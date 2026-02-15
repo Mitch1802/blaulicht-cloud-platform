@@ -172,7 +172,7 @@ export class UserComponent implements OnInit {
         this.globalDataService.erstelleMessage("error", "Die Passwörter müssen übereinstimmen!");
         return
       }
-      this.globalDataService.post("auth/registration", object, false).subscribe({
+      this.globalDataService.post("users/create", object, false).subscribe({
         next: (erg: any) => {
           try {
             this.username = "";

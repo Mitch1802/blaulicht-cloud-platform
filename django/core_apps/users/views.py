@@ -6,13 +6,13 @@ from dj_rest_auth.views import LogoutView
 
 from .models import User, Role
 from .renderers import UserJSONRenderer
-from .serializers import UserSerializer, ChangePasswordSerializer, RoleSerializer, UserSelfSerializer
-from core_apps.common.permissions import HasAnyRolePermission
+from .serializers import UserSerializer, ChangePasswordSerializer, RoleSerializer, AdminCreateUserSerializer
+from core_apps.common.permissions import IsAdminPermission, HasAnyRolePermission
 
 
 class CustomUserDetailsView(generics.RetrieveUpdateAPIView):
-    serializer_class = UserSelfSerializer
-    permission_classes = [permissions.IsAuthenticated, HasAnyRolePermission.with_roles("ADMIN", "MITGLIED")]
+    serializer_class = UserSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_object(self):
         return self.request.user
@@ -24,7 +24,7 @@ class CustomUserDetailsView(generics.RetrieveUpdateAPIView):
 class UserListView(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated, HasAnyRolePermission.with_roles("ADMIN")]
+    permission_classes = [permissions.IsAuthenticated, IsAdminPermission]
     renderer_classes = [UserJSONRenderer]
 
     def list(self, request):
@@ -41,7 +41,7 @@ class UserListView(generics.ListAPIView):
 class UserRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated, HasAnyRolePermission.with_roles("ADMIN")]
+    permission_classes = [permissions.IsAuthenticated, IsAdminPermission]
     lookup_field = "id"
     renderer_classes = [UserJSONRenderer]
 
@@ -71,10 +71,14 @@ class ForceLogoutView(LogoutView):
 
         response = Response({"detail": "Cookies removed."}, status=200)
         response.delete_cookie('sessionid')
-        response.delete_cookie('blaulichtcloud-access-token')
+        response.delete_cookie('app-access-token')
         return response
 
 class RoleViewSet(viewsets.ModelViewSet):
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
-    permission_classes = [permissions.IsAuthenticated, HasAnyRolePermission.with_roles("ADMIN")]
+    permission_classes = [permissions.IsAuthenticated, IsAdminPermission]
+
+class AdminCreateUserView(generics.CreateAPIView):
+    serializer_class = AdminCreateUserSerializer
+    permission_classes = [permissions.IsAuthenticated, IsAdminPermission]

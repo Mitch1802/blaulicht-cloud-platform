@@ -1,10 +1,8 @@
-from allauth.account.adapter import get_adapter
-from dj_rest_auth.registration.serializers import RegisterSerializer
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 
-from .models import Role
+from .models import User, Role
 
 User = get_user_model()
 
@@ -12,9 +10,14 @@ User = get_user_model()
 class UserSerializer(serializers.ModelSerializer):
     roles = serializers.SlugRelatedField(
         many=True,
-        slug_field='key',
-        queryset=Role.objects.all()
+        slug_field="key",
+        queryset=Role.objects.none(),
+        required=False
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["roles"].queryset = Role.objects.all()
 
     def update(self, instance, validated_data):
         if instance.is_superuser:
@@ -48,50 +51,6 @@ class UserSerializer(serializers.ModelSerializer):
             representation["admin"] = True
         return representation
 
-class CustomRegisterSerializer(RegisterSerializer):
-    username = serializers.CharField(required=True)
-    first_name = serializers.CharField(required=True)
-    last_name = serializers.CharField(required=True)
-    email = serializers.EmailField(required=False)
-    password1 = serializers.CharField(write_only=True)
-    password2 = serializers.CharField(write_only=True)
-    roles = serializers.ListField(
-        child=serializers.CharField(), 
-        required=True,
-        help_text="Liste von Rollen-Keys (z. B. ['ADMIN', 'FMD'])"
-    )
-
-    def get_cleaned_data(self):
-        super().get_cleaned_data()
-        return {
-            "username": self.validated_data.get("username", ""),
-            "email": self.validated_data.get("email", ""),
-            "password1": self.validated_data.get("password1", ""),
-            "first_name": self.validated_data.get("first_name", ""),
-            "last_name": self.validated_data.get("last_name", ""),
-            "roles": self.validated_data.get("roles", []),
-        }
-
-    def save(self, request):
-        adapter = get_adapter()
-        user = adapter.new_user(request)
-        self.cleaned_data = self.get_cleaned_data()
-
-        # Basisdaten setzen
-        user.username = self.cleaned_data.get("username")
-        user.email = self.cleaned_data.get("email")
-        user.first_name = self.cleaned_data.get("first_name")
-        user.last_name = self.cleaned_data.get("last_name")
-        user.set_password(self.cleaned_data.get("password1"))
-        user.save()
-
-        # Rollen setzen
-        role_keys = self.cleaned_data.get("roles", [])
-        role_objs = Role.objects.filter(key__in=role_keys)
-        user.roles.set(role_objs)
-
-        return user
-
 class UserDetailSerializer(serializers.ModelSerializer):
     roles = serializers.SlugRelatedField(
         many=True,
@@ -102,16 +61,6 @@ class UserDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["id", "username", "roles"]
-
-class UserSelfSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        # NUR das, was ein User selbst ändern darf:
-        fields = ("id", "username", "first_name", "last_name")
-        read_only_fields = ("id", "roles")
-
-    def update(self, instance, validated_data):
-        return super().update(instance, validated_data)
 
 class ChangePasswordSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
@@ -130,3 +79,33 @@ class RoleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Role
         fields = ['id', 'key', 'verbose_name']
+
+class AdminCreateUserSerializer(serializers.ModelSerializer):
+    password1 = serializers.CharField(write_only=True)
+    password2 = serializers.CharField(write_only=True)
+    roles = serializers.ListField(child=serializers.CharField(), required=True)
+
+    class Meta:
+        model = User
+        fields = ("username", "first_name", "last_name", "email", "password1", "password2", "roles")
+
+    def validate(self, attrs):
+        if attrs["password1"] != attrs["password2"]:
+            raise serializers.ValidationError("Passwörter stimmen nicht überein.")
+        validate_password(attrs["password1"])
+        return attrs
+
+    def create(self, validated_data):
+        roles = validated_data.pop("roles")
+        pwd = validated_data.pop("password1")
+        validated_data.pop("password2", None)
+
+        user = User(**validated_data)
+        user.set_password(pwd)
+        user.save()
+
+        # roles setzen (dein Role Modell nutzt key)
+        role_qs = Role.objects.filter(key__in=roles)
+        user.roles.set(role_qs)
+
+        return user

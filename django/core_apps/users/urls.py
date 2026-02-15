@@ -7,6 +7,7 @@ from .views import (
     ChangePasswordView,
     RoleViewSet,
     CustomUserDetailsView,
+    AdminCreateUserView
 )
 
 router = DefaultRouter()
@@ -16,6 +17,7 @@ urlpatterns = [
     path("", UserListView.as_view(), name="user-list"),
     path("self/", CustomUserDetailsView.as_view(), name="user-self"),
     path("<uuid:id>/", UserRetrieveUpdateDestroyView.as_view(), name="user-retrieve-update-destroy"),
+    path("create/", AdminCreateUserView.as_view(), name="user-create"),
     path("change_password/<uuid:id>/", ChangePasswordView.as_view(), name="user-change-password"),
     path("", include(router.urls)),
 ]

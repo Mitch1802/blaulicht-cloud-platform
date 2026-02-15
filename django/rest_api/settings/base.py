@@ -24,15 +24,9 @@ DJANGO_APPS = [
 
 THIRD_PARTY_APPS = [
     "rest_framework",
-    "drf_yasg",
     "corsheaders",
     "rest_framework.authtoken",
-    'rest_framework_simplejwt',
-    "allauth",
-    "allauth.account",
-    "allauth.socialaccount",
     "dj_rest_auth",
-    "dj_rest_auth.registration",
 ]
 
 LOCAL_APPS = [
@@ -132,8 +126,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-SITE_ID = 1
-
 API_URL = env("DJANGO_API_URL")
 
 
@@ -182,13 +174,8 @@ REST_AUTH = {
     "USE_JWT": True,
     "SESSION_LOGIN": True,
     "JWT_AUTH_COOKIE": "app-access-token",
-    "JWT_AUTH_RETURN_EXPIRATION": True,
-    "REGISTER_SERIALIZER": "core_apps.users.serializers.CustomRegisterSerializer",
-    'REGISTER_PERMISSION_CLASSES': ("core_apps.common.permissions.IsAdminPermission",),
     "USER_DETAILS_SERIALIZER": "core_apps.users.serializers.UserDetailSerializer",
 }
-
-REST_USE_JWT = True
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
