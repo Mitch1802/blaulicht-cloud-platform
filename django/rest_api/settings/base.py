@@ -14,11 +14,9 @@ DEBUG = env.bool("DJANGO_DEBUG", False)
 # Application definition
 
 DJANGO_APPS = [
-    "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
-    "django.contrib.messages",
     "django.contrib.staticfiles",
 ]
 
@@ -26,7 +24,6 @@ THIRD_PARTY_APPS = [
     "rest_framework",
     "corsheaders",
     "rest_framework.authtoken",
-    'rest_framework_simplejwt',
     "dj_rest_auth",
 ]
 
@@ -174,8 +171,7 @@ REST_FRAMEWORK = {
 REST_AUTH = {
     "USE_JWT": True,
     "SESSION_LOGIN": True,
-    "JWT_AUTH_COOKIE": "blaulichtcloud-access-token",
-    "JWT_AUTH_RETURN_EXPIRATION": True,
+    "JWT_AUTH_COOKIE": "app-access-token",
     "USER_DETAILS_SERIALIZER": "core_apps.users.serializers.UserDetailSerializer",
 }
 
