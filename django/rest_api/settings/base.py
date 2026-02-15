@@ -26,6 +26,7 @@ THIRD_PARTY_APPS = [
     "rest_framework",
     "corsheaders",
     "rest_framework.authtoken",
+    'rest_framework_simplejwt',
     "dj_rest_auth",
 ]
 
@@ -174,6 +175,7 @@ REST_AUTH = {
     "USE_JWT": True,
     "SESSION_LOGIN": True,
     "JWT_AUTH_COOKIE": "blaulichtcloud-access-token",
+    "JWT_AUTH_RETURN_EXPIRATION": True,
     "USER_DETAILS_SERIALIZER": "core_apps.users.serializers.UserDetailSerializer",
 }
 
