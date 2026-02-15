@@ -6,13 +6,13 @@ from dj_rest_auth.views import LogoutView
 
 from .models import User, Role
 from .renderers import UserJSONRenderer
-from .serializers import UserSerializer, ChangePasswordSerializer, RoleSerializer, AdminCreateUserSerializer
+from .serializers import UserSelfSerializer, UserSerializer, ChangePasswordSerializer, RoleSerializer, AdminCreateUserSerializer
 from core_apps.common.permissions import IsAdminPermission, HasAnyRolePermission
 
 
 class CustomUserDetailsView(generics.RetrieveUpdateAPIView):
-    serializer_class = UserSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = UserSelfSerializer
+    permission_classes = [permissions.IsAuthenticated, HasAnyRolePermission.with_roles("ADMIN", "MITGLIED")]
 
     def get_object(self):
         return self.request.user
@@ -71,7 +71,7 @@ class ForceLogoutView(LogoutView):
 
         response = Response({"detail": "Cookies removed."}, status=200)
         response.delete_cookie('sessionid')
-        response.delete_cookie('app-access-token')
+        response.delete_cookie('blaulichtcloud-access-token')
         return response
 
 class RoleViewSet(viewsets.ModelViewSet):

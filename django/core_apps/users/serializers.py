@@ -109,3 +109,13 @@ class AdminCreateUserSerializer(serializers.ModelSerializer):
         user.roles.set(role_qs)
 
         return user
+
+class UserSelfSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        # NUR das, was ein User selbst ändern darf:
+        fields = ("id", "username", "first_name", "last_name")
+        read_only_fields = ("id", "roles")
+
+    def update(self, instance, validated_data):
+        return super().update(instance, validated_data)

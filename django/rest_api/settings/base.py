@@ -173,7 +173,7 @@ REST_FRAMEWORK = {
 REST_AUTH = {
     "USE_JWT": True,
     "SESSION_LOGIN": True,
-    "JWT_AUTH_COOKIE": "app-access-token",
+    "JWT_AUTH_COOKIE": "blaulichtcloud-access-token",
     "USER_DETAILS_SERIALIZER": "core_apps.users.serializers.UserDetailSerializer",
 }
 
