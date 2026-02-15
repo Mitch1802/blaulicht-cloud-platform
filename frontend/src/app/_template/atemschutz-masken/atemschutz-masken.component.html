@@ -7,7 +7,7 @@
         <mat-card-title>{{ title }}</mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        @if (formModul.disabled && formPruefung.disabled && !showPruefungTable)
+        @if (sichtbarkeitModul() == "tableListe")
         {
         <button
           mat-raised-button
@@ -27,7 +27,7 @@
         >
           Protokoll Eintrag
         </button>
-        } @if (showPruefungTable) {
+        } @if (sichtbarkeitModul() == "tablePruefungen") {
         <button
           mat-raised-button
           color="primary"
@@ -38,8 +38,8 @@
           Zurück
         </button>
         }
-        <!-- MASKE FORM -->
-        @if (!formModul.disabled) {
+        <!-- FORM -->
+        @if (sichtbarkeitModul() == "formModul") {
         <form [formGroup]="formModul" (ngSubmit)="datenSpeichern()">
           <input hidden type="text" class="form-control" formControlName="id" />
           <button
@@ -59,7 +59,7 @@
             type="button"
             (click)="abbrechen()"
           >
-            Abbrechen
+            Zurück
           </button>
           <section class="row mt-2 mx-0">
             <div class="col-12 col-lg-6 mb-3">
@@ -114,9 +114,9 @@
           </button>
         </form>
         }
-        <!-- MASKE FORM ENDE -->
+        <!-- FORM ENDE -->
         <!-- PRÜFUNG FORM -->
-        @if (!formPruefung.disabled) {
+        @if (sichtbarkeitModul() == "formPruefung") {
         <form [formGroup]="formPruefung" (ngSubmit)="datenSpeichernProtokoll()">
           <input hidden type="text" class="form-control" formControlName="id" />
           <button
@@ -132,11 +132,10 @@
             mat-raised-button
             class="mb-3"
             color="primary"
-            [hidden]="formPruefung.disabled"
             type="button"
             (click)="pruefungAbbrechen()"
           >
-            Abbrechen
+            Zurück
           </button>
           <section class="row mt-2 mx-0">
             <div class="col-12 col-lg-12 mb-3">
@@ -275,7 +274,7 @@
         }
         <!-- PRÜFUNG FORM ENDE -->
         <!-- TABELLE MASKEN -->
-        @if (formModul.disabled && formPruefung.disabled && !showPruefungTable)
+        @if (sichtbarkeitModul() == "tableListe")
         {
         <table
           mat-table
@@ -331,7 +330,7 @@
         }
         <!-- TABELLE MASKEN ENDE -->
         <!-- TABELLE MASKEN PRÜFUNGEN -->
-        @if (formModul.disabled && formPruefung.disabled && showPruefungTable)
+        @if (sichtbarkeitModul() == "tablePruefungen")
         {
         <table
           mat-table
@@ -371,7 +370,7 @@
                 color="primary"
                 (click)="auswahlBearbeitenProtokoll(element)"
               >
-                <mat-icon class="m-0">edit</mat-icon>
+                <mat-icon class="m-0">remove_red_eye</mat-icon>
               </button>
             </td>
           </ng-container>

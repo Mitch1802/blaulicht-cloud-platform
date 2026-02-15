@@ -55,6 +55,7 @@ export class AtemschutzMaskenComponent implements OnInit {
   title_modul = this.title;
   title_pruefung = 'Masken Prüfung';
   modul = 'atemschutz/masken';
+  showPruefungForm: boolean = false;
   showPruefungTable: boolean = false;
 
   masken: IAtemschutzMaske[] = [];
@@ -134,11 +135,13 @@ export class AtemschutzMaskenComponent implements OnInit {
   }
 
   neuePruefung(): void {
+    this.showPruefungForm = true;
     this.formPruefung.enable();
     this.title = this.title_pruefung;
   }
 
   neuePruefungVonMaske(element: any): void {
+    this.showPruefungForm = true;
     this.formPruefung.enable();
     this.title = this.title_pruefung;
     this.formPruefung.controls['maske_id'].setValue(element.pkid);
@@ -216,8 +219,8 @@ export class AtemschutzMaskenComponent implements OnInit {
       next: (erg: any) => {
         try {
           this.showPruefungTable = false;
+          this.showPruefungForm = true;
           const details: IAtemschutzMaskeProtokoll = erg;
-          this.formPruefung.enable();
           this.formPruefung.setValue({
             id: details.id,
             maske_id: details.maske_id,
@@ -374,7 +377,8 @@ export class AtemschutzMaskenComponent implements OnInit {
                 notiz: '',
               });
               this.formPruefung.disable();
-              this.showPruefungTable = true;
+              this.showPruefungForm = false;
+              this.showPruefungTable = false;
               this.globalDataService.erstelleMessage(
                 'success',
                 'Protokoll gespeichert!'
@@ -385,50 +389,50 @@ export class AtemschutzMaskenComponent implements OnInit {
           },
           error: (error: any) => this.globalDataService.errorAnzeigen(error),
         });
-    } else {
-      this.globalDataService
-        .patch(`${this.modul}/protokoll`, idValue, objekt, false)
-        .subscribe({
-          next: (erg: any) => {
-            try {
-              const updated: any = erg;
-              this.pruefungen = this.pruefungen
-                .map((m) => (m.id === updated.id ? updated : m))
-                .sort((a, b) => a.datum - b.datum);
+    // } else {
+    //   this.globalDataService
+    //     .patch(`${this.modul}/protokoll`, idValue, objekt, false)
+    //     .subscribe({
+    //       next: (erg: any) => {
+    //         try {
+    //           const updated: any = erg;
+    //           this.pruefungen = this.pruefungen
+    //             .map((m) => (m.id === updated.id ? updated : m))
+    //             .sort((a, b) => a.datum - b.datum);
 
-              this.dataSourcePruefungen.data = this.pruefungen;
+    //           this.dataSourcePruefungen.data = this.pruefungen;
 
-              this.formPruefung.reset({
-                id: '',
-                maske_id: 0,
-                taetigkeit: '',
-                verwendung_typ: '',
-                verwendung_min: 0,
-                wartung_2_punkt: false,
-                wartung_unterdruck: false,
-                wartung_oeffnungsdruck: false,
-                wartung_scheibe: false,
-                wartung_ventile: false,
-                wartung_maengel: false,
-                ausser_dienst: false,
-                tausch_sprechmembran: false,
-                tausch_ausatemventil: false,
-                tausch_sichtscheibe: false,
-                name_pruefer: '',
-                notiz: '',
-              });
-              this.formPruefung.disable();
-              this.showPruefungTable = true;
-              this.globalDataService.erstelleMessage(
-                'success',
-                'Protokoll geändert!'
-              );
-            } catch (e: any) {
-              this.globalDataService.erstelleMessage('error', e);
-            }
-          },
-          error: (error: any) => this.globalDataService.errorAnzeigen(error),
-        });
+    //           this.formPruefung.reset({
+    //             id: '',
+    //             maske_id: 0,
+    //             taetigkeit: '',
+    //             verwendung_typ: '',
+    //             verwendung_min: 0,
+    //             wartung_2_punkt: false,
+    //             wartung_unterdruck: false,
+    //             wartung_oeffnungsdruck: false,
+    //             wartung_scheibe: false,
+    //             wartung_ventile: false,
+    //             wartung_maengel: false,
+    //             ausser_dienst: false,
+    //             tausch_sprechmembran: false,
+    //             tausch_ausatemventil: false,
+    //             tausch_sichtscheibe: false,
+    //             name_pruefer: '',
+    //             notiz: '',
+    //           });
+    //           this.formPruefung.disable();
+    //           this.showPruefungTable = true;
+    //           this.globalDataService.erstelleMessage(
+    //             'success',
+    //             'Protokoll geändert!'
+    //           );
+    //         } catch (e: any) {
+    //           this.globalDataService.erstelleMessage('error', e);
+    //         }
+    //       },
+    //       error: (error: any) => this.globalDataService.errorAnzeigen(error),
+    //     });
     }
   }
 
@@ -472,6 +476,8 @@ export class AtemschutzMaskenComponent implements OnInit {
     });
     this.formPruefung.disable();
     this.title = this.title_modul;
+    this.showPruefungForm = false;
+    this.showPruefungTable = false;
   }
 
   datenLoeschen(): void {
@@ -551,6 +557,8 @@ export class AtemschutzMaskenComponent implements OnInit {
             notiz: '',
           });
           this.formPruefung.disable();
+          this.showPruefungForm = false;
+          this.showPruefungTable = true;
           this.globalDataService.erstelleMessage(
             'success',
             'Protokoll erfolgreich gelöscht!'
@@ -579,5 +587,21 @@ export class AtemschutzMaskenComponent implements OnInit {
         ? null
         : { dateInvalid: true };
     };
+  }
+
+  sichtbarkeitModul(): string {
+    let modulSichtbar = "";
+
+    if (!this.formModul.disabled) {
+      modulSichtbar = "formModul";
+    } else if (this.formModul.disabled && !this.showPruefungTable && !this.showPruefungForm) {
+      modulSichtbar = "tableListe";
+    } else if (this.showPruefungForm) {
+      modulSichtbar = "formPruefung";
+    } else if (this.showPruefungTable) {
+      modulSichtbar = "tablePruefungen";
+    }
+
+    return modulSichtbar;
   }
 }

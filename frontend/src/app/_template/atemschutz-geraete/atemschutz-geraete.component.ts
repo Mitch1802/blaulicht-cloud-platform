@@ -48,6 +48,7 @@ export class AtemschutzGeraeteComponent implements OnInit {
   title_modul = this.title;
   title_pruefung = "Geräte Prüfung";
   modul = "atemschutz/geraete";
+  showPruefungForm: boolean = false;
   showPruefungTable: boolean = false;
 
   geraete: IAtemschutzGeraet[] = [];
@@ -61,7 +62,7 @@ export class AtemschutzGeraeteComponent implements OnInit {
 
   formModul = new FormGroup({
     id: new FormControl(''),
-    inv_nr: new FormControl(''),
+    inv_nr: new FormControl('', Validators.required),
     art: new FormControl(''),
     typ: new FormControl(''),
     druckminderer: new FormControl(''),
@@ -142,11 +143,13 @@ export class AtemschutzGeraeteComponent implements OnInit {
   }
 
   neuePruefung(): void {
+    this.showPruefungForm = true;
     this.formPruefung.enable();
     this.title = this.title_pruefung;
   }
 
   neuePruefungVonMaske(element: any): void {
+    this.showPruefungForm = true;
     this.formPruefung.enable();
     this.title = this.title_pruefung;
     this.formPruefung.controls['geraet_id'].setValue(element.pkid);
@@ -163,7 +166,6 @@ export class AtemschutzGeraeteComponent implements OnInit {
       next: (erg: any) => {
         try {
           const details: IAtemschutzGeraet = erg;
-
           this.formModul.enable();
           this.formModul.setValue({
             id: details.id,
@@ -230,8 +232,8 @@ export class AtemschutzGeraeteComponent implements OnInit {
       next: (erg: any) => {
         try {
           this.showPruefungTable = false;
+          this.showPruefungForm = true;
           const details: IAtemschutzGeraetProtokoll = erg;
-          this.formPruefung.enable();
           this.formPruefung.setValue({
             id: details.id,
             geraet_id: details.geraet_id,
@@ -375,7 +377,8 @@ export class AtemschutzGeraeteComponent implements OnInit {
               notiz: '',
             });
             this.formPruefung.disable();
-            this.showPruefungTable = true;
+            this.showPruefungForm = false;
+            this.showPruefungTable = false;
             this.globalDataService.erstelleMessage('success', 'Protokoll gespeichert!');
           } catch (e: any) {
             this.globalDataService.erstelleMessage('error', e);
@@ -383,43 +386,43 @@ export class AtemschutzGeraeteComponent implements OnInit {
         },
         error: (error: any) => this.globalDataService.errorAnzeigen(error)
       });
-    } else {
-      this.globalDataService.patch(`${this.modul}/protokoll`, idValue, objekt, false).subscribe({
-        next: (erg: any) => {
-          try {
-            const updated: any = erg;
-            this.pruefungen = this.pruefungen
-              .map(m => m.id === updated.id ? updated : m)
-              .sort((a, b) => a.datum - b.datum);
+    // } else {
+    //   this.globalDataService.patch(`${this.modul}/protokoll`, idValue, objekt, false).subscribe({
+    //     next: (erg: any) => {
+    //       try {
+    //         const updated: any = erg;
+    //         this.pruefungen = this.pruefungen
+    //           .map(m => m.id === updated.id ? updated : m)
+    //           .sort((a, b) => a.datum - b.datum);
 
-            this.dataSourcePruefungen.data = this.pruefungen;
+    //         this.dataSourcePruefungen.data = this.pruefungen;
 
-            this.formPruefung.reset({
-              id: '',
-              geraet_id: 0,
-              taetigkeit: '',
-              verwendung_typ: '',
-              verwendung_min: 0,
-              mitglied_id: 0,
-              geraet_ok: false,
-              name_pruefer: '',
-              tausch_hochdruckdichtring: false,
-              tausch_membran: false,
-              tausch_gleitring: false,
-              pruefung_10jahre: false,
-              pruefung_jaehrlich: false,
-              preufung_monatlich: false,
-              notiz: '',
-            });
-            this.formPruefung.disable();
-            this.showPruefungTable = true;
-            this.globalDataService.erstelleMessage('success', 'Protokoll geändert!');
-          } catch (e: any) {
-            this.globalDataService.erstelleMessage('error', e);
-          }
-        },
-        error: (error: any) => this.globalDataService.errorAnzeigen(error)
-      });
+    //         this.formPruefung.reset({
+    //           id: '',
+    //           geraet_id: 0,
+    //           taetigkeit: '',
+    //           verwendung_typ: '',
+    //           verwendung_min: 0,
+    //           mitglied_id: 0,
+    //           geraet_ok: false,
+    //           name_pruefer: '',
+    //           tausch_hochdruckdichtring: false,
+    //           tausch_membran: false,
+    //           tausch_gleitring: false,
+    //           pruefung_10jahre: false,
+    //           pruefung_jaehrlich: false,
+    //           preufung_monatlich: false,
+    //           notiz: '',
+    //         });
+    //         this.formPruefung.disable();
+    //         this.showPruefungTable = true;
+    //         this.globalDataService.erstelleMessage('success', 'Protokoll geändert!');
+    //       } catch (e: any) {
+    //         this.globalDataService.erstelleMessage('error', e);
+    //       }
+    //     },
+    //     error: (error: any) => this.globalDataService.errorAnzeigen(error)
+    //   });
     }
   }
 
@@ -464,6 +467,8 @@ export class AtemschutzGeraeteComponent implements OnInit {
     });
     this.formPruefung.disable();
     this.title = this.title_modul;
+    this.showPruefungForm = false;
+    this.showPruefungTable = false;
   }
 
   datenLoeschen(): void {
@@ -538,6 +543,8 @@ export class AtemschutzGeraeteComponent implements OnInit {
             notiz: '',
           });
           this.formPruefung.disable();
+          this.showPruefungForm = false;
+          this.showPruefungTable = true;
           this.globalDataService.erstelleMessage('success', 'Protokoll erfolgreich gelöscht!');
         } catch (e: any) {
           this.globalDataService.erstelleMessage('error', e);
@@ -561,5 +568,21 @@ export class AtemschutzGeraeteComponent implements OnInit {
         ? null
         : { dateInvalid: true };
     };
+  }
+
+  sichtbarkeitModul(): string {
+    let modulSichtbar = "";
+
+    if (!this.formModul.disabled) {
+      modulSichtbar = "formModul";
+    } else if (this.formModul.disabled && !this.showPruefungTable && !this.showPruefungForm) {
+      modulSichtbar = "tableListe";
+    } else if (this.showPruefungForm) {
+      modulSichtbar = "formPruefung";
+    } else if (this.showPruefungTable) {
+      modulSichtbar = "tablePruefungen";
+    }
+
+    return modulSichtbar;
   }
 }

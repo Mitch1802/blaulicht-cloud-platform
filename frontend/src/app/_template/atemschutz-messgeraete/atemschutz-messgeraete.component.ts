@@ -55,6 +55,7 @@ export class AtemschutzMessgeraeteComponent implements OnInit {
   title_modul = this.title;
   title_pruefung = 'Messgeräte Prüfung';
   modul = 'atemschutz/messgeraete';
+  showPruefungForm: boolean = false;
   showPruefungTable: boolean = false;
 
   messgeraete: IMessgeraet[] = [];
@@ -121,11 +122,13 @@ export class AtemschutzMessgeraeteComponent implements OnInit {
   }
 
   neuePruefung(): void {
+    this.showPruefungForm = true;
     this.formPruefung.enable();
     this.title = this.title_pruefung;
   }
 
   neuePruefungVonMessgeraet(element: any): void {
+    this.showPruefungForm = true;
     this.formPruefung.enable();
     this.title = this.title_pruefung;
     this.formPruefung.controls['geraet_id'].setValue(element.pkid);
@@ -202,8 +205,8 @@ export class AtemschutzMessgeraeteComponent implements OnInit {
       next: (erg: any) => {
         try {
           this.showPruefungTable = false;
+          this.showPruefungForm = true;
           const details: IMessgeraetProtokoll = erg;
-          this.formPruefung.enable();
           this.formPruefung.setValue({
             id: details.id,
             geraet_id: details.geraet_id,
@@ -336,7 +339,8 @@ export class AtemschutzMessgeraeteComponent implements OnInit {
                 name_pruefer: '',
               });
               this.formPruefung.disable();
-              this.showPruefungTable = true;
+              this.showPruefungForm = false;
+              this.showPruefungTable = false;
               this.globalDataService.erstelleMessage(
                 'success',
                 'Protokoll gespeichert!'
@@ -347,39 +351,39 @@ export class AtemschutzMessgeraeteComponent implements OnInit {
           },
           error: (error: any) => this.globalDataService.errorAnzeigen(error),
         });
-    } else {
-      this.globalDataService
-        .patch(`${this.modul}/protokoll`, idValue, objekt, false)
-        .subscribe({
-          next: (erg: any) => {
-            try {
-              const updated: any = erg;
-              this.pruefungen = this.pruefungen
-                .map((m) => (m.id === updated.id ? updated : m))
-                .sort((a, b) => a.datum - b.datum);
+    // } else {
+    //   this.globalDataService
+    //     .patch(`${this.modul}/protokoll`, idValue, objekt, false)
+    //     .subscribe({
+    //       next: (erg: any) => {
+    //         try {
+    //           const updated: any = erg;
+    //           this.pruefungen = this.pruefungen
+    //             .map((m) => (m.id === updated.id ? updated : m))
+    //             .sort((a, b) => a.datum - b.datum);
 
-              this.dataSourcePruefungen.data = this.pruefungen;
+    //           this.dataSourcePruefungen.data = this.pruefungen;
 
-              this.formPruefung.reset({
-                id: '',
-                geraet_id: 0,
-                kalibrierung: false,
-                kontrolle_woechentlich: false,
-                wartung_jaehrlich: false,
-                name_pruefer: '',
-              });
-              this.formPruefung.disable();
-              this.showPruefungTable = true;
-              this.globalDataService.erstelleMessage(
-                'success',
-                'Protokoll geändert!'
-              );
-            } catch (e: any) {
-              this.globalDataService.erstelleMessage('error', e);
-            }
-          },
-          error: (error: any) => this.globalDataService.errorAnzeigen(error),
-        });
+    //           this.formPruefung.reset({
+    //             id: '',
+    //             geraet_id: 0,
+    //             kalibrierung: false,
+    //             kontrolle_woechentlich: false,
+    //             wartung_jaehrlich: false,
+    //             name_pruefer: '',
+    //           });
+    //           this.formPruefung.disable();
+    //           this.showPruefungTable = true;
+    //           this.globalDataService.erstelleMessage(
+    //             'success',
+    //             'Protokoll geändert!'
+    //           );
+    //         } catch (e: any) {
+    //           this.globalDataService.erstelleMessage('error', e);
+    //         }
+    //       },
+    //       error: (error: any) => this.globalDataService.errorAnzeigen(error),
+    //     });
     }
   }
 
@@ -411,6 +415,8 @@ export class AtemschutzMessgeraeteComponent implements OnInit {
     });
     this.formPruefung.disable();
     this.title = this.title_modul;
+    this.showPruefungForm = false;
+    this.showPruefungTable = false;
   }
 
   datenLoeschen(): void {
@@ -478,6 +484,8 @@ export class AtemschutzMessgeraeteComponent implements OnInit {
             name_pruefer: '',
           });
           this.formPruefung.disable();
+          this.showPruefungForm = false;
+          this.showPruefungTable = true;
           this.globalDataService.erstelleMessage(
             'success',
             'Protokoll erfolgreich gelöscht!'
@@ -506,6 +514,22 @@ export class AtemschutzMessgeraeteComponent implements OnInit {
         ? null
         : { dateInvalid: true };
     };
+  }
+
+  sichtbarkeitModul(): string {
+    let modulSichtbar = "";
+
+    if (!this.formModul.disabled) {
+      modulSichtbar = "formModul";
+    } else if (this.formModul.disabled && !this.showPruefungTable && !this.showPruefungForm) {
+      modulSichtbar = "tableListe";
+    } else if (this.showPruefungForm) {
+      modulSichtbar = "formPruefung";
+    } else if (this.showPruefungTable) {
+      modulSichtbar = "tablePruefungen";
+    }
+
+    return modulSichtbar;
   }
 }
 
