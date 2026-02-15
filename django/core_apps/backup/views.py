@@ -185,7 +185,7 @@ class RestorePostView(APIView):
             'msg': msg,
         })
         response.delete_cookie('sessionid')
-        response.delete_cookie('katplan-access-token')
+        response.delete_cookie('app-access-token')
         return response
 
 

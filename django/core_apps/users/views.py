@@ -71,7 +71,7 @@ class ForceLogoutView(LogoutView):
 
         response = Response({"detail": "Cookies removed."}, status=200)
         response.delete_cookie('sessionid')
-        response.delete_cookie('blaulichtcloud-access-token')
+        response.delete_cookie('app-access-token')
         return response
 
 class RoleViewSet(viewsets.ModelViewSet):
