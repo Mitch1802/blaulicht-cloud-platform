@@ -34,9 +34,6 @@ export class KonfigurationComponent implements OnInit {
   @Output() breadcrumbout = new EventEmitter<any[]>();
 
   rollen: any = []
-
-  file: HTMLInputElement = document.getElementById("backupUpload") as HTMLInputElement;
-  uploadText = "";
   backups: any = [];
   backup_msg = "";
 
@@ -90,9 +87,8 @@ export class KonfigurationComponent implements OnInit {
               fw_iban: details.fw_iban,
               fw_bic: details.fw_bic
             })
-            this.rollen = erg.rollen;
-            this.uploadText="";
           }
+          this.rollen = erg.rollen;
           this.backups = this.convertBackups(erg.backups);
         } catch (e: any) {
           this.globalDataService.erstelleMessage("error", e);
@@ -308,7 +304,7 @@ export class KonfigurationComponent implements OnInit {
       let backup_version = file.split('_');
       backup_version = backup_version[1];
 
-      if (backup_version == version) {
+      if (backup_version == version || backup_version == 'test') {
         const dict = {
           "name": file,
         }

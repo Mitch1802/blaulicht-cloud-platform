@@ -56,7 +56,7 @@ export class LoginComponent implements OnInit {
     this.globalDataService.post(this.modul, data, false).subscribe({
       next: (erg: any) => {
         try {
-          sessionStorage.setItem("Token", erg.access_token);
+          sessionStorage.setItem("Token", erg.access);
           sessionStorage.setItem('Benutzername', erg.user.username);
           sessionStorage.setItem('Rollen', JSON.stringify(erg.user.roles));
           this.router.navigate(['/start']);

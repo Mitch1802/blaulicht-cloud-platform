@@ -83,11 +83,11 @@ class BackupGetPostView(APIView):
         return Response({'msg': msg, 'backups': backups})
 
 
-
 class RestorePostView(APIView):
     permission_classes = [permissions.IsAuthenticated, HasAnyRolePermission.with_roles("ADMIN")]
 
     def post(self, request, *args, **kwargs):
+        version = env('VERSION')
         msg = ""
         backupname = request.data['backup']
         backups = os.listdir(backup_path)
