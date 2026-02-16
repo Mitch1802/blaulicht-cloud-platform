@@ -4,6 +4,7 @@ import { GlobalDataService } from 'src/app/_service/global-data.service';
 import { MatToolbar } from '@angular/material/toolbar';
 import { MatIconButton, MatButton } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { environment } from 'src/environments/environment';
 import { AsyncPipe } from '@angular/common';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 
@@ -26,7 +27,7 @@ export class HeaderComponent implements OnInit {
   globalDataService = inject(GlobalDataService);
   private router = inject(Router);
 
-  title = '';
+  title: string = environment.title;
 
   loading$ = this.globalDataService.loading$;
 

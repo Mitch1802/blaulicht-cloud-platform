@@ -15,7 +15,4 @@ import { RouterOutlet } from '@angular/router';
         '../assets/css/bootstrap-grid.css'
     ]
 })
-export class AppComponent {
-    title = '';
-    constructor() {}
-}
+export class AppComponent {}
