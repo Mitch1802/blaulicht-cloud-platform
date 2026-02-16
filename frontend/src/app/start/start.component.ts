@@ -55,7 +55,7 @@ export class StartComponent implements OnInit {
 
     this.breadcrumb = this.globalDataService.ladeBreadcrumb();
     this.username = sessionStorage.getItem('Benutzername') || 'Gast';
-    this.meine_rollen = sessionStorage.getItem('Rollen') || '';
+    this.meine_rollen = sessionStorage.getItem('BenutzerRollen') || '';
 
     this.globalDataService.get("modul_konfiguration").subscribe({
       next: (erg: any) => {

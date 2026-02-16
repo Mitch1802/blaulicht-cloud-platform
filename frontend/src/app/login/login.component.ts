@@ -7,6 +7,9 @@ import { MatFormField, MatLabel, MatSuffix } from '@angular/material/form-field'
 import { MatInput } from '@angular/material/input';
 import { MatIcon } from '@angular/material/icon';
 import { MatButton } from '@angular/material/button';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
+import { CommonModule } from '@angular/common';
 
 type VersionInfo = {
   version: string;
@@ -19,19 +22,33 @@ type VersionInfo = {
     selector: 'app-login',
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.sass'],
-    imports: [MatCardModule, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatIcon, MatSuffix, MatButton]
+    imports: [
+      CommonModule,
+      MatCardModule,
+      FormsModule,
+      ReactiveFormsModule,
+      MatFormField,
+      MatLabel,
+      MatInput,
+      MatIcon,
+      MatSuffix,
+      MatButton,
+      HttpClientModule
+    ]
 })
 
 export class LoginComponent implements OnInit {
   private formBuilder = inject(FormBuilder);
   private router = inject(Router);
   private globalDataService = inject(GlobalDataService);
+  private http = inject(HttpClient);
 
-  modul = "auth/login";
+  title: string = environment.title;
+  modul: string = "auth/login";
   form!: FormGroup;
   versionInfo?: VersionInfo;
 
-  public showPassword = false;
+  public showPassword: boolean = false;
 
   public togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
@@ -58,7 +75,7 @@ export class LoginComponent implements OnInit {
   get f() { return this.form.controls; }
 
   anmelden(): void {
-    const data = {
+    let data = {
       "username": this.f.user.value,
       "password": this.f.pwd.value
     };
@@ -68,7 +85,7 @@ export class LoginComponent implements OnInit {
         try {
           sessionStorage.setItem("Token", erg.access);
           sessionStorage.setItem('Benutzername', erg.user.username);
-          sessionStorage.setItem('Rollen', JSON.stringify(erg.user.roles));
+          sessionStorage.setItem('BenutzerRollen', erg.user.roles);
           this.router.navigate(['/start']);
         } catch (e: any) {
           this.globalDataService.erstelleMessage("error", e);
