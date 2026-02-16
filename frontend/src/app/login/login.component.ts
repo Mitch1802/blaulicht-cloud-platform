@@ -46,7 +46,6 @@ export class LoginComponent implements OnInit {
     if (sessionStorage.getItem("Token")) {
       this.router.navigate(['/start']);
     } else {
-      this.ladeFooter();
       sessionStorage.clear();
 
       this.form = this.formBuilder.group({
