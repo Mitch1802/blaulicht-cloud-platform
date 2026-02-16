@@ -6,20 +6,22 @@
 
 <div class="row justify-content-center content">
   @for (item of visibleItems; track item) { 
-    @if (item.rolle == "ADMIN") {
-    <div class="col-6 col-md-4 col-lg-4 col-xl-2 content-item link-card admin">
-      <mat-card [routerLink]="item.routerlink">
-        <mat-icon class="material-icons-outlined">{{ item.icon }}</mat-icon>
-        <mat-card-footer>{{ item.modul }}</mat-card-footer>
-      </mat-card>
-    </div>
-    } @else {
     <div class="col-6 col-md-4 col-lg-4 col-xl-2 content-item link-card">
       <mat-card [routerLink]="item.routerlink">
         <mat-icon class="material-icons-outlined">{{ item.icon }}</mat-icon>
         <mat-card-footer>{{ item.modul }}</mat-card-footer>
       </mat-card>
     </div>
-    }
+  }
+</div>
+
+<div class="row justify-content-center content">
+  @for (item of adminItems; track item) { 
+    <div class="col-6 col-md-4 col-lg-4 col-xl-2 content-item link-card admin">
+      <mat-card [routerLink]="item.routerlink">
+        <mat-icon class="material-icons-outlined">{{ item.icon }}</mat-icon>
+        <mat-card-footer>{{ item.modul }}</mat-card-footer>
+      </mat-card>
+    </div>
   }
 </div>

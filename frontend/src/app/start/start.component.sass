@@ -1,3 +1,5 @@
+@use '../../theme' as theme
+
 .mat-mdc-card
     align-items: center
     justify-content: center
@@ -9,5 +11,6 @@
         line-height: 1
     
 .admin .mat-mdc-card
-    background-color: rgb(124, 131, 133) !important
+    background-color: theme.$app-primary !important
+    color: white !important
 

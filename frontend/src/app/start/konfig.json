@@ -18,10 +18,28 @@
     "routerlink": "/news"
   },
   {
+    "icon": "pending_actions",
+    "modul": "Aufgaben/Tickets",
+    "rolle": "ADMIN, MITGLIED",
+    "routerlink": "/aufgaben"
+  },
+  {
     "icon": "construction",
     "modul": "Inventar",
     "rolle": "ADMIN, INVENTAR",
     "routerlink": "/inventar"
+  },
+  {
+    "icon": "book",
+    "modul": "Einsatzbericht",
+    "rolle": "ADMIN, BERICHT",
+    "routerlink": "/einsatzbericht"
+  },
+  {
+    "icon": "book",
+    "modul": "Anwesenheitsliste",
+    "rolle": "ADMIN, BERICHT",
+    "routerlink": "/anwesenheitsliste"
   },
   {
     "icon": "fire_truck",
@@ -34,6 +52,18 @@
     "modul": "Verwaltung",
     "rolle": "ADMIN, VERWALTUNG",
     "routerlink": "/verwaltung"
+  },
+  {
+    "icon": "child_care",
+    "modul": "Jugend",
+    "rolle": "ADMIN, JUGEND",
+    "routerlink": "/jugend"
+  },
+  {
+    "icon": "school",
+    "modul": "Ausbildung",
+    "rolle": "ADMIN, AUSBILDUNG",
+    "routerlink": "/ausbildung"
   },
   {
     "icon": "groups",
