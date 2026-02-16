@@ -5,7 +5,8 @@
 export const environment = {
   production: false,
   version: "dev",
-  apiUrl: "https://test.blaulichtcloud.at/api/v1/"
+  apiUrl: "https://test.blaulichtcloud.at/api/v1/",
+  title: "Blaulichtcloud (DEV)"
 };
 
 /*
