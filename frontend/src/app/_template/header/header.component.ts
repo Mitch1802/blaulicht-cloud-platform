@@ -23,7 +23,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
         AsyncPipe
     ]
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent {
   globalDataService = inject(GlobalDataService);
   private router = inject(Router);
 
