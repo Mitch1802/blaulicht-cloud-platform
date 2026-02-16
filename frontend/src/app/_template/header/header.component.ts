@@ -33,10 +33,6 @@ export class HeaderComponent implements OnInit {
 
   @Input() breadcrumb!: any;
 
-  ngOnInit(): void {
-    this.title = this.globalDataService.Titel;
-  }
-
   onClick(link: string): void {
     this.globalDataService.ladeBreadcrumb();
     this.router.navigate([link]);

@@ -17,7 +17,6 @@ export class GlobalDataService {
   private router = inject(Router);
   private _snackBar = inject(MatSnackBar);
 
-  Titel = 'Blaulicht Cloud';
   Demo = false;
   Author = "Ing. M. Reichenauer";
   AppUrl: string = environment.apiUrl;
