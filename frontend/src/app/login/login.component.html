@@ -23,6 +23,10 @@
       </form>
     </mat-card-content>
   </mat-card>
-  <div class="footer">{{ footer }}</div>
+  @if (versionInfo) {
+  <div class="footer">
+  Version: {{ versionInfo.version }} ({{ versionInfo.commit }}) – {{ versionInfo.channel }}
+  </div>
+  }
 </div>
 

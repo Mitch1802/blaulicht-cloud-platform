@@ -8,6 +8,13 @@ import { MatInput } from '@angular/material/input';
 import { MatIcon } from '@angular/material/icon';
 import { MatButton } from '@angular/material/button';
 
+type VersionInfo = {
+  version: string;
+  commit: string;
+  channel: string;
+  builtAt?: string;
+};
+
 @Component({
     selector: 'app-login',
     templateUrl: './login.component.html',
@@ -22,7 +29,7 @@ export class LoginComponent implements OnInit {
 
   modul = "auth/login";
   form!: FormGroup;
-  footer = "";
+  versionInfo?: VersionInfo;
 
   public showPassword = false;
 
@@ -31,6 +38,10 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.http.get<VersionInfo>('/assets/version.json').subscribe({
+      next: (v) => (this.versionInfo = v),
+      error: () => (this.versionInfo = undefined),
+    });
 
     if (sessionStorage.getItem("Token")) {
       this.router.navigate(['/start']);
@@ -68,9 +79,5 @@ export class LoginComponent implements OnInit {
         this.globalDataService.errorAnzeigen(error);
       }
     });
-  }
-
-  ladeFooter(): void {
-    this.footer = this.globalDataService.ladeFooter();
   }
 }
