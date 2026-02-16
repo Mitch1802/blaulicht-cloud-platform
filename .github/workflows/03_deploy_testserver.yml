@@ -1,0 +1,173 @@
+name: 03 Deploy Testserver
+
+on:
+  workflow_run:
+    workflows: ["02 Build & Push Docker Images"]
+    types: [completed]
+
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to deploy (default test)"
+        required: true
+        default: "test"
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: deploy-test
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04 
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event.workflow_run.conclusion == 'success' &&
+        github.event.workflow_run.head_branch == 'main'
+      )
+
+    steps:
+      - name: Init
+        run: echo "DEPLOY=false" >> "$GITHUB_ENV"
+
+      # =========================
+      # AUTO (workflow_run)
+      # =========================
+      - name: Fetch build-meta via GitHub API (auto)
+        if: github.event_name == 'workflow_run'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          echo "Fetching artifacts for run: $RUN_ID"
+
+          ARTIFACTS_JSON="$(curl -sS \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${REPO}/actions/runs/${RUN_ID}/artifacts")"
+
+          URL="$(echo "$ARTIFACTS_JSON" | jq -r '.artifacts[]? | select(.name=="build-meta") | .archive_download_url' | head -n 1)"
+
+          if [ -z "$URL" ] || [ "$URL" = "null" ]; then
+            echo "No build-meta artifact found -> skip deploy."
+            exit 0
+          fi
+
+          echo "Downloading artifact zip..."
+          curl -sSL \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            -o build-meta.zip "$URL"
+
+          mkdir -p build-meta
+          unzip -o build-meta.zip -d build-meta >/dev/null
+
+          if [ ! -f build-meta/meta.env ]; then
+            echo "meta.env missing inside artifact"
+            exit 1
+          fi
+
+          # CRLF entfernen (falls Windows)
+          sed -i 's/\r$//' build-meta/meta.env
+
+          echo "---- meta.env content ----"
+          cat build-meta/meta.env
+          echo "--------------------------"
+
+          # Werte DIREKT aus meta.env lesen (GITHUB_ENV wirkt erst im nächsten Step)
+          BUILT="$(grep '^BUILT=' build-meta/meta.env | cut -d= -f2- || true)"
+          VERSION="$(grep '^VERSION=' build-meta/meta.env | cut -d= -f2- || true)"
+          DOCKER_REPO="$(grep '^DOCKER_REPO=' build-meta/meta.env | cut -d= -f2- || true)"
+          CHANNEL="$(grep '^CHANNEL=' build-meta/meta.env | cut -d= -f2- || true)"
+          SHORT_SHA="$(grep '^SHORT_SHA=' build-meta/meta.env | cut -d= -f2- || true)"
+
+          # Defaults
+          BUILT="${BUILT:-true}"
+          CHANNEL="${CHANNEL:-test}"
+
+          if [ -z "$VERSION" ]; then
+            echo "VERSION missing in meta.env"
+            exit 1
+          fi
+
+          if [ -z "$DOCKER_REPO" ]; then
+            echo "DOCKER_REPO missing in meta.env"
+            exit 1
+          fi
+
+          echo "Resolved: BUILT=$BUILT CHANNEL=$CHANNEL VERSION=$VERSION DOCKER_REPO=$DOCKER_REPO SHORT_SHA=${SHORT_SHA:-}"
+
+          # Für spätere Steps exportieren
+          echo "BUILT=$BUILT" >> "$GITHUB_ENV"
+          echo "CHANNEL=$CHANNEL" >> "$GITHUB_ENV"
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "DOCKER_REPO=$DOCKER_REPO" >> "$GITHUB_ENV"
+          echo "SHORT_SHA=${SHORT_SHA:-}" >> "$GITHUB_ENV"
+
+          if [ "$BUILT" != "true" ]; then
+            echo "Build was skipped -> no deploy."
+            exit 0
+          fi
+
+          echo "DEPLOY=true" >> "$GITHUB_ENV"
+
+      # =========================
+      # MANUAL (workflow_dispatch)
+      # =========================
+      - name: Load manual metadata
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          DOCKER_REPO_FROM_VARS='${{ vars.DOCKER_REPO }}'
+          VERSION_INPUT='${{ inputs.version }}'
+
+          if [ -z "$DOCKER_REPO_FROM_VARS" ]; then
+            echo "ERROR: vars.DOCKER_REPO is empty."
+            exit 1
+          fi
+
+          if [ -z "$VERSION_INPUT" ]; then
+            echo "ERROR: input version is empty."
+            exit 1
+          fi
+
+          echo "DOCKER_REPO=$DOCKER_REPO_FROM_VARS" >> "$GITHUB_ENV"
+          echo "VERSION=$VERSION_INPUT" >> "$GITHUB_ENV"
+          echo "DEPLOY=true" >> "$GITHUB_ENV"
+
+          echo "Manual deploy: $DOCKER_REPO_FROM_VARS:$VERSION_INPUT"
+
+      # =========================
+      # DEPLOY
+      # =========================
+      - name: Deploy to testserver via SSH
+        if: env.DEPLOY == 'true'
+        uses: appleboy/ssh-action@v1.1.0
+        with:
+          host: ${{ secrets.TESTSERVER_HOST }}
+          username: ${{ secrets.TESTSERVER_USER }}
+          key: ${{ secrets.TESTSERVER_SSH_KEY }}
+          port: 22
+          script_stop: true
+          command_timeout: 30m
+          script: |
+            set -euo pipefail
+
+            DOCKER_REPO='${{ env.DOCKER_REPO }}'
+            VERSION='${{ env.VERSION }}'
+
+            : "${DOCKER_REPO:?missing}"
+            : "${VERSION:?missing}"
+
+            echo "Deploying ${DOCKER_REPO}:${VERSION}"
+            /srv/${DOCKER_REPO}/app_manager.sh update "${VERSION}"

@@ -1,0 +1,92 @@
+name: 01 Generate Django Migrations
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'django/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: migrations-main
+  cancel-in-progress: true
+
+jobs:
+  migrations:
+    name: Run Django Migrations
+    runs-on: ubuntu-24.04 
+    if: github.actor != 'github-actions[bot]'
+
+    services:
+      postgres:
+        image: postgres:15-bullseye
+        env:
+          POSTGRES_USER: ${{ secrets.DB_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.DB_NAME }}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 30
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r django/requirements/production.txt
+      
+      - name: Load DJANGO_API_URL (GitHub variable)
+        shell: bash
+        run: echo "DJANGO_API_URL=${{ vars.DJANGO_API_URL }}" >> "$GITHUB_ENV"
+
+      - name: Generate DJANGO_SECRET_KEY
+        id: generate_secret_key
+        run: echo "DJANGO_SECRET_KEY=$(openssl rand -base64 32)" >> $GITHUB_ENV
+
+      - name: Run makemigrations
+        env:
+          DJANGO_SETTINGS_MODULE: rest_api.settings.production
+          DATABASE_URL: postgres://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@localhost:5432/${{ secrets.DB_NAME }}
+        run: |
+          python django/manage.py makemigrations --noinput --skip-checks
+
+      - name: Apply migrations (test)
+        env:
+          DJANGO_SETTINGS_MODULE: rest_api.settings.production
+          DATABASE_URL: postgres://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@localhost:5432/${{ secrets.DB_NAME }}
+        run: |
+          python django/manage.py migrate --noinput --skip-checks
+
+      - name: Commit migrations (if changed)
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git add django/**/migrations/**
+
+          if [ -z "$(git diff --cached --name-only)" ]; then
+            echo "No new migrations."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git commit -m "Auto-generate Django migrations [skip ci]"
+          git push origin main
