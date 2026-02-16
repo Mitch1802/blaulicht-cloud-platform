@@ -49,12 +49,17 @@ jobs:
       - name: Init build flag
         run: echo "BUILT=true" >> "$GITHUB_ENV"
 
-      # DOCKER_REPO aus GitHub Variables
       - name: Load DOCKER_REPO (GitHub variable)
         shell: bash
         run: |
           set -euo pipefail
           echo "DOCKER_REPO=${{ vars.DOCKER_REPO }}" >> "$GITHUB_ENV"
+      
+      - name: Load PUBLIC_FAHRZEUG_PIN (GitHub variable)
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "PUBLIC_FAHRZEUG_PIN=${{ secrets.PUBLIC_FAHRZEUG_PIN }}" >> "$GITHUB_ENV"
 
       - name: Determine CHANNEL + VERSION
         shell: bash
@@ -86,6 +91,7 @@ jobs:
           echo "VERSION=$VERSION"
           echo "SHORT_SHA=$SHORT_SHA"
           echo "DOCKER_REPO=$DOCKER_REPO"
+          echo "PUBLIC_FAHRZEUG_PIN=$PUBLIC_FAHRZEUG_PIN"
           test -n "$DOCKER_REPO"
 
       - name: Set up Node
