@@ -24,4 +24,4 @@ class ModulKonfigurationViewSet(ModelViewSet):
         resp = super().list(request, *args, **kwargs)
         rollen = RoleSerializer(Role.objects.all(), many=True).data
         pdf = PdfTemplateSerializer(PdfTemplate.objects.all(), many=True).data
-        return Response({"main": resp.data, "rollen": rollen, "pdf": pdf})
+        return Response({"main": resp.data, "rollen": rollen, "pdf": pdf, "request": request})

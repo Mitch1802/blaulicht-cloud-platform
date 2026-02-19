@@ -68,7 +68,7 @@
   {
     "icon": "groups",
     "modul": "Mitglieder",
-    "rolle": "ADMIN, VERWALTUNG",
+    "rolle": "ADMIN",
     "routerlink": "/mitglied"
   },
   {
