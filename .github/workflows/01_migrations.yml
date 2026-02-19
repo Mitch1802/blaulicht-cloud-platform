@@ -54,6 +54,12 @@ jobs:
       - name: Load DJANGO_API_URL (GitHub variable)
         shell: bash
         run: echo "DJANGO_API_URL=${{ vars.DJANGO_API_URL }}" >> "$GITHUB_ENV"
+      
+      - name: Load PUBLIC_FAHRZEUG_PIN (GitHub variable)
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "PUBLIC_FAHRZEUG_PIN=${{ secrets.PUBLIC_FAHRZEUG_PIN }}" >> "$GITHUB_ENV"
 
       - name: Generate DJANGO_SECRET_KEY
         id: generate_secret_key
