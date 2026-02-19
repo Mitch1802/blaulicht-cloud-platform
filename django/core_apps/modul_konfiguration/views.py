@@ -10,6 +10,7 @@ from core_apps.users.models import Role
 from core_apps.users.serializers import RoleSerializer
 from core_apps.pdf.models import PdfTemplate
 from core_apps.pdf.serializers import PdfTemplateSerializer
+from core_apps.users.serializers import UserDetailSerializer
 
 
 class ModulKonfigurationViewSet(ModelViewSet):
@@ -24,8 +25,5 @@ class ModulKonfigurationViewSet(ModelViewSet):
         resp = super().list(request, *args, **kwargs)
         rollen = RoleSerializer(Role.objects.all(), many=True).data
         pdf = PdfTemplateSerializer(PdfTemplate.objects.all(), many=True).data
-        request_info = {
-            "first_name": request.user.first_name,
-            "last_name": request.user.last_name
-        }
-        return Response({"main": resp.data, "rollen": rollen, "pdf": pdf, "request": request_info})
+        user = UserDetailSerializer(request.user).data
+        return Response({"main": resp.data, "rollen": rollen, "pdf": pdf, "user": user})
