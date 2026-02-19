@@ -24,7 +24,9 @@ export class StartComponent implements OnInit {
   breadcrumb: any[] = [];
   start_konfig: any[] = [];
   username = '';
-  meine_rollen = '';
+  first_name = '';
+  last_name = '';
+  meine_rollen: string[] = [];
 
   visibleItems: any[] = [];
   adminItems: any[] = [];
@@ -51,18 +53,20 @@ export class StartComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-
     sessionStorage.setItem('PageNumber', '1');
     sessionStorage.setItem('Page1', 'Start');
     sessionStorage.setItem('Page2', '');
 
     this.breadcrumb = this.globalDataService.ladeBreadcrumb();
-    this.username = sessionStorage.getItem('Benutzername') || 'Gast';
-    this.meine_rollen = sessionStorage.getItem('BenutzerRollen') || '';
 
     this.globalDataService.get("modul_konfiguration").subscribe({
       next: (erg: any) => {
         try {
+          const user = erg.user;
+          this.meine_rollen = this.normalizeRoles(user?.roles);
+          this.first_name = user.first_name;
+          this.last_name = user.last_name;
+          this.username = user.username;
 
           const main = Array.isArray(erg?.main) ? erg.main : [];
           const konfigs = main.find((m: any) => m.modul === 'start');
@@ -101,8 +105,14 @@ export class StartComponent implements OnInit {
      Rollen-Logik
      ============================ */
 
-  private normalizeRoles(value: string | null | undefined): string[] {
-    return (value ?? '')
+  private normalizeRoles(value: unknown): string[] {
+    if (Array.isArray(value)) {
+      return value
+        .map(v => String(v).trim().toUpperCase())
+        .filter(Boolean);
+    }
+
+    return String(value ?? '')
       .split(',')
       .map(r => r.trim().toUpperCase())
       .filter(Boolean);
@@ -110,12 +120,9 @@ export class StartComponent implements OnInit {
 
   private userHasAccess(item: any): boolean {
     const itemRoles = this.normalizeRoles(item?.rolle);
-    const userRoles = this.normalizeRoles(this.meine_rollen);
+    const userRoles = this.meine_rollen;
 
-    // Keine Rolle definiert → öffentlich
     if (itemRoles.length === 0) return true;
-
-    // Exakte Rollenübereinstimmung erforderlich
     return itemRoles.some(role => userRoles.includes(role));
   }
 

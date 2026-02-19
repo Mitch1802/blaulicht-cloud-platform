@@ -84,8 +84,6 @@ export class LoginComponent implements OnInit {
       next: (erg: any) => {
         try {
           sessionStorage.setItem("Token", erg.access);
-          sessionStorage.setItem('Benutzername', erg.user.username);
-          sessionStorage.setItem('BenutzerRollen', erg.user.roles);
           this.router.navigate(['/start']);
         } catch (e: any) {
           this.globalDataService.erstelleMessage("error", e);
