@@ -1,210 +1,205 @@
 <app-header [breadcrumb]="breadcrumb"></app-header>
 
-<mat-card class="m-2 p-2">
-  <div style="display:flex; justify-content:space-between; align-items:center;">
-    <h2>Fahrzeuge Verwaltung</h2>
+<div class="row justify-content-center content">
+  <div class="col-12 col-xl-11 p-0 m-0">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Fahrzeuge Verwaltung</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="toolbar mb-3">
+          <button mat-raised-button color="accent" type="button" (click)="newFahrzeug()">
+            <mat-icon>add</mat-icon>
+            Neues Fahrzeug
+          </button>
+        </div>
 
-    <button mat-raised-button color="primary" (click)="newFahrzeug()">
-      <mat-icon>add</mat-icon>
-      Neues Fahrzeug
-    </button>
-  </div>
+        <section class="row g-3">
+          <div class="col-12 col-lg-5">
+            <mat-card class="section-card">
+              <mat-card-header>
+                <mat-card-title>Fahrzeugliste</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="table-wrap">
+                  <table mat-table [dataSource]="dataSource" matSort class="w-100">
+                    <ng-container matColumnDef="name">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+                      <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+                    </ng-container>
 
-  <mat-divider class="my-2"></mat-divider>
+                    <ng-container matColumnDef="bezeichnung">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header>Bezeichnung</th>
+                      <td mat-cell *matCellDef="let row">{{ row.bezeichnung }}</td>
+                    </ng-container>
 
-  <div style="display:flex; gap:16px;">
-    <!-- LEFT: Liste -->
-    <div style="flex: 1; min-width: 420px;">
-      <table mat-table [dataSource]="dataSource" matSort style="width:100%;">
+                    <ng-container matColumnDef="public_id">
+                      <th mat-header-cell *matHeaderCellDef>Public ID</th>
+                      <td mat-cell *matCellDef="let row">{{ row.public_id }}</td>
+                    </ng-container>
 
-        <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
-          <td mat-cell *matCellDef="let row" (click)="selectRow(row)" style="cursor:pointer;">
-            {{ row.name }}
-          </td>
-        </ng-container>
+                    <ng-container matColumnDef="actions">
+                      <th mat-header-cell *matHeaderCellDef>Aktionen</th>
+                      <td mat-cell *matCellDef="let row">
+                        <button mat-icon-button color="warn" type="button" (click)="$event.stopPropagation(); deleteFahrzeug(row)">
+                          <mat-icon>delete</mat-icon>
+                        </button>
+                      </td>
+                    </ng-container>
 
-        <ng-container matColumnDef="bezeichnung">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Bezeichnung</th>
-          <td mat-cell *matCellDef="let row" (click)="selectRow(row)" style="cursor:pointer;">
-            {{ row.bezeichnung }}
-          </td>
-        </ng-container>
+                    <tr mat-header-row *matHeaderRowDef="sichtbareSpalten"></tr>
+                    <tr
+                      mat-row
+                      *matRowDef="let row; columns: sichtbareSpalten"
+                      (click)="selectRow(row)"
+                      class="click-row"
+                      [class.selected-row]="selectedId === row.id"
+                    ></tr>
+                  </table>
+                </div>
 
-        <ng-container matColumnDef="public_id">
-          <th mat-header-cell *matHeaderCellDef>Public ID</th>
-          <td mat-cell *matCellDef="let row" (click)="selectRow(row)" style="cursor:pointer;">
-            {{ row.public_id }}
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef>Aktionen</th>
-          <td mat-cell *matCellDef="let row">
-            <button mat-icon-button color="warn" (click)="deleteFahrzeug(row)">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="sichtbareSpalten"></tr>
-        <tr mat-row *matRowDef="let row; columns: sichtbareSpalten"></tr>
-      </table>
-
-      <mat-paginator [pageSize]="10"></mat-paginator>
-    </div>
-
-    <!-- RIGHT: Editor -->
-    <div style="flex: 1.2; min-width: 520px;">
-      <mat-card class="p-2">
-        <h3>Fahrzeug bearbeiten</h3>
-
-        <form [formGroup]="fahrzeugForm" style="display:flex; flex-direction:column; gap:12px;">
-          <mat-form-field>
-            <mat-label>Name</mat-label>
-            <input matInput formControlName="name" />
-          </mat-form-field>
-
-          <mat-form-field>
-            <mat-label>Bezeichnung</mat-label>
-            <input matInput formControlName="bezeichnung" />
-          </mat-form-field>
-
-          <mat-form-field>
-            <mat-label>Beschreibung</mat-label>
-            <textarea matInput rows="3" formControlName="beschreibung"></textarea>
-          </mat-form-field>
-
-          <div style="display:flex; gap:12px; align-items:center;">
-            <button mat-raised-button color="primary" type="button" (click)="saveFahrzeug()">
-              <mat-icon>save</mat-icon>
-              Speichern
-            </button>
-
-            <button mat-stroked-button type="button" (click)="newFahrzeug()">
-              Zurücksetzen
-            </button>
-
-            @if (selectedId) {
-              <span style="flex:1;"></span>
-
-              <a
-                mat-stroked-button
-                color="primary"
-                [routerLink]="['/fahrzeuge', selectedId, 'check']"
-              >
-                <mat-icon>checklist</mat-icon>
-                Check öffnen
-              </a>
-            }
+                <mat-paginator [pageSize]="10"></mat-paginator>
+              </mat-card-content>
+            </mat-card>
           </div>
-        </form>
 
-        <mat-divider class="my-2"></mat-divider>
-
-        @if (selected; as f) {
-          <h3>Räume & Items: {{ f.name }}</h3>
-
-          <!-- Raum anlegen -->
-          <form [formGroup]="raumForm" style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
-            <mat-form-field style="flex:1; min-width:220px;">
-              <mat-label>Raumname</mat-label>
-              <input matInput formControlName="name" />
-            </mat-form-field>
-
-            <mat-form-field style="width:140px;">
-              <mat-label>Reihenfolge</mat-label>
-              <input matInput type="number" formControlName="reihenfolge" />
-            </mat-form-field>
-
-            <button mat-raised-button color="accent" type="button" (click)="addRaum()">
-              <mat-icon>add</mat-icon>
-              Raum
-            </button>
-          </form>
-
-          <mat-accordion class="mt-2">
-            @for (raum of f.raeume; track raum.id) {
-              <mat-expansion-panel>
-                <mat-expansion-panel-header>
-                  <mat-panel-title>
-                    {{ raum.name }} ({{ raum.items.length }} Items)
-                  </mat-panel-title>
-                  <mat-panel-description>
-                    <button
-                      mat-icon-button
-                      color="warn"
-                      type="button"
-                      (click)="onDeleteRaum($event, raum)"
-                    >
-                      <mat-icon>delete</mat-icon>
-                    </button>
-                  </mat-panel-description>
-                </mat-expansion-panel-header>
-
-                <!-- Items Liste -->
-                @for (item of raum.items; track item.id) {
-                  <div
-                    style="display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid #eee;"
-                  >
-                    <div>
-                      <strong>{{ item.name }}</strong>
-                      <span style="opacity:0.8;"> — Soll: {{ item.menge }} {{ item.einheit }}</span>
-                      @if (item.notiz) {
-                        <span style="opacity:0.7;"> • {{ item.notiz }}</span>
-                      }
-                    </div>
-
-                    <button mat-icon-button color="warn" type="button" (click)="deleteItem(raum, item)">
-                      <mat-icon>delete</mat-icon>
-                    </button>
-                  </div>
-                }
-
-                <!-- Item anlegen (Reactive Form pro Raum) -->
-                <form
-                  [formGroup]="itemFormFor(raum.id)"
-                  style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-top:10px;"
-                >
-                  <mat-form-field style="flex:1; min-width:220px;">
-                    <mat-label>Item Name</mat-label>
+          <div class="col-12 col-lg-7">
+            <mat-card class="section-card">
+              <mat-card-header>
+                <mat-card-title>Fahrzeug bearbeiten</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <form [formGroup]="fahrzeugForm" class="form-grid mb-3">
+                  <mat-form-field>
+                    <mat-label>Name</mat-label>
                     <input matInput formControlName="name" />
                   </mat-form-field>
 
-                  <mat-form-field style="width:120px;">
-                    <mat-label>Menge</mat-label>
-                    <input matInput type="number" formControlName="menge" />
+                  <mat-form-field>
+                    <mat-label>Bezeichnung</mat-label>
+                    <input matInput formControlName="bezeichnung" />
                   </mat-form-field>
 
-                  <mat-form-field style="width:120px;">
-                    <mat-label>Einheit</mat-label>
-                    <input matInput formControlName="einheit" />
+                  <mat-form-field class="full-width">
+                    <mat-label>Beschreibung</mat-label>
+                    <textarea matInput rows="3" formControlName="beschreibung"></textarea>
                   </mat-form-field>
 
-                  <mat-form-field style="flex:1; min-width:200px;">
-                    <mat-label>Notiz</mat-label>
-                    <input matInput formControlName="notiz" />
-                  </mat-form-field>
+                  <div class="actions-row full-width">
+                    <button mat-raised-button color="accent" type="button" (click)="saveFahrzeug()">
+                      <mat-icon>save</mat-icon>
+                      Speichern
+                    </button>
 
-                  <mat-form-field style="width:140px;">
-                    <mat-label>Reihenfolge</mat-label>
-                    <input matInput type="number" formControlName="reihenfolge" />
-                  </mat-form-field>
+                    <button mat-stroked-button type="button" (click)="newFahrzeug()">
+                      Zurücksetzen
+                    </button>
 
-                  <button mat-raised-button color="accent" type="button" (click)="addItem(raum)">
-                    <mat-icon>add</mat-icon>
-                    Item
-                  </button>
+                    @if (selectedId) {
+                      <a mat-stroked-button color="primary" [routerLink]="['/fahrzeuge', selectedId, 'check']">
+                        <mat-icon>checklist</mat-icon>
+                        Check öffnen
+                      </a>
+                    }
+                  </div>
                 </form>
-              </mat-expansion-panel>
-            }
-          </mat-accordion>
-        } @else {
-          <div style="opacity:0.7; margin-top:8px;">
-            Wähle links ein Fahrzeug aus, um Räume & Items zu verwalten.
+
+                <mat-divider class="mb-3"></mat-divider>
+
+                @if (selected; as f) {
+                  <h3 class="section-title">Räume & Items: {{ f.name }}</h3>
+
+                  <form [formGroup]="raumForm" class="raum-form mb-3">
+                    <mat-form-field>
+                      <mat-label>Raumname</mat-label>
+                      <input matInput formControlName="name" />
+                    </mat-form-field>
+
+                    <mat-form-field>
+                      <mat-label>Reihenfolge</mat-label>
+                      <input matInput type="number" formControlName="reihenfolge" />
+                    </mat-form-field>
+
+                    <button mat-raised-button color="accent" type="button" (click)="addRaum()">
+                      <mat-icon>add</mat-icon>
+                      Raum
+                    </button>
+                  </form>
+
+                  <mat-accordion>
+                    @for (raum of f.raeume; track raum.id) {
+                      <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                          <mat-panel-title>
+                            {{ raum.name }} ({{ raum.items.length }} Items)
+                          </mat-panel-title>
+                          <mat-panel-description>
+                            <button mat-icon-button color="warn" type="button" (click)="onDeleteRaum($event, raum)">
+                              <mat-icon>delete</mat-icon>
+                            </button>
+                          </mat-panel-description>
+                        </mat-expansion-panel-header>
+
+                        @for (item of raum.items; track item.id) {
+                          <div class="item-row">
+                            <div class="item-text">
+                              <strong>{{ item.name }}</strong>
+                              <span>— Soll: {{ item.menge }} {{ item.einheit }}</span>
+                              @if (item.notiz) {
+                                <span>• {{ item.notiz }}</span>
+                              }
+                            </div>
+
+                            <button mat-icon-button color="warn" type="button" (click)="deleteItem(raum, item)">
+                              <mat-icon>delete</mat-icon>
+                            </button>
+                          </div>
+                        }
+
+                        <form [formGroup]="itemFormFor(raum.id)" class="item-form mt-2">
+                          <mat-form-field>
+                            <mat-label>Item Name</mat-label>
+                            <input matInput formControlName="name" />
+                          </mat-form-field>
+
+                          <mat-form-field>
+                            <mat-label>Menge</mat-label>
+                            <input matInput type="number" formControlName="menge" />
+                          </mat-form-field>
+
+                          <mat-form-field>
+                            <mat-label>Einheit</mat-label>
+                            <input matInput formControlName="einheit" />
+                          </mat-form-field>
+
+                          <mat-form-field>
+                            <mat-label>Notiz</mat-label>
+                            <input matInput formControlName="notiz" />
+                          </mat-form-field>
+
+                          <mat-form-field>
+                            <mat-label>Reihenfolge</mat-label>
+                            <input matInput type="number" formControlName="reihenfolge" />
+                          </mat-form-field>
+
+                          <button mat-raised-button color="accent" type="button" (click)="addItem(raum)">
+                            <mat-icon>add</mat-icon>
+                            Item
+                          </button>
+                        </form>
+                      </mat-expansion-panel>
+                    }
+                  </mat-accordion>
+                } @else {
+                  <div class="empty-hint">
+                    Wähle links ein Fahrzeug aus, um Räume & Items zu verwalten.
+                  </div>
+                }
+              </mat-card-content>
+            </mat-card>
           </div>
-        }
-      </mat-card>
-    </div>
+        </section>
+      </mat-card-content>
+    </mat-card>
   </div>
-</mat-card>
+</div>

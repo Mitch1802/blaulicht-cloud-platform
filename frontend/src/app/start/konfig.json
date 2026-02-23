@@ -45,7 +45,7 @@
     "icon": "fire_truck",
     "modul": "Fahrzeuge",
     "rolle": "ADMIN, FAHRZEUG",
-    "routerlink": "/fahrzeug"
+    "routerlink": "/fahrzeuge"
   },
   {
     "icon": "euro",

@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, OnInit, ViewChild, inject } from "@angular/core";
+import { Component, HostListener, OnInit, ViewChild, inject } from "@angular/core";
 import {
   FormBuilder,
   FormControl,
@@ -105,7 +105,29 @@ export class FahrzeugComponent implements OnInit {
     sessionStorage.setItem("PageNumber", "2");
     sessionStorage.setItem("Page2", "FZ");
     this.breadcrumb = this.gds.ladeBreadcrumb();
+    this.updateVisibleColumns();
     this.loadList();
+  }
+
+  @HostListener("window:resize")
+  onWindowResize(): void {
+    this.updateVisibleColumns();
+  }
+
+  private updateVisibleColumns(): void {
+    const width = typeof window !== "undefined" ? window.innerWidth : 1200;
+
+    if (width < 576) {
+      this.sichtbareSpalten = ["name", "actions"];
+      return;
+    }
+
+    if (width < 768) {
+      this.sichtbareSpalten = ["name", "bezeichnung", "actions"];
+      return;
+    }
+
+    this.sichtbareSpalten = ["name", "bezeichnung", "public_id", "actions"];
   }
 
   private loadList(): void {

@@ -12,20 +12,19 @@ import { ActivatedRoute, Router } from "@angular/router";
 
 import { MatCardModule } from "@angular/material/card";
 import { MatButtonModule } from "@angular/material/button";
+import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatInputModule } from "@angular/material/input";
-import { MatSelectModule } from "@angular/material/select";
 import { MatDividerModule } from "@angular/material/divider";
 import { MatFormFieldModule } from "@angular/material/form-field";
 
 import { GlobalDataService } from "../_service/global-data.service";
 import { IFahrzeugDetail } from "../_interface/fahrzeug";
-import { CHECK_STATUS_OPTIONS, CheckStatus } from "./fahrzeug.constants";
 import { HeaderComponent } from "../_template/header/header.component";
 
 type ResultFG = FormGroup<{
   item_id: FormControl<string>;
-  status: FormControl<CheckStatus>;
-  menge_aktuel: FormControl<number | null>;
+  checked: FormControl<boolean>;
+  menge_soll: FormControl<number | null>;
   notiz: FormControl<string>;
 }>;
 
@@ -34,6 +33,16 @@ type CheckForm = FormGroup<{
   notiz: FormControl<string>;
   results: FormArray<ResultFG>;
 }>;
+
+type CheckRoomView = {
+  name: string;
+  items: Array<{
+    index: number;
+    name: string;
+    menge: number;
+    einheit: string;
+  }>;
+};
 
 @Component({
   standalone: true,
@@ -44,8 +53,8 @@ type CheckForm = FormGroup<{
     ReactiveFormsModule,
     MatCardModule,
     MatButtonModule,
+    MatCheckboxModule,
     MatInputModule,
-    MatSelectModule,
     MatDividerModule,
     MatFormFieldModule,
   ],
@@ -61,8 +70,7 @@ export class FahrzeugCheckComponent implements OnInit {
 
   fahrzeugId = "";
   fahrzeug: IFahrzeugDetail | null = null;
-
-  statusOptions = CHECK_STATUS_OPTIONS;
+  raeumeView: CheckRoomView[] = [];
 
   form: CheckForm = this.fb.group({
     title: this.fb.control("", { nonNullable: true }),
@@ -91,8 +99,8 @@ export class FahrzeugCheckComponent implements OnInit {
   private makeResultFG(itemId: string, mengeSoll: number): ResultFG {
     return this.fb.group({
       item_id: this.fb.control(itemId, { nonNullable: true, validators: [Validators.required] }),
-      status: this.fb.control<CheckStatus>("ok", { nonNullable: true, validators: [Validators.required] }),
-      menge_aktuel: this.fb.control<number | null>(mengeSoll ?? null),
+      checked: this.fb.control(false, { nonNullable: true }),
+      menge_soll: this.fb.control<number | null>(mengeSoll ?? null),
       notiz: this.fb.control("", { nonNullable: true }),
     });
   }
@@ -100,14 +108,29 @@ export class FahrzeugCheckComponent implements OnInit {
   private buildForm(): void {
     const arr = this.form.controls.results;
     arr.clear();
+    this.raeumeView = [];
 
     const fz = this.fahrzeug;
     if (!fz) return;
 
     for (const raum of fz.raeume ?? []) {
+      const roomView: CheckRoomView = {
+        name: raum.name,
+        items: [],
+      };
+
       for (const item of raum.items ?? []) {
+        const idx = arr.length;
         arr.push(this.makeResultFG(String(item.id), Number(item.menge)));
+        roomView.items.push({
+          index: idx,
+          name: item.name,
+          menge: Number(item.menge),
+          einheit: item.einheit,
+        });
       }
+
+      this.raeumeView.push(roomView);
     }
   }
 
@@ -125,8 +148,8 @@ export class FahrzeugCheckComponent implements OnInit {
       notiz: this.form.controls.notiz.value,
       results: this.form.controls.results.controls.map((fg) => ({
         item_id: fg.controls.item_id.value,
-        status: fg.controls.status.value,
-        menge_aktuel: fg.controls.menge_aktuel.value ?? null,
+        status: fg.controls.checked.value ? "ok" : "missing",
+        menge_aktuel: fg.controls.checked.value ? (fg.controls.menge_soll.value ?? null) : null,
         notiz: fg.controls.notiz.value ?? "",
       })),
     };
