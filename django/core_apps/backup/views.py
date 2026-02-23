@@ -1,13 +1,14 @@
-import os, datetime, subprocess, environ, zipfile, shutil
+import os, datetime, subprocess, environ, zipfile, shutil, logging
 
 from rest_framework import permissions
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.core.exceptions import ValidationError
 from django.http import FileResponse
 from core_apps.common.permissions import HasAnyRolePermission
 
 env = environ.Env()
+logger = logging.getLogger(__name__)
 
 backup_path = "/app/backups/"
 uploaded_files_dir = "/app/mediafiles/"
@@ -91,8 +92,8 @@ class RestorePostView(APIView):
         msg = ""
         backupname = request.data['backup']
         backups = os.listdir(backup_path)
-        backup_version = backupname.split('_')
-        backup_version = backup_version[1]
+        backup_tokens = backupname.split('_')
+        backup_version = backup_tokens[1] if len(backup_tokens) > 1 else ""
 
         if backupname in backups and backupname.endswith('.zip') and backup_version == version:
             backup_zip_path = os.path.join(backup_path, backupname)

@@ -21,7 +21,7 @@ class KonfigurationViewSet(ModelViewSet):
     pagination_class = None 
     
     def _has_role(self, user, role_name: str) -> bool:
-        return user.is_authenticated and user.roles.filter(name=role_name).exists()
+        return user.is_authenticated and user.roles.filter(key=role_name).exists()
 
     def list(self, request, *args, **kwargs):
         resp = super().list(request, *args, **kwargs)

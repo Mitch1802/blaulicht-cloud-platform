@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.http import Http404
 from rest_framework import generics, permissions, status, viewsets
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 from dj_rest_auth.views import LogoutView
 
@@ -62,6 +63,14 @@ class ChangePasswordView(generics.UpdateAPIView):
     serializer_class = ChangePasswordSerializer
     permission_classes = [permissions.IsAuthenticated, HasAnyRolePermission.with_roles("ADMIN", "MITGLIED")]
     lookup_field = "id"
+
+    def get_object(self):
+        target_user = super().get_object()
+        if self.request.user.is_superuser or self.request.user.has_role("ADMIN"):
+            return target_user
+        if target_user.id != self.request.user.id:
+            raise PermissionDenied("Du darfst nur dein eigenes Passwort ändern.")
+        return target_user
 
 
 class ForceLogoutView(LogoutView):

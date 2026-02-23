@@ -152,3 +152,6 @@ testem.log
 Thumbs.db
 
 */.angular
+*.sqlite3
+django/mediafiles/inventar/*
+django/mediafiles/news/*

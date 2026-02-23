@@ -43,7 +43,19 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = '__all__'
+        fields = [
+            "pkid",
+            "id",
+            "username",
+            "first_name",
+            "last_name",
+            "email",
+            "is_active",
+            "is_superuser",
+            "date_joined",
+            "roles",
+        ]
+        read_only_fields = ["pkid", "id", "is_superuser", "date_joined"]
 
     def to_representation(self, instance):
         representation = super(UserSerializer, self).to_representation(instance)
@@ -83,7 +95,7 @@ class RoleSerializer(serializers.ModelSerializer):
 class AdminCreateUserSerializer(serializers.ModelSerializer):
     password1 = serializers.CharField(write_only=True)
     password2 = serializers.CharField(write_only=True)
-    roles = serializers.ListField(child=serializers.CharField(), required=True)
+    roles = serializers.ListField(child=serializers.CharField(), required=True, write_only=True)
 
     class Meta:
         model = User

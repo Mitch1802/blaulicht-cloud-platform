@@ -13,12 +13,13 @@ import { environment } from "src/environments/environment";
 import { Router } from '@angular/router';
 import { HeaderComponent } from '../_template/header/header.component';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatOption, MatSelect } from '@angular/material/select';
 
 @Component({
     selector: 'app-konfiguration',
     templateUrl: './konfiguration.component.html',
     styleUrls: ['./konfiguration.component.sass'],
-    imports: [HeaderComponent, MatCardModule, FormsModule, ReactiveFormsModule, MatButton, MatFormField, MatLabel, MatInput, MatError, MatList, MatListItem, MatIconModule, MatChipsModule]
+    imports: [HeaderComponent, MatCardModule, FormsModule, ReactiveFormsModule, MatButton, MatFormField, MatLabel, MatInput, MatError, MatList, MatListItem, MatIconModule, MatChipsModule, MatSelect, MatOption]
 })
 export class KonfigurationComponent implements OnInit {
   globalDataService = inject(GlobalDataService);
@@ -36,6 +37,10 @@ export class KonfigurationComponent implements OnInit {
   rollen: any = []
   backups: any = [];
   backup_msg = "";
+  cleanupTarget: 'all' | 'news' | 'inventar' = 'all';
+  cleanupRunning = false;
+  cleanupSummary = '';
+  cleanupFiles: Array<{ target: string; filename: string }> = [];
 
   formRolle = new FormGroup({
     rolle: new FormControl('')
@@ -292,6 +297,45 @@ export class KonfigurationComponent implements OnInit {
       },
       error: (error: any) => {
         this.globalDataService.errorAnzeigen(error);
+      }
+    });
+  }
+
+  mediaCleanup(deleteFiles: boolean): void {
+    if (this.cleanupRunning) {
+      return;
+    }
+
+    this.cleanupRunning = true;
+    const payload = {
+      target: this.cleanupTarget,
+      delete: deleteFiles,
+    };
+
+    this.globalDataService.cleanupOrphanMedia(payload).subscribe({
+      next: (erg: any) => {
+        const summary = erg?.summary ?? {};
+        const orphanCount = summary.orphan ?? 0;
+        const deletedCount = erg?.deleted ?? 0;
+        this.cleanupSummary = `Ergebnis: ${orphanCount} verwaist gefunden, ${deletedCount} gelöscht.`;
+        this.cleanupFiles = [];
+
+        for (const item of (erg?.items ?? [])) {
+          for (const orphan of (item?.orphans ?? [])) {
+            this.cleanupFiles.push({
+              target: item.target,
+              filename: orphan,
+            });
+          }
+        }
+
+        const message = `Medien bereinigt: ${deletedCount} gelöscht, ${orphanCount} verwaist gefunden.`;
+        this.globalDataService.erstelleMessage('success', message);
+        this.cleanupRunning = false;
+      },
+      error: (error: any) => {
+        this.globalDataService.errorAnzeigen(error);
+        this.cleanupRunning = false;
       }
     });
   }

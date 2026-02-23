@@ -46,7 +46,7 @@ def inventar_filename(instance, filename):
         base, _ = os.path.splitext(filename)
         filename = f"{base}.{ext}"
 
-    return os.path.join("news", filename)
+    return os.path.join("inventar", filename)
 
 class Inventar(TimeStampedModel):  
     bezeichnung = models.CharField(verbose_name=_("Bezeichnung"), max_length=255)
@@ -56,4 +56,4 @@ class Inventar(TimeStampedModel):
     foto = models.ImageField(_("Foto"), upload_to=inventar_filename, blank=True, null=True)
 
     def __str__(self):
-        return f"{self.title}"
+        return f"{self.bezeichnung}"

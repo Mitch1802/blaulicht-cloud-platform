@@ -39,7 +39,7 @@ def read_public_token(token: str) -> dict | None:
             salt="fahrzeug_public_pin_v2",
             max_age=ttl_min * 60,
         )
-    except Exception:
+    except (signing.BadSignature, signing.SignatureExpired, TypeError, ValueError):
         return None
 
 
@@ -113,7 +113,7 @@ class FahrzeugRaumViewSet(viewsets.ModelViewSet):
     lookup_field = "id"
 
     def get_queryset(self):
-        return FahrzeugRaum.objects.filter(fahrzeug_id=self.kwargs["fahrzeug_id"]).order_by("reihenfolge", "pkid")
+        return FahrzeugRaum.objects.filter(fahrzeug__id=self.kwargs["fahrzeug_id"]).order_by("reihenfolge", "pkid")
 
     def get_serializer_class(self):
         if self.action in ("list", "retrieve"):
@@ -136,7 +136,7 @@ class RaumItemViewSet(viewsets.ModelViewSet):
     lookup_field = "id"
 
     def get_queryset(self):
-        return RaumItem.objects.filter(raum_id=self.kwargs["raum_id"]).order_by("reihenfolge", "pkid")
+        return RaumItem.objects.filter(raum__id=self.kwargs["raum_id"]).order_by("reihenfolge", "pkid")
 
     def get_serializer_class(self):
         if self.action in ("list", "retrieve"):
@@ -173,10 +173,10 @@ class FahrzeugCheckCreateView(APIView):
 
         # Items müssen zu diesem Fahrzeug gehören -> Filter über raum__fahrzeug_id
         items = RaumItem.objects.select_related("raum").filter(
-            id__in=item_ids,
-            raum__fahrzeug_id=fahrzeug.id,
+            pkid__in=item_ids,
+            raum__fahrzeug_id=fahrzeug.pkid,
         )
-        item_map = {i.id: i for i in items}
+        item_map = {i.pkid: i for i in items}
 
         bulk = []
         for r in ser.validated_data["results"]:

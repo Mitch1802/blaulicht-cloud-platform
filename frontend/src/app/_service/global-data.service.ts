@@ -300,6 +300,14 @@ export class GlobalDataService {
     return this.withLoading(this.http.post<any[]>(url, daten, { headers }));
   }
 
+  cleanupOrphanMedia(payload: {
+    target?: 'all' | 'news' | 'inventar';
+    delete?: boolean;
+    allow_missing_db?: boolean;
+  }): Observable<any> {
+    return this.post('files/cleanup-orphans', payload, false) as Observable<any>;
+  }
+
   postBlob(modul: string, daten: any): Observable<Blob> {
     const isFD = typeof FormData !== 'undefined' && daten instanceof FormData;
     const headers = this.ladeHeaders(isFD).set('Accept', 'application/pdf');

@@ -1,4 +1,9 @@
-from allauth.account.adapter import DefaultAccountAdapter
+try:
+    from allauth.account.adapter import DefaultAccountAdapter
+except ModuleNotFoundError:  # pragma: no cover
+    class DefaultAccountAdapter:
+        def save_user(self, request, user, form, commit=False):
+            return user
 
 
 class UserAdapter(DefaultAccountAdapter):
