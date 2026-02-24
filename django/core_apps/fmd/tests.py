@@ -29,6 +29,7 @@ class FMDEndpointTests(EndpointSmokeMixin, APITestCase):
     def test_all_fmd_endpoints_resolve(self):
         endpoints = [
             "fmd/",
+            "fmd/context/",
             f"fmd/{uuid4()}/",
         ]
 
@@ -43,11 +44,16 @@ class FMDEndpointTests(EndpointSmokeMixin, APITestCase):
     def test_fmd_method_matrix_no_server_error(self):
         self.assert_method_matrix_no_server_error("fmd/")
 
-    def test_fmd_list_returns_aggregated_payload(self):
+    def test_fmd_list_returns_plain_list_payload(self):
         self.client.force_authenticate(user=self.fmd_user)
         response = self.request_method("get", "fmd/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn("main", response.data)
+        self.assertIsInstance(response.data, list)
+
+    def test_fmd_context_returns_auxiliary_payload(self):
+        self.client.force_authenticate(user=self.fmd_user)
+        response = self.request_method("get", "fmd/context/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("mitglieder", response.data)
         self.assertIn("modul_konfig", response.data)
         self.assertIn("konfig", response.data)

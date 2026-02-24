@@ -21,6 +21,7 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { IStammdaten } from '../_interface/stammdaten';
+import { forkJoin } from 'rxjs';
 
 Chart.register(ChartDataLabels);
 
@@ -199,20 +200,23 @@ export class FmdComponent implements OnInit, AfterViewInit {
     this.breadcrumb = this.globalDataService.ladeBreadcrumb();
     this.formModul.disable();
 
-    this.globalDataService.get(this.modul).subscribe({
-      next: (erg: any) => {
+    forkJoin({
+      main: this.globalDataService.get<any[]>(this.modul),
+      context: this.globalDataService.get<any>(`${this.modul}/context`),
+    }).subscribe({
+      next: ({ main, context }) => {
         try {
-          const konfigs = erg.modul_konfig.find((m: any) => m.modul === 'fmd');
+          const konfigs = context.modul_konfig.find((m: any) => m.modul === 'fmd');
           this.modul_konfig = konfigs?.konfiguration ?? [];
           
-          const templates = erg.modul_konfig.find((m: any) => m.modul === 'pdf');
+          const templates = context.modul_konfig.find((m: any) => m.modul === 'pdf');
           this.pdf_konfig = templates?.konfiguration ?? [];
 
-          this.stammdaten = <IStammdaten>erg.konfig[0];
+          this.stammdaten = <IStammdaten>context.konfig[0];
 
-          const mains = erg.main as any[];
-          this.mitglieder = erg.mitglieder as any[];
-          this.mitgliederGesamt = erg.mitglieder as any[];
+          const mains = main as any[];
+          this.mitglieder = context.mitglieder as any[];
+          this.mitgliederGesamt = context.mitglieder as any[];
           const memberMap = new Map<number, any>(this.mitglieder.map((m: any) => [m.pkid, m]));
 
           this.atstraeger = mains.map(item => {

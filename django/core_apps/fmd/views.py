@@ -1,6 +1,7 @@
 from rest_framework import permissions
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
 from .models import FMD
@@ -22,10 +23,12 @@ class FMDViewSet(ModelViewSet):
     lookup_field = "id"
     pagination_class = None 
 
-    def list(self, request, *args, **kwargs):
-        resp = super().list(request, *args, **kwargs)
+
+class FMDContextView(APIView):
+    permission_classes = [permissions.IsAuthenticated, HasAnyRolePermission.with_roles("ADMIN", "FMD")]
+
+    def get(self, request):
         mitglieder = MitgliedSerializer(Mitglied.objects.all(), many=True).data
         modul_konfig = ModulKonfigurationSerializer(ModulKonfiguration.objects.all(), many=True).data
         konfig = KonfigurationSerializer(Konfiguration.objects.all(), many=True).data
-
-        return Response({"main": resp.data, 'mitglieder': mitglieder, 'modul_konfig': modul_konfig, 'konfig': konfig})
+        return Response({"mitglieder": mitglieder, "modul_konfig": modul_konfig, "konfig": konfig})

@@ -20,7 +20,7 @@ export class EigeneDatenComponent implements OnInit {
 
   title: string = "Eigenes Passwort ändern";
   modul: string = "users/self";
-  username: string = sessionStorage.getItem("Benutzername")!;
+  username: string = '';
 
   breadcrumb: any = [];
 
@@ -44,16 +44,16 @@ export class EigeneDatenComponent implements OnInit {
     this.globalDataService.get(this.modul).subscribe({
       next: (erg: any) => {
         try {
-          if (erg.username == this.username) {
-            this.formModul.setValue({
-              id: erg.id,
-              username: erg.username,
-              first_name: erg.first_name,
-              last_name: erg.last_name,
-              password1: "",
-              password2: ""
-            });
-          }
+          this.username = erg.username;
+          sessionStorage.setItem("Benutzername", this.username);
+          this.formModul.setValue({
+            id: erg.id,
+            username: erg.username,
+            first_name: erg.first_name,
+            last_name: erg.last_name,
+            password1: "",
+            password2: ""
+          });
           this.formModul.enable();
         } catch (e: any) {
           this.globalDataService.erstelleMessage("error", e);

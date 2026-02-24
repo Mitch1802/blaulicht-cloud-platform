@@ -1,10 +1,11 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideRouter, RouteReuseStrategy, DetachedRouteHandle, ActivatedRouteSnapshot, withRouterConfig } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { AppComponent } from './app/app.component';
 import { routes } from './app/app.routes';
+import { authInterceptor } from './app/_interceptors/auth.interceptor';
 
 
 class NoReuseStrategy implements RouteReuseStrategy {
@@ -19,7 +20,7 @@ class NoReuseStrategy implements RouteReuseStrategy {
 bootstrapApplication(AppComponent, {
   providers: [
     provideRouter(routes, withRouterConfig({ onSameUrlNavigation: 'reload' })),
-    provideHttpClient(),
+    provideHttpClient(withInterceptors([authInterceptor])),
     provideAnimations(),
     provideCharts(withDefaultRegisterables()),
     { provide: RouteReuseStrategy, useClass: NoReuseStrategy }

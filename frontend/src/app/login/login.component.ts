@@ -60,16 +60,12 @@ export class LoginComponent implements OnInit {
       error: () => (this.versionInfo = undefined),
     });
 
-    if (sessionStorage.getItem("Token")) {
-      this.router.navigate(['/start']);
-    } else {
-      sessionStorage.clear();
+    sessionStorage.clear();
 
-      this.form = this.formBuilder.group({
-        user: ['', Validators.required],
-        pwd: ['', Validators.required]
-      });
-    }
+    this.form = this.formBuilder.group({
+      user: ['', Validators.required],
+      pwd: ['', Validators.required]
+    });
   }
 
   get f() { return this.form.controls; }
@@ -83,8 +79,17 @@ export class LoginComponent implements OnInit {
     this.globalDataService.post(this.modul, data, false).subscribe({
       next: (erg: any) => {
         try {
-          sessionStorage.setItem("Token", erg.access);
-          this.router.navigate(['/start']);
+          this.globalDataService.get<any>('users/self').subscribe({
+            next: (me) => {
+              if (me?.username) {
+                sessionStorage.setItem("Benutzername", me.username);
+              }
+              this.router.navigate(['/start']);
+            },
+            error: () => {
+              this.router.navigate(['/start']);
+            }
+          });
         } catch (e: any) {
           this.globalDataService.erstelleMessage("error", e);
         }

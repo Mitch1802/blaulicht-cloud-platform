@@ -12,6 +12,7 @@ import { MatButton } from '@angular/material/button';
 import { MatInput } from '@angular/material/input';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { Router } from '@angular/router';
+import { forkJoin } from 'rxjs';
 
 @Component({
     selector: 'app-user',
@@ -64,11 +65,14 @@ export class UserComponent implements OnInit {
     this.breadcrumb = this.globalDataService.ladeBreadcrumb();
     this.formModul.disable();
 
-    this.globalDataService.get(this.modul).subscribe({
-      next: (erg: any) => {
+    forkJoin({
+      usersResponse: this.globalDataService.get<any>(this.modul),
+      contextResponse: this.globalDataService.get<any>(`${this.modul}/context`),
+    }).subscribe({
+      next: ({ usersResponse, contextResponse }) => {
         try {
-          this.benutzer = erg.data.main;
-          this.rollen = erg.data.rollen;
+          this.benutzer = usersResponse.data;
+          this.rollen = contextResponse.data.rollen;
           this.benutzer = this.globalDataService.arraySortByKey(this.benutzer, 'username');
         } catch (e: any) {
           this.globalDataService.erstelleMessage("error", e);

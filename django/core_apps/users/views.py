@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.http import Http404
 from rest_framework import generics, permissions, status, viewsets
+from rest_framework.views import APIView
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 from dj_rest_auth.views import LogoutView
@@ -28,15 +29,14 @@ class UserListView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated, IsAdminPermission]
     renderer_classes = [UserJSONRenderer]
 
-    def list(self, request):
-        mod_queryset = self.filter_queryset(self.get_queryset())
-        mod_serializer = self.get_serializer(mod_queryset, many=True)
-        rollen = RoleSerializer(Role.objects.all(), many=True).data
 
-        return Response({
-            'main': mod_serializer.data,
-            'rollen': rollen
-        })
+class UserContextView(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsAdminPermission]
+    renderer_classes = [UserJSONRenderer]
+
+    def get(self, request):
+        rollen = RoleSerializer(Role.objects.all(), many=True).data
+        return Response({"rollen": rollen})
 
 
 class UserRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):

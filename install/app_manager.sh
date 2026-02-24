@@ -22,6 +22,18 @@ if [ "$ACTION" != "install" ] && [ "$ACTION" != "update" ]; then
     exit 1
 fi
 
+function upsert_env_var() {
+    local file="$1"
+    local key="$2"
+    local value="$3"
+
+    if grep -q "^${key}=" "$file"; then
+        sed -i "s|^${key}=.*|${key}=${value}|" "$file"
+    else
+        echo "${key}=${value}" >> "$file"
+    fi
+}
+
 #############################################
 # FUNKTION: Installation
 #############################################
@@ -51,6 +63,7 @@ EOF
 
     # Zusätzliche Hilfsvariable, die ggf. '-demo' entfernt:
     VERSION_CLEAN=${VERSION/-demo/}
+    APP_ORIGIN="https://$DOMAIN"
 
     cat <<EOF > "$INSTALL_PATH/.envs/.django"
 DJANGO_SECRET_KEY=$DJANGO_SECRET_KEY
@@ -58,6 +71,10 @@ DJANGO_DEBUG=$DEBUG
 DJANGO_API_URL=$API_VERSION
 VERSION=$VERSION_CLEAN
 PUBLIC_FAHRZEUG_PIN=2432
+DJANGO_ALLOWED_HOSTS=$DOMAIN,localhost,127.0.0.1
+DJANGO_CORS_ALLOWED_ORIGINS=$APP_ORIGIN
+DJANGO_CSRF_TRUSTED_ORIGINS=$APP_ORIGIN
+DJANGO_SECURE_SSL_REDIRECT=True
 EOF
 
     DB_URL="postgres://sh17vFE9ttPIuk1:$POSTGRES_PASSWORD@postgres:5432/app-live"
@@ -159,6 +176,18 @@ function do_update() {
     sed -i "s/^VERSION=.*/VERSION=$VERSION/" .env
     # Hier die bereinigte Version für .envs/.django:
     sed -i "s/^VERSION=.*/VERSION=${VERSION/-demo/}/" .envs/.django
+
+    # Security-/Host-Variablen in .envs/.django ergänzen/aktualisieren
+    DOMAIN_CURRENT=$(grep -E '^DOMAIN=' .env | cut -d'=' -f2- || true)
+    if [ -z "$DOMAIN_CURRENT" ]; then
+        DOMAIN_CURRENT="$DOMAIN"
+    fi
+    APP_ORIGIN="https://$DOMAIN_CURRENT"
+
+    upsert_env_var ".envs/.django" "DJANGO_ALLOWED_HOSTS" "$DOMAIN_CURRENT,localhost,127.0.0.1"
+    upsert_env_var ".envs/.django" "DJANGO_CORS_ALLOWED_ORIGINS" "$APP_ORIGIN"
+    upsert_env_var ".envs/.django" "DJANGO_CSRF_TRUSTED_ORIGINS" "$APP_ORIGIN"
+    upsert_env_var ".envs/.django" "DJANGO_SECURE_SSL_REDIRECT" "True"
 
     # Neue Images holen
     echo "Ziehe neue Images (docker compose pull) ..."

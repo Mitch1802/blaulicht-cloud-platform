@@ -21,7 +21,7 @@ export class GlobalDataService {
   Author = "Ing. M. Reichenauer";
   AppUrl: string = environment.apiUrl;
   MaxUploadSize = 20480; // 20 MB => 1024 KB = 1 MB
-  MessageShowInSeconds = 5; // Sekundenloading$ = new BehaviorSubject<boolean>(false);
+  MessageShowInSeconds = 5; // Sekunden
   private loadingCount = 0;
   loading$ = new BehaviorSubject<boolean>(false);
 
@@ -245,12 +245,11 @@ export class GlobalDataService {
     return data_new;
   }
 
-  ladeHeaders(filesVorhanden: boolean): HttpHeaders {
-    const token: string | null = sessionStorage.getItem('Token');
+  ladeHeaders(filesVorhanden: boolean, bearerToken?: string): HttpHeaders {
     let headers = new HttpHeaders();
 
-    if (token) {
-      headers = headers.set('Authorization', 'Bearer ' + token);
+    if (bearerToken) {
+      headers = headers.set('Authorization', 'Bearer ' + bearerToken);
     }
 
     if (!filesVorhanden) {
@@ -259,7 +258,7 @@ export class GlobalDataService {
     return headers;
   }
 
-  get(modul: string, param?: any, afterSlash?: boolean): Observable<any[]> {
+  get<T = unknown>(modul: string, param?: any, afterSlash?: boolean): Observable<T> {
     const headers = this.ladeHeaders(false);
     let url = this.AppUrl + modul;
     let paramUrl = '';
@@ -282,22 +281,22 @@ export class GlobalDataService {
       url += paramUrl;
     }
 
-    const response: any = this.http.get<any[]>(url, { headers: headers });
+    const response = this.http.get<T>(url, { headers: headers });
 
     return this.withLoading(response);
   }
 
-  getURL(url: string): Observable<any[]> {
-    const response: any = this.http.get<any[]>(url);
+  getURL<T = unknown>(url: string): Observable<T> {
+    const response = this.http.get<T>(url);
 
     return this.withLoading(response);
   }
 
-  post(modul: string, daten: any, filesVorhanden?: boolean): Observable<any[]> {
+  post<T = unknown>(modul: string, daten: any, filesVorhanden?: boolean): Observable<T> {
     const isFD = typeof FormData !== 'undefined' && daten instanceof FormData;
     const headers = this.ladeHeaders(isFD ?? false);
     const url = this.AppUrl + modul + '/';
-    return this.withLoading(this.http.post<any[]>(url, daten, { headers }));
+    return this.withLoading(this.http.post<T>(url, daten, { headers }));
   }
 
   cleanupOrphanMedia(payload: {
@@ -320,7 +319,7 @@ export class GlobalDataService {
     }));
   }
 
-  patch(modul: string, id: any, daten: any, filesVorhanden?: boolean): Observable<any[]> {
+  patch<T = unknown>(modul: string, id: any, daten: any, filesVorhanden?: boolean): Observable<T> {
     const isFD = typeof FormData !== 'undefined' && daten instanceof FormData;
     const headers = this.ladeHeaders(isFD ?? false);
     let url = ''
@@ -330,13 +329,13 @@ export class GlobalDataService {
       url += `${this.AppUrl}${modul}/`;
     }
     
-    return this.withLoading(this.http.patch<any[]>(url, daten, { headers }));
+    return this.withLoading(this.http.patch<T>(url, daten, { headers }));
   }
 
-  delete(modul: string, id: any): Observable<any[]> {
+  delete<T = unknown>(modul: string, id: any): Observable<T> {
     const headers = this.ladeHeaders(false);
     const url = this.AppUrl + modul + '/' + id + '/';
-    const response: any = this.http.delete<any[]>(url, { headers: headers });
+    const response = this.http.delete<T>(url, { headers: headers });
 
     return this.withLoading(response);
   }
@@ -413,7 +412,7 @@ export class GlobalDataService {
       link = '/inventar';
       kuerzel = 'Inventar';
     } else if (page == 'PDF') {
-      link = '/pdf_templates';
+      link = '/pdf_template';
       kuerzel = 'PDF Templates';
     } else if (page == 'VER') {
       link = '/verwaltung';
@@ -497,10 +496,10 @@ export class GlobalDataService {
     return footer;
   }
 
-  getWithBearer(modul: string, token: string): Observable<any[]> {
-    const headers = this.ladeHeaders(false).set("Authorization", "Bearer " + token);
+  getWithBearer<T = unknown>(modul: string, token: string): Observable<T> {
+    const headers = this.ladeHeaders(false, token);
     const url = this.AppUrl + modul + '/';
-    const response: any = this.http.get<any[]>(url, { headers });
+    const response = this.http.get<T>(url, { headers });
     return this.withLoading(response);
   }
 

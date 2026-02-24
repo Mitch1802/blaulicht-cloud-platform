@@ -271,6 +271,7 @@ class UsersEndpointSmokeTests(EndpointSmokeMixin, APITestCase):
     def test_all_users_and_auth_endpoints_resolve(self):
         endpoints = [
             "users/",
+            "users/context/",
             "users/self/",
             f"users/{uuid4()}/",
             "users/create/",
@@ -307,6 +308,7 @@ class UsersEndpointSmokeTests(EndpointSmokeMixin, APITestCase):
     def test_users_method_matrix_no_server_error(self):
         for endpoint in [
             "users/",
+            "users/context/",
             "users/self/",
             f"users/{uuid4()}/",
             "users/create/",
@@ -474,8 +476,11 @@ class UsersBranchCoverageTests(APITestCase):
         self.client.force_authenticate(user=admin)
         list_response = self.client.get(reverse("user-list"), format="json")
         self.assertEqual(list_response.status_code, status.HTTP_200_OK)
-        self.assertIn("main", list_response.data)
-        self.assertIn("rollen", list_response.data)
+        self.assertIsInstance(list_response.data, list)
+
+        context_response = self.client.get(reverse("user-context"), format="json")
+        self.assertEqual(context_response.status_code, status.HTTP_200_OK)
+        self.assertIn("rollen", context_response.data)
 
         retrieve_response = self.client.get(
             reverse("user-retrieve-update-destroy", kwargs={"id": member.id}),
