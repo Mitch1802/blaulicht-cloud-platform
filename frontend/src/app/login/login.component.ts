@@ -79,17 +79,7 @@ export class LoginComponent implements OnInit {
     this.globalDataService.post(this.modul, data, false).subscribe({
       next: (erg: any) => {
         try {
-          this.globalDataService.get<any>('users/self').subscribe({
-            next: (me) => {
-              if (me?.username) {
-                sessionStorage.setItem("Benutzername", me.username);
-              }
-              this.router.navigate(['/start']);
-            },
-            error: () => {
-              this.router.navigate(['/start']);
-            }
-          });
+          this.router.navigate(['/start']);
         } catch (e: any) {
           this.globalDataService.erstelleMessage("error", e);
         }
