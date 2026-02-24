@@ -16,19 +16,30 @@ ACTION=${1:-""}
 VERSION=${2:-"1.0.0"}
 DOMAIN=${3:-"blaulichtcloud.michael-web.at"}
 PORT=${4:-"2432"}
+DEV_CORS=$(echo "${5:-false}" | tr '[:upper:]' '[:lower:]')
 
 DOMAIN_PROVIDED=false
 PORT_PROVIDED=false
+DEV_CORS_PROVIDED=false
 if [ $# -ge 3 ] && [ -n "${3:-}" ]; then
     DOMAIN_PROVIDED=true
 fi
 if [ $# -ge 4 ] && [ -n "${4:-}" ]; then
     PORT_PROVIDED=true
 fi
+if [ $# -ge 5 ] && [ -n "${5:-}" ]; then
+    DEV_CORS_PROVIDED=true
+fi
 
 if [ "$ACTION" != "install" ] && [ "$ACTION" != "update" ]; then
-    echo "Usage: app_manager.sh [install|update] [VERSION]"
+    echo "Usage: app_manager.sh [install|update] [VERSION] [DOMAIN] [PORT] [DEV_CORS]"
     echo "Beispiel für Update einer neuen Version: ./app_manager.sh update 1.0.0"
+    exit 1
+fi
+
+if [ "$DEV_CORS" != "true" ] && [ "$DEV_CORS" != "false" ]; then
+    echo "Fehler: DEV_CORS muss 'true' oder 'false' sein."
+    echo "Beispiel: ./app_manager.sh install 1.0.0 example.com 2432 true"
     exit 1
 fi
 
@@ -92,6 +103,13 @@ EOF
     # Zusätzliche Hilfsvariable, die ggf. '-demo' entfernt:
     VERSION_CLEAN=${VERSION/-demo/}
     APP_ORIGIN="https://$DOMAIN"
+    CORS_ORIGINS="$APP_ORIGIN"
+    CSRF_TRUSTED_ORIGINS="$APP_ORIGIN"
+
+    if [ "$DEV_CORS" = "true" ]; then
+        CORS_ORIGINS="http://localhost:4200,http://127.0.0.1:4200,$APP_ORIGIN"
+        CSRF_TRUSTED_ORIGINS="http://localhost:4200,http://127.0.0.1:4200,$APP_ORIGIN"
+    fi
 
     cat <<EOF > "$INSTALL_PATH/.envs/.django"
 DJANGO_SECRET_KEY=$DJANGO_SECRET_KEY
@@ -99,9 +117,9 @@ DJANGO_DEBUG=$DEBUG
 DJANGO_API_URL=$API_VERSION
 VERSION=$VERSION_CLEAN
 PUBLIC_FAHRZEUG_PIN=2432
-DJANGO_ALLOWED_HOSTS=$DOMAIN,localhost,127.0.0.1
-DJANGO_CORS_ALLOWED_ORIGINS=$APP_ORIGIN
-DJANGO_CSRF_TRUSTED_ORIGINS=$APP_ORIGIN
+DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,$DOMAIN
+DJANGO_CORS_ALLOWED_ORIGINS=$CORS_ORIGINS
+DJANGO_CSRF_TRUSTED_ORIGINS=$CSRF_TRUSTED_ORIGINS
 DJANGO_SECURE_SSL_REDIRECT=$SECURE_SSL_REDIRECT_DEFAULT
 EOF
 
@@ -233,15 +251,25 @@ function do_update() {
     set_env_var_if_missing ".envs/.django" "PUBLIC_FAHRZEUG_PIN" "2432"
 
     APP_ORIGIN="https://$DOMAIN_CURRENT"
+    CORS_ORIGINS="$APP_ORIGIN"
+    CSRF_TRUSTED_ORIGINS="$APP_ORIGIN"
+
+    if [ "$DEV_CORS" = "true" ]; then
+        CORS_ORIGINS="http://localhost:4200,http://127.0.0.1:4200,$APP_ORIGIN"
+        CSRF_TRUSTED_ORIGINS="http://localhost:4200,http://127.0.0.1:4200,$APP_ORIGIN"
+    fi
 
     if [ "$DOMAIN_PROVIDED" = true ]; then
         upsert_env_var ".envs/.django" "DJANGO_ALLOWED_HOSTS" "$DOMAIN_CURRENT,localhost,127.0.0.1"
-        upsert_env_var ".envs/.django" "DJANGO_CORS_ALLOWED_ORIGINS" "$APP_ORIGIN"
-        upsert_env_var ".envs/.django" "DJANGO_CSRF_TRUSTED_ORIGINS" "$APP_ORIGIN"
+        upsert_env_var ".envs/.django" "DJANGO_CORS_ALLOWED_ORIGINS" "$CORS_ORIGINS"
+        upsert_env_var ".envs/.django" "DJANGO_CSRF_TRUSTED_ORIGINS" "$CSRF_TRUSTED_ORIGINS"
+    elif [ "$DEV_CORS_PROVIDED" = true ]; then
+        upsert_env_var ".envs/.django" "DJANGO_CORS_ALLOWED_ORIGINS" "$CORS_ORIGINS"
+        upsert_env_var ".envs/.django" "DJANGO_CSRF_TRUSTED_ORIGINS" "$CSRF_TRUSTED_ORIGINS"
     else
         set_env_var_if_missing ".envs/.django" "DJANGO_ALLOWED_HOSTS" "$DOMAIN_CURRENT,localhost,127.0.0.1"
-        set_env_var_if_missing ".envs/.django" "DJANGO_CORS_ALLOWED_ORIGINS" "$APP_ORIGIN"
-        set_env_var_if_missing ".envs/.django" "DJANGO_CSRF_TRUSTED_ORIGINS" "$APP_ORIGIN"
+        set_env_var_if_missing ".envs/.django" "DJANGO_CORS_ALLOWED_ORIGINS" "$CORS_ORIGINS"
+        set_env_var_if_missing ".envs/.django" "DJANGO_CSRF_TRUSTED_ORIGINS" "$CSRF_TRUSTED_ORIGINS"
     fi
 
     set_env_var_if_missing ".envs/.django" "DJANGO_SECURE_SSL_REDIRECT" "$SECURE_SSL_REDIRECT_DEFAULT"
