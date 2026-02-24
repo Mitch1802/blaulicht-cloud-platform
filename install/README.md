@@ -31,3 +31,8 @@ Hinweis:
   - `DJANGO_CORS_ALLOWED_ORIGINS`
   - `DJANGO_CSRF_TRUSTED_ORIGINS`
   - `DJANGO_SECURE_SSL_REDIRECT`
+- Beim `update` werden fehlende Env-Dateien/Keys automatisch erstellt (`.env` und `.envs/.django`).
+- Beim `update` werden bestehende Werte standardmäßig **nicht** überschrieben; überschrieben wird nur,
+  wenn neue Parameter übergeben werden (z. B. `DOMAIN`/`HOST_PORT`).
+- Standard für `DJANGO_SECURE_SSL_REDIRECT` ist `False` (Login/Redirect-Probleme hinter Proxy vermeiden);
+  bei sauberem HTTPS-Setup kann der Wert manuell auf `True` gesetzt werden.

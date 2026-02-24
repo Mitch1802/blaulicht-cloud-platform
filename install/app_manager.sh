@@ -10,11 +10,21 @@ API_VERSION="api/v1/"
 SOFTWARE_NAME="blaulichtcloud"
 NETWORK_NAME="blaulichtcloud_nw"
 DEBUG=False
+SECURE_SSL_REDIRECT_DEFAULT=False
 
 ACTION=${1:-""}
 VERSION=${2:-"1.0.0"}
 DOMAIN=${3:-"blaulichtcloud.michael-web.at"}
 PORT=${4:-"2432"}
+
+DOMAIN_PROVIDED=false
+PORT_PROVIDED=false
+if [ $# -ge 3 ] && [ -n "${3:-}" ]; then
+    DOMAIN_PROVIDED=true
+fi
+if [ $# -ge 4 ] && [ -n "${4:-}" ]; then
+    PORT_PROVIDED=true
+fi
 
 if [ "$ACTION" != "install" ] && [ "$ACTION" != "update" ]; then
     echo "Usage: app_manager.sh [install|update] [VERSION]"
@@ -30,6 +40,24 @@ function upsert_env_var() {
     if grep -q "^${key}=" "$file"; then
         sed -i "s|^${key}=.*|${key}=${value}|" "$file"
     else
+        echo "${key}=${value}" >> "$file"
+    fi
+}
+
+function ensure_file_exists() {
+    local file="$1"
+    local dir
+    dir="$(dirname "$file")"
+    mkdir -p "$dir"
+    touch "$file"
+}
+
+function set_env_var_if_missing() {
+    local file="$1"
+    local key="$2"
+    local value="$3"
+
+    if ! grep -q "^${key}=" "$file"; then
         echo "${key}=${value}" >> "$file"
     fi
 }
@@ -74,7 +102,7 @@ PUBLIC_FAHRZEUG_PIN=2432
 DJANGO_ALLOWED_HOSTS=$DOMAIN,localhost,127.0.0.1
 DJANGO_CORS_ALLOWED_ORIGINS=$APP_ORIGIN
 DJANGO_CSRF_TRUSTED_ORIGINS=$APP_ORIGIN
-DJANGO_SECURE_SSL_REDIRECT=True
+DJANGO_SECURE_SSL_REDIRECT=$SECURE_SSL_REDIRECT_DEFAULT
 EOF
 
     DB_URL="postgres://sh17vFE9ttPIuk1:$POSTGRES_PASSWORD@postgres:5432/app-live"
@@ -160,6 +188,9 @@ function do_update() {
     fi
     cd "$INSTALL_PATH"
 
+    ensure_file_exists ".env"
+    ensure_file_exists ".envs/.django"
+
     # Container stoppen
     docker compose down
 
@@ -173,21 +204,47 @@ function do_update() {
 
     # Versions-Eintrag in Env-Files aktualisieren
     echo "Aktualisiere Versionseintrag auf $VERSION in Env-Files ..."
-    sed -i "s/^VERSION=.*/VERSION=$VERSION/" .env
-    # Hier die bereinigte Version für .envs/.django:
-    sed -i "s/^VERSION=.*/VERSION=${VERSION/-demo/}/" .envs/.django
+    upsert_env_var ".env" "VERSION" "$VERSION"
+    set_env_var_if_missing ".env" "NAME" "$SOFTWARE_NAME"
+
+    if [ "$PORT_PROVIDED" = true ]; then
+        upsert_env_var ".env" "HOST_PORT" "$PORT"
+    else
+        set_env_var_if_missing ".env" "HOST_PORT" "$PORT"
+    fi
 
     # Security-/Host-Variablen in .envs/.django ergänzen/aktualisieren
     DOMAIN_CURRENT=$(grep -E '^DOMAIN=' .env | cut -d'=' -f2- || true)
     if [ -z "$DOMAIN_CURRENT" ]; then
         DOMAIN_CURRENT="$DOMAIN"
     fi
+
+    if [ "$DOMAIN_PROVIDED" = true ]; then
+        upsert_env_var ".env" "DOMAIN" "$DOMAIN"
+        DOMAIN_CURRENT="$DOMAIN"
+    else
+        set_env_var_if_missing ".env" "DOMAIN" "$DOMAIN_CURRENT"
+    fi
+
+    # Core-Variablen in .envs/.django ergänzen/aktualisieren
+    set_env_var_if_missing ".envs/.django" "DJANGO_DEBUG" "$DEBUG"
+    set_env_var_if_missing ".envs/.django" "DJANGO_API_URL" "$API_VERSION"
+    upsert_env_var ".envs/.django" "VERSION" "${VERSION/-demo/}"
+    set_env_var_if_missing ".envs/.django" "PUBLIC_FAHRZEUG_PIN" "2432"
+
     APP_ORIGIN="https://$DOMAIN_CURRENT"
 
-    upsert_env_var ".envs/.django" "DJANGO_ALLOWED_HOSTS" "$DOMAIN_CURRENT,localhost,127.0.0.1"
-    upsert_env_var ".envs/.django" "DJANGO_CORS_ALLOWED_ORIGINS" "$APP_ORIGIN"
-    upsert_env_var ".envs/.django" "DJANGO_CSRF_TRUSTED_ORIGINS" "$APP_ORIGIN"
-    upsert_env_var ".envs/.django" "DJANGO_SECURE_SSL_REDIRECT" "True"
+    if [ "$DOMAIN_PROVIDED" = true ]; then
+        upsert_env_var ".envs/.django" "DJANGO_ALLOWED_HOSTS" "$DOMAIN_CURRENT,localhost,127.0.0.1"
+        upsert_env_var ".envs/.django" "DJANGO_CORS_ALLOWED_ORIGINS" "$APP_ORIGIN"
+        upsert_env_var ".envs/.django" "DJANGO_CSRF_TRUSTED_ORIGINS" "$APP_ORIGIN"
+    else
+        set_env_var_if_missing ".envs/.django" "DJANGO_ALLOWED_HOSTS" "$DOMAIN_CURRENT,localhost,127.0.0.1"
+        set_env_var_if_missing ".envs/.django" "DJANGO_CORS_ALLOWED_ORIGINS" "$APP_ORIGIN"
+        set_env_var_if_missing ".envs/.django" "DJANGO_CSRF_TRUSTED_ORIGINS" "$APP_ORIGIN"
+    fi
+
+    set_env_var_if_missing ".envs/.django" "DJANGO_SECURE_SSL_REDIRECT" "$SECURE_SSL_REDIRECT_DEFAULT"
 
     # Neue Images holen
     echo "Ziehe neue Images (docker compose pull) ..."

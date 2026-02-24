@@ -11,6 +11,8 @@ on:
       - 'default.conf'
       - 'docker-compose.yml'
       - '.github/workflows/**'
+    paths-ignore:
+      - 'django/**'
   workflow_run:
     workflows: ["01 Generate Django Migrations"]
     types: [completed]
