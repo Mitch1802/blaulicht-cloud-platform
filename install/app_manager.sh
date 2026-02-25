@@ -121,6 +121,11 @@ DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,$DOMAIN
 DJANGO_CORS_ALLOWED_ORIGINS=$CORS_ORIGINS
 DJANGO_CSRF_TRUSTED_ORIGINS=$CSRF_TRUSTED_ORIGINS
 DJANGO_SECURE_SSL_REDIRECT=$SECURE_SSL_REDIRECT_DEFAULT
+BLAULICHTSMS_API_URL=https://api.blaulichtsms.net/blaulicht
+BLAULICHTSMS_API_USERNAME=
+BLAULICHTSMS_API_PASSWORD=
+BLAULICHTSMS_API_CUSTOMER_IDS=
+BLAULICHTSMS_TIMEOUT=10
 EOF
 
     DB_URL="postgres://sh17vFE9ttPIuk1:$POSTGRES_PASSWORD@postgres:5432/app-live"
@@ -249,6 +254,11 @@ function do_update() {
     set_env_var_if_missing ".envs/.django" "DJANGO_API_URL" "$API_VERSION"
     upsert_env_var ".envs/.django" "VERSION" "${VERSION/-demo/}"
     set_env_var_if_missing ".envs/.django" "PUBLIC_FAHRZEUG_PIN" "2432"
+    set_env_var_if_missing ".envs/.django" "BLAULICHTSMS_API_URL" "https://api.blaulichtsms.net/blaulicht"
+    set_env_var_if_missing ".envs/.django" "BLAULICHTSMS_API_USERNAME" ""
+    set_env_var_if_missing ".envs/.django" "BLAULICHTSMS_API_PASSWORD" ""
+    set_env_var_if_missing ".envs/.django" "BLAULICHTSMS_API_CUSTOMER_IDS" ""
+    set_env_var_if_missing ".envs/.django" "BLAULICHTSMS_TIMEOUT" "10"
 
     APP_ORIGIN="https://$DOMAIN_CURRENT"
     CORS_ORIGINS="$APP_ORIGIN"

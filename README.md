@@ -42,6 +42,10 @@ $env:DATABASE_URL='sqlite:///C:/Users/mr96/GitHub/blaulicht-cloud-platform/djang
 $env:DJANGO_SECRET_KEY='test-secret-key'
 $env:DJANGO_API_URL='api/v1/'
 $env:PUBLIC_FAHRZEUG_PIN='1234'
+$env:BLAULICHTSMS_API_URL='https://api.blaulichtsms.net/blaulicht'
+$env:BLAULICHTSMS_API_USERNAME='myUser'
+$env:BLAULICHTSMS_API_PASSWORD='mySuperSecretPwd'
+$env:BLAULICHTSMS_API_CUSTOMER_IDS='100027,900027'
 $env:VERSION='test'
 C:/Users/mr96/GitHub/blaulicht-cloud-platform/.venv/Scripts/python.exe django/manage.py test
 ```
