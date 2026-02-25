@@ -133,10 +133,7 @@
               </div>
               <div class="alert alert-secondary">
                 @if (fileFound==true) {
-                  <div>
-                    {{fileName}}
-                  </div>
-                  <button mat-raised-button color="primary" type="button" [hidden]="!formModul.controls['id'].value" (click)="openModal()">Bild öffnen</button>
+                  <button mat-raised-button color="primary" type="button" (click)="openModal()">Bild öffnen</button>
                 }
               </div>
             </div>

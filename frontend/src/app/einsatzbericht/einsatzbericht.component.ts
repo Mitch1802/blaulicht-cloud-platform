@@ -419,8 +419,9 @@ export class EinsatzberichtComponent implements OnInit {
     this.globalDataService.get<any>('users/self').subscribe({
       next: (user: any) => {
         const roles: string[] = Array.isArray(user?.roles) ? user.roles : [];
-        this.canDeleteBerichte = roles.includes('ADMIN') || roles.includes('VERWALTUNG');
-        this.canManageStatus = roles.includes('ADMIN') || roles.includes('VERWALTUNG');
+        const isSuperuser = !!user?.is_superuser;
+        this.canDeleteBerichte = isSuperuser || roles.includes('ADMIN') || roles.includes('VERWALTUNG');
+        this.canManageStatus = isSuperuser || roles.includes('ADMIN') || roles.includes('VERWALTUNG');
         if (this.canManageStatus) {
           this.formBericht.controls.status.enable({ emitEvent: false });
         } else {

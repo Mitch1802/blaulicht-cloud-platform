@@ -51,6 +51,7 @@ export class NewsComponent implements OnInit {
   filePfad = '';
   fileFound = false;
   btnUploadStatus = false;
+  private selectedPreviewUrl = '';
 
   formAuswahl = new FormGroup({
     news: new FormControl<number | ''>('')
@@ -282,9 +283,15 @@ export class NewsComponent implements OnInit {
 
   onFotoSelected(event: Event): void {
     const file = this.getSelectedFile();
+    if (this.selectedPreviewUrl) {
+      URL.revokeObjectURL(this.selectedPreviewUrl);
+      this.selectedPreviewUrl = '';
+    }
+
     if (!file) {
       this.fileFound = false;
       this.fileName = '';
+      this.filePfad = '';
       return;
     }
     const sizeKB = Math.round(file.size / 1024);
@@ -298,6 +305,8 @@ export class NewsComponent implements OnInit {
     } else {
       this.fileFound = true;
       this.fileName = file.name;
+      this.selectedPreviewUrl = URL.createObjectURL(file);
+      this.filePfad = this.selectedPreviewUrl;
     }
   }
 
@@ -324,6 +333,10 @@ export class NewsComponent implements OnInit {
     this.fileName = '';
     this.filePfad = '';
     this.fileFound = false;
+    if (this.selectedPreviewUrl) {
+      URL.revokeObjectURL(this.selectedPreviewUrl);
+      this.selectedPreviewUrl = '';
+    }
     this.setzeSelectZurueck();
     // Datei im Input löschen
     if (this.fotoRef?.nativeElement) {
