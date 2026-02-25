@@ -38,7 +38,7 @@
   {
     "icon": "book",
     "modul": "Anwesenheitsliste",
-    "rolle": "ADMIN, BERICHT",
+    "rolle": "ADMIN, ANWESENHEIT",
     "routerlink": "/anwesenheitsliste"
   },
   {

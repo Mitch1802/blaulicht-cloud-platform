@@ -170,7 +170,7 @@ export class UserComponent implements OnInit {
       username: this.formModul.controls["username"].value || '',
       first_name: this.formModul.controls["first_name"].value || '',
       last_name: this.formModul.controls["last_name"].value || '',
-      roles,
+      roles: rollen,
       password1: this.formModul.controls["password1"].value || '',
       password2: this.formModul.controls["password2"].value || ''
     };
@@ -179,7 +179,7 @@ export class UserComponent implements OnInit {
       username: this.formModul.controls["username"].value || '',
       first_name: this.formModul.controls["first_name"].value || '',
       last_name: this.formModul.controls["last_name"].value || '',
-      roles
+      roles: rollen
     };
 
     if (idValue === '' || idValue === null) {
