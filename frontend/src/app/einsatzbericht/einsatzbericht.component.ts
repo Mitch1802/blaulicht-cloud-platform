@@ -106,10 +106,10 @@ export class EinsatzberichtComponent implements OnInit {
   ];
 
   brandOptionBeschreibungen: Record<string, string> = {
-    'Kleinbrand': 'Kleinere Brandausbreitung, meist auf einen begrenzten Bereich beschränkt.',
-    'Mittelbrand': 'Deutliche Brandausbreitung mit erhöhtem Kräfte- und Zeitaufwand.',
-    'Großbrand': 'Umfangreicher Brand mit großem Ressourcenbedarf und längerem Einsatzverlauf.',
-    'Brand vor Eintreffen gelöscht oder erloschen': 'Der Brand war bei Eintreffen bereits gelöscht oder selbst erloschen.',
+    'Kleinbrand': 'Kleinlöschgerät, HD/Schnellangriff, 1 STrahlrohr, Kaminbrand',
+    'Mittelbrand': '2-3 Strahlrohre im Einsatz',
+    'Großbrand': '> 3 Strahrohre im Einsatz',
+    'Brand vor Eintreffen gelöscht oder erloschen': '',
   };
 
   technischOptionen = [
