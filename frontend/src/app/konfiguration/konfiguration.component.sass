@@ -69,13 +69,28 @@
         gap: .3rem
         opacity: .85
 
-.backup-list
-    .backup-item
-        p
-            margin: 0
-            white-space: nowrap
-            overflow: hidden
-            text-overflow: ellipsis
+.table-wrap
+    overflow-x: auto
+    margin-top: .5rem
+
+    table
+        width: 100%
+
+.backup-table-wrap
+    margin-top: .25rem
+
+.backup-name
+    white-space: nowrap
+    overflow: hidden
+    text-overflow: ellipsis
+
+.action-cell
+    display: flex
+    gap: .35rem
+
+.backup-empty
+    margin: .85rem 0 0
+    opacity: .75
 
 .cleanup-actions
     display: flex
@@ -119,6 +134,9 @@
     .actions-top
         button
             width: 100%
+
+    .action-cell
+        justify-content: flex-start
 
     .backup-legend
         gap: .55rem .9rem

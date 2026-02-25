@@ -7,19 +7,19 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButton } from '@angular/material/button';
 import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
-import { MatList, MatListItem } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { environment } from "src/environments/environment";
 import { Router } from '@angular/router';
 import { HeaderComponent } from '../_template/header/header.component';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatOption, MatSelect } from '@angular/material/select';
+import { MatTableModule } from '@angular/material/table';
 
 @Component({
     selector: 'app-konfiguration',
     templateUrl: './konfiguration.component.html',
     styleUrls: ['./konfiguration.component.sass'],
-    imports: [HeaderComponent, MatCardModule, FormsModule, ReactiveFormsModule, MatButton, MatFormField, MatLabel, MatInput, MatError, MatList, MatListItem, MatIconModule, MatChipsModule, MatSelect, MatOption]
+    imports: [HeaderComponent, MatCardModule, FormsModule, ReactiveFormsModule, MatButton, MatFormField, MatLabel, MatInput, MatError, MatIconModule, MatChipsModule, MatSelect, MatOption, MatTableModule]
 })
 export class KonfigurationComponent implements OnInit {
   globalDataService = inject(GlobalDataService);
@@ -36,6 +36,7 @@ export class KonfigurationComponent implements OnInit {
 
   rollen: any = []
   backups: any = [];
+  backupColumns: string[] = ['name', 'actions'];
   backup_msg = "";
   cleanupTarget: 'all' | 'news' | 'inventar' = 'all';
   cleanupRunning = false;
