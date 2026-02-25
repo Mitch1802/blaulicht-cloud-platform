@@ -9,6 +9,7 @@ from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
+from core_apps.common.logging_utils import log_event, log_exception
 from core_apps.common.permissions import HasAnyRolePermission
 from core_apps.fahrzeuge.models import Fahrzeug
 from core_apps.mitglieder.models import Mitglied
@@ -17,6 +18,7 @@ from .models import Einsatzbericht, EinsatzberichtFoto
 from .serializers import EinsatzberichtSerializer
 
 logger = logging.getLogger(__name__)
+LOG_SOURCE = "einsatzberichte"
 
 
 class EinsatzberichtViewSet(ModelViewSet):
@@ -47,7 +49,7 @@ class EinsatzberichtViewSet(ModelViewSet):
             try:
                 storage.delete(name)
             except Exception:
-                logger.exception("Einsatzbericht file delete failed bericht=%s file=%s", bericht.id, name)
+                log_exception(logger, LOG_SOURCE, "report_file_delete_failed", bericht_id=bericht.id, file=name)
 
         return response
 
@@ -135,18 +137,21 @@ class EinsatzberichtViewSet(ModelViewSet):
             response.raise_for_status()
             payload = response.json() if response.content else {}
         except requests.RequestException:
-            logger.exception("BlaulichtSMS request failed (list) url=%s", url)
+            log_exception(logger, LOG_SOURCE, "blaulichtsms_request_failed", endpoint="list", url=url)
             return None
 
         if not isinstance(payload, dict):
-            logger.error("BlaulichtSMS response has invalid format: %s", type(payload).__name__)
+            log_event(logger, LOG_SOURCE, "blaulichtsms_invalid_payload", level="error", payload_type=type(payload).__name__)
             return None
 
         if payload.get("result") != "OK":
-            logger.error(
-                "BlaulichtSMS list returned non-OK result=%s description=%s",
-                payload.get("result"),
-                payload.get("description"),
+            log_event(
+                logger,
+                LOG_SOURCE,
+                "blaulichtsms_non_ok_result",
+                level="error",
+                result=payload.get("result"),
+                description=payload.get("description"),
             )
             return None
 
@@ -203,6 +208,7 @@ class EinsatzberichtViewSet(ModelViewSet):
         foto = bericht.fotos.filter(id=foto_id).first()
 
         if foto is None:
+            log_event(logger, LOG_SOURCE, "photo_not_found", level="warning", bericht_id=bericht.id, foto_id=foto_id)
             return Response({"detail": "Foto nicht gefunden."}, status=status.HTTP_404_NOT_FOUND)
 
         storage = foto.foto.storage if foto.foto else None
@@ -214,6 +220,6 @@ class EinsatzberichtViewSet(ModelViewSet):
             try:
                 storage.delete(name)
             except Exception:
-                logger.exception("EinsatzberichtFoto file delete failed bericht=%s foto=%s", bericht.id, foto_id)
+                log_exception(logger, LOG_SOURCE, "photo_file_delete_failed", bericht_id=bericht.id, foto_id=foto_id, file=name)
 
         return Response(status=status.HTTP_204_NO_CONTENT)

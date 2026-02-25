@@ -10,6 +10,7 @@ from rest_framework.views import APIView
 from rest_framework.exceptions import ValidationError
 from rest_framework.renderers import StaticHTMLRenderer
 
+from core_apps.common.logging_utils import log_event
 from core_apps.common.permissions import any_of, HasAnyRolePermission, HasReadOnlyRolePermission
 from .models import PdfTemplate
 from .serializers import PdfTemplateSerializer
@@ -17,6 +18,7 @@ from .services import PdfTemplateService
 from .renderers import PdfRenderer
 
 logger = logging.getLogger(__name__)
+LOG_SOURCE = "pdf"
 
 
 # -----------------------------
@@ -86,6 +88,7 @@ class PdfTemplatePublishView(APIView):
 
         tmpl.publish()
         tmpl.save(update_fields=["status", "published_at", "updated_at"])
+        log_event(logger, LOG_SOURCE, "template_published", template_id=tmpl.id, typ=tmpl.typ, version=tmpl.version)
 
         return Response(PdfTemplateSerializer(tmpl).data)
 
@@ -108,6 +111,8 @@ class PdfTemplateNewVersionView(APIView):
             status=PdfTemplate.Status.DRAFT,
             source=tmpl.source,
         )
+
+        log_event(logger, LOG_SOURCE, "template_new_version", source_template_id=tmpl.id, cloned_template_id=cloned.id, version=cloned.version)
 
 
         return Response(PdfTemplateSerializer(cloned).data, status=201)
@@ -155,6 +160,7 @@ class PdfTemplateRenderView(APIView):
             raise ValidationError(str(e))
 
         pdf_bytes = PdfTemplateService.render_pdf_bytes(html, header_html, footer_html)
+        log_event(logger, LOG_SOURCE, "template_rendered", template_id=tmpl.id, typ=tmpl.typ, version=tmpl.version)
 
         resp = Response(pdf_bytes, content_type="application/pdf")
         resp["Content-Disposition"] = f'inline; filename="{tmpl.typ}_v{tmpl.version}.pdf"'
@@ -242,6 +248,7 @@ class PdfTemplateTestView(APIView):
             raise ValidationError(str(e))
 
         pdf_bytes = PdfTemplateService.render_pdf_bytes(html, header_html, footer_html)
+        log_event(logger, LOG_SOURCE, "template_test_rendered", template_id=tmpl.id, typ=tmpl.typ, version=tmpl.version)
 
         resp = Response(pdf_bytes, content_type="application/pdf")
         resp["Content-Disposition"] = f'inline; filename="TEST_{tmpl.typ}_v{tmpl.version}.pdf"'

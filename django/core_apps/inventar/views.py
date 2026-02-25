@@ -3,11 +3,13 @@ from rest_framework import permissions, filters
 from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 from rest_framework.viewsets import ModelViewSet
 
+from core_apps.common.logging_utils import log_event, log_exception
 from .models import Inventar
 from .serializers import InventarSerializer
 from core_apps.common.permissions import HasAnyRolePermission
 
 logger = logging.getLogger(__name__)
+LOG_SOURCE = "inventar"
 
 
 def _is_default(name: str) -> bool:
@@ -25,7 +27,13 @@ class InventarViewSet(ModelViewSet):
     ordering = ["bezeichnung"]
 
     def create(self, request, *args, **kwargs):
-        logger.info("FILES=%s | DATA=%s", list(request.FILES.keys()), list(request.data.keys()))
+        log_event(
+            logger,
+            LOG_SOURCE,
+            "create_request_received",
+            files=list(request.FILES.keys()),
+            data=list(request.data.keys()),
+        )
         return super().create(request, *args, **kwargs)
 
     # --- Bildwechsel: altes Bild nur löschen, wenn wirklich ersetzt ---
@@ -37,10 +45,10 @@ class InventarViewSet(ModelViewSet):
 
         if old_name and new_name and old_name != new_name and not _is_default(old_name):
             try:
-                logger.info("Deleting old image | old_name=%s", old_name)
+                log_event(logger, LOG_SOURCE, "old_image_delete", old_name=old_name)
                 saved.foto.storage.delete(old_name)
             except Exception:
-                logger.exception("Failed to delete old image | old_name=%s", old_name)
+                log_exception(logger, LOG_SOURCE, "old_image_delete_failed", old_name=old_name)
 
     # --- Löschen: Datei aus Storage entfernen (sofern nicht Default) ---
     def perform_destroy(self, instance):
@@ -48,7 +56,7 @@ class InventarViewSet(ModelViewSet):
         super().perform_destroy(instance)
         if name and not _is_default(name):
             try:
-                logger.info("Deleting image on destroy | image_name=%s", name)
+                log_event(logger, LOG_SOURCE, "destroy_image_delete", image_name=name)
                 instance.foto.storage.delete(name)
             except Exception:
-                logger.exception("Failed to delete image on destroy | image_name=%s", name)
+                log_exception(logger, LOG_SOURCE, "destroy_image_delete_failed", image_name=name)
