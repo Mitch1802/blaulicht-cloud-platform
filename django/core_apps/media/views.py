@@ -36,23 +36,13 @@ class BaseMediaGetFileView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     subdirectory = ""
 
-    def _resolve_file_path(self, filename: str) -> Path:
-        media_root = Path(settings.MEDIA_ROOT).resolve()
-        base_dir = (media_root / self.subdirectory).resolve() if self.subdirectory else media_root
-        requested = (base_dir / filename).resolve()
-
-        if not str(requested).startswith(str(base_dir)):
-            raise Http404("Ungültiger Dateipfad!")
-
-        return requested
-
     def get(self, request, filename, *args, **kwargs):
-        file_path = self._resolve_file_path(filename)
+        file_path = os.path.join(settings.MEDIA_ROOT, self.subdirectory, filename)
 
-        if not file_path.exists() or not file_path.is_file():
+        if not os.path.exists(file_path):
             raise Http404("Datei nicht gefunden!")
 
-        return FileResponse(open(file_path, "rb"), as_attachment=False, filename=file_path.name)
+        return FileResponse(open(file_path, "rb"), as_attachment=True, filename=filename)
 
 
 class MediaNewsGetFileView(BaseMediaGetFileView):
@@ -63,11 +53,6 @@ class MediaNewsGetFileView(BaseMediaGetFileView):
 class MediaInventarGetFileView(BaseMediaGetFileView):
     """Abruf von Inventar-Mediendateien."""
     subdirectory = "inventar"
-
-
-class MediaEinsatzberichteGetFileView(BaseMediaGetFileView):
-    """Abruf von Einsatzberichte-Mediendateien."""
-    subdirectory = "einsatzberichte"
 
 
 class MediaCleanupOrphansView(APIView):

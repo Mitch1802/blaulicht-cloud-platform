@@ -5,12 +5,10 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.http import FileResponse
-from core_apps.common.logging_utils import log_event, log_exception
 from core_apps.common.permissions import HasAnyRolePermission
 
 env = environ.Env()
 logger = logging.getLogger(__name__)
-LOG_SOURCE = "backup"
 
 backup_path = "/app/backups/"
 uploaded_files_dir = "/app/mediafiles/"
@@ -79,10 +77,8 @@ class BackupGetPostView(APIView):
 
             os.remove(sql_path)
             msg = f"Backup {zip_filename} wurde erfolgreich erstellt!"
-            log_event(logger, LOG_SOURCE, "backup_created", backup=zip_filename)
         except subprocess.CalledProcessError as e:
             msg = f"Fehler beim Erstellen des Backups: {str(e)}"
-            log_exception(logger, LOG_SOURCE, "backup_create_failed", error=str(e))
 
         backups = os.listdir(backup_path)
         return Response({'msg': msg, 'backups': backups})
@@ -181,10 +177,8 @@ class RestorePostView(APIView):
                                     shutil.copyfileobj(source_file, target_file)
 
                 msg = f"Backup {backupname} wurde erfolgreich wiederhergestellt!"
-                log_event(logger, LOG_SOURCE, "backup_restored", backup=backupname)
             except subprocess.CalledProcessError as e:
                 msg = f"Fehler beim Wiederherstellen des Backups: {str(e)}"
-                log_exception(logger, LOG_SOURCE, "backup_restore_failed", backup=backupname, error=str(e))
         else:
             raise ValidationError(f"Backup nicht gefunden oder ungültig: {backupname}")
 
@@ -205,7 +199,7 @@ class BackupGetFileView(APIView):
             dateipfad = os.path.join(backup_path, filename)
         
             if os.path.isfile(dateipfad):
-                log_event(logger, LOG_SOURCE, "backup_download", path=dateipfad)
+                logger.info(f'Vollständiger Pfad: {dateipfad}')
                 file = open(os.path.join(backup_path, filename), 'rb')
                 response = FileResponse(file, content_type='application/octet-stream')
                 response['Content-Disposition'] = f'attachment; filename="{filename}"'
@@ -229,10 +223,8 @@ class BackupDeleteView(APIView):
             try:
                 os.remove(backup_path_to_delete)
                 msg = f"Backup {backupname} wurde erfolgreich gelöscht!"
-                log_event(logger, LOG_SOURCE, "backup_deleted", backup=backupname)
             except OSError as e:
                 msg = f"Fehler beim Löschen des Backups: {str(e)}"
-                log_exception(logger, LOG_SOURCE, "backup_delete_failed", backup=backupname, error=str(e))
         else:
             raise ValidationError(f"Backup nicht gefunden: {backupname}")
 

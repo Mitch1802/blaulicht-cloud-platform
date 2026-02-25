@@ -7,21 +7,8 @@ from .models import User, Role
 User = get_user_model()
 
 
-class RoleKeyRelatedField(serializers.SlugRelatedField):
-    def to_internal_value(self, data):
-        role_key = str(data or "").strip()
-        if not role_key:
-            self.fail("does_not_exist", slug_name=self.slug_field, value=data)
-
-        role, _ = Role.objects.get_or_create(
-            key=role_key,
-            defaults={"verbose_name": role_key.replace("_", " ").title()},
-        )
-        return role
-
-
 class UserSerializer(serializers.ModelSerializer):
-    roles = RoleKeyRelatedField(
+    roles = serializers.SlugRelatedField(
         many=True,
         slug_field="key",
         queryset=Role.objects.none(),
@@ -136,17 +123,11 @@ class AdminCreateUserSerializer(serializers.ModelSerializer):
         return user
 
 class UserSelfSerializer(serializers.ModelSerializer):
-    roles = serializers.SlugRelatedField(
-        many=True,
-        slug_field='key',
-        read_only=True
-    )
-
     class Meta:
         model = User
         # NUR das, was ein User selbst ändern darf:
-        fields = ("id", "username", "first_name", "last_name", "roles", "is_superuser")
-        read_only_fields = ("id", "roles", "is_superuser")
+        fields = ("id", "username", "first_name", "last_name")
+        read_only_fields = ("id", "roles")
 
     def update(self, instance, validated_data):
         return super().update(instance, validated_data)
