@@ -165,8 +165,22 @@ export class UserComponent implements OnInit {
       this.formModul.controls["roles"].setValue(rollen);
     }
 
-    const object = this.formModul.value;
     const idValue = this.formModul.controls["id"].value;
+    const payloadCreate = {
+      username: this.formModul.controls["username"].value || '',
+      first_name: this.formModul.controls["first_name"].value || '',
+      last_name: this.formModul.controls["last_name"].value || '',
+      roles,
+      password1: this.formModul.controls["password1"].value || '',
+      password2: this.formModul.controls["password2"].value || ''
+    };
+
+    const payloadUpdate = {
+      username: this.formModul.controls["username"].value || '',
+      first_name: this.formModul.controls["first_name"].value || '',
+      last_name: this.formModul.controls["last_name"].value || '',
+      roles
+    };
 
     if (idValue === '' || idValue === null) {
       if (this.formModul.controls["password1"].value == "" || this.formModul.controls["password1"].value == "") {
@@ -176,7 +190,7 @@ export class UserComponent implements OnInit {
         this.globalDataService.erstelleMessage("error", "Die Passwörter müssen übereinstimmen!");
         return
       }
-      this.globalDataService.post("users/create", object, false).subscribe({
+      this.globalDataService.post("users/create", payloadCreate, false).subscribe({
         next: (erg: any) => {
           try {
             this.username = "";
@@ -194,9 +208,7 @@ export class UserComponent implements OnInit {
         }
       });
     } else {
-      delete object.password2;
-
-      this.globalDataService.patch(this.modul, idValue, object, false).subscribe({
+      this.globalDataService.patch(this.modul, idValue, payloadUpdate, false).subscribe({
         next: (erg: any) => {
           try {
             const data = this.benutzer;
