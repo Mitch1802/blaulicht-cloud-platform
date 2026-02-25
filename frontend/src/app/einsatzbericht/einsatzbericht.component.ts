@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 type FahrzeugOption = {
   id: number;
@@ -62,6 +63,7 @@ type EinsatzberichtDto = {
     MatSelectModule,
     MatButtonModule,
     MatCheckboxModule,
+    MatExpansionModule,
   ],
   templateUrl: './einsatzbericht.component.html',
   styleUrl: './einsatzbericht.component.sass'

@@ -34,6 +34,28 @@
 .bericht-form
     margin-top: .4rem
 
+.bericht-accordion
+    display: grid
+    gap: .75rem
+    margin-bottom: .9rem
+
+.form-section
+    border: 1px solid rgba(0, 0, 0, .08)
+    border-radius: .75rem !important
+    background: rgba(0, 0, 0, .01)
+    box-shadow: none !important
+
+.form-section-title
+    color: theme.$app-primary
+    font-weight: 600
+
+.form-section-subtitle
+    opacity: .72
+    font-size: .84rem
+
+.form-section-body
+    margin-top: .35rem
+
 .grid
     display: grid
     gap: .75rem
@@ -56,6 +78,7 @@
     border-radius: .7rem
     padding: .8rem
     margin-bottom: .85rem
+    background: #fff
 
     h3
         margin: 0 0 .65rem
@@ -171,6 +194,12 @@
     .settings-card
         mat-card-content
             padding: .35rem .25rem .25rem
+
+    .form-section
+        border-radius: .6rem !important
+
+    .form-section-subtitle
+        display: none
 
     .actions-row
         button
