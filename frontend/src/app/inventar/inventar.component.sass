@@ -1,3 +1,68 @@
+@use '../../theme' as theme
+
+.inventar-page
+    max-width: 1280px
+    margin: 0 auto
+    padding: 1rem 1rem 2rem
+
+.page-head
+    margin: 0 0 1.5rem
+
+    h1
+        margin: 0
+        color: theme.$app-primary
+        font-size: clamp(1.5rem, 2.4vw, 2.1rem)
+        line-height: 1.2
+
+.settings-card
+    border-radius: .9rem
+
+    mat-card-content
+        padding-top: .5rem
+
+.section-head
+    display: flex
+    align-items: center
+    justify-content: space-between
+    padding: 1rem 1rem 0
+
+    h2
+        margin: 0
+        color: theme.$app-primary
+        font-size: 1.1rem
+
+.top-actions
+    display: flex
+    gap: .6rem
+    flex-wrap: wrap
+    margin: .25rem 0 .8rem
+
+.edit-form
+    margin-top: .2rem
+
+.form-actions
+    display: flex
+    flex-wrap: wrap
+    gap: .6rem
+    margin-bottom: .8rem
+
+.form-grid
+    margin-top: .2rem
+
+.full-width
+    width: 100%
+
+.table-wrap
+    overflow-x: auto
+    margin-top: .5rem
+
+    table
+        width: 100%
+
+.action-cell
+    display: flex
+    gap: .35rem
+
 .upload-btn-wrapper
     position: relative
     overflow: hidden
@@ -53,5 +118,29 @@
     cursor: pointer
 
 @media only screen and (max-width: 700px)
+    .inventar-page
+        padding: .75rem .75rem 1.5rem
+
+    .page-head
+        margin-bottom: 1rem
+
+        h1
+            font-size: 1.4rem
+
+    .section-head
+        padding: .85rem .85rem 0
+
+        h2
+            font-size: 1rem
+
+    .settings-card
+        mat-card-content
+            padding: .35rem .25rem .25rem
+
+    .top-actions,
+    .form-actions
+        button
+            width: 100%
+
     .modal-content
         width: 100%

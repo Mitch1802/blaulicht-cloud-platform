@@ -1,0 +1,8 @@
+{
+  "/api": {
+    "target": "https://test.blaulichtcloud.at",
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}

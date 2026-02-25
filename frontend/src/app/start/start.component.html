@@ -1,27 +1,45 @@
 <app-header [breadcrumb]="breadcrumb"></app-header>
 
-<div class="row justify-content-center content">
-  <h1 class="col-12 col-lg-6 justify-content-center">Hallo {{ first_name }} {{ last_name }}!</h1>
-</div>
+<section class="start-page">
+  <header class="welcome">
+    <h1>Hallo {{ first_name }} {{ last_name }}!</h1>
+  </header>
 
-<div class="row justify-content-center content">
-  @for (item of visibleItems; track item) { 
-    <div class="col-6 col-md-4 col-lg-4 col-xl-2 content-item link-card">
-      <mat-card [routerLink]="item.routerlink">
-        <mat-icon class="material-icons-outlined">{{ item.icon }}</mat-icon>
-        <mat-card-footer>{{ item.modul }}</mat-card-footer>
-      </mat-card>
+  <section class="module-section">
+    <div class="section-head">
+      <h2>Einsatzmodule</h2>
+      <span class="count">{{ visibleItems.length }}</span>
     </div>
-  }
-</div>
 
-<div class="row justify-content-center content">
-  @for (item of adminItems; track item) { 
-    <div class="col-6 col-md-4 col-lg-4 col-xl-2 content-item link-card admin">
-      <mat-card [routerLink]="item.routerlink">
-        <mat-icon class="material-icons-outlined">{{ item.icon }}</mat-icon>
-        <mat-card-footer>{{ item.modul }}</mat-card-footer>
-      </mat-card>
-    </div>
+    @if (visibleItems.length === 0) {
+      <p class="empty">Für deine Rollen sind aktuell keine Module freigeschaltet.</p>
+    } @else {
+      <div class="module-grid">
+        @for (item of visibleItems; track item) {
+          <mat-card class="module-card" [routerLink]="item.routerlink">
+            <mat-icon class="module-icon material-icons-outlined">{{ item.icon }}</mat-icon>
+            <div class="module-title">{{ item.modul }}</div>
+          </mat-card>
+        }
+      </div>
+    }
+  </section>
+
+  @if (adminItems.length > 0) {
+    <section class="module-section admin-section">
+      <div class="section-head">
+        <h2>Administration &amp; Einstellungen</h2>
+        <span class="count">{{ adminItems.length }}</span>
+      </div>
+
+      <div class="module-grid">
+        @for (item of adminItems; track item) {
+          <mat-card class="module-card admin" [routerLink]="item.routerlink">
+            <mat-icon class="module-icon material-icons-outlined">{{ item.icon }}</mat-icon>
+            <div class="module-title">{{ item.modul }}</div>
+          </mat-card>
+        }
+      </div>
+    </section>
   }
-</div>
+</section>

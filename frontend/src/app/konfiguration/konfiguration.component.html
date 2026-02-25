@@ -1,291 +1,281 @@
 <app-header [breadcrumb]="breadcrumb"></app-header>
 
-<div class="row justify-content-center content">
-  <div class="col-12 col-md-10 col-lg-8 p-0 m-0">
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>{{ title }}</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <form [formGroup]="formRolle" (ngSubmit)="rolleSpeichern()">
-          <section class="row mt-3">
-            <div class="col-12 col-lg-9">
-              <mat-form-field>
-                <mat-label>Rolle</mat-label>
-                <input matInput type="text" formControlName="rolle" />
-              </mat-form-field>
-            </div>
-            <div
-              class="col-6 col-lg-3 m-0 row align-items-center auswahl-button"
-              >
-              <button
-                mat-raised-button
-                class="col-auto"
-                color="accent"
-                [disabled]="!formRolle.valid"
-                type="submit"
-                >
-                Rolle speichern
-              </button>
-            </div>
-            <div class="col-12 col-lg-12 mt-3 mb-3">
-              <mat-chip-set>
-                @for (rolle of rollen; track rolle) {
-                  @if (rolle.key !== 'ADMIN' && rolle.key !== 'MITGLIED') {
-                    <mat-chip
-                      [removable]="true"
-                      (removed)="rolleLoeschen(rolle)"
-                      >
-                      {{ rolle.key }}
-                      <mat-icon matChipRemove>cancel</mat-icon>
-                    </mat-chip>
-                  }
-                }
-              </mat-chip-set>
-            </div>
-          </section>
-        </form>
-      </mat-card-content>
-    </mat-card>
-    <mat-card class="mt-3">
-      <mat-card-header>
-        <mat-card-title>{{ title2 }}</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <form [formGroup]="formKonfig" (ngSubmit)="konfigSpeichern()">
-          <input hidden type="text" class="form-control" formControlName="id" />
+<section class="config-page">
+  <header class="page-head">
+    <h1>Konfiguration</h1>
+  </header>
+
+  <mat-card class="settings-card">
+    <div class="section-head">
+      <h2>{{ title }}</h2>
+    </div>
+
+    <mat-card-content>
+      <form [formGroup]="formRolle" (ngSubmit)="rolleSpeichern()" class="role-form">
+        <mat-form-field class="full-width">
+          <mat-label>Rolle</mat-label>
+          <input matInput type="text" formControlName="rolle" />
+        </mat-form-field>
+
+        <button
+          mat-raised-button
+          color="accent"
+          [disabled]="!formRolle.valid"
+          type="submit"
+        >
+          Rolle speichern
+        </button>
+
+        <mat-chip-set class="role-chips">
+          @for (rolle of rollen; track rolle) {
+            @if (rolle.key !== 'ADMIN' && rolle.key !== 'MITGLIED') {
+              <mat-chip [removable]="true" (removed)="rolleLoeschen(rolle)">
+                {{ rolle.key }}
+                <mat-icon matChipRemove>cancel</mat-icon>
+              </mat-chip>
+            }
+          }
+        </mat-chip-set>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="settings-card">
+    <div class="section-head">
+      <h2>{{ title2 }}</h2>
+    </div>
+
+    <mat-card-content>
+      <form [formGroup]="formKonfig" (ngSubmit)="konfigSpeichern()">
+        <input hidden type="text" class="form-control" formControlName="id" />
+
+        <div class="actions-top">
           <button
             mat-raised-button
-            class="mt-3"
             color="accent"
             [disabled]="!formKonfig.valid"
             type="submit"
-            >
+          >
             Stammdaten speichern
           </button>
-          <section class="row mt-3 mt-2">
-            <div class="col-12 col-lg-4 mb-3">
-              <mat-form-field hintLabel="* Pflichtfeld">
-                <mat-label>FW Nummer</mat-label>
-                <input matInput type="text" formControlName="fw_nummer" />
-                @if (formKonfig.controls['fw_nummer'].hasError('required')) {
-                  <mat-error> FW Nummer ist erforderlich! </mat-error>
-                }
-              </mat-form-field>
-            </div>
-            <div class="col-12 col-lg-8 mb-3">
-              <mat-form-field hintLabel="* Pflichtfeld">
-                <mat-label>FW Name</mat-label>
-                <input matInput type="text" formControlName="fw_name" />
-                @if (formKonfig.controls['fw_name'].hasError('required')) {
-                  <mat-error> FW Name ist erforderlich! </mat-error>
-                }
-              </mat-form-field>
-            </div>
-            <div class="col-12 col-lg-5 mb-3">
-              <mat-form-field hintLabel="* Pflichtfeld">
-                <mat-label>Straße</mat-label>
-                <input matInput type="text" formControlName="fw_street" />
-                @if (formKonfig.controls['fw_street'].hasError('required')) {
-                  <mat-error> Straße ist erforderlich! </mat-error>
-                }
-              </mat-form-field>
-            </div>
-            <div class="col-12 col-lg-3 mb-3">
-              <mat-form-field hintLabel="* Pflichtfeld">
-                <mat-label>PLZ</mat-label>
-                <input matInput type="text" formControlName="fw_plz" />
-                @if (formKonfig.controls['fw_plz'].hasError('required')) {
-                  <mat-error> PLZ ist erforderlich! </mat-error>
-                }
-              </mat-form-field>
-            </div>
-            <div class="col-12 col-lg-4 mb-3">
-              <mat-form-field hintLabel="* Pflichtfeld">
-                <mat-label>Ort</mat-label>
-                <input matInput type="text" formControlName="fw_ort" />
-                @if (formKonfig.controls['fw_ort'].hasError('required')) {
-                  <mat-error> Ort ist erforderlich! </mat-error>
-                }
-              </mat-form-field>
-            </div>
-            <div class="col-12 col-lg-6 mb-3 mt-5">
-              <mat-form-field hintLabel="* Pflichtfeld">
-                <mat-label>E-Mail</mat-label>
-                <input matInput type="text" formControlName="fw_email" />
-                @if (formKonfig.controls['fw_email'].hasError('required')) {
-                  <mat-error> E-Mail ist erforderlich! </mat-error>
-                }
-              </mat-form-field>
-            </div>
-            <div class="col-12 col-lg-6 mb-3 mt-5">
-              <mat-form-field hintLabel="* Pflichtfeld">
-                <mat-label>Telefon</mat-label>
-                <input matInput type="text" formControlName="fw_telefon" />
-                @if (formKonfig.controls['fw_telefon'].hasError('required')) {
-                  <mat-error> Telefon ist erforderlich! </mat-error>
-                }
-              </mat-form-field>
-            </div>
-            <div class="col-12 col-lg-12 mb-3">
-              <mat-form-field hintLabel="* Pflichtfeld">
-                <mat-label>Webseite</mat-label>
-                <input matInput type="text" formControlName="fw_webseite" />
-                @if (formKonfig.controls['fw_webseite'].hasError('required')) {
-                  <mat-error> Webseite ist erforderlich! </mat-error>
-                }
-              </mat-form-field>
-            </div>
-            <div class="col-12 col-lg-12 mb-3 mt-5">
-              <mat-form-field hintLabel="* Pflichtfeld">
-                <mat-label>Kommandant</mat-label>
-                <input matInput type="text" formControlName="fw_kdt" />
-                @if (formKonfig.controls['fw_kdt'].hasError('required')) {
-                  <mat-error> Kommandant ist erforderlich! </mat-error>
-                }
-              </mat-form-field>
-            </div>
-            <div class="col-12 col-lg-12 mb-3 mt-5">
-              <mat-form-field hintLabel="* Pflichtfeld">
-                <mat-label>Bankkonto</mat-label>
-                <input matInput type="text" formControlName="fw_konto" />
-                @if (formKonfig.controls['fw_konto'].hasError('required')) {
-                  <mat-error> Bankkonto ist erforderlich! </mat-error>
-                }
-              </mat-form-field>
-            </div>
-            <div class="col-12 col-lg-4 mb-3">
-              <mat-form-field hintLabel="* Pflichtfeld">
-                <mat-label>BIC</mat-label>
-                <input matInput type="text" formControlName="fw_bic" />
-                @if (formKonfig.controls['fw_bic'].hasError('required')) {
-                  <mat-error> BIC ist erforderlich! </mat-error>
-                }
-              </mat-form-field>
-            </div>
-            <div class="col-12 col-lg-8 mb-3">
-              <mat-form-field hintLabel="* Pflichtfeld">
-                <mat-label>IBAN</mat-label>
-                <input matInput type="text" formControlName="fw_iban" />
-                @if (formKonfig.controls['fw_iban'].hasError('required')) {
-                  <mat-error> IBAN ist erforderlich! </mat-error>
-                }
-              </mat-form-field>
-            </div>
-          </section>
-        </form>
-      </mat-card-content>
-    </mat-card>
-    <mat-card class="mt-3">
-      <mat-card-header>
-        <mat-card-title>{{ title3 }}</mat-card-title>
-        <mat-card-subtitle class="row">
-          <div class="col-12 d-flex align-items-center mb-3">
-            <mat-icon>warning</mat-icon> Nach jedem Wiederherstellen wird man
-            austomatisch abgemeldet!
+        </div>
+
+        <section class="row form-grid">
+          <div class="col-12 col-lg-4 mb-3">
+            <mat-form-field hintLabel="* Pflichtfeld" class="full-width">
+              <mat-label>FW Nummer</mat-label>
+              <input matInput type="text" formControlName="fw_nummer" />
+              @if (formKonfig.controls['fw_nummer'].hasError('required')) {
+                <mat-error> FW Nummer ist erforderlich! </mat-error>
+              }
+            </mat-form-field>
           </div>
-          <div class="col-auto d-flex align-items-center">
-            <mat-icon>settings_backup_restore</mat-icon> ... Wiederherstellen
+          <div class="col-12 col-lg-8 mb-3">
+            <mat-form-field hintLabel="* Pflichtfeld" class="full-width">
+              <mat-label>FW Name</mat-label>
+              <input matInput type="text" formControlName="fw_name" />
+              @if (formKonfig.controls['fw_name'].hasError('required')) {
+                <mat-error> FW Name ist erforderlich! </mat-error>
+              }
+            </mat-form-field>
           </div>
-          <div class="col-auto d-flex align-items-center">
-            <mat-icon>get_app</mat-icon> ... Herunterladen
+          <div class="col-12 col-lg-5 mb-3">
+            <mat-form-field hintLabel="* Pflichtfeld" class="full-width">
+              <mat-label>Straße</mat-label>
+              <input matInput type="text" formControlName="fw_street" />
+              @if (formKonfig.controls['fw_street'].hasError('required')) {
+                <mat-error> Straße ist erforderlich! </mat-error>
+              }
+            </mat-form-field>
           </div>
-          <div class="col-auto d-flex align-items-center">
-            <mat-icon>delete</mat-icon> ... Löschen
+          <div class="col-12 col-lg-3 mb-3">
+            <mat-form-field hintLabel="* Pflichtfeld" class="full-width">
+              <mat-label>PLZ</mat-label>
+              <input matInput type="text" formControlName="fw_plz" />
+              @if (formKonfig.controls['fw_plz'].hasError('required')) {
+                <mat-error> PLZ ist erforderlich! </mat-error>
+              }
+            </mat-form-field>
           </div>
-        </mat-card-subtitle>
-      </mat-card-header>
-      <mat-card-content>
+          <div class="col-12 col-lg-4 mb-3">
+            <mat-form-field hintLabel="* Pflichtfeld" class="full-width">
+              <mat-label>Ort</mat-label>
+              <input matInput type="text" formControlName="fw_ort" />
+              @if (formKonfig.controls['fw_ort'].hasError('required')) {
+                <mat-error> Ort ist erforderlich! </mat-error>
+              }
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-lg-6 mb-3">
+            <mat-form-field hintLabel="* Pflichtfeld" class="full-width">
+              <mat-label>E-Mail</mat-label>
+              <input matInput type="text" formControlName="fw_email" />
+              @if (formKonfig.controls['fw_email'].hasError('required')) {
+                <mat-error> E-Mail ist erforderlich! </mat-error>
+              }
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-lg-6 mb-3">
+            <mat-form-field hintLabel="* Pflichtfeld" class="full-width">
+              <mat-label>Telefon</mat-label>
+              <input matInput type="text" formControlName="fw_telefon" />
+              @if (formKonfig.controls['fw_telefon'].hasError('required')) {
+                <mat-error> Telefon ist erforderlich! </mat-error>
+              }
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-lg-12 mb-3">
+            <mat-form-field hintLabel="* Pflichtfeld" class="full-width">
+              <mat-label>Webseite</mat-label>
+              <input matInput type="text" formControlName="fw_webseite" />
+              @if (formKonfig.controls['fw_webseite'].hasError('required')) {
+                <mat-error> Webseite ist erforderlich! </mat-error>
+              }
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-lg-12 mb-3">
+            <mat-form-field hintLabel="* Pflichtfeld" class="full-width">
+              <mat-label>Kommandant</mat-label>
+              <input matInput type="text" formControlName="fw_kdt" />
+              @if (formKonfig.controls['fw_kdt'].hasError('required')) {
+                <mat-error> Kommandant ist erforderlich! </mat-error>
+              }
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-lg-12 mb-3">
+            <mat-form-field hintLabel="* Pflichtfeld" class="full-width">
+              <mat-label>Bankkonto</mat-label>
+              <input matInput type="text" formControlName="fw_konto" />
+              @if (formKonfig.controls['fw_konto'].hasError('required')) {
+                <mat-error> Bankkonto ist erforderlich! </mat-error>
+              }
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-lg-4 mb-3">
+            <mat-form-field hintLabel="* Pflichtfeld" class="full-width">
+              <mat-label>BIC</mat-label>
+              <input matInput type="text" formControlName="fw_bic" />
+              @if (formKonfig.controls['fw_bic'].hasError('required')) {
+                <mat-error> BIC ist erforderlich! </mat-error>
+              }
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-lg-8 mb-3">
+            <mat-form-field hintLabel="* Pflichtfeld" class="full-width">
+              <mat-label>IBAN</mat-label>
+              <input matInput type="text" formControlName="fw_iban" />
+              @if (formKonfig.controls['fw_iban'].hasError('required')) {
+                <mat-error> IBAN ist erforderlich! </mat-error>
+              }
+            </mat-form-field>
+          </div>
+        </section>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="settings-card">
+    <div class="section-head">
+      <h2>{{ title3 }}</h2>
+    </div>
+
+    <mat-card-content>
+      <p class="backup-warning">
+        <mat-icon>warning</mat-icon>
+        Nach jedem Wiederherstellen wird man automatisch abgemeldet.
+      </p>
+
+      <div class="backup-legend">
+        <span><mat-icon>settings_backup_restore</mat-icon> Wiederherstellen</span>
+        <span><mat-icon>get_app</mat-icon> Herunterladen</span>
+        <span><mat-icon>delete</mat-icon> Löschen</span>
+      </div>
+
+      <div class="actions-top">
         <button
           mat-raised-button
-          class="mt-3"
           color="accent"
           (click)="backupErstellen()"
-          type="submit"
-          >
+          type="button"
+        >
           Backup erstellen
         </button>
-        <section class="ml-3 mt-2">
-          <mat-list role="list">
-            @for (backup of backups; track backup) {
-              <mat-list-item role="listitem">
-                <mat-icon
-                  (click)="backupImport(backup)"
-                  style="margin-right: 10px"
-                  >settings_backup_restore</mat-icon
-                  >
-                  <mat-icon
-                    (click)="backupDownload(backup)"
-                    style="margin-right: 10px"
-                    >get_app</mat-icon
-                    >
-                    <mat-icon
-                      (click)="backupLoeschen(backup)"
-                      style="margin-right: 10px"
-                      >delete</mat-icon
-                      >
-                      <p>{{ backup.name }}</p>
-                    </mat-list-item>
-                  }
-                </mat-list>
-              </section>
-            </mat-card-content>
-          </mat-card>
+      </div>
 
-          <mat-card class="mt-3">
-            <mat-card-header>
-              <mat-card-title>Datei-Bereinigung</mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-              <div class="row mt-2">
-                <div class="col-12 col-md-6">
-                  <mat-form-field appearance="fill" class="w-100">
-                    <mat-label>Zielbereich</mat-label>
-                    <mat-select
-                      [(ngModel)]="cleanupTarget"
-                      [ngModelOptions]="{ standalone: true }"
-                    >
-                      <mat-option value="all">Alle</mat-option>
-                      <mat-option value="news">News</mat-option>
-                      <mat-option value="inventar">Inventar</mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                </div>
-              </div>
+      <mat-list role="list" class="backup-list">
+        @for (backup of backups; track backup) {
+          <mat-list-item role="listitem" class="backup-item">
+            <button mat-icon-button type="button" (click)="backupImport(backup)">
+              <mat-icon>settings_backup_restore</mat-icon>
+            </button>
+            <button mat-icon-button type="button" (click)="backupDownload(backup)">
+              <mat-icon>get_app</mat-icon>
+            </button>
+            <button mat-icon-button type="button" (click)="backupLoeschen(backup)">
+              <mat-icon>delete</mat-icon>
+            </button>
+            <p>{{ backup.name }}</p>
+          </mat-list-item>
+        }
+      </mat-list>
+    </mat-card-content>
+  </mat-card>
 
-              <button
-                mat-raised-button
-                color="primary"
-                class="me-3"
-                type="button"
-                [disabled]="cleanupRunning"
-                (click)="mediaCleanup(false)"
-              >
-                Verwaiste Dateien analysieren
-              </button>
+  <mat-card class="settings-card">
+    <div class="section-head">
+      <h2>Datei-Bereinigung</h2>
+    </div>
 
-              <button
-                mat-raised-button
-                color="warn"
-                type="button"
-                [disabled]="cleanupRunning"
-                (click)="mediaCleanup(true)"
-              >
-                Verwaiste Dateien endgültig löschen
-              </button>
-
-              @if (cleanupSummary) {
-              <p class="mt-3 mb-2">{{ cleanupSummary }}</p>
-              }
-
-              @if (cleanupFiles.length > 0) {
-              <ul class="mb-0 mt-2">
-                @for (entry of cleanupFiles; track entry.target + '-' + entry.filename) {
-                <li>{{ entry.target }}/{{ entry.filename }}</li>
-                }
-              </ul>
-              }
-            </mat-card-content>
-          </mat-card>
+    <mat-card-content>
+      <div class="row mt-2">
+        <div class="col-12 col-md-6">
+          <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Zielbereich</mat-label>
+            <mat-select
+              [(ngModel)]="cleanupTarget"
+              [ngModelOptions]="{ standalone: true }"
+            >
+              <mat-option value="all">Alle</mat-option>
+              <mat-option value="news">News</mat-option>
+              <mat-option value="inventar">Inventar</mat-option>
+            </mat-select>
+          </mat-form-field>
         </div>
       </div>
+
+      <div class="cleanup-actions">
+        <button
+          mat-raised-button
+          color="primary"
+          type="button"
+          [disabled]="cleanupRunning"
+          (click)="mediaCleanup(false)"
+        >
+          Verwaiste Dateien analysieren
+        </button>
+
+        <button
+          mat-raised-button
+          color="warn"
+          type="button"
+          [disabled]="cleanupRunning"
+          (click)="mediaCleanup(true)"
+        >
+          Verwaiste Dateien endgültig löschen
+        </button>
+      </div>
+
+      @if (cleanupSummary) {
+        <p class="cleanup-summary">{{ cleanupSummary }}</p>
+      }
+
+      @if (cleanupFiles.length > 0) {
+        <ul class="cleanup-list">
+          @for (entry of cleanupFiles; track entry.target + '-' + entry.filename) {
+            <li>{{ entry.target }}/{{ entry.filename }}</li>
+          }
+        </ul>
+      }
+    </mat-card-content>
+  </mat-card>
+</section>

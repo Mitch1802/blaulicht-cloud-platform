@@ -1,192 +1,165 @@
 <app-header [breadcrumb]="breadcrumb"></app-header>
 
-<div class="row justify-content-center content">
-  <div class="col-12 col-md-10 col-lg-8 p-0 m-0">
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>{{ title }}</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <form
-          [formGroup]="formAuswahl"
-          (ngSubmit)="auswahlBearbeiten()"
-          [hidden]="!formModul.disabled"
-          >
-          <section class="row mt-3 mb-3">
-            <div class="col-12 col-lg-9">
-              <mat-form-field>
-                <mat-label>Benutzer auswählen</mat-label>
-                <mat-select formControlName="benutzer">
-                  @for (opt of benutzer; track opt) {
-                    <mat-option [value]="opt.id"> {{ opt.username }} </mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
-            </div>
-            <div
-              class="col-6 col-lg-3 m-0 row align-items-center auswahl-button"
-              >
-              <button
-                type="submit"
-                mat-raised-button
-                class="col-auto"
-                color="primary"
-                [disabled]="!formAuswahl.controls['benutzer'].value"
-                >
-                Auswahl bearbeiten
-              </button>
-            </div>
-          </section>
-        </form>
-        <button
-          mat-raised-button
-          color="accent"
-          class="me-2 mb-3"
-          [hidden]="!formModul.disabled"
-          (click)="neueDetails()"
-          type="button"
-          >
+<section class="user-page">
+  <header class="page-head">
+    <h1>{{ title }}</h1>
+  </header>
+
+  <mat-card class="settings-card">
+    <div class="section-head">
+      <h2>Benutzer verwalten</h2>
+    </div>
+
+    <mat-card-content>
+      <form [formGroup]="formAuswahl" (ngSubmit)="auswahlBearbeiten()" [hidden]="!formModul.disabled">
+        <section class="row selector-row">
+          <div class="col-12 col-lg-9">
+            <mat-form-field class="full-width">
+              <mat-label>Benutzer auswählen</mat-label>
+              <mat-select formControlName="benutzer">
+                @for (opt of benutzer; track opt) {
+                  <mat-option [value]="opt.id"> {{ opt.username }} </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-lg-3 selector-action">
+            <button
+              type="submit"
+              mat-raised-button
+              color="primary"
+              [disabled]="!formAuswahl.controls['benutzer'].value"
+            >
+              Auswahl bearbeiten
+            </button>
+          </div>
+        </section>
+      </form>
+
+      <div class="top-actions" [hidden]="!formModul.disabled">
+        <button mat-raised-button color="accent" (click)="neueDetails()" type="button">
           Hinzufügen
         </button>
-        <form
-          [formGroup]="formModul"
-          (ngSubmit)="datenSpeichern()"
-          [hidden]="formModul.disabled"
-          >
-          <input hidden type="text" class="form-control" formControlName="id" />
-          <button
-            mat-raised-button
-            color="accent"
-            class="me-3 mb-3"
-            [hidden]="!formModul.valid"
-            type="submit"
-            >
+      </div>
+
+      <form [formGroup]="formModul" (ngSubmit)="datenSpeichern()" [hidden]="formModul.disabled" class="edit-form">
+        <input hidden type="text" class="form-control" formControlName="id" />
+
+        <div class="form-actions">
+          <button mat-raised-button color="accent" [hidden]="!formModul.valid" type="submit">
             Daten speichern
           </button>
-          <button
-            mat-raised-button
-            class="mb-3"
-            color="primary"
-            [hidden]="formModul.disabled"
-            type="button"
-            (click)="abbrechen()"
-            >
+          <button mat-raised-button color="primary" [hidden]="formModul.disabled" type="button" (click)="abbrechen()">
             Abbrechen
           </button>
-          @if (username === "admin") {
-            <input hidden type="text" formControlName="username" />
-          } @else {
-            <section class="row mt-2">
-              <div class="col-12 col-lg-6 mb-3">
-                <mat-form-field hintLabel="* Pflichtfeld">
-                  <mat-label>Benutzername</mat-label>
-                  <input matInput type="text" formControlName="username" />
-                  @if (formModul.controls['username'].hasError('required')) {
-                    <mat-error> Benutzername ist erforderlich! </mat-error>
-                  }
-                </mat-form-field>
-              </div>
-            </section>
-          }
-          <section class="row mt-2">
+        </div>
+
+        @if (username === "admin") {
+          <input hidden type="text" formControlName="username" />
+        } @else {
+          <section class="row form-grid">
             <div class="col-12 col-lg-6 mb-3">
-              <mat-form-field hintLabel="* Pflichtfeld">
-                <mat-label>Vorname</mat-label>
-                <input matInput type="text" formControlName="first_name" />
-                @if (formModul.controls['first_name'].hasError('required')) {
-                  <mat-error> Vorname ist erforderlich! </mat-error>
-                }
-              </mat-form-field>
-            </div>
-            <div class="col-12 col-lg-6 mb-3">
-              <mat-form-field hintLabel="* Pflichtfeld">
-                <mat-label>Nachname</mat-label>
-                <input matInput type="text" formControlName="last_name" />
-                @if (formModul.controls['last_name'].hasError('required')) {
-                  <mat-error> Nachname ist erforderlich! </mat-error>
+              <mat-form-field hintLabel="* Pflichtfeld" class="full-width">
+                <mat-label>Benutzername</mat-label>
+                <input matInput type="text" formControlName="username" />
+                @if (formModul.controls['username'].hasError('required')) {
+                  <mat-error> Benutzername ist erforderlich! </mat-error>
                 }
               </mat-form-field>
             </div>
           </section>
-          <section class="row mt-2">
-            @for (rolle of rollen; track rolle) {
-              @if (rolle.key !== 'MITGLIED') {
-                <div
-                  class="col-auto mb-3"
-                  >
-                  <mat-checkbox
-                    [checked]="formModul.controls['roles'].value?.includes(rolle.key)"
-                    (change)="rolleToggle(rolle.key, $event)"
-                    >
-                    {{ rolle.verbose_name }}
-                  </mat-checkbox>
-                </div>
+        }
+
+        <section class="row form-grid">
+          <div class="col-12 col-lg-6 mb-3">
+            <mat-form-field hintLabel="* Pflichtfeld" class="full-width">
+              <mat-label>Vorname</mat-label>
+              <input matInput type="text" formControlName="first_name" />
+              @if (formModul.controls['first_name'].hasError('required')) {
+                <mat-error> Vorname ist erforderlich! </mat-error>
               }
-            }
-          </section>
-          @if (formModul.controls['id'].value) {
-            <hr />
-            <section class="row mt-3">
-              <div class="col-auto">
-                <p>
-                  Das Benutzer Passwort nur durch "Passwort ändern"
-                  geändert werden!
-                </p>
-              </div>
-            </section>
-          }
-          <section class="row mt-3">
-            <div class="col-12 col-lg-4 mb-3">
-              <mat-form-field>
-                <mat-label>Passwort</mat-label>
-                <input matInput type="password" formControlName="password1" />
-              </mat-form-field>
-              @if (formModul.controls['password1'].hasError('minlength')) {
-                <mat-error
-                  >Das Passwort muss mindestens 8 Zeichen lang sein!
-                </mat-error>
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-lg-6 mb-3">
+            <mat-form-field hintLabel="* Pflichtfeld" class="full-width">
+              <mat-label>Nachname</mat-label>
+              <input matInput type="text" formControlName="last_name" />
+              @if (formModul.controls['last_name'].hasError('required')) {
+                <mat-error> Nachname ist erforderlich! </mat-error>
               }
-            </div>
-            <div class="col-12 col-lg-4 mb-3">
-              <mat-form-field>
-                <mat-label>Passwort wiederholen</mat-label>
-                <input matInput type="password" formControlName="password2" />
-              </mat-form-field>
-              @if (formModul.controls['password2'].hasError('minlength')) {
-                <mat-error
-                  >Das Passwort muss mindestens 8 Zeichen lang sein!
-                </mat-error>
-              }
-            </div>
-            <div class="col-12 col-lg-4 m-0 row align-items-center">
-              <button
-                mat-raised-button
-                class="col-auto"
-                color="accent"
-                [hidden]="!formModul.controls['id'].value"
-                type="button"
-                (click)="passwortAendern()"
+            </mat-form-field>
+          </div>
+        </section>
+
+        <section class="row role-row">
+          @for (rolle of rollen; track rolle) {
+            @if (rolle.key !== 'MITGLIED') {
+              <div class="col-auto mb-3">
+                <mat-checkbox
+                  [checked]="formModul.controls['roles'].value?.includes(rolle.key)"
+                  (change)="rolleToggle(rolle.key, $event)"
                 >
-                Passwort ändern
-              </button>
-            </div>
-          </section>
-          @if (username !== "admin") {
-            @if (formModul.controls['id'].value) {
-              <hr />
+                  {{ rolle.verbose_name }}
+                </mat-checkbox>
+              </div>
             }
+          }
+        </section>
+
+        @if (formModul.controls['id'].value) {
+          <hr />
+          <section class="password-note">
+            <p>Das Benutzer Passwort nur durch "Passwort ändern" geändert werden!</p>
+          </section>
+        }
+
+        <section class="row form-grid">
+          <div class="col-12 col-lg-4 mb-3">
+            <mat-form-field class="full-width">
+              <mat-label>Passwort</mat-label>
+              <input matInput type="password" formControlName="password1" />
+            </mat-form-field>
+            @if (formModul.controls['password1'].hasError('minlength')) {
+              <mat-error>Das Passwort muss mindestens 8 Zeichen lang sein!</mat-error>
+            }
+          </div>
+          <div class="col-12 col-lg-4 mb-3">
+            <mat-form-field class="full-width">
+              <mat-label>Passwort wiederholen</mat-label>
+              <input matInput type="password" formControlName="password2" />
+            </mat-form-field>
+            @if (formModul.controls['password2'].hasError('minlength')) {
+              <mat-error>Das Passwort muss mindestens 8 Zeichen lang sein!</mat-error>
+            }
+          </div>
+          <div class="col-12 col-lg-4 password-action">
             <button
               mat-raised-button
-              color="warn"
+              color="accent"
               [hidden]="!formModul.controls['id'].value"
               type="button"
-              (click)="datenLoeschen()"
-              >
-              Daten löschen
+              (click)="passwortAendern()"
+            >
+              Passwort ändern
             </button>
+          </div>
+        </section>
+
+        @if (username !== "admin") {
+          @if (formModul.controls['id'].value) {
+            <hr />
           }
-        </form>
-      </mat-card-content>
-    </mat-card>
-  </div>
-</div>
+          <button
+            mat-raised-button
+            color="warn"
+            [hidden]="!formModul.controls['id'].value"
+            type="button"
+            (click)="datenLoeschen()"
+          >
+            Daten löschen
+          </button>
+        }
+      </form>
+    </mat-card-content>
+  </mat-card>
+</section>

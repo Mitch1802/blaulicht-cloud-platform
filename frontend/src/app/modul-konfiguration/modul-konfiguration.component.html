@@ -1,93 +1,28 @@
 <app-header [breadcrumb]="breadcrumb"></app-header>
 
-<div class="row justify-content-center content">
-  <div class="col-12 col-md-10 col-lg-8 p-0 m-0">
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>{{ title }}</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <form
-          [formGroup]="formModul"
-          (ngSubmit)="datenSpeichern()"
-        >
-          <input hidden type="text" class="form-control" formControlName="id" />
+<section class="modul-page">
+  <header class="page-head">
+    <h1>{{ title }}</h1>
+  </header>
+
+  <mat-card class="settings-card">
+    <div class="section-head">
+      <h2>Modul-Einstellungen</h2>
+    </div>
+
+    <mat-card-content>
+      <form [formGroup]="formModul" (ngSubmit)="datenSpeichern()" class="modul-form">
+        <input hidden type="text" class="form-control" formControlName="id" />
+
+        <div class="form-actions">
           <button
             mat-raised-button
             color="accent"
-            class="me-3 mb-3"
             [hidden]="!formModul.valid"
             type="submit"
           >
             Daten speichern
           </button>
-          <section class="row mt-2">
-            <div class="col-12 col-lg-12 mb-3">
-              <mat-form-field>
-                <mat-label>Verfügbare Modul auswählen</mat-label>
-                <mat-select
-                  formControlName="modul"
-                  (selectionChange)="onModulChange()"
-                >
-                  <mat-option [value]="''">Bitte auswählen</mat-option>
-                  @for (m of verfuegbareModulListe; track m.key) {
-                  <mat-option [value]="m.key">{{ m.label }}</mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
-            </div>
-            <div class="col-12 col-lg-12 mb-3">
-              @if (formModul.controls['modul'].value === 'pdf') {
-
-              <div [formGroup]="pdfMappingForm">
-                @for (ex of pdfExports; track ex.key) {
-                <mat-form-field appearance="fill" class="w-100">
-                  <mat-label>{{ ex.label }}</mat-label>
-                  <mat-select [formControlName]="ex.key">
-                    <mat-option [value]="null">Bitte auswählen</mat-option>
-                    @for (t of pdfTemplates; track t.id) {
-                    <mat-option [value]="t.id">
-                      {{ t.typ }} v{{ t.version }} – {{ t.bezeichnung }}
-                    </mat-option>
-                    }
-                  </mat-select>
-
-                  @if (pdfMappingForm.controls[ex.key].hasError('required')) {
-                  <mat-error>Template ist erforderlich!</mat-error>
-                  }
-                </mat-form-field>
-                }
-              </div>
-
-              <!-- konfiguration bleibt Teil des formModul (Validator), wird aber automatisch befüllt -->
-              <textarea
-                hidden
-                matInput
-                formControlName="konfiguration"
-              ></textarea>
-
-              } @else {
-
-              <mat-form-field appearance="fill">
-                <mat-label>Konfiguration (JSON)</mat-label>
-                <textarea
-                  matInput
-                  formControlName="konfiguration"
-                  rows="12"
-                  placeholder="{ 'key': 'value' }"
-                ></textarea>
-
-                @if (formModul.controls['konfiguration'].hasError('required')) {
-                <mat-error>Konfiguration ist erforderlich!</mat-error>
-                } @if
-                (formModul.controls['konfiguration'].hasError('jsonInvalid')) {
-                <mat-error>Ungültiges JSON!</mat-error>
-                }
-              </mat-form-field>
-
-              }
-            </div>
-          </section>
           <button
             mat-raised-button
             color="warn"
@@ -97,8 +32,65 @@
           >
             Daten löschen
           </button>
-        </form>
-      </mat-card-content>
-    </mat-card>
-  </div>
-</div>
+        </div>
+
+        <section class="row form-grid">
+          <div class="col-12 col-lg-12 mb-3">
+            <mat-form-field class="full-width">
+              <mat-label>Verfügbare Module auswählen</mat-label>
+              <mat-select formControlName="modul" (selectionChange)="onModulChange()">
+                <mat-option [value]="''">Bitte auswählen</mat-option>
+                @for (m of verfuegbareModulListe; track m.key) {
+                  <mat-option [value]="m.key">{{ m.label }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="col-12 col-lg-12 mb-3">
+            @if (formModul.controls['modul'].value === 'pdf') {
+              <div [formGroup]="pdfMappingForm" class="pdf-mapping">
+                @for (ex of pdfExports; track ex.key) {
+                  <mat-form-field appearance="fill" class="full-width">
+                    <mat-label>{{ ex.label }}</mat-label>
+                    <mat-select [formControlName]="ex.key">
+                      <mat-option [value]="null">Bitte auswählen</mat-option>
+                      @for (t of pdfTemplates; track t.id) {
+                        <mat-option [value]="t.id">
+                          {{ t.typ }} v{{ t.version }} – {{ t.bezeichnung }}
+                        </mat-option>
+                      }
+                    </mat-select>
+
+                    @if (pdfMappingForm.controls[ex.key].hasError('required')) {
+                      <mat-error>Template ist erforderlich!</mat-error>
+                    }
+                  </mat-form-field>
+                }
+              </div>
+
+              <textarea hidden matInput formControlName="konfiguration"></textarea>
+            } @else {
+              <mat-form-field appearance="fill" class="full-width">
+                <mat-label>Konfiguration (JSON)</mat-label>
+                <textarea
+                  matInput
+                  formControlName="konfiguration"
+                  rows="12"
+                  placeholder="{ 'key': 'value' }"
+                ></textarea>
+
+                @if (formModul.controls['konfiguration'].hasError('required')) {
+                  <mat-error>Konfiguration ist erforderlich!</mat-error>
+                }
+                @if (formModul.controls['konfiguration'].hasError('jsonInvalid')) {
+                  <mat-error>Ungültiges JSON!</mat-error>
+                }
+              </mat-form-field>
+            }
+          </div>
+        </section>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</section>

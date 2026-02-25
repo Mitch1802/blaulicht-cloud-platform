@@ -78,7 +78,7 @@ export class StartComponent implements OnInit {
 
           // 1️⃣ Zugriff strikt prüfen
           const allowed = this.start_konfig.filter(item =>
-            this.userHasAccess(item)
+            this.userHasAccess(item) && !this.isHiddenItem(item)
           );
 
           // 2️⃣ Reine ADMIN-Module separieren
@@ -124,6 +124,13 @@ export class StartComponent implements OnInit {
 
     if (itemRoles.length === 0) return true;
     return itemRoles.some(role => userRoles.includes(role));
+  }
+
+  private isHiddenItem(item: any): boolean {
+    const modul = String(item?.modul ?? '').trim().toLowerCase();
+    const routerlink = String(item?.routerlink ?? '').trim().toLowerCase();
+
+    return modul === 'zahlen' || routerlink === '/zahlen' || routerlink.endsWith('/zahlen');
   }
 
   private isPureAdminItem(item: any): boolean {

@@ -248,8 +248,10 @@ export class GlobalDataService {
   ladeHeaders(filesVorhanden: boolean, bearerToken?: string): HttpHeaders {
     let headers = new HttpHeaders();
 
-    if (bearerToken) {
-      headers = headers.set('Authorization', 'Bearer ' + bearerToken);
+    const authToken = bearerToken;
+
+    if (authToken) {
+      headers = headers.set('Authorization', 'Bearer ' + authToken);
     }
 
     if (!filesVorhanden) {
