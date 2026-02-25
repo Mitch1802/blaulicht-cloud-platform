@@ -756,23 +756,31 @@ export class EinsatzberichtComponent implements OnInit {
     mitalarmiertText.clearValidators();
 
     if (this.isBrand) {
-      brandKategorie.setValidators([Validators.required]);
-      technischKategorie.setValue('');
+      if (technischKategorie.value) {
+        technischKategorie.setValue('', { emitEvent: false });
+      }
     } else {
-      brandKategorie.setValue('');
+      if (brandKategorie.value) {
+        brandKategorie.setValue('', { emitEvent: false });
+      }
     }
 
     if (this.isTechnisch) {
-      technischKategorie.setValidators([Validators.required]);
-      brandKategorie.setValue('');
+      if (brandKategorie.value) {
+        brandKategorie.setValue('', { emitEvent: false });
+      }
     } else {
-      technischKategorie.setValue('');
+      if (technischKategorie.value) {
+        technischKategorie.setValue('', { emitEvent: false });
+      }
     }
 
     if (this.isMitalarmiertAndere) {
       mitalarmiertText.setValidators([Validators.required]);
     } else {
-      mitalarmiertText.setValue('');
+      if (mitalarmiertText.value) {
+        mitalarmiertText.setValue('', { emitEvent: false });
+      }
     }
 
     brandKategorie.updateValueAndValidity({ emitEvent: false });

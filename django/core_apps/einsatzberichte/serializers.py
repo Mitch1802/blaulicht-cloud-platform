@@ -58,15 +58,15 @@ class EinsatzberichtSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         instance = getattr(self, "instance", None)
         einsatzart = attrs.get("einsatzart", getattr(instance, "einsatzart", ""))
-        brand_kategorie = attrs.get("brand_kategorie", getattr(instance, "brand_kategorie", ""))
 
         is_brandeinsatz = str(einsatzart).strip() in {"Brandeinsatz", "Brand"}
+        is_technisch = str(einsatzart).strip() in {"Technischer Einsatz", "Technisch"}
 
-        if is_brandeinsatz:
-            if not str(brand_kategorie or "").strip():
-                raise serializers.ValidationError({"brand_kategorie": "Brand Kategorie ist bei Brandeinsatz erforderlich."})
-        else:
+        if not is_brandeinsatz:
             attrs["brand_kategorie"] = ""
+
+        if not is_technisch:
+            attrs["technisch_kategorie"] = ""
 
         return attrs
 
