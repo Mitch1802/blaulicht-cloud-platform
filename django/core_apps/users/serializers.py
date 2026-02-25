@@ -17,7 +17,40 @@ class UserSerializer(serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self._ensure_roles_from_initial_data()
         self.fields["roles"].queryset = Role.objects.all()
+
+    def _ensure_roles_from_initial_data(self):
+        initial = getattr(self, "initial_data", None)
+        if not isinstance(initial, dict):
+            return
+
+        incoming_roles = initial.get("roles")
+        if incoming_roles is None:
+            return
+
+        if isinstance(incoming_roles, str):
+            roles_list = [incoming_roles]
+        elif isinstance(incoming_roles, list):
+            roles_list = incoming_roles
+        else:
+            roles_list = [incoming_roles]
+
+        for role_entry in roles_list:
+            if isinstance(role_entry, str):
+                role_key = role_entry.strip()
+            elif isinstance(role_entry, dict):
+                role_key = str(role_entry.get("key") or role_entry.get("id") or "").strip()
+            else:
+                role_key = str(role_entry).strip()
+
+            if not role_key:
+                continue
+
+            Role.objects.get_or_create(
+                key=role_key,
+                defaults={"verbose_name": role_key.replace("_", " ").title()},
+            )
 
     def update(self, instance, validated_data):
         if instance.is_superuser:

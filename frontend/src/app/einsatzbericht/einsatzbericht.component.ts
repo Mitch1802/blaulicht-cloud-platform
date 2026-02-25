@@ -244,9 +244,11 @@ export class EinsatzberichtComponent implements OnInit {
     return this.formBericht.controls.mitalarmiert.value === 'Andere';
   }
 
-  get selectedBrandBeschreibung(): string {
-    const key = this.formBericht.controls.brandKategorie.value;
-    return this.brandOptionBeschreibungen[key] || '';
+  get brandOptionenMitBeschreibung(): Array<{ titel: string; beschreibung: string }> {
+    return this.brandOptionen.map((titel) => ({
+      titel,
+      beschreibung: this.brandOptionBeschreibungen[titel] || ''
+    }));
   }
 
   get selectedFahrzeugOptionen(): FahrzeugOption[] {

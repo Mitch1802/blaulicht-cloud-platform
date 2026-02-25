@@ -199,14 +199,16 @@
                     <mat-form-field class="full-width">
                       <mat-label>Brand Kategorie</mat-label>
                       <mat-select formControlName="brandKategorie">
-                        @for (opt of brandOptionen; track opt) {
-                          <mat-option [value]="opt">{{ opt }}</mat-option>
+                        @for (opt of brandOptionenMitBeschreibung; track opt.titel) {
+                          <mat-option [value]="opt.titel">
+                            <div class="option-title">{{ opt.titel }}</div>
+                            @if (opt.beschreibung) {
+                              <div class="option-description">{{ opt.beschreibung }}</div>
+                            }
+                          </mat-option>
                         }
                       </mat-select>
                     </mat-form-field>
-                    @if (selectedBrandBeschreibung) {
-                      <p class="selection-description">{{ selectedBrandBeschreibung }}</p>
-                    }
                   } @else if (isTechnisch) {
                     <h3>Technische-Details</h3>
                     <mat-form-field class="full-width">
