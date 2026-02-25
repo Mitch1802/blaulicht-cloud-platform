@@ -26,7 +26,7 @@ class EinsatzberichtViewSet(ModelViewSet):
     serializer_class = EinsatzberichtSerializer
     permission_classes = [
         permissions.IsAuthenticated,
-        HasAnyRolePermission.with_roles("ADMIN", "BERICHT", "MITGLIED"),
+        HasAnyRolePermission.with_roles("ADMIN", "VERWALTUNG", "BERICHT", "MITGLIED"),
     ]
     parser_classes = [JSONParser, MultiPartParser, FormParser]
     lookup_field = "id"
@@ -34,6 +34,59 @@ class EinsatzberichtViewSet(ModelViewSet):
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ["created_at", "einsatz_datum", "status", "alarmstichwort"]
     ordering = ["-created_at"]
+
+    def get_permissions(self):
+        if getattr(self, "action", None) == "destroy":
+            permission_classes = [
+                permissions.IsAuthenticated,
+                HasAnyRolePermission.with_roles("ADMIN", "VERWALTUNG"),
+            ]
+            return [permission() for permission in permission_classes]
+        return super().get_permissions()
+
+    def _can_manage_status(self, user) -> bool:
+        return bool(
+            getattr(user, "is_authenticated", False)
+            and hasattr(user, "has_any_role")
+            and user.has_any_role("ADMIN", "VERWALTUNG")
+        )
+
+    def _validate_status_change(self, request, instance=None):
+        incoming_status = request.data.get("status", None)
+        if incoming_status is None:
+            return
+
+        incoming_status = str(incoming_status).strip()
+        if self._can_manage_status(request.user):
+            return
+
+        if instance is None:
+            if incoming_status and incoming_status != Einsatzbericht.Status.ENTWURF:
+                self.permission_denied(
+                    request,
+                    message="Nur Verwaltung oder Admin dürfen den Status ändern.",
+                )
+            return
+
+        if incoming_status != instance.status:
+            self.permission_denied(
+                request,
+                message="Nur Verwaltung oder Admin dürfen den Status ändern.",
+            )
+
+    def create(self, request, *args, **kwargs):
+        self._validate_status_change(request, instance=None)
+        return super().create(request, *args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self._validate_status_change(request, instance=instance)
+        return super().update(request, *args, **kwargs)
+
+    def partial_update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self._validate_status_change(request, instance=instance)
+        return super().partial_update(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
         bericht = self.get_object()

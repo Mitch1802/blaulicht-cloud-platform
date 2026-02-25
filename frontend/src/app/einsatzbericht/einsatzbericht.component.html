@@ -22,45 +22,32 @@
           @if (berichte.length === 0) {
             <p class="empty">Noch keine Einsatzberichte vorhanden.</p>
           } @else {
-            <section class="table-wrap">
-              <table mat-table [dataSource]="berichte">
-                <ng-container matColumnDef="created_at">
-                  <th mat-header-cell *matHeaderCellDef>Datum</th>
-                  <td mat-cell *matCellDef="let element">{{ formatListDateTime(element.created_at) }}</td>
-                </ng-container>
-
-                <ng-container matColumnDef="alarmstichwort">
-                  <th mat-header-cell *matHeaderCellDef>Alarmstichwort</th>
-                  <td mat-cell *matCellDef="let element">{{ element.alarmstichwort || 'Ohne Stichwort' }}</td>
-                </ng-container>
-
-                <ng-container matColumnDef="einsatzadresse">
-                  <th mat-header-cell *matHeaderCellDef>Einsatzadresse</th>
-                  <td mat-cell *matCellDef="let element">{{ element.einsatzadresse || 'Ohne Adresse' }}</td>
-                </ng-container>
-
-                <ng-container matColumnDef="status">
-                  <th mat-header-cell *matHeaderCellDef>Status</th>
-                  <td mat-cell *matCellDef="let element">
+            <section class="draft-list">
+              @for (element of berichte; track element.id) {
+                <article class="draft-item">
+                  <div class="draft-main">
+                    <strong>{{ element.alarmstichwort || 'Ohne Stichwort' }}</strong>
+                    <span>{{ element.einsatzadresse || 'Ohne Adresse' }}</span>
+                    <small>{{ element.einsatz_datum || '-' }}</small>
                     <span class="status-badge" [class.done]="element.status === 'ABGESCHLOSSEN'">{{ element.status }}</span>
-                  </td>
-                </ng-container>
-
-                <ng-container matColumnDef="actions">
-                  <th mat-header-cell *matHeaderCellDef>Aktionen</th>
-                  <td mat-cell *matCellDef="let element" class="action-cell">
+                  </div>
+                  <div class="draft-actions">
                     <button mat-raised-button color="primary" type="button" (click)="berichtBearbeiten(element)">
                       <mat-icon class="m-0">edit</mat-icon>
                     </button>
-                    <button mat-raised-button type="button" (click)="statusUmschalten(element)">
-                      <mat-icon class="m-0">check</mat-icon>
-                    </button>
-                  </td>
-                </ng-container>
-
-                <tr mat-header-row *matHeaderRowDef="sichtbareSpalten"></tr>
-                <tr mat-row *matRowDef="let row; columns: sichtbareSpalten"></tr>
-              </table>
+                    @if (canManageStatus) {
+                      <button mat-raised-button type="button" (click)="statusUmschalten(element)">
+                        <mat-icon class="m-0">check</mat-icon>
+                      </button>
+                    }
+                    @if (canDeleteBerichte) {
+                      <button mat-raised-button color="warn" type="button" (click)="berichtLoeschen(element)">
+                        <mat-icon class="m-0">delete</mat-icon>
+                      </button>
+                    }
+                  </div>
+                </article>
+              }
             </section>
           }
         </section>

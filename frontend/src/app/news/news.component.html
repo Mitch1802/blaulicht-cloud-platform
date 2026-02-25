@@ -146,59 +146,47 @@
           type="button" (click)="datenLoeschen()">Daten löschen</button>
       </form>
 
-      <section [hidden]="!formModul.disabled" class="table-wrap">
-        <table
-          mat-table
-          [dataSource]="dataSource"
-          matSort
-        >
-          <ng-container matColumnDef="created_at">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Datum</th>
-            <td mat-cell *matCellDef="let element">{{ element.created_at }}</td>
-          </ng-container>
-          <ng-container matColumnDef="title">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
-            <td mat-cell *matCellDef="let element">{{ element.title }}</td>
-          </ng-container>
-          <ng-container matColumnDef="typ">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Typ</th>
-            <td mat-cell *matCellDef="let element">
-              @if (element.typ == 'extern') {
-              <mat-icon class="m-0">home</mat-icon><mat-icon class="m-0">public</mat-icon>
-              }@else if (element.typ == 'intern') {
-              <mat-icon class="m-0">home</mat-icon>
-              }
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef>Aktionen</th>
-            <td mat-cell *matCellDef="let element" class="action-cell">
-              <button
-                mat-raised-button
-                color="primary"
-                (click)="auswahlBearbeiten(element)"
-              >
-                <mat-icon class="m-0">edit</mat-icon>
-              </button>
-              <button
-                mat-raised-button
-                color="warn"
-                (click)="auswahlLoeschen(element.id)"
-              >
-                <mat-icon class="m-0">delete</mat-icon>
-              </button>
-            </td>
-          </ng-container>
-          <tr mat-header-row *matHeaderRowDef="sichtbareSpalten"></tr>
-          <tr mat-row *matRowDef="let row; columns: sichtbareSpalten"></tr>
-        </table>
-
-        <mat-paginator
-          [pageSizeOptions]="pageOptions"
-          showFirstLastButtons
-          aria-label="Auswahl Anzahl der sichtbaren Elemente"
-        >
-        </mat-paginator>
+      <section [hidden]="!formModul.disabled" class="news-list-wrap">
+        @if (newsArray.length === 0) {
+          <p class="empty">Noch keine News vorhanden.</p>
+        } @else {
+          <section class="news-list">
+            @for (element of newsArray; track element.id) {
+              <article class="news-item">
+                <div class="news-main">
+                  <strong>{{ element.title }}</strong>
+                  <span>{{ element.created_at }}</span>
+                  <small>
+                    @if (element.typ == 'extern') {
+                      <mat-icon class="m-0">home</mat-icon>
+                      <mat-icon class="m-0">public</mat-icon>
+                    } @else {
+                      <mat-icon class="m-0">home</mat-icon>
+                    }
+                  </small>
+                </div>
+                <div class="news-actions">
+                  <button
+                    mat-raised-button
+                    color="primary"
+                    type="button"
+                    (click)="auswahlBearbeiten(element)"
+                  >
+                    <mat-icon class="m-0">edit</mat-icon>
+                  </button>
+                  <button
+                    mat-raised-button
+                    color="warn"
+                    type="button"
+                    (click)="auswahlLoeschen(element.id)"
+                  >
+                    <mat-icon class="m-0">delete</mat-icon>
+                  </button>
+                </div>
+              </article>
+            }
+          </section>
+        }
       </section>
     </mat-card-content>
   </mat-card>

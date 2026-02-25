@@ -52,16 +52,44 @@
 .full-width
     width: 100%
 
-.table-wrap
-    overflow-x: auto
+.news-list-wrap
     margin-top: .5rem
 
-    table
-        width: 100%
-
-.action-cell
-    display: flex
+.news-list
+    display: grid
     gap: .5rem
+
+.news-item
+    border: 1px solid rgba(0, 0, 0, .08)
+    border-radius: .5rem
+    padding: .6rem
+    display: flex
+    justify-content: space-between
+    gap: .8rem
+    align-items: center
+    background: #fff
+
+.news-main
+    display: grid
+    gap: .2rem
+
+    span
+        opacity: .85
+
+    small
+        display: flex
+        align-items: center
+        gap: .15rem
+        opacity: .7
+
+.news-actions
+    display: flex
+    gap: .45rem
+    flex-wrap: wrap
+    align-items: center
+
+.empty
+    opacity: .75
 
 .upload-btn-wrapper 
     position: relative 
@@ -142,8 +170,15 @@
         button
             width: 100%
 
-    .action-cell
-        flex-wrap: wrap
+    .news-item
+        flex-direction: column
+        align-items: flex-start
+
+    .news-actions
+        width: 100%
+
+        button
+            width: 100%
 
     .modal-content 
         width: 100%

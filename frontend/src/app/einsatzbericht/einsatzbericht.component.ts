@@ -125,7 +125,9 @@ export class EinsatzberichtComponent implements OnInit {
   mitgliedSuche = new FormControl<string>('', { nonNullable: true });
   berichte: EinsatzberichtDto[] = [];
   viewMode: 'list' | 'form' = 'list';
-  sichtbareSpalten: string[] = ['created_at', 'alarmstichwort', 'einsatzadresse', 'status', 'actions'];
+  sichtbareSpalten: string[] = ['einsatz_datum', 'alarmstichwort', 'einsatzadresse', 'status', 'actions'];
+  canDeleteBerichte = false;
+  canManageStatus = false;
 
   statusOptionen = [
     { key: 'ENTWURF', label: 'Entwurf' },
@@ -414,6 +416,24 @@ export class EinsatzberichtComponent implements OnInit {
       error: (error: any) => this.globalDataService.errorAnzeigen(error),
     });
 
+    this.globalDataService.get<any>('users/self').subscribe({
+      next: (user: any) => {
+        const roles: string[] = Array.isArray(user?.roles) ? user.roles : [];
+        this.canDeleteBerichte = roles.includes('ADMIN') || roles.includes('VERWALTUNG');
+        this.canManageStatus = roles.includes('ADMIN') || roles.includes('VERWALTUNG');
+        if (this.canManageStatus) {
+          this.formBericht.controls.status.enable({ emitEvent: false });
+        } else {
+          this.formBericht.controls.status.disable({ emitEvent: false });
+        }
+      },
+      error: () => {
+        this.canDeleteBerichte = false;
+        this.canManageStatus = false;
+        this.formBericht.controls.status.disable({ emitEvent: false });
+      },
+    });
+
     this.ladeBerichte();
   }
 
@@ -521,6 +541,11 @@ export class EinsatzberichtComponent implements OnInit {
   }
 
   statusUmschalten(bericht: EinsatzberichtDto): void {
+    if (!this.canManageStatus) {
+      this.globalDataService.erstelleMessage('error', 'Nur Verwaltung oder Admin dürfen den Status ändern.');
+      return;
+    }
+
     const neuerStatus = bericht.status === 'ABGESCHLOSSEN' ? 'ENTWURF' : 'ABGESCHLOSSEN';
     this.globalDataService.patch('einsatzberichte', bericht.id, { status: neuerStatus }, false).subscribe({
       next: () => {
@@ -528,6 +553,26 @@ export class EinsatzberichtComponent implements OnInit {
           this.formBericht.controls.status.setValue(neuerStatus);
         }
         this.globalDataService.erstelleMessage('success', `Status auf ${neuerStatus} gesetzt.`);
+        this.ladeBerichte();
+      },
+      error: (error: any) => this.globalDataService.errorAnzeigen(error),
+    });
+  }
+
+  berichtLoeschen(bericht: EinsatzberichtDto): void {
+    if (!this.canDeleteBerichte) {
+      this.globalDataService.erstelleMessage('error', 'Keine Berechtigung zum Löschen.');
+      return;
+    }
+
+    const confirmDelete = window.confirm(`Einsatzbericht "${bericht.alarmstichwort || bericht.id}" wirklich löschen?`);
+    if (!confirmDelete) {
+      return;
+    }
+
+    this.globalDataService.delete('einsatzberichte', bericht.id).subscribe({
+      next: () => {
+        this.globalDataService.erstelleMessage('success', 'Einsatzbericht gelöscht.');
         this.ladeBerichte();
       },
       error: (error: any) => this.globalDataService.errorAnzeigen(error),

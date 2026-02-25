@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, inject, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, inject, ViewChild, ElementRef } from '@angular/core';
 import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { INews } from 'src/app/_interface/news';
 import { GlobalDataService } from 'src/app/_service/global-data.service';
@@ -12,10 +12,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { Router } from '@angular/router';
 import { HeaderComponent } from '../_template/header/header.component';
-import { FormatService } from '../helpers/format.service';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatSortModule } from '@angular/material/sort';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatIcon } from '@angular/material/icon';
 
 @Component({
@@ -31,9 +27,6 @@ import { MatIcon } from '@angular/material/icon';
     MatOption,
     MatButton,
     MatInputModule,
-    MatTableModule,
-    MatSortModule,
-    MatPaginatorModule,
     MatIcon,
     MatError,
     NgStyle,
@@ -44,10 +37,8 @@ import { MatIcon } from '@angular/material/icon';
 })
 export class NewsComponent implements OnInit {
   @ViewChild('fotoUpload', { static: false }) fotoRef!: ElementRef<HTMLInputElement>;
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   globalDataService = inject(GlobalDataService);
-  formatService = inject(FormatService);
   router = inject(Router);
 
   title = 'News Verwaltung';
@@ -60,9 +51,6 @@ export class NewsComponent implements OnInit {
   filePfad = '';
   fileFound = false;
   btnUploadStatus = false;
-  dataSource = new MatTableDataSource<INews>(this.newsArray);
-  sichtbareSpalten: string[] = ['created_at', 'title', 'typ', 'actions'];
-  pageOptions: any[] = [10, 50, 100]
 
   formAuswahl = new FormGroup({
     news: new FormControl<number | ''>('')
@@ -77,10 +65,6 @@ export class NewsComponent implements OnInit {
     foto_url: new FormControl<string>(''),
   });
 
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-  }
-
   ngOnInit(): void {
     sessionStorage.setItem('PageNumber', '2');
     sessionStorage.setItem('Page2', 'NEWS');
@@ -92,7 +76,6 @@ export class NewsComponent implements OnInit {
       next: (erg: any) => {
         try {
           this.newsArray = this.convertNewsDate(erg) as INews[];
-          this.dataSource.data = this.newsArray;
         } catch (e: any) {
           this.globalDataService.erstelleMessage('error', e);
         }
@@ -142,7 +125,6 @@ export class NewsComponent implements OnInit {
       next: (erg: any) => {
         try {
           this.newsArray = this.newsArray.filter(n => n.id !== id);
-          this.dataSource.data = this.newsArray;
           this.resetFormNachAktion();
           this.globalDataService.erstelleMessage('success', 'News erfolgreich gelöscht!');
         } catch (e: any) {
@@ -236,7 +218,6 @@ export class NewsComponent implements OnInit {
           next: (erg: any) => {
             try {
               this.newsArray.push(erg);
-              this.dataSource.data = this.newsArray;
               this.resetFormNachAktion();
               this.globalDataService.erstelleMessage('success', 'News erfolgreich gespeichert!');
             } catch (e: any) {
@@ -251,7 +232,6 @@ export class NewsComponent implements OnInit {
           next: (erg: any) => {
             try {
               this.newsArray.push(erg);
-              this.dataSource.data = this.newsArray;
               this.resetFormNachAktion();
               this.globalDataService.erstelleMessage('success', 'News erfolgreich gespeichert!');
             } catch (e: any) {
@@ -274,7 +254,6 @@ export class NewsComponent implements OnInit {
           next: (erg: any) => {
             try {
               this.newsArray = this.newsArray.map(n => (n.id === erg.id ? erg : n));
-              this.dataSource.data = this.newsArray;
               this.resetFormNachAktion();
               this.globalDataService.erstelleMessage('success', 'News erfolgreich geändert!');
             } catch (e: any) {
@@ -289,7 +268,6 @@ export class NewsComponent implements OnInit {
           next: (erg: any) => {
             try {
               this.newsArray = this.newsArray.map(n => (n.id === erg.id ? erg : n));
-              this.dataSource.data = this.newsArray;
               this.resetFormNachAktion();
               this.globalDataService.erstelleMessage('success', 'News erfolgreich geändert!');
             } catch (e: any) {
