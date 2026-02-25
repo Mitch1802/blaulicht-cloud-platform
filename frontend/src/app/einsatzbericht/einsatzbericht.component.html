@@ -1,0 +1,213 @@
+<app-header [breadcrumb]="breadcrumb"></app-header>
+
+<section class="bericht-page">
+  <header class="page-head">
+    <h1>{{ title }}</h1>
+  </header>
+
+  <mat-card class="settings-card">
+    <div class="section-head">
+      <h2>{{ viewMode === 'list' ? 'Einsätze' : 'Einsatz erfassen' }}</h2>
+    </div>
+
+    <mat-card-content>
+      @if (viewMode === 'list') {
+        <section class="drafts-section list-only">
+          <div class="actions-row top-actions">
+            <button mat-raised-button type="button" color="accent" (click)="neuerEntwurf()">Neuen Einsatz anlegen</button>
+          </div>
+
+          <h3>Vorhandene Einsatzberichte</h3>
+
+          @if (berichte.length === 0) {
+            <p class="empty">Noch keine Einsatzberichte vorhanden.</p>
+          } @else {
+            <div class="draft-list">
+              @for (bericht of berichte; track bericht.id) {
+                <div class="draft-item">
+                  <div class="draft-main">
+                    <strong>{{ bericht.alarmstichwort || 'Ohne Stichwort' }}</strong>
+                    <span>{{ bericht.einsatzadresse || 'Ohne Adresse' }}</span>
+                    <small>{{ bericht.created_at || '' }}</small>
+                  </div>
+
+                  <div class="draft-actions">
+                    <span class="status-badge" [class.done]="bericht.status === 'ABGESCHLOSSEN'">{{ bericht.status }}</span>
+                    <button mat-stroked-button color="primary" type="button" (click)="berichtBearbeiten(bericht)">Öffnen</button>
+                    <button mat-stroked-button type="button" (click)="statusUmschalten(bericht)">
+                      {{ bericht.status === 'ABGESCHLOSSEN' ? 'Als Entwurf' : 'Abschließen' }}
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </section>
+      } @else {
+      <form [formGroup]="formBericht" (ngSubmit)="speichereBericht()" class="bericht-form">
+        <div class="actions-row top-actions">
+          <button mat-stroked-button type="button" color="primary" (click)="zurueckZurListe()">Zur Liste</button>
+        </div>
+
+        <section class="grid two-col">
+          <mat-form-field class="full-width">
+            <mat-label>Status</mat-label>
+            <mat-select formControlName="status">
+              @for (status of statusOptionen; track status.key) {
+                <mat-option [value]="status.key">{{ status.label }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <div class="prefill-row">
+            <mat-form-field class="full-width">
+              <mat-label>BlaulichtSMS Einsatz-ID</mat-label>
+              <input matInput formControlName="blaulichtsmsEinsatzId" />
+            </mat-form-field>
+            <button mat-stroked-button type="button" color="primary" (click)="ladeBlaulichtSmsDaten()">
+              Daten übernehmen
+            </button>
+          </div>
+        </section>
+
+        <section class="grid two-col">
+          <mat-form-field class="full-width">
+            <mat-label>Einsatzleiter</mat-label>
+            <input matInput formControlName="einsatzleiter" />
+          </mat-form-field>
+
+          <mat-form-field class="full-width">
+            <mat-label>Einsatzart</mat-label>
+            <mat-select formControlName="einsatzart">
+              @for (art of einsatzarten; track art) {
+                <mat-option [value]="art">{{ art }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field class="full-width">
+            <mat-label>Alarmstichwort</mat-label>
+            <input matInput formControlName="alarmstichwort" />
+          </mat-form-field>
+
+          <mat-form-field class="full-width">
+            <mat-label>Einsatzadresse</mat-label>
+            <input matInput formControlName="einsatzadresse" />
+          </mat-form-field>
+
+          <mat-form-field class="full-width">
+            <mat-label>Alarmierende Stelle</mat-label>
+            <input matInput formControlName="alarmierendeStelle" />
+          </mat-form-field>
+        </section>
+
+        <section class="grid three-col">
+          <mat-form-field class="full-width">
+            <mat-label>Einsatz Datum</mat-label>
+            <input matInput type="date" formControlName="einsatzDatum" />
+          </mat-form-field>
+
+          <mat-form-field class="full-width">
+            <mat-label>Ausgerückt</mat-label>
+            <input matInput type="time" formControlName="ausgerueckt" />
+          </mat-form-field>
+
+          <mat-form-field class="full-width">
+            <mat-label>Eingerückt</mat-label>
+            <input matInput type="time" formControlName="eingerueckt" />
+          </mat-form-field>
+        </section>
+
+        <section class="grid one-col">
+          <mat-form-field class="full-width">
+            <mat-label>Lage beim Eintreffen</mat-label>
+            <textarea matInput rows="3" formControlName="lageBeimEintreffen"></textarea>
+          </mat-form-field>
+
+          <mat-form-field class="full-width">
+            <mat-label>Gesetzte Maßnahmen</mat-label>
+            <textarea matInput rows="3" formControlName="gesetzteMassnahmen"></textarea>
+          </mat-form-field>
+        </section>
+
+        @if (isBrand) {
+          <section class="conditional-block">
+            <h3>Brand-Details</h3>
+            <mat-form-field class="full-width">
+              <mat-label>Brand Kategorie</mat-label>
+              <mat-select formControlName="brandKategorie">
+                @for (opt of brandOptionen; track opt) {
+                  <mat-option [value]="opt">{{ opt }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </section>
+        }
+
+        @if (isTechnisch) {
+          <section class="conditional-block">
+            <h3>Technische-Details</h3>
+            <mat-form-field class="full-width">
+              <mat-label>Technische Kategorie</mat-label>
+              <mat-select formControlName="technischKategorie">
+                @for (opt of technischOptionen; track opt) {
+                  <mat-option [value]="opt">{{ opt }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </section>
+        }
+
+        @if (isTechnischPkw) {
+          <section class="conditional-block">
+            <h3>Geschädigter PKW</h3>
+
+            <div class="checkbox-grid">
+              <mat-checkbox formControlName="geschaedigterPkw">Geschädigter PKW erfasst</mat-checkbox>
+              <mat-checkbox formControlName="fotoDoku">Foto Doku vorhanden</mat-checkbox>
+              <mat-checkbox formControlName="zulassungsschein">Zulassungsschein vorhanden</mat-checkbox>
+              <mat-checkbox formControlName="versicherungsschein">Versicherungsschein vorhanden</mat-checkbox>
+            </div>
+
+            <div class="upload-row">
+              <label class="upload-label" for="fotoDokuDateien">Foto Doku Dateien</label>
+              <input id="fotoDokuDateien" type="file" multiple accept=".jpg,.jpeg,.png,.pdf" (change)="onFotoDokuSelected($event)" />
+              @if (fotoDateien.length > 0) {
+                <ul class="file-list">
+                  @for (file of fotoDateien; track file) {
+                    <li>{{ file }}</li>
+                  }
+                </ul>
+              }
+            </div>
+          </section>
+        }
+
+        <section class="grid two-col">
+          <mat-form-field class="full-width">
+            <mat-label>Fahrzeuge</mat-label>
+            <mat-select formControlName="fahrzeuge" multiple>
+              @for (fahrzeug of fahrzeugOptionen; track fahrzeug.id) {
+                <mat-option [value]="fahrzeug.id">{{ fahrzeug.label }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field class="full-width">
+            <mat-label>Mitglieder</mat-label>
+            <mat-select formControlName="mitglieder" multiple>
+              @for (mitglied of mitgliedOptionen; track mitglied.id) {
+                <mat-option [value]="mitglied.id">{{ mitglied.label }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </section>
+
+        <div class="actions-row">
+          <button mat-raised-button color="accent" type="submit">Einsatzbericht speichern</button>
+        </div>
+      </form>
+      }
+    </mat-card-content>
+  </mat-card>
+</section>

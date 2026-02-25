@@ -1,0 +1,88 @@
+from django.conf import settings
+from django.db import migrations, models
+import django.db.models.deletion
+import uuid
+
+import core_apps.einsatzberichte.models
+
+
+class Migration(migrations.Migration):
+
+    initial = True
+
+    dependencies = [
+        ("fahrzeuge", "0003_alter_fahrzeug_options_alter_fahrzeugcheck_options_and_more"),
+        ("mitglieder", "0002_mitglied_hauptberuflich"),
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+    ]
+
+    operations = [
+        migrations.CreateModel(
+            name="Einsatzbericht",
+            fields=[
+                ("pkid", models.BigAutoField(editable=False, primary_key=True, serialize=False, unique=True)),
+                ("id", models.UUIDField(default=uuid.uuid4, editable=False, unique=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("einsatzleiter", models.CharField(max_length=255, verbose_name="Einsatzleiter")),
+                ("einsatzart", models.CharField(max_length=120, verbose_name="Einsatzart")),
+                ("alarmstichwort", models.CharField(max_length=255, verbose_name="Alarmstichwort")),
+                ("einsatzadresse", models.CharField(max_length=500, verbose_name="Einsatzadresse")),
+                ("alarmierende_stelle", models.CharField(max_length=255, verbose_name="Alarmierende Stelle")),
+                ("einsatz_datum", models.DateField(blank=True, null=True, verbose_name="Einsatzdatum")),
+                ("ausgerueckt", models.TimeField(blank=True, null=True, verbose_name="Ausgerückt")),
+                ("eingerueckt", models.TimeField(blank=True, null=True, verbose_name="Eingerückt")),
+                ("lage_beim_eintreffen", models.TextField(blank=True, default="", verbose_name="Lage beim Eintreffen")),
+                ("gesetzte_massnahmen", models.TextField(blank=True, default="", verbose_name="Gesetzte Maßnahmen")),
+                ("brand_kategorie", models.CharField(blank=True, default="", max_length=120, verbose_name="Brand Kategorie")),
+                ("technisch_kategorie", models.CharField(blank=True, default="", max_length=120, verbose_name="Technisch Kategorie")),
+                ("geschaedigter_pkw", models.BooleanField(default=False, verbose_name="Geschädigter PKW")),
+                ("foto_doku", models.BooleanField(default=False, verbose_name="Foto Doku")),
+                ("zulassungsschein", models.BooleanField(default=False, verbose_name="Zulassungsschein")),
+                ("versicherungsschein", models.BooleanField(default=False, verbose_name="Versicherungsschein")),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[("ENTWURF", "Entwurf"), ("ABGESCHLOSSEN", "Abgeschlossen")],
+                        default="ENTWURF",
+                        max_length=20,
+                        verbose_name="Status",
+                    ),
+                ),
+                ("blaulichtsms_einsatz_id", models.CharField(blank=True, default="", max_length=120, verbose_name="BlaulichtSMS Einsatz-ID")),
+                ("blaulichtsms_payload", models.JSONField(blank=True, default=dict, verbose_name="BlaulichtSMS Daten")),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="einsatzberichte",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                ("fahrzeuge", models.ManyToManyField(blank=True, related_name="einsatzberichte", to="fahrzeuge.fahrzeug")),
+                ("mitglieder", models.ManyToManyField(blank=True, related_name="einsatzberichte", to="mitglieder.mitglied")),
+            ],
+            options={"ordering": ["-created_at", "-pkid"]},
+        ),
+        migrations.CreateModel(
+            name="EinsatzberichtFoto",
+            fields=[
+                ("pkid", models.BigAutoField(editable=False, primary_key=True, serialize=False, unique=True)),
+                ("id", models.UUIDField(default=uuid.uuid4, editable=False, unique=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("foto", models.ImageField(upload_to=core_apps.einsatzberichte.models.einsatzbericht_foto_path, verbose_name="Foto")),
+                (
+                    "einsatzbericht",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="fotos",
+                        to="einsatzberichte.einsatzbericht",
+                    ),
+                ),
+            ],
+            options={"ordering": ["pkid"]},
+        ),
+    ]

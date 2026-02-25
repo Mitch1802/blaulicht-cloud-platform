@@ -162,6 +162,13 @@
           <tr mat-header-row *matHeaderRowDef="sichtbareSpalten"></tr>
           <tr mat-row *matRowDef="let row; columns: sichtbareSpalten"></tr>
         </table>
+
+        <mat-paginator
+          [pageSizeOptions]="[10, 50, 100]"
+          showFirstLastButtons
+          aria-label="Auswahl Anzahl der sichtbaren Elemente"
+        >
+        </mat-paginator>
       </div>
     </mat-card-content>
   </mat-card>

@@ -1,5 +1,6 @@
 import { IInventar } from './../_interface/inventar';
 import {
+  AfterViewInit,
   Component,
   OnInit,
   ViewChild,
@@ -25,8 +26,8 @@ import { HeaderComponent } from '../_template/header/header.component';
 import { FormatService } from '../helpers/format.service';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatIcon } from '@angular/material/icon';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatSortModule } from '@angular/material/sort';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSort, MatSortModule } from '@angular/material/sort';
 
 @Component({
   selector: 'app-inventar',
@@ -50,8 +51,10 @@ import { MatSortModule } from '@angular/material/sort';
   templateUrl: './inventar.component.html',
   styleUrl: './inventar.component.sass',
 })
-export class InventarComponent implements OnInit {
+export class InventarComponent implements OnInit, AfterViewInit {
   @ViewChild('fotoUpload', { static: false }) fotoRef!: ElementRef<HTMLInputElement>;
+  @ViewChild(MatPaginator) paginator?: MatPaginator;
+  @ViewChild(MatSort) sort?: MatSort;
 
   globalDataService = inject(GlobalDataService);
   formatService = inject(FormatService);
@@ -81,6 +84,10 @@ export class InventarComponent implements OnInit {
     foto_url: new FormControl<string>(''),
   });
 
+  ngAfterViewInit(): void {
+    this.bindTableControls();
+  }
+
   ngOnInit(): void {
     sessionStorage.setItem('PageNumber', '2');
     sessionStorage.setItem('Page2', 'INV');
@@ -93,6 +100,7 @@ export class InventarComponent implements OnInit {
         try {
           this.inventarArray = this.convertNewsDate(erg) as IInventar[];
           this.dataSource.data = this.inventarArray;
+          this.bindTableControls();
         } catch (e: any) {
           this.globalDataService.erstelleMessage('error', e);
         }
@@ -229,6 +237,7 @@ export class InventarComponent implements OnInit {
               this.inventarArray.push(newMask);
               this.inventarArray = this.globalDataService.arraySortByKey(this.inventarArray, 'bezeichnung');
               this.dataSource.data = this.inventarArray;
+              this.bindTableControls();
               this.resetFormNachAktion();
               this.globalDataService.erstelleMessage('success', 'Inventar erfolgreich gespeichert!');
             } catch (e: any) {
@@ -246,6 +255,7 @@ export class InventarComponent implements OnInit {
               this.inventarArray.push(newMask);
               this.inventarArray = this.globalDataService.arraySortByKey(this.inventarArray, 'bezeichnung');
               this.dataSource.data = this.inventarArray;
+              this.bindTableControls();
               this.resetFormNachAktion();
               this.globalDataService.erstelleMessage('success', 'Inventar erfolgreich gespeichert!');
             } catch (e: any) {
@@ -274,6 +284,7 @@ export class InventarComponent implements OnInit {
                 .sort((a, b) => a.bezeichnung - b.bezeichnung);
 
               this.dataSource.data = this.inventarArray;
+              this.bindTableControls();
               this.resetFormNachAktion();
               this.globalDataService.erstelleMessage('success', 'Inventar erfolgreich geändert!');
             } catch (e: any) {
@@ -293,6 +304,7 @@ export class InventarComponent implements OnInit {
                 .sort((a, b) => a.bezeichnung - b.bezeichnung);
 
               this.dataSource.data = this.inventarArray;
+              this.bindTableControls();
               this.resetFormNachAktion();
               this.globalDataService.erstelleMessage('success', 'Inventar erfolgreich geändert!');
             } catch (e: any) {
@@ -348,6 +360,15 @@ export class InventarComponent implements OnInit {
     // Datei im Input löschen
     if (this.fotoRef?.nativeElement) {
       this.fotoRef.nativeElement.value = '';
+    }
+  }
+
+  private bindTableControls(): void {
+    if (this.paginator) {
+      this.dataSource.paginator = this.paginator;
+    }
+    if (this.sort) {
+      this.dataSource.sort = this.sort;
     }
   }
 }

@@ -413,6 +413,9 @@ export class GlobalDataService {
     } else if (page == 'INV') {
       link = '/inventar';
       kuerzel = 'Inventar';
+    } else if (page == 'BER') {
+      link = '/einsatzbericht';
+      kuerzel = 'Einsatzbericht';
     } else if (page == 'PDF') {
       link = '/pdf_template';
       kuerzel = 'PDF Templates';

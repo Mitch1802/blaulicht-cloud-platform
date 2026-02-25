@@ -1,0 +1,187 @@
+@use '../../theme' as theme
+
+.bericht-page
+    max-width: 1280px
+    margin: 0 auto
+    padding: 1rem 1rem 2rem
+
+.page-head
+    margin: 0 0 1.5rem
+
+    h1
+        margin: 0
+        color: theme.$app-primary
+        font-size: clamp(1.5rem, 2.4vw, 2.1rem)
+        line-height: 1.2
+
+.settings-card
+    border-radius: .9rem
+
+    mat-card-content
+        padding-top: .5rem
+
+.section-head
+    display: flex
+    align-items: center
+    justify-content: space-between
+    padding: 1rem 1rem 0
+
+    h2
+        margin: 0
+        color: theme.$app-primary
+        font-size: 1.1rem
+
+.bericht-form
+    margin-top: .4rem
+
+.grid
+    display: grid
+    gap: .75rem
+    margin-bottom: .75rem
+
+.one-col
+    grid-template-columns: 1fr
+
+.two-col
+    grid-template-columns: repeat(2, minmax(0, 1fr))
+
+.three-col
+    grid-template-columns: repeat(3, minmax(0, 1fr))
+
+.full-width
+    width: 100%
+
+.conditional-block
+    border: 1px solid rgba(0, 0, 0, .08)
+    border-radius: .7rem
+    padding: .8rem
+    margin-bottom: .85rem
+
+    h3
+        margin: 0 0 .65rem
+        color: theme.$app-primary
+        font-size: 1rem
+
+.checkbox-grid
+    display: grid
+    grid-template-columns: repeat(2, minmax(0, 1fr))
+    gap: .5rem
+
+.prefill-row
+    display: grid
+    grid-template-columns: 1fr auto
+    gap: .6rem
+    align-items: center
+
+.upload-row
+    margin-top: .7rem
+
+.upload-label
+    font-weight: 600
+    display: inline-block
+    margin-bottom: .35rem
+
+.file-list
+    margin: .45rem 0 0
+    padding-left: 1rem
+
+.actions-row
+    margin-top: .6rem
+
+.top-actions
+    margin-top: 0
+    margin-bottom: .8rem
+
+.drafts-section
+    margin-top: 1.2rem
+
+    h3
+        margin: 0 0 .6rem
+        color: theme.$app-primary
+        font-size: 1rem
+
+    &.list-only
+        margin-top: .2rem
+
+.draft-list
+    display: grid
+    gap: .55rem
+
+.draft-item
+    border: 1px solid rgba(0, 0, 0, .08)
+    border-radius: .6rem
+    padding: .65rem
+    display: flex
+    justify-content: space-between
+    gap: .8rem
+    align-items: center
+
+.draft-main
+    display: grid
+    gap: .2rem
+
+    span
+        opacity: .85
+
+    small
+        opacity: .65
+
+.draft-actions
+    display: flex
+    gap: .45rem
+    flex-wrap: wrap
+    align-items: center
+
+.status-badge
+    border-radius: 999px
+    padding: .15rem .55rem
+    background: rgba(0, 0, 0, .08)
+    font-weight: 600
+    font-size: .78rem
+
+    &.done
+        background: rgba(theme.$app-primary, .16)
+
+.empty
+    opacity: .75
+
+@media (max-width: 992px)
+    .two-col,
+    .three-col,
+    .checkbox-grid,
+    .prefill-row
+        grid-template-columns: 1fr
+
+@media (max-width: 768px)
+    .bericht-page
+        padding: .75rem .75rem 1.5rem
+
+    .page-head
+        margin-bottom: 1rem
+
+        h1
+            font-size: 1.4rem
+
+    .section-head
+        padding: .85rem .85rem 0
+
+        h2
+            font-size: 1rem
+
+    .settings-card
+        mat-card-content
+            padding: .35rem .25rem .25rem
+
+    .actions-row
+        button
+            width: 100%
+
+    .draft-item
+        flex-direction: column
+        align-items: flex-start
+
+    .draft-actions
+        width: 100%
+
+        button
+            width: 100%

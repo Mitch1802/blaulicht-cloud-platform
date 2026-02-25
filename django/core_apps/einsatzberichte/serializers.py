@@ -1,0 +1,103 @@
+from rest_framework import serializers
+
+from core_apps.fahrzeuge.models import Fahrzeug
+from core_apps.mitglieder.models import Mitglied
+
+from .models import Einsatzbericht, EinsatzberichtFoto
+
+
+class EinsatzberichtFotoSerializer(serializers.ModelSerializer):
+    foto_url = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = EinsatzberichtFoto
+        fields = ["id", "foto", "foto_url", "created_at"]
+        read_only_fields = ["id", "foto_url", "created_at"]
+
+    def get_foto_url(self, obj):
+        f = getattr(obj, "foto", None)
+        try:
+            return f.url if f and getattr(f, "name", "") else None
+        except Exception:
+            return None
+
+
+class EinsatzberichtSerializer(serializers.ModelSerializer):
+    fahrzeuge = serializers.PrimaryKeyRelatedField(queryset=Fahrzeug.objects.all(), many=True, required=False)
+    mitglieder = serializers.PrimaryKeyRelatedField(queryset=Mitglied.objects.all(), many=True, required=False)
+    fotos = EinsatzberichtFotoSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Einsatzbericht
+        fields = [
+            "id",
+            "status",
+            "einsatzleiter",
+            "einsatzart",
+            "alarmstichwort",
+            "einsatzadresse",
+            "alarmierende_stelle",
+            "einsatz_datum",
+            "ausgerueckt",
+            "eingerueckt",
+            "lage_beim_eintreffen",
+            "gesetzte_massnahmen",
+            "brand_kategorie",
+            "technisch_kategorie",
+            "geschaedigter_pkw",
+            "foto_doku",
+            "zulassungsschein",
+            "versicherungsschein",
+            "blaulichtsms_einsatz_id",
+            "blaulichtsms_payload",
+            "fahrzeuge",
+            "mitglieder",
+            "fotos",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["id", "created_at", "updated_at"]
+
+    def create(self, validated_data):
+        request = self.context.get("request")
+        fahrzeuge = validated_data.pop("fahrzeuge", [])
+        mitglieder = validated_data.pop("mitglieder", [])
+
+        instance = Einsatzbericht.objects.create(**validated_data)
+        instance.fahrzeuge.set(fahrzeuge)
+        instance.mitglieder.set(mitglieder)
+
+        if request and request.user and request.user.is_authenticated:
+            instance.created_by = request.user
+            instance.save(update_fields=["created_by"])
+
+        if request:
+            for f in request.FILES.getlist("fotos"):
+                EinsatzberichtFoto.objects.create(einsatzbericht=instance, foto=f)
+
+        return instance
+
+    def update(self, instance, validated_data):
+        request = self.context.get("request")
+        fahrzeuge = validated_data.pop("fahrzeuge", None)
+        mitglieder = validated_data.pop("mitglieder", None)
+
+        for key, value in validated_data.items():
+            setattr(instance, key, value)
+        instance.save()
+
+        if fahrzeuge is not None:
+            instance.fahrzeuge.set(fahrzeuge)
+        if mitglieder is not None:
+            instance.mitglieder.set(mitglieder)
+
+        if request:
+            for f in request.FILES.getlist("fotos"):
+                EinsatzberichtFoto.objects.create(einsatzbericht=instance, foto=f)
+
+        return instance
+
+
+class EinsatzberichtContextSerializer(serializers.Serializer):
+    fahrzeuge = serializers.ListField()
+    mitglieder = serializers.ListField()

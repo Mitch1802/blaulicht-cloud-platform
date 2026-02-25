@@ -2,7 +2,6 @@ from datetime import timedelta
 from pathlib import Path
 
 import environ, os
-
 env = environ.Env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -42,7 +41,8 @@ LOCAL_APPS = [
     "core_apps.messgeraete",
     "core_apps.pdf",
     "core_apps.fahrzeuge",
-    "core_apps.verwaltung"
+    "core_apps.verwaltung",
+    "core_apps.einsatzberichte",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -207,3 +207,7 @@ LOGGING = {
 
 PUBLIC_FAHRZEUG_PIN = env("PUBLIC_FAHRZEUG_PIN")
 PUBLIC_PIN_ENABLED = bool(PUBLIC_FAHRZEUG_PIN)
+
+BLAULICHTSMS_API_URL = env("BLAULICHTSMS_API_URL", default="")
+BLAULICHTSMS_API_TOKEN = env("BLAULICHTSMS_API_TOKEN", default="")
+BLAULICHTSMS_TIMEOUT = env.int("BLAULICHTSMS_TIMEOUT", default=10)

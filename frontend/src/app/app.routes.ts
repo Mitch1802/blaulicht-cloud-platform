@@ -66,6 +66,11 @@ export const routes: Routes = [
     loadComponent: () => import("./inventar/inventar.component").then(m => m.InventarComponent),
   },
   {
+    path: 'einsatzbericht',
+    canActivate: [authGuard],
+    loadComponent: () => import("./einsatzbericht/einsatzbericht.component").then(m => m.EinsatzberichtComponent),
+  },
+  {
     path: "fahrzeuge",
     canActivate: [authGuard],
     loadComponent: () => import("./fahrzeug/fahrzeug.component").then(m => m.FahrzeugComponent),
