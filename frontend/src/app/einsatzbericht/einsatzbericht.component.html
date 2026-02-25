@@ -79,14 +79,25 @@
           </section>
 
           <section class="grid two-col">
-            <mat-form-field class="full-width">
-              <mat-label>Einsatzleiter</mat-label>
-              <mat-select formControlName="einsatzleiter">
-                @for (einsatzleiter of einsatzleiterOptionen; track einsatzleiter) {
-                  <mat-option [value]="einsatzleiter">{{ einsatzleiter }}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
+            <div class="searchable-select">
+              <mat-form-field class="full-width">
+                <mat-label>Einsatzleiter (Autocomplete)</mat-label>
+                <input
+                  matInput
+                  [formControl]="einsatzleiterSuche"
+                  [matAutocomplete]="einsatzleiterAuto"
+                  placeholder="Name oder StbNr"
+                />
+                <mat-autocomplete #einsatzleiterAuto="matAutocomplete" (optionSelected)="onEinsatzleiterSelected($event)">
+                  @for (einsatzleiter of filteredEinsatzleiterOptionen; track einsatzleiter) {
+                    <mat-option [value]="einsatzleiter">{{ einsatzleiter }}</mat-option>
+                  }
+                  @if (filteredEinsatzleiterOptionen.length === 0) {
+                    <mat-option disabled>Kein Einsatzleiter gefunden.</mat-option>
+                  }
+                </mat-autocomplete>
+              </mat-form-field>
+            </div>
 
             <mat-form-field class="full-width">
               <mat-label>Einsatzart</mat-label>
@@ -197,52 +208,65 @@
 
             <div class="form-section-body">
               <section class="grid two-col">
-            <mat-form-field class="full-width">
-              <mat-label>Fahrzeuge</mat-label>
-              <mat-select formControlName="fahrzeuge" multiple>
-                <mat-option class="select-search-option" disabled>
+              <div class="autocomplete-multi">
+                <mat-form-field class="full-width">
+                  <mat-label>Fahrzeug hinzufügen (Autocomplete)</mat-label>
                   <input
                     matInput
-                    placeholder="Fahrzeug suchen..."
                     [formControl]="fahrzeugSuche"
-                    (click)="$event.stopPropagation()"
-                    (keydown)="$event.stopPropagation()"
+                    [matAutocomplete]="fahrzeugAuto"
+                    placeholder="Fahrzeugname"
                   />
-                </mat-option>
-                @for (fahrzeug of filteredFahrzeugOptionen; track fahrzeug.id) {
-                  <mat-option [value]="fahrzeug.id">{{ fahrzeug.label }}</mat-option>
-                }
-                @if (filteredFahrzeugOptionen.length === 0) {
-                  <mat-option disabled>Keine Fahrzeuge gefunden.</mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
+                  <mat-autocomplete #fahrzeugAuto="matAutocomplete" (optionSelected)="onFahrzeugSelected($event)">
+                    @for (fahrzeug of filteredFahrzeugOptionen; track fahrzeug.id) {
+                      <mat-option [value]="fahrzeug.id">{{ fahrzeug.label }}</mat-option>
+                    }
+                    @if (filteredFahrzeugOptionen.length === 0) {
+                      <mat-option disabled>Keine Fahrzeuge gefunden.</mat-option>
+                    }
+                  </mat-autocomplete>
+                </mat-form-field>
 
-            <mat-form-field class="full-width">
-              <mat-label>Mitglieder</mat-label>
-              <mat-select formControlName="mitglieder" multiple>
-                <mat-option class="select-search-option" disabled>
+                <div class="selected-pills">
+                  @for (fahrzeug of selectedFahrzeugOptionen; track fahrzeug.id) {
+                    <button type="button" class="pill" (click)="removeFahrzeug(fahrzeug.id)">
+                      {{ fahrzeug.label }} <span aria-hidden="true">×</span>
+                    </button>
+                  }
+                </div>
+              </div>
+
+              <div class="autocomplete-multi">
+                <mat-form-field class="full-width">
+                  <mat-label>Mitglied hinzufügen (Autocomplete)</mat-label>
                   <input
                     matInput
-                    placeholder="Mitglied suchen..."
                     [formControl]="mitgliedSuche"
-                    (click)="$event.stopPropagation()"
-                    (keydown)="$event.stopPropagation()"
+                    [matAutocomplete]="mitgliedAuto"
+                    placeholder="Name oder StbNr"
                   />
-                </mat-option>
-                @for (mitglied of filteredMitgliedOptionen; track mitglied.id) {
-                  <mat-option [value]="mitglied.id">{{ mitglied.label }}</mat-option>
-                }
-                @if (filteredMitgliedOptionen.length === 0) {
-                  <mat-option disabled>Keine Mitglieder gefunden.</mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
+                  <mat-autocomplete #mitgliedAuto="matAutocomplete" (optionSelected)="onMitgliedSelected($event)">
+                    @for (mitglied of filteredMitgliedOptionen; track mitglied.id) {
+                      <mat-option [value]="mitglied.id">{{ mitglied.label }}</mat-option>
+                    }
+                    @if (filteredMitgliedOptionen.length === 0) {
+                      <mat-option disabled>Keine Mitglieder gefunden.</mat-option>
+                    }
+                  </mat-autocomplete>
+                </mat-form-field>
+
+                <div class="selected-pills">
+                  @for (mitglied of selectedMitgliedOptionen; track mitglied.id) {
+                    <button type="button" class="pill" (click)="removeMitglied(mitglied.id)">
+                      {{ mitglied.label }} <span aria-hidden="true">×</span>
+                    </button>
+                  }
+                </div>
+              </div>
             </section>
 
-          @if (isTechnischPkw) {
             <section class="conditional-block">
-              <h3>Geschädigter PKW</h3>
+              <h3>Dokumentation & Nachweise</h3>
 
               <div class="checkbox-grid">
                 <mat-checkbox formControlName="geschaedigterPkw">Geschädigter PKW erfasst</mat-checkbox>
@@ -298,7 +322,6 @@
                 </div>
               }
             </section>
-          }
             </div>
           </mat-expansion-panel>
         </mat-accordion>

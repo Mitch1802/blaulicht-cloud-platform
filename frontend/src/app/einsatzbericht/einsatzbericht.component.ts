@@ -9,6 +9,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 
 type FahrzeugOption = {
   id: number;
@@ -65,6 +66,7 @@ type EinsatzberichtDto = {
     MatButtonModule,
     MatCheckboxModule,
     MatExpansionModule,
+    MatAutocompleteModule,
   ],
   templateUrl: './einsatzbericht.component.html',
   styleUrl: './einsatzbericht.component.sass'
@@ -111,6 +113,7 @@ export class EinsatzberichtComponent implements OnInit {
 
   fahrzeugOptionen: FahrzeugOption[] = [];
   mitgliedOptionen: MitgliedOption[] = [];
+  einsatzleiterSuche = new FormControl<string>('', { nonNullable: true });
   fahrzeugSuche = new FormControl<string>('', { nonNullable: true });
   mitgliedSuche = new FormControl<string>('', { nonNullable: true });
   berichte: EinsatzberichtDto[] = [];
@@ -157,21 +160,31 @@ export class EinsatzberichtComponent implements OnInit {
   }
 
   get filteredFahrzeugOptionen(): FahrzeugOption[] {
+    const selected = new Set(this.formBericht.controls.fahrzeuge.value);
     const search = this.fahrzeugSuche.value.trim().toLowerCase();
-    if (!search) {
-      return this.fahrzeugOptionen;
-    }
-
-    return this.fahrzeugOptionen.filter((fahrzeug) => fahrzeug.label.toLowerCase().includes(search));
+    return this.fahrzeugOptionen.filter((fahrzeug) => {
+      if (selected.has(fahrzeug.id)) {
+        return false;
+      }
+      if (!search) {
+        return true;
+      }
+      return fahrzeug.label.toLowerCase().includes(search);
+    });
   }
 
   get filteredMitgliedOptionen(): MitgliedOption[] {
+    const selected = new Set(this.formBericht.controls.mitglieder.value);
     const search = this.mitgliedSuche.value.trim().toLowerCase();
-    if (!search) {
-      return this.mitgliedOptionen;
-    }
-
-    return this.mitgliedOptionen.filter((mitglied) => mitglied.label.toLowerCase().includes(search));
+    return this.mitgliedOptionen.filter((mitglied) => {
+      if (selected.has(mitglied.id)) {
+        return false;
+      }
+      if (!search) {
+        return true;
+      }
+      return mitglied.label.toLowerCase().includes(search);
+    });
   }
 
   get einsatzleiterOptionen(): string[] {
@@ -181,6 +194,25 @@ export class EinsatzberichtComponent implements OnInit {
       options.unshift(current);
     }
     return options;
+  }
+
+  get filteredEinsatzleiterOptionen(): string[] {
+    const search = this.einsatzleiterSuche.value.trim().toLowerCase();
+    if (!search) {
+      return this.einsatzleiterOptionen;
+    }
+
+    return this.einsatzleiterOptionen.filter((einsatzleiter) => einsatzleiter.toLowerCase().includes(search));
+  }
+
+  get selectedFahrzeugOptionen(): FahrzeugOption[] {
+    const selected = this.formBericht.controls.fahrzeuge.value;
+    return this.fahrzeugOptionen.filter((fahrzeug) => selected.includes(fahrzeug.id));
+  }
+
+  get selectedMitgliedOptionen(): MitgliedOption[] {
+    const selected = this.formBericht.controls.mitglieder.value;
+    return this.mitgliedOptionen.filter((mitglied) => selected.includes(mitglied.id));
   }
 
   ngOnInit(): void {
@@ -354,6 +386,40 @@ export class EinsatzberichtComponent implements OnInit {
     this.versicherungDateien = fileNames;
   }
 
+  onEinsatzleiterSelected(event: MatAutocompleteSelectedEvent): void {
+    const value = String(event.option.value || '').trim();
+    this.formBericht.controls.einsatzleiter.setValue(value);
+    this.einsatzleiterSuche.setValue(value);
+  }
+
+  onFahrzeugSelected(event: MatAutocompleteSelectedEvent): void {
+    const id = Number(event.option.value);
+    const current = this.formBericht.controls.fahrzeuge.value;
+    if (!current.includes(id)) {
+      this.formBericht.controls.fahrzeuge.setValue([...current, id]);
+    }
+    this.fahrzeugSuche.setValue('');
+  }
+
+  removeFahrzeug(id: number): void {
+    const next = this.formBericht.controls.fahrzeuge.value.filter((x) => x !== id);
+    this.formBericht.controls.fahrzeuge.setValue(next);
+  }
+
+  onMitgliedSelected(event: MatAutocompleteSelectedEvent): void {
+    const id = Number(event.option.value);
+    const current = this.formBericht.controls.mitglieder.value;
+    if (!current.includes(id)) {
+      this.formBericht.controls.mitglieder.setValue([...current, id]);
+    }
+    this.mitgliedSuche.setValue('');
+  }
+
+  removeMitglied(id: number): void {
+    const next = this.formBericht.controls.mitglieder.value.filter((x) => x !== id);
+    this.formBericht.controls.mitglieder.setValue(next);
+  }
+
   private resetDokumentUploads(): void {
     this.fotoDokuDateien = [];
     this.fotoDokuFiles = [];
@@ -364,6 +430,7 @@ export class EinsatzberichtComponent implements OnInit {
   }
 
   private resetSuchfilter(): void {
+    this.einsatzleiterSuche.setValue('');
     this.fahrzeugSuche.setValue('');
     this.mitgliedSuche.setValue('');
   }
@@ -449,13 +516,6 @@ export class EinsatzberichtComponent implements OnInit {
       fotoDoku.setValidators([Validators.requiredTrue]);
       zulassungsschein.setValidators([Validators.requiredTrue]);
       versicherungsschein.setValidators([Validators.requiredTrue]);
-    } else {
-      geschaedigterPkw.setValue(false);
-      fotoDoku.setValue(false);
-      zulassungsschein.setValue(false);
-      versicherungsschein.setValue(false);
-      this.bestehendeDateien = [];
-      this.resetDokumentUploads();
     }
 
     brandKategorie.updateValueAndValidity({ emitEvent: false });
