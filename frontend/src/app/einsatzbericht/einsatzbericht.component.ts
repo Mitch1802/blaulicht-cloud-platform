@@ -10,6 +10,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatIconModule } from '@angular/material/icon';
 
 type FahrzeugOption = {
   id: number;
@@ -67,6 +69,8 @@ type EinsatzberichtDto = {
     MatCheckboxModule,
     MatExpansionModule,
     MatAutocompleteModule,
+    MatChipsModule,
+    MatIconModule,
   ],
   templateUrl: './einsatzbericht.component.html',
   styleUrl: './einsatzbericht.component.sass'
@@ -215,6 +219,23 @@ export class EinsatzberichtComponent implements OnInit {
     return this.mitgliedOptionen.filter((mitglied) => selected.includes(mitglied.id));
   }
 
+  private normalizeDateInput(value: string | null | undefined): string {
+    if (!value) {
+      return '';
+    }
+
+    const stringValue = String(value).trim();
+    if (!stringValue) {
+      return '';
+    }
+
+    if (stringValue.includes('T')) {
+      return stringValue.split('T')[0];
+    }
+
+    return stringValue;
+  }
+
   ngOnInit(): void {
     sessionStorage.setItem('PageNumber', '2');
     sessionStorage.setItem('Page2', 'BER');
@@ -299,10 +320,12 @@ export class EinsatzberichtComponent implements OnInit {
           alarmstichwort: mapped.alarmstichwort ?? '',
           einsatzadresse: mapped.einsatzadresse ?? '',
           alarmierendeStelle: mapped.alarmierende_stelle ?? '',
-          einsatzDatum: mapped.einsatz_datum ?? '',
+          einsatzDatum: this.normalizeDateInput(mapped.einsatz_datum),
           ausgerueckt: mapped.ausgerueckt ?? '',
           eingerueckt: mapped.eingerueckt ?? '',
         });
+
+        this.einsatzleiterSuche.setValue(this.formBericht.controls.einsatzleiter.value);
 
         this.updateConditionalValidation();
         this.globalDataService.erstelleMessage('success', 'Letzter Alarm von BlaulichtSMS übernommen.');
@@ -321,7 +344,7 @@ export class EinsatzberichtComponent implements OnInit {
       alarmstichwort: bericht.alarmstichwort || '',
       einsatzadresse: bericht.einsatzadresse || '',
       alarmierendeStelle: bericht.alarmierende_stelle || '',
-      einsatzDatum: bericht.einsatz_datum || '',
+      einsatzDatum: this.normalizeDateInput(bericht.einsatz_datum),
       ausgerueckt: bericht.ausgerueckt || '',
       eingerueckt: bericht.eingerueckt || '',
       lageBeimEintreffen: bericht.lage_beim_eintreffen || '',
@@ -340,6 +363,7 @@ export class EinsatzberichtComponent implements OnInit {
       .map((f) => f.foto_url || '')
       .filter(Boolean)
       .map((url) => url.split('/').pop() || url);
+    this.einsatzleiterSuche.setValue(this.formBericht.controls.einsatzleiter.value);
     this.resetSuchfilter();
     this.resetDokumentUploads();
 
@@ -430,7 +454,9 @@ export class EinsatzberichtComponent implements OnInit {
   }
 
   private resetSuchfilter(): void {
-    this.einsatzleiterSuche.setValue('');
+    if (!this.formBericht.controls.einsatzleiter.value) {
+      this.einsatzleiterSuche.setValue('');
+    }
     this.fahrzeugSuche.setValue('');
     this.mitgliedSuche.setValue('');
   }

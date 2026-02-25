@@ -81,7 +81,7 @@
           <section class="grid two-col">
             <div class="searchable-select">
               <mat-form-field class="full-width">
-                <mat-label>Einsatzleiter (Autocomplete)</mat-label>
+                <mat-label>Einsatzleiter</mat-label>
                 <input
                   matInput
                   [formControl]="einsatzleiterSuche"
@@ -210,7 +210,7 @@
               <section class="grid two-col">
               <div class="autocomplete-multi">
                 <mat-form-field class="full-width">
-                  <mat-label>Fahrzeug hinzufügen (Autocomplete)</mat-label>
+                  <mat-label>Fahrzeug hinzufügen</mat-label>
                   <input
                     matInput
                     [formControl]="fahrzeugSuche"
@@ -227,18 +227,19 @@
                   </mat-autocomplete>
                 </mat-form-field>
 
-                <div class="selected-pills">
+                <mat-chip-set class="role-chips">
                   @for (fahrzeug of selectedFahrzeugOptionen; track fahrzeug.id) {
-                    <button type="button" class="pill" (click)="removeFahrzeug(fahrzeug.id)">
-                      {{ fahrzeug.label }} <span aria-hidden="true">×</span>
-                    </button>
+                    <mat-chip [removable]="true" (removed)="removeFahrzeug(fahrzeug.id)">
+                      {{ fahrzeug.label }}
+                      <mat-icon matChipRemove>cancel</mat-icon>
+                    </mat-chip>
                   }
-                </div>
+                </mat-chip-set>
               </div>
 
               <div class="autocomplete-multi">
                 <mat-form-field class="full-width">
-                  <mat-label>Mitglied hinzufügen (Autocomplete)</mat-label>
+                  <mat-label>Mitglied hinzufügen</mat-label>
                   <input
                     matInput
                     [formControl]="mitgliedSuche"
@@ -255,13 +256,14 @@
                   </mat-autocomplete>
                 </mat-form-field>
 
-                <div class="selected-pills">
+                <mat-chip-set class="role-chips">
                   @for (mitglied of selectedMitgliedOptionen; track mitglied.id) {
-                    <button type="button" class="pill" (click)="removeMitglied(mitglied.id)">
-                      {{ mitglied.label }} <span aria-hidden="true">×</span>
-                    </button>
+                    <mat-chip [removable]="true" (removed)="removeMitglied(mitglied.id)">
+                      {{ mitglied.label }}
+                      <mat-icon matChipRemove>cancel</mat-icon>
+                    </mat-chip>
                   }
-                </div>
+                </mat-chip-set>
               </div>
             </section>
 
