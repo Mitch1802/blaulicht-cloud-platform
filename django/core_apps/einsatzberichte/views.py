@@ -13,7 +13,7 @@ from core_apps.common.permissions import HasAnyRolePermission
 from core_apps.fahrzeuge.models import Fahrzeug
 from core_apps.mitglieder.models import Mitglied
 
-from .models import Einsatzbericht
+from .models import Einsatzbericht, EinsatzberichtFoto
 from .serializers import EinsatzberichtSerializer
 
 logger = logging.getLogger(__name__)
@@ -32,6 +32,24 @@ class EinsatzberichtViewSet(ModelViewSet):
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ["created_at", "einsatz_datum", "status", "alarmstichwort"]
     ordering = ["-created_at"]
+
+    def destroy(self, request, *args, **kwargs):
+        bericht = self.get_object()
+        foto_files = [
+            (f.foto.storage, f.foto.name)
+            for f in bericht.fotos.all()
+            if getattr(f, "foto", None) and getattr(f.foto, "name", "")
+        ]
+
+        response = super().destroy(request, *args, **kwargs)
+
+        for storage, name in foto_files:
+            try:
+                storage.delete(name)
+            except Exception:
+                logger.exception("Einsatzbericht file delete failed bericht=%s file=%s", bericht.id, name)
+
+        return response
 
     @action(detail=False, methods=["get"], url_path="context")
     def context(self, request):
@@ -178,3 +196,24 @@ class EinsatzberichtViewSet(ModelViewSet):
             "blaulichtsms_einsatz_id": einsatz_id,
             "blaulichtsms_payload": payload,
         }
+
+    @action(detail=True, methods=["delete"], url_path=r"fotos/(?P<foto_id>[^/.]+)")
+    def foto_loeschen(self, request, id=None, foto_id=None):
+        bericht = self.get_object()
+        foto = bericht.fotos.filter(id=foto_id).first()
+
+        if foto is None:
+            return Response({"detail": "Foto nicht gefunden."}, status=status.HTTP_404_NOT_FOUND)
+
+        storage = foto.foto.storage if foto.foto else None
+        name = foto.foto.name if foto.foto else ""
+
+        foto.delete()
+
+        if storage and name:
+            try:
+                storage.delete(name)
+            except Exception:
+                logger.exception("EinsatzberichtFoto file delete failed bericht=%s foto=%s", bericht.id, foto_id)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)

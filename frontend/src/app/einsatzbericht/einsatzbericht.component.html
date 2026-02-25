@@ -28,7 +28,7 @@
                   <div class="draft-main">
                     <strong>{{ bericht.alarmstichwort || 'Ohne Stichwort' }}</strong>
                     <span>{{ bericht.einsatzadresse || 'Ohne Adresse' }}</span>
-                    <small>{{ bericht.created_at || '' }}</small>
+                    <small>{{ formatListDateTime(bericht.created_at) }}</small>
                   </div>
 
                   <div class="draft-actions">
@@ -199,74 +199,14 @@
           <mat-expansion-panel class="form-section">
             <mat-expansion-panel-header>
               <mat-panel-title>
-                <span class="form-section-title">3. Ressourcen &amp; Doku</span>
+                <span class="form-section-title">3. Dokumentation</span>
               </mat-panel-title>
               <mat-panel-description>
-                <span class="form-section-subtitle">Fahrzeuge, Mitglieder und optionale Dokumentation</span>
+                <span class="form-section-subtitle">Foto-Doku und Nachweise</span>
               </mat-panel-description>
             </mat-expansion-panel-header>
 
             <div class="form-section-body">
-              <section class="grid two-col">
-              <div class="autocomplete-multi">
-                <mat-form-field class="full-width">
-                  <mat-label>Fahrzeug hinzufügen</mat-label>
-                  <input
-                    matInput
-                    [formControl]="fahrzeugSuche"
-                    [matAutocomplete]="fahrzeugAuto"
-                    placeholder="Fahrzeugname"
-                  />
-                  <mat-autocomplete #fahrzeugAuto="matAutocomplete" (optionSelected)="onFahrzeugSelected($event)">
-                    @for (fahrzeug of filteredFahrzeugOptionen; track fahrzeug.id) {
-                      <mat-option [value]="fahrzeug.id">{{ fahrzeug.label }}</mat-option>
-                    }
-                    @if (filteredFahrzeugOptionen.length === 0) {
-                      <mat-option disabled>Keine Fahrzeuge gefunden.</mat-option>
-                    }
-                  </mat-autocomplete>
-                </mat-form-field>
-
-                <mat-chip-set class="role-chips">
-                  @for (fahrzeug of selectedFahrzeugOptionen; track fahrzeug.id) {
-                    <mat-chip [removable]="true" (removed)="removeFahrzeug(fahrzeug.id)">
-                      {{ fahrzeug.label }}
-                      <mat-icon matChipRemove>cancel</mat-icon>
-                    </mat-chip>
-                  }
-                </mat-chip-set>
-              </div>
-
-              <div class="autocomplete-multi">
-                <mat-form-field class="full-width">
-                  <mat-label>Mitglied hinzufügen</mat-label>
-                  <input
-                    matInput
-                    [formControl]="mitgliedSuche"
-                    [matAutocomplete]="mitgliedAuto"
-                    placeholder="Name oder StbNr"
-                  />
-                  <mat-autocomplete #mitgliedAuto="matAutocomplete" (optionSelected)="onMitgliedSelected($event)">
-                    @for (mitglied of filteredMitgliedOptionen; track mitglied.id) {
-                      <mat-option [value]="mitglied.id">{{ mitglied.label }}</mat-option>
-                    }
-                    @if (filteredMitgliedOptionen.length === 0) {
-                      <mat-option disabled>Keine Mitglieder gefunden.</mat-option>
-                    }
-                  </mat-autocomplete>
-                </mat-form-field>
-
-                <mat-chip-set class="role-chips">
-                  @for (mitglied of selectedMitgliedOptionen; track mitglied.id) {
-                    <mat-chip [removable]="true" (removed)="removeMitglied(mitglied.id)">
-                      {{ mitglied.label }}
-                      <mat-icon matChipRemove>cancel</mat-icon>
-                    </mat-chip>
-                  }
-                </mat-chip-set>
-              </div>
-            </section>
-
             <section class="conditional-block">
               <h3>Dokumentation & Nachweise</h3>
 
@@ -279,51 +219,200 @@
 
               <div class="upload-row">
                 <label class="upload-label" for="fotoDokuDateien">Foto Doku Dateien</label>
-                <input id="fotoDokuDateien" type="file" multiple accept=".jpg,.jpeg,.png,.pdf" (change)="onDokumentSelected($event, 'fotoDoku')" />
-                @if (fotoDokuDateien.length > 0) {
-                  <ul class="file-list">
-                    @for (file of fotoDokuDateien; track file) {
-                      <li>{{ file }}</li>
+                <input id="fotoDokuDateien" class="file-input-hidden" type="file" multiple accept=".jpg,.jpeg,.png,.pdf" (change)="onDokumentSelected($event, 'fotoDoku')" />
+                <label for="fotoDokuDateien" class="upload-button" mat-stroked-button>Dateien auswählen</label>
+                @if (fotoDokuFiles.length > 0) {
+                  <div class="preview-grid">
+                    @for (file of fotoDokuFiles; track file; let i = $index) {
+                      <article class="preview-card">
+                        @if (file.type.startsWith('image/')) {
+                          <img class="preview-image" [src]="getFilePreviewUrl(file)" [alt]="file.name" />
+                        } @else {
+                          <div class="preview-file">PDF</div>
+                        }
+                        <div class="preview-meta">
+                          <span>{{ file.name }}</span>
+                          <button mat-stroked-button type="button" color="warn" (click)="removeSelectedDokument(i, 'fotoDoku')">Entfernen</button>
+                        </div>
+                      </article>
                     }
-                  </ul>
+                  </div>
+                }
+
+                @if (bestehendeDokuFotos.length > 0) {
+                  <div class="preview-grid existing-previews">
+                    @for (foto of bestehendeDokuFotos; track foto.id) {
+                      <article class="preview-card">
+                        @if (isImagePath(foto.foto_url)) {
+                          <img class="preview-image" [src]="foto.foto_url" [alt]="getFileNameFromPath(foto.foto_url)" />
+                        } @else {
+                          <div class="preview-file">PDF</div>
+                        }
+                        <div class="preview-meta">
+                          <a [href]="foto.foto_url" target="_blank" rel="noopener">{{ getFileNameFromPath(foto.foto_url) }}</a>
+                          <button mat-stroked-button type="button" color="warn" (click)="loescheBestehendesFoto(foto)">Löschen</button>
+                        </div>
+                      </article>
+                    }
+                  </div>
                 }
               </div>
 
               <div class="upload-row">
                 <label class="upload-label" for="zulassungDateien">Zulassungsschein Dateien</label>
-                <input id="zulassungDateien" type="file" multiple accept=".jpg,.jpeg,.png,.pdf" (change)="onDokumentSelected($event, 'zulassungsschein')" />
-                @if (zulassungDateien.length > 0) {
-                  <ul class="file-list">
-                    @for (file of zulassungDateien; track file) {
-                      <li>{{ file }}</li>
+                <input id="zulassungDateien" class="file-input-hidden" type="file" multiple accept=".jpg,.jpeg,.png,.pdf" (change)="onDokumentSelected($event, 'zulassungsschein')" />
+                <label for="zulassungDateien" class="upload-button" mat-stroked-button>Dateien auswählen</label>
+                @if (zulassungFiles.length > 0) {
+                  <div class="preview-grid">
+                    @for (file of zulassungFiles; track file; let i = $index) {
+                      <article class="preview-card">
+                        @if (file.type.startsWith('image/')) {
+                          <img class="preview-image" [src]="getFilePreviewUrl(file)" [alt]="file.name" />
+                        } @else {
+                          <div class="preview-file">PDF</div>
+                        }
+                        <div class="preview-meta">
+                          <span>{{ file.name }}</span>
+                          <button mat-stroked-button type="button" color="warn" (click)="removeSelectedDokument(i, 'zulassungsschein')">Entfernen</button>
+                        </div>
+                      </article>
                     }
-                  </ul>
+                  </div>
+                }
+
+                @if (bestehendeZulassungFotos.length > 0) {
+                  <div class="preview-grid existing-previews">
+                    @for (foto of bestehendeZulassungFotos; track foto.id) {
+                      <article class="preview-card">
+                        @if (isImagePath(foto.foto_url)) {
+                          <img class="preview-image" [src]="foto.foto_url" [alt]="getFileNameFromPath(foto.foto_url)" />
+                        } @else {
+                          <div class="preview-file">PDF</div>
+                        }
+                        <div class="preview-meta">
+                          <a [href]="foto.foto_url" target="_blank" rel="noopener">{{ getFileNameFromPath(foto.foto_url) }}</a>
+                          <button mat-stroked-button type="button" color="warn" (click)="loescheBestehendesFoto(foto)">Löschen</button>
+                        </div>
+                      </article>
+                    }
+                  </div>
                 }
               </div>
 
               <div class="upload-row">
                 <label class="upload-label" for="versicherungDateien">Versicherungsschein Dateien</label>
-                <input id="versicherungDateien" type="file" multiple accept=".jpg,.jpeg,.png,.pdf" (change)="onDokumentSelected($event, 'versicherungsschein')" />
-                @if (versicherungDateien.length > 0) {
-                  <ul class="file-list">
-                    @for (file of versicherungDateien; track file) {
-                      <li>{{ file }}</li>
+                <input id="versicherungDateien" class="file-input-hidden" type="file" multiple accept=".jpg,.jpeg,.png,.pdf" (change)="onDokumentSelected($event, 'versicherungsschein')" />
+                <label for="versicherungDateien" class="upload-button" mat-stroked-button>Dateien auswählen</label>
+                @if (versicherungFiles.length > 0) {
+                  <div class="preview-grid">
+                    @for (file of versicherungFiles; track file; let i = $index) {
+                      <article class="preview-card">
+                        @if (file.type.startsWith('image/')) {
+                          <img class="preview-image" [src]="getFilePreviewUrl(file)" [alt]="file.name" />
+                        } @else {
+                          <div class="preview-file">PDF</div>
+                        }
+                        <div class="preview-meta">
+                          <span>{{ file.name }}</span>
+                          <button mat-stroked-button type="button" color="warn" (click)="removeSelectedDokument(i, 'versicherungsschein')">Entfernen</button>
+                        </div>
+                      </article>
                     }
-                  </ul>
+                  </div>
+                }
+
+                @if (bestehendeVersicherungFotos.length > 0) {
+                  <div class="preview-grid existing-previews">
+                    @for (foto of bestehendeVersicherungFotos; track foto.id) {
+                      <article class="preview-card">
+                        @if (isImagePath(foto.foto_url)) {
+                          <img class="preview-image" [src]="foto.foto_url" [alt]="getFileNameFromPath(foto.foto_url)" />
+                        } @else {
+                          <div class="preview-file">PDF</div>
+                        }
+                        <div class="preview-meta">
+                          <a [href]="foto.foto_url" target="_blank" rel="noopener">{{ getFileNameFromPath(foto.foto_url) }}</a>
+                          <button mat-stroked-button type="button" color="warn" (click)="loescheBestehendesFoto(foto)">Löschen</button>
+                        </div>
+                      </article>
+                    }
+                  </div>
                 }
               </div>
-
-              @if (bestehendeDateien.length > 0) {
-                <div class="upload-row">
-                  <label class="upload-label">Bereits hochgeladene Dateien</label>
-                  <ul class="file-list">
-                    @for (file of bestehendeDateien; track file) {
-                      <li>{{ file }}</li>
-                    }
-                  </ul>
-                </div>
-              }
             </section>
+            </div>
+          </mat-expansion-panel>
+
+          <mat-expansion-panel class="form-section">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <span class="form-section-title">4. Fahrzeuge &amp; Mitglieder</span>
+              </mat-panel-title>
+              <mat-panel-description>
+                <span class="form-section-subtitle">Auswahl der eingesetzten Ressourcen</span>
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <div class="form-section-body">
+              <section class="grid two-col">
+                <div class="autocomplete-multi">
+                  <mat-form-field class="full-width">
+                    <mat-label>Fahrzeug hinzufügen</mat-label>
+                    <input
+                      matInput
+                      [formControl]="fahrzeugSuche"
+                      [matAutocomplete]="fahrzeugAuto"
+                      placeholder="Fahrzeugname"
+                    />
+                    <mat-autocomplete #fahrzeugAuto="matAutocomplete" (optionSelected)="onFahrzeugSelected($event)">
+                      @for (fahrzeug of filteredFahrzeugOptionen; track fahrzeug.id) {
+                        <mat-option [value]="fahrzeug.id">{{ fahrzeug.label }}</mat-option>
+                      }
+                      @if (filteredFahrzeugOptionen.length === 0) {
+                        <mat-option disabled>Keine Fahrzeuge gefunden.</mat-option>
+                      }
+                    </mat-autocomplete>
+                  </mat-form-field>
+
+                  <mat-chip-set class="role-chips">
+                    @for (fahrzeug of selectedFahrzeugOptionen; track fahrzeug.id) {
+                      <mat-chip [removable]="true" (removed)="removeFahrzeug(fahrzeug.id)">
+                        {{ fahrzeug.label }}
+                        <mat-icon matChipRemove>cancel</mat-icon>
+                      </mat-chip>
+                    }
+                  </mat-chip-set>
+                </div>
+
+                <div class="autocomplete-multi">
+                  <mat-form-field class="full-width">
+                    <mat-label>Mitglied hinzufügen</mat-label>
+                    <input
+                      matInput
+                      [formControl]="mitgliedSuche"
+                      [matAutocomplete]="mitgliedAuto"
+                      placeholder="Name oder StbNr"
+                    />
+                    <mat-autocomplete #mitgliedAuto="matAutocomplete" (optionSelected)="onMitgliedSelected($event)">
+                      @for (mitglied of filteredMitgliedOptionen; track mitglied.id) {
+                        <mat-option [value]="mitglied.id">{{ mitglied.label }}</mat-option>
+                      }
+                      @if (filteredMitgliedOptionen.length === 0) {
+                        <mat-option disabled>Keine Mitglieder gefunden.</mat-option>
+                      }
+                    </mat-autocomplete>
+                  </mat-form-field>
+
+                  <mat-chip-set class="role-chips">
+                    @for (mitglied of selectedMitgliedOptionen; track mitglied.id) {
+                      <mat-chip [removable]="true" (removed)="removeMitglied(mitglied.id)">
+                        {{ mitglied.label }}
+                        <mat-icon matChipRemove>cancel</mat-icon>
+                      </mat-chip>
+                    }
+                  </mat-chip-set>
+                </div>
+              </section>
             </div>
           </mat-expansion-panel>
         </mat-accordion>

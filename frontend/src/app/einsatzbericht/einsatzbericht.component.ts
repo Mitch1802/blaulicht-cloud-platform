@@ -24,7 +24,7 @@ type MitgliedOption = {
 };
 
 type EinsatzberichtFotoDto = {
-  id: string;
+  id: string | number;
   foto_url?: string;
   dokument_typ?: string;
 };
@@ -81,7 +81,8 @@ export class EinsatzberichtComponent implements OnInit {
   title = 'Einsatzbericht';
   breadcrumb: any[] = [];
 
-  bestehendeDateien: string[] = [];
+  bestehendeFotos: EinsatzberichtFotoDto[] = [];
+  private filePreviewUrlMap = new Map<File, string>();
 
   fotoDokuDateien: string[] = [];
   fotoDokuFiles: File[] = [];
@@ -219,6 +220,129 @@ export class EinsatzberichtComponent implements OnInit {
     return this.mitgliedOptionen.filter((mitglied) => selected.includes(mitglied.id));
   }
 
+  get bestehendeDokuFotos(): EinsatzberichtFotoDto[] {
+    return this.bestehendeFotos.filter((foto) => (foto.dokument_typ || 'ALLGEMEIN') === 'DOKU');
+  }
+
+  get bestehendeZulassungFotos(): EinsatzberichtFotoDto[] {
+    return this.bestehendeFotos.filter((foto) => foto.dokument_typ === 'ZULASSUNG');
+  }
+
+  get bestehendeVersicherungFotos(): EinsatzberichtFotoDto[] {
+    return this.bestehendeFotos.filter((foto) => foto.dokument_typ === 'VERSICHERUNG');
+  }
+
+  isImagePath(path: string | undefined): boolean {
+    if (!path) {
+      return false;
+    }
+    return /\.(jpg|jpeg|png|gif|webp|bmp|svg)(\?.*)?$/i.test(path);
+  }
+
+  getFileNameFromPath(path: string | undefined): string {
+    if (!path) {
+      return 'Datei';
+    }
+    const clean = path.split('?')[0];
+    return clean.split('/').pop() || clean;
+  }
+
+  getFilePreviewUrl(file: File): string {
+    const existing = this.filePreviewUrlMap.get(file);
+    if (existing) {
+      return existing;
+    }
+    const created = URL.createObjectURL(file);
+    this.filePreviewUrlMap.set(file, created);
+    return created;
+  }
+
+  removeSelectedDokument(index: number, dokumentTyp: 'fotoDoku' | 'zulassungsschein' | 'versicherungsschein'): void {
+    const confirmDelete = window.confirm('Datei wirklich entfernen?');
+    if (!confirmDelete) {
+      return;
+    }
+
+    if (dokumentTyp === 'fotoDoku') {
+      const removed = this.fotoDokuFiles[index];
+      if (removed) {
+        const url = this.filePreviewUrlMap.get(removed);
+        if (url) {
+          URL.revokeObjectURL(url);
+          this.filePreviewUrlMap.delete(removed);
+        }
+      }
+      this.fotoDokuFiles = this.fotoDokuFiles.filter((_, i) => i !== index);
+      this.fotoDokuDateien = this.fotoDokuFiles.map((file) => file.name);
+      return;
+    }
+
+    if (dokumentTyp === 'zulassungsschein') {
+      const removed = this.zulassungFiles[index];
+      if (removed) {
+        const url = this.filePreviewUrlMap.get(removed);
+        if (url) {
+          URL.revokeObjectURL(url);
+          this.filePreviewUrlMap.delete(removed);
+        }
+      }
+      this.zulassungFiles = this.zulassungFiles.filter((_, i) => i !== index);
+      this.zulassungDateien = this.zulassungFiles.map((file) => file.name);
+      return;
+    }
+
+    const removed = this.versicherungFiles[index];
+    if (removed) {
+      const url = this.filePreviewUrlMap.get(removed);
+      if (url) {
+        URL.revokeObjectURL(url);
+        this.filePreviewUrlMap.delete(removed);
+      }
+    }
+    this.versicherungFiles = this.versicherungFiles.filter((_, i) => i !== index);
+    this.versicherungDateien = this.versicherungFiles.map((file) => file.name);
+  }
+
+  loescheBestehendesFoto(foto: EinsatzberichtFotoDto): void {
+    const berichtId = this.formBericht.controls.id.value;
+    if (!berichtId || !foto?.id) {
+      return;
+    }
+
+    const fileName = this.getFileNameFromPath(foto.foto_url);
+    const confirmDelete = window.confirm(`Foto "${fileName}" wirklich löschen?`);
+    if (!confirmDelete) {
+      return;
+    }
+
+    this.globalDataService.delete(`einsatzberichte/${berichtId}/fotos`, foto.id).subscribe({
+      next: () => {
+        this.bestehendeFotos = this.bestehendeFotos.filter((entry) => String(entry.id) !== String(foto.id));
+        this.globalDataService.erstelleMessage('success', 'Foto gelöscht.');
+      },
+      error: (error: any) => this.globalDataService.errorAnzeigen(error),
+    });
+  }
+
+  formatListDateTime(value: string | null | undefined): string {
+    if (!value) {
+      return '';
+    }
+
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) {
+      return String(value);
+    }
+
+    const day = String(parsed.getDate()).padStart(2, '0');
+    const month = String(parsed.getMonth() + 1).padStart(2, '0');
+    const year = parsed.getFullYear();
+    const hour = String(parsed.getHours()).padStart(2, '0');
+    const minute = String(parsed.getMinutes()).padStart(2, '0');
+
+    return `${day}.${month}.${year} ${hour}:${minute}`;
+  }
+
   private normalizeDateInput(value: string | null | undefined): string {
     if (!value) {
       return '';
@@ -229,11 +353,32 @@ export class EinsatzberichtComponent implements OnInit {
       return '';
     }
 
-    if (stringValue.includes('T')) {
-      return stringValue.split('T')[0];
+    if (/^\d{4}-\d{2}-\d{2}$/.test(stringValue)) {
+      return stringValue;
     }
 
-    return stringValue;
+    if (/^\d{2}\.\d{2}\.\d{4}$/.test(stringValue)) {
+      const [day, month, year] = stringValue.split('.');
+      return `${year}-${month}-${day}`;
+    }
+
+    if (stringValue.includes('T')) {
+      const isoDate = stringValue.split('T')[0];
+      if (/^\d{4}-\d{2}-\d{2}$/.test(isoDate)) {
+        return isoDate;
+      }
+    }
+
+    const parsed = new Date(stringValue);
+    if (!Number.isNaN(parsed.getTime())) {
+      return parsed.toISOString().slice(0, 10);
+    }
+
+    return '';
+  }
+
+  private formatDateForApi(value: string | null | undefined): string {
+    return this.normalizeDateInput(value);
   }
 
   ngOnInit(): void {
@@ -303,7 +448,7 @@ export class EinsatzberichtComponent implements OnInit {
       fahrzeuge: [],
       mitglieder: [],
     });
-    this.bestehendeDateien = [];
+    this.bestehendeFotos = [];
     this.resetSuchfilter();
     this.resetDokumentUploads();
     this.updateConditionalValidation();
@@ -359,10 +504,7 @@ export class EinsatzberichtComponent implements OnInit {
       mitglieder: bericht.mitglieder || [],
     });
 
-    this.bestehendeDateien = (bericht.fotos || [])
-      .map((f) => f.foto_url || '')
-      .filter(Boolean)
-      .map((url) => url.split('/').pop() || url);
+    this.bestehendeFotos = (bericht.fotos || []);
     this.einsatzleiterSuche.setValue(this.formBericht.controls.einsatzleiter.value);
     this.resetSuchfilter();
     this.resetDokumentUploads();
@@ -445,6 +587,9 @@ export class EinsatzberichtComponent implements OnInit {
   }
 
   private resetDokumentUploads(): void {
+    this.filePreviewUrlMap.forEach((url) => URL.revokeObjectURL(url));
+    this.filePreviewUrlMap.clear();
+
     this.fotoDokuDateien = [];
     this.fotoDokuFiles = [];
     this.zulassungDateien = [];
@@ -478,7 +623,7 @@ export class EinsatzberichtComponent implements OnInit {
     fd.append('alarmstichwort', form.alarmstichwort);
     fd.append('einsatzadresse', form.einsatzadresse);
     fd.append('alarmierende_stelle', form.alarmierendeStelle);
-    fd.append('einsatz_datum', form.einsatzDatum || '');
+    fd.append('einsatz_datum', this.formatDateForApi(form.einsatzDatum));
     fd.append('ausgerueckt', form.ausgerueckt || '');
     fd.append('eingerueckt', form.eingerueckt || '');
     fd.append('lage_beim_eintreffen', form.lageBeimEintreffen);
