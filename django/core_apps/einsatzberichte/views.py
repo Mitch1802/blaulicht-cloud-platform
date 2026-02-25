@@ -57,12 +57,8 @@ class EinsatzberichtViewSet(ModelViewSet):
 
         return Response({"fahrzeuge": fahrzeuge, "mitglieder": mitglieder})
 
-    @action(detail=False, methods=["get"], url_path="blaulichtsms/prefill")
-    def blaulichtsms_prefill(self, request):
-        einsatz_id = request.query_params.get("einsatz_id", "").strip()
-        if not einsatz_id:
-            return Response({"detail": "einsatz_id fehlt."}, status=status.HTTP_400_BAD_REQUEST)
-
+    @action(detail=False, methods=["get"], url_path="blaulichtsms/letzter")
+    def blaulichtsms_letzter(self, request):
         base_url = getattr(settings, "BLAULICHTSMS_API_URL", "").strip()
         token = getattr(settings, "BLAULICHTSMS_API_TOKEN", "").strip()
         timeout = getattr(settings, "BLAULICHTSMS_TIMEOUT", 10)
@@ -76,7 +72,27 @@ class EinsatzberichtViewSet(ModelViewSet):
                 status=status.HTTP_503_SERVICE_UNAVAILABLE,
             )
 
-        url = f"{base_url.rstrip('/')}/einsaetze/{einsatz_id}"
+        candidates = [
+            f"{base_url.rstrip('/')}/einsaetze/latest",
+            f"{base_url.rstrip('/')}/einsaetze?limit=1",
+        ]
+
+        payload = None
+        for url in candidates:
+            payload = self._fetch_blaulichtsms_payload(url, token, timeout, "latest")
+            if payload:
+                break
+
+        if payload is None:
+            return Response(
+                {"detail": "Letzter BlaulichtSMS Alarm konnte nicht geladen werden."},
+                status=status.HTTP_502_BAD_GATEWAY,
+            )
+
+        mapped = self._map_blaulichtsms_payload(payload)
+        return Response({"configured": True, "mapped": mapped, "raw": payload})
+
+    def _fetch_blaulichtsms_payload(self, url: str, token: str, timeout: int, context: str):
         headers = {
             "Authorization": f"Bearer {token}",
             "Accept": "application/json",
@@ -86,14 +102,28 @@ class EinsatzberichtViewSet(ModelViewSet):
             response = requests.get(url, headers=headers, timeout=timeout)
             response.raise_for_status()
             payload = response.json() if response.content else {}
-        except requests.RequestException as exc:
-            logger.exception("BlaulichtSMS prefill failed for einsatz_id=%s", einsatz_id)
-            return Response(
-                {"detail": "BlaulichtSMS konnte nicht abgefragt werden.", "error": str(exc)},
-                status=status.HTTP_502_BAD_GATEWAY,
-            )
+        except requests.RequestException:
+            logger.exception("BlaulichtSMS request failed (%s) url=%s", context, url)
+            return None
 
-        mapped = {
+        if isinstance(payload, list):
+            return payload[0] if payload else None
+
+        if isinstance(payload, dict):
+            for key in ("results", "data", "items", "einsaetze"):
+                value = payload.get(key)
+                if isinstance(value, list) and value:
+                    return value[0]
+            return payload
+
+        return None
+
+    def _map_blaulichtsms_payload(self, payload: dict) -> dict:
+        einsatz_id = (
+            str(payload.get("einsatz_id") or payload.get("id") or "").strip()
+        )
+
+        return {
             "einsatzleiter": payload.get("einsatzleiter", ""),
             "einsatzart": payload.get("einsatzart", ""),
             "alarmstichwort": payload.get("alarmstichwort", ""),
@@ -105,5 +135,3 @@ class EinsatzberichtViewSet(ModelViewSet):
             "blaulichtsms_einsatz_id": einsatz_id,
             "blaulichtsms_payload": payload,
         }
-
-        return Response({"configured": True, "mapped": mapped, "raw": payload})

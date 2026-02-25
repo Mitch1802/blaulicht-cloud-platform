@@ -129,7 +129,6 @@ export class EinsatzberichtComponent implements OnInit {
     versicherungsschein: new FormControl<boolean>(false, { nonNullable: true }),
     fahrzeuge: new FormControl<number[]>([], { nonNullable: true }),
     mitglieder: new FormControl<number[]>([], { nonNullable: true }),
-    blaulichtsmsEinsatzId: new FormControl<string>('', { nonNullable: true }),
   });
 
   get isBrand(): boolean {
@@ -210,7 +209,6 @@ export class EinsatzberichtComponent implements OnInit {
       versicherungsschein: false,
       fahrzeuge: [],
       mitglieder: [],
-      blaulichtsmsEinsatzId: '',
     });
     this.fotoDateien = [];
     this.fotoFiles = [];
@@ -218,37 +216,26 @@ export class EinsatzberichtComponent implements OnInit {
   }
 
   uebernehmeLetztenEinsatz(): void {
-    const letzter = this.berichte[0];
-    if (!letzter) {
-      this.globalDataService.erstelleMessage('info', 'Kein vorheriger Einsatz zum Übernehmen vorhanden.');
-      this.neuerEntwurf();
-      return;
-    }
-
     this.neuerEntwurf();
-    this.formBericht.patchValue({
-      einsatzleiter: letzter.einsatzleiter || '',
-      einsatzart: letzter.einsatzart || '',
-      alarmstichwort: letzter.alarmstichwort || '',
-      einsatzadresse: letzter.einsatzadresse || '',
-      alarmierendeStelle: letzter.alarmierende_stelle || '',
-      lageBeimEintreffen: letzter.lage_beim_eintreffen || '',
-      gesetzteMassnahmen: letzter.gesetzte_massnahmen || '',
-      brandKategorie: letzter.brand_kategorie || '',
-      technischKategorie: letzter.technisch_kategorie || '',
-      geschaedigterPkw: !!letzter.geschaedigter_pkw,
-      fotoDoku: !!letzter.foto_doku,
-      zulassungsschein: !!letzter.zulassungsschein,
-      versicherungsschein: !!letzter.versicherungsschein,
-      fahrzeuge: letzter.fahrzeuge || [],
-      mitglieder: letzter.mitglieder || [],
-      blaulichtsmsEinsatzId: letzter.blaulichtsms_einsatz_id || '',
-    });
+    this.globalDataService.get<any>('einsatzberichte/blaulichtsms/letzter').subscribe({
+      next: (response: any) => {
+        const mapped = response?.mapped ?? {};
+        this.formBericht.patchValue({
+          einsatzleiter: mapped.einsatzleiter ?? '',
+          einsatzart: mapped.einsatzart ?? '',
+          alarmstichwort: mapped.alarmstichwort ?? '',
+          einsatzadresse: mapped.einsatzadresse ?? '',
+          alarmierendeStelle: mapped.alarmierende_stelle ?? '',
+          einsatzDatum: mapped.einsatz_datum ?? '',
+          ausgerueckt: mapped.ausgerueckt ?? '',
+          eingerueckt: mapped.eingerueckt ?? '',
+        });
 
-    this.updateConditionalValidation();
-    const stichwort = letzter.alarmstichwort || 'ohne Stichwort';
-    const datum = letzter.einsatz_datum || (letzter.created_at ? String(letzter.created_at).split('T')[0] : 'ohne Datum');
-    this.globalDataService.erstelleMessage('success', `Letzter Einsatz übernommen: ${stichwort} (${datum}).`);
+        this.updateConditionalValidation();
+        this.globalDataService.erstelleMessage('success', 'Letzter Alarm von BlaulichtSMS übernommen.');
+      },
+      error: (error: any) => this.globalDataService.errorAnzeigen(error),
+    });
   }
 
   berichtBearbeiten(bericht: EinsatzberichtDto): void {
@@ -274,7 +261,6 @@ export class EinsatzberichtComponent implements OnInit {
       versicherungsschein: !!bericht.versicherungsschein,
       fahrzeuge: bericht.fahrzeuge || [],
       mitglieder: bericht.mitglieder || [],
-      blaulichtsmsEinsatzId: bericht.blaulichtsms_einsatz_id || '',
     });
 
     this.fotoFiles = [];
@@ -312,34 +298,6 @@ export class EinsatzberichtComponent implements OnInit {
     this.fotoDateien = files.map(file => file.name);
   }
 
-  ladeBlaulichtSmsDaten(): void {
-    const einsatzId = this.formBericht.controls.blaulichtsmsEinsatzId.value.trim();
-    if (!einsatzId) {
-      this.globalDataService.erstelleMessage('error', 'Bitte zuerst eine BlaulichtSMS Einsatz-ID eingeben.');
-      return;
-    }
-
-    this.globalDataService.get<any>('einsatzberichte/blaulichtsms/prefill', { einsatz_id: einsatzId }).subscribe({
-      next: (response: any) => {
-        const mapped = response?.mapped ?? {};
-
-        this.formBericht.patchValue({
-          einsatzleiter: mapped.einsatzleiter ?? this.formBericht.controls.einsatzleiter.value,
-          einsatzart: mapped.einsatzart ?? this.formBericht.controls.einsatzart.value,
-          alarmstichwort: mapped.alarmstichwort ?? this.formBericht.controls.alarmstichwort.value,
-          einsatzadresse: mapped.einsatzadresse ?? this.formBericht.controls.einsatzadresse.value,
-          alarmierendeStelle: mapped.alarmierende_stelle ?? this.formBericht.controls.alarmierendeStelle.value,
-          einsatzDatum: mapped.einsatz_datum ?? this.formBericht.controls.einsatzDatum.value,
-          ausgerueckt: mapped.ausgerueckt ?? this.formBericht.controls.ausgerueckt.value,
-          eingerueckt: mapped.eingerueckt ?? this.formBericht.controls.eingerueckt.value,
-        });
-
-        this.globalDataService.erstelleMessage('success', 'BlaulichtSMS Daten übernommen.');
-      },
-      error: (error: any) => this.globalDataService.errorAnzeigen(error),
-    });
-  }
-
   speichereBericht(): void {
     if (this.formBericht.invalid) {
       this.formBericht.markAllAsTouched();
@@ -368,7 +326,6 @@ export class EinsatzberichtComponent implements OnInit {
     fd.append('foto_doku', String(form.fotoDoku));
     fd.append('zulassungsschein', String(form.zulassungsschein));
     fd.append('versicherungsschein', String(form.versicherungsschein));
-    fd.append('blaulichtsms_einsatz_id', form.blaulichtsmsEinsatzId || '');
 
     form.fahrzeuge.forEach((fahrzeugId) => fd.append('fahrzeuge', String(fahrzeugId)));
     form.mitglieder.forEach((mitgliedId) => fd.append('mitglieder', String(mitgliedId)));

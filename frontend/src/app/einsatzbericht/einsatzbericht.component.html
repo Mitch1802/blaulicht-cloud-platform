@@ -15,7 +15,6 @@
         <section class="drafts-section list-only">
           <div class="actions-row top-actions">
             <button mat-raised-button type="button" color="accent" (click)="neuerEntwurf()">Neuen Einsatz anlegen</button>
-            <button mat-stroked-button type="button" color="primary" (click)="uebernehmeLetztenEinsatz()">Letzten Einsatz übernehmen</button>
           </div>
 
           <h3>Vorhandene Einsatzberichte</h3>
@@ -61,12 +60,8 @@
           </mat-form-field>
 
           <div class="prefill-row">
-            <mat-form-field class="full-width">
-              <mat-label>BlaulichtSMS Einsatz-ID</mat-label>
-              <input matInput formControlName="blaulichtsmsEinsatzId" />
-            </mat-form-field>
-            <button mat-stroked-button type="button" color="primary" (click)="ladeBlaulichtSmsDaten()">
-              Daten übernehmen
+            <button mat-stroked-button type="button" color="accent" (click)="uebernehmeLetztenEinsatz()">
+              Letzten Alarm übernehmen
             </button>
           </div>
         </section>
