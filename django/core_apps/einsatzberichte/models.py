@@ -67,8 +67,20 @@ class Einsatzbericht(TimeStampedModel):
 
 
 class EinsatzberichtFoto(TimeStampedModel):
+    class DokumentTyp(models.TextChoices):
+        ALLGEMEIN = "ALLGEMEIN", "Allgemein"
+        DOKU = "DOKU", "Foto Doku"
+        ZULASSUNG = "ZULASSUNG", "Zulassungsschein"
+        VERSICHERUNG = "VERSICHERUNG", "Versicherungsschein"
+
     einsatzbericht = models.ForeignKey(Einsatzbericht, on_delete=models.CASCADE, related_name="fotos")
     foto = models.ImageField(_("Foto"), upload_to=einsatzbericht_foto_path)
+    dokument_typ = models.CharField(
+        _("Dokumenttyp"),
+        max_length=20,
+        choices=DokumentTyp.choices,
+        default=DokumentTyp.ALLGEMEIN,
+    )
 
     class Meta:
         ordering = ["pkid"]

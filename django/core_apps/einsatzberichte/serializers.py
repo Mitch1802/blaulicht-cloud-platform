@@ -11,7 +11,7 @@ class EinsatzberichtFotoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = EinsatzberichtFoto
-        fields = ["id", "foto", "foto_url", "created_at"]
+        fields = ["id", "foto", "foto_url", "dokument_typ", "created_at"]
         read_only_fields = ["id", "foto_url", "created_at"]
 
     def get_foto_url(self, obj):
@@ -58,6 +58,25 @@ class EinsatzberichtSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ["id", "created_at", "updated_at"]
 
+    def _create_uploaded_fotos(self, request, instance):
+        if not request:
+            return
+
+        upload_map = [
+            ("fotos", EinsatzberichtFoto.DokumentTyp.ALLGEMEIN),
+            ("fotos_doku", EinsatzberichtFoto.DokumentTyp.DOKU),
+            ("fotos_zulassung", EinsatzberichtFoto.DokumentTyp.ZULASSUNG),
+            ("fotos_versicherung", EinsatzberichtFoto.DokumentTyp.VERSICHERUNG),
+        ]
+
+        for key, dokument_typ in upload_map:
+            for f in request.FILES.getlist(key):
+                EinsatzberichtFoto.objects.create(
+                    einsatzbericht=instance,
+                    foto=f,
+                    dokument_typ=dokument_typ,
+                )
+
     def create(self, validated_data):
         request = self.context.get("request")
         fahrzeuge = validated_data.pop("fahrzeuge", [])
@@ -71,9 +90,7 @@ class EinsatzberichtSerializer(serializers.ModelSerializer):
             instance.created_by = request.user
             instance.save(update_fields=["created_by"])
 
-        if request:
-            for f in request.FILES.getlist("fotos"):
-                EinsatzberichtFoto.objects.create(einsatzbericht=instance, foto=f)
+        self._create_uploaded_fotos(request, instance)
 
         return instance
 
@@ -91,9 +108,7 @@ class EinsatzberichtSerializer(serializers.ModelSerializer):
         if mitglieder is not None:
             instance.mitglieder.set(mitglieder)
 
-        if request:
-            for f in request.FILES.getlist("fotos"):
-                EinsatzberichtFoto.objects.create(einsatzbericht=instance, foto=f)
+        self._create_uploaded_fotos(request, instance)
 
         return instance
 

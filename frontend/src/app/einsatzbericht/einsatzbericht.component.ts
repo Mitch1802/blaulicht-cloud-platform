@@ -23,6 +23,7 @@ type MitgliedOption = {
 type EinsatzberichtFotoDto = {
   id: string;
   foto_url?: string;
+  dokument_typ?: string;
 };
 
 type EinsatzberichtDto = {
@@ -74,8 +75,16 @@ export class EinsatzberichtComponent implements OnInit {
   title = 'Einsatzbericht';
   breadcrumb: any[] = [];
 
-  fotoDateien: string[] = [];
-  fotoFiles: File[] = [];
+  bestehendeDateien: string[] = [];
+
+  fotoDokuDateien: string[] = [];
+  fotoDokuFiles: File[] = [];
+
+  zulassungDateien: string[] = [];
+  zulassungFiles: File[] = [];
+
+  versicherungDateien: string[] = [];
+  versicherungFiles: File[] = [];
 
   einsatzarten = [
     'Brand',
@@ -102,6 +111,8 @@ export class EinsatzberichtComponent implements OnInit {
 
   fahrzeugOptionen: FahrzeugOption[] = [];
   mitgliedOptionen: MitgliedOption[] = [];
+  fahrzeugSuche = new FormControl<string>('', { nonNullable: true });
+  mitgliedSuche = new FormControl<string>('', { nonNullable: true });
   berichte: EinsatzberichtDto[] = [];
   viewMode: 'list' | 'form' = 'list';
 
@@ -143,6 +154,33 @@ export class EinsatzberichtComponent implements OnInit {
 
   get isTechnischPkw(): boolean {
     return this.isTechnisch && this.formBericht.controls.technischKategorie.value === 'Geschädigter PKW';
+  }
+
+  get filteredFahrzeugOptionen(): FahrzeugOption[] {
+    const search = this.fahrzeugSuche.value.trim().toLowerCase();
+    if (!search) {
+      return this.fahrzeugOptionen;
+    }
+
+    return this.fahrzeugOptionen.filter((fahrzeug) => fahrzeug.label.toLowerCase().includes(search));
+  }
+
+  get filteredMitgliedOptionen(): MitgliedOption[] {
+    const search = this.mitgliedSuche.value.trim().toLowerCase();
+    if (!search) {
+      return this.mitgliedOptionen;
+    }
+
+    return this.mitgliedOptionen.filter((mitglied) => mitglied.label.toLowerCase().includes(search));
+  }
+
+  get einsatzleiterOptionen(): string[] {
+    const options = this.mitgliedOptionen.map((mitglied) => mitglied.label);
+    const current = this.formBericht.controls.einsatzleiter.value?.trim();
+    if (current && !options.includes(current)) {
+      options.unshift(current);
+    }
+    return options;
   }
 
   ngOnInit(): void {
@@ -212,8 +250,9 @@ export class EinsatzberichtComponent implements OnInit {
       fahrzeuge: [],
       mitglieder: [],
     });
-    this.fotoDateien = [];
-    this.fotoFiles = [];
+    this.bestehendeDateien = [];
+    this.resetSuchfilter();
+    this.resetDokumentUploads();
     this.updateConditionalValidation();
   }
 
@@ -265,11 +304,12 @@ export class EinsatzberichtComponent implements OnInit {
       mitglieder: bericht.mitglieder || [],
     });
 
-    this.fotoFiles = [];
-    this.fotoDateien = (bericht.fotos || [])
+    this.bestehendeDateien = (bericht.fotos || [])
       .map((f) => f.foto_url || '')
       .filter(Boolean)
       .map((url) => url.split('/').pop() || url);
+    this.resetSuchfilter();
+    this.resetDokumentUploads();
 
     this.updateConditionalValidation();
   }
@@ -293,11 +333,39 @@ export class EinsatzberichtComponent implements OnInit {
     });
   }
 
-  onFotoDokuSelected(event: Event): void {
+  onDokumentSelected(event: Event, dokumentTyp: 'fotoDoku' | 'zulassungsschein' | 'versicherungsschein'): void {
     const input = event.target as HTMLInputElement;
     const files = input.files ? Array.from(input.files) : [];
-    this.fotoFiles = files;
-    this.fotoDateien = files.map(file => file.name);
+    const fileNames = files.map((file) => file.name);
+
+    if (dokumentTyp === 'fotoDoku') {
+      this.fotoDokuFiles = files;
+      this.fotoDokuDateien = fileNames;
+      return;
+    }
+
+    if (dokumentTyp === 'zulassungsschein') {
+      this.zulassungFiles = files;
+      this.zulassungDateien = fileNames;
+      return;
+    }
+
+    this.versicherungFiles = files;
+    this.versicherungDateien = fileNames;
+  }
+
+  private resetDokumentUploads(): void {
+    this.fotoDokuDateien = [];
+    this.fotoDokuFiles = [];
+    this.zulassungDateien = [];
+    this.zulassungFiles = [];
+    this.versicherungDateien = [];
+    this.versicherungFiles = [];
+  }
+
+  private resetSuchfilter(): void {
+    this.fahrzeugSuche.setValue('');
+    this.mitgliedSuche.setValue('');
   }
 
   speichereBericht(): void {
@@ -331,7 +399,9 @@ export class EinsatzberichtComponent implements OnInit {
 
     form.fahrzeuge.forEach((fahrzeugId) => fd.append('fahrzeuge', String(fahrzeugId)));
     form.mitglieder.forEach((mitgliedId) => fd.append('mitglieder', String(mitgliedId)));
-    this.fotoFiles.forEach((foto) => fd.append('fotos', foto));
+    this.fotoDokuFiles.forEach((foto) => fd.append('fotos_doku', foto));
+    this.zulassungFiles.forEach((foto) => fd.append('fotos_zulassung', foto));
+    this.versicherungFiles.forEach((foto) => fd.append('fotos_versicherung', foto));
 
     const request$ = berichtId
       ? this.globalDataService.patch('einsatzberichte', berichtId, fd, true)
@@ -384,8 +454,8 @@ export class EinsatzberichtComponent implements OnInit {
       fotoDoku.setValue(false);
       zulassungsschein.setValue(false);
       versicherungsschein.setValue(false);
-      this.fotoDateien = [];
-      this.fotoFiles = [];
+      this.bestehendeDateien = [];
+      this.resetDokumentUploads();
     }
 
     brandKategorie.updateValueAndValidity({ emitEvent: false });

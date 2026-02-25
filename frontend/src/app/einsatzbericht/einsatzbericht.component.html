@@ -81,7 +81,11 @@
           <section class="grid two-col">
             <mat-form-field class="full-width">
               <mat-label>Einsatzleiter</mat-label>
-              <input matInput formControlName="einsatzleiter" />
+              <mat-select formControlName="einsatzleiter">
+                @for (einsatzleiter of einsatzleiterOptionen; track einsatzleiter) {
+                  <mat-option [value]="einsatzleiter">{{ einsatzleiter }}</mat-option>
+                }
+              </mat-select>
             </mat-form-field>
 
             <mat-form-field class="full-width">
@@ -196,8 +200,20 @@
             <mat-form-field class="full-width">
               <mat-label>Fahrzeuge</mat-label>
               <mat-select formControlName="fahrzeuge" multiple>
-                @for (fahrzeug of fahrzeugOptionen; track fahrzeug.id) {
+                <mat-option class="select-search-option" disabled>
+                  <input
+                    matInput
+                    placeholder="Fahrzeug suchen..."
+                    [formControl]="fahrzeugSuche"
+                    (click)="$event.stopPropagation()"
+                    (keydown)="$event.stopPropagation()"
+                  />
+                </mat-option>
+                @for (fahrzeug of filteredFahrzeugOptionen; track fahrzeug.id) {
                   <mat-option [value]="fahrzeug.id">{{ fahrzeug.label }}</mat-option>
+                }
+                @if (filteredFahrzeugOptionen.length === 0) {
+                  <mat-option disabled>Keine Fahrzeuge gefunden.</mat-option>
                 }
               </mat-select>
             </mat-form-field>
@@ -205,8 +221,20 @@
             <mat-form-field class="full-width">
               <mat-label>Mitglieder</mat-label>
               <mat-select formControlName="mitglieder" multiple>
-                @for (mitglied of mitgliedOptionen; track mitglied.id) {
+                <mat-option class="select-search-option" disabled>
+                  <input
+                    matInput
+                    placeholder="Mitglied suchen..."
+                    [formControl]="mitgliedSuche"
+                    (click)="$event.stopPropagation()"
+                    (keydown)="$event.stopPropagation()"
+                  />
+                </mat-option>
+                @for (mitglied of filteredMitgliedOptionen; track mitglied.id) {
                   <mat-option [value]="mitglied.id">{{ mitglied.label }}</mat-option>
+                }
+                @if (filteredMitgliedOptionen.length === 0) {
+                  <mat-option disabled>Keine Mitglieder gefunden.</mat-option>
                 }
               </mat-select>
             </mat-form-field>
@@ -225,15 +253,50 @@
 
               <div class="upload-row">
                 <label class="upload-label" for="fotoDokuDateien">Foto Doku Dateien</label>
-                <input id="fotoDokuDateien" type="file" multiple accept=".jpg,.jpeg,.png,.pdf" (change)="onFotoDokuSelected($event)" />
-                @if (fotoDateien.length > 0) {
+                <input id="fotoDokuDateien" type="file" multiple accept=".jpg,.jpeg,.png,.pdf" (change)="onDokumentSelected($event, 'fotoDoku')" />
+                @if (fotoDokuDateien.length > 0) {
                   <ul class="file-list">
-                    @for (file of fotoDateien; track file) {
+                    @for (file of fotoDokuDateien; track file) {
                       <li>{{ file }}</li>
                     }
                   </ul>
                 }
               </div>
+
+              <div class="upload-row">
+                <label class="upload-label" for="zulassungDateien">Zulassungsschein Dateien</label>
+                <input id="zulassungDateien" type="file" multiple accept=".jpg,.jpeg,.png,.pdf" (change)="onDokumentSelected($event, 'zulassungsschein')" />
+                @if (zulassungDateien.length > 0) {
+                  <ul class="file-list">
+                    @for (file of zulassungDateien; track file) {
+                      <li>{{ file }}</li>
+                    }
+                  </ul>
+                }
+              </div>
+
+              <div class="upload-row">
+                <label class="upload-label" for="versicherungDateien">Versicherungsschein Dateien</label>
+                <input id="versicherungDateien" type="file" multiple accept=".jpg,.jpeg,.png,.pdf" (change)="onDokumentSelected($event, 'versicherungsschein')" />
+                @if (versicherungDateien.length > 0) {
+                  <ul class="file-list">
+                    @for (file of versicherungDateien; track file) {
+                      <li>{{ file }}</li>
+                    }
+                  </ul>
+                }
+              </div>
+
+              @if (bestehendeDateien.length > 0) {
+                <div class="upload-row">
+                  <label class="upload-label">Bereits hochgeladene Dateien</label>
+                  <ul class="file-list">
+                    @for (file of bestehendeDateien; track file) {
+                      <li>{{ file }}</li>
+                    }
+                  </ul>
+                </div>
+              }
             </section>
           }
             </div>
