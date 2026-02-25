@@ -45,6 +45,31 @@ export class UserComponent implements OnInit {
   breadcrumb: any = [];
   rollen: any = [];
 
+  private normalizeRoleKeys(raw: any): string[] {
+    let values: any[] = [];
+
+    if (Array.isArray(raw)) {
+      values = raw;
+    } else if (typeof raw === 'string') {
+      values = raw.split(',').map((v) => v.trim()).filter((v) => v !== '');
+    } else if (raw && typeof raw === 'object') {
+      values = [raw];
+    }
+
+    const extracted = values
+      .map((entry: any) => {
+        if (typeof entry === 'string') return entry.trim();
+        if (entry && typeof entry === 'object') return String(entry.key ?? entry.id ?? '').trim();
+        return '';
+      })
+      .filter((v: string) => v !== '');
+
+    const allowed = new Set((this.rollen || []).map((r: any) => String(r.key || '').trim()).filter((k: string) => k !== ''));
+    const filtered = extracted.filter((key: string) => allowed.size === 0 || allowed.has(key));
+
+    return Array.from(new Set(filtered));
+  }
+
   formAuswahl = new FormGroup({
     benutzer: new FormControl(0)
   });
@@ -97,12 +122,13 @@ export class UserComponent implements OnInit {
           const details: IBenutzer = erg.data.user;
           this.username = details.username;
           this.formModul.enable();
+          const normalizedRoles = this.normalizeRoleKeys(details.roles);
           this.formModul.setValue({
             id: details.id,
             username: details.username,
             first_name: details.first_name,
             last_name: details.last_name,
-            roles: details.roles,
+            roles: normalizedRoles,
             password1: "",
             password2: ""
           })
@@ -158,12 +184,13 @@ export class UserComponent implements OnInit {
   }
 
   datenSpeichern(): void {
-    const rollen = this.formModul.controls["roles"].value || [];
+    const rollen = this.normalizeRoleKeys(this.formModul.controls["roles"].value);
 
     if (!rollen.includes("ADMIN") && !rollen.includes("MITGLIED")) {
       rollen.push("MITGLIED");
-      this.formModul.controls["roles"].setValue(rollen);
     }
+
+    this.formModul.controls["roles"].setValue([...rollen]);
 
     const idValue = this.formModul.controls["id"].value;
     const payloadCreate = {
@@ -266,7 +293,7 @@ export class UserComponent implements OnInit {
   }
 
   rolleToggle(key: string, event: any): void {
-    const current = this.formModul.controls["roles"].value || [];
+    const current = this.normalizeRoleKeys(this.formModul.controls["roles"].value);
 
     if (event.checked && !current.includes(key)) {
       this.formModul.controls["roles"].setValue([...current, key]);
