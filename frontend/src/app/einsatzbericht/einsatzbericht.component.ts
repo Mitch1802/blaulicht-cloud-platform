@@ -12,6 +12,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTableModule } from '@angular/material/table';
 
 type FahrzeugOption = {
   id: number;
@@ -71,6 +72,7 @@ type EinsatzberichtDto = {
     MatAutocompleteModule,
     MatChipsModule,
     MatIconModule,
+    MatTableModule,
   ],
   templateUrl: './einsatzbericht.component.html',
   styleUrl: './einsatzbericht.component.sass'
@@ -123,6 +125,7 @@ export class EinsatzberichtComponent implements OnInit {
   mitgliedSuche = new FormControl<string>('', { nonNullable: true });
   berichte: EinsatzberichtDto[] = [];
   viewMode: 'list' | 'form' = 'list';
+  sichtbareSpalten: string[] = ['created_at', 'alarmstichwort', 'einsatzadresse', 'status', 'actions'];
 
   statusOptionen = [
     { key: 'ENTWURF', label: 'Entwurf' },
