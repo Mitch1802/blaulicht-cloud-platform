@@ -246,7 +246,9 @@ export class EinsatzberichtComponent implements OnInit {
     });
 
     this.updateConditionalValidation();
-    this.globalDataService.erstelleMessage('success', 'Letzter Einsatz als Entwurf übernommen.');
+    const stichwort = letzter.alarmstichwort || 'ohne Stichwort';
+    const datum = letzter.einsatz_datum || (letzter.created_at ? String(letzter.created_at).split('T')[0] : 'ohne Datum');
+    this.globalDataService.erstelleMessage('success', `Letzter Einsatz übernommen: ${stichwort} (${datum}).`);
   }
 
   berichtBearbeiten(bericht: EinsatzberichtDto): void {
