@@ -7,7 +7,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatChipsModule } from '@angular/material/chips';
@@ -45,10 +44,7 @@ type EinsatzberichtDto = {
   gesetzte_massnahmen: string;
   brand_kategorie: string;
   technisch_kategorie: string;
-  geschaedigter_pkw: boolean;
-  foto_doku: boolean;
-  zulassungsschein: boolean;
-  versicherungsschein: boolean;
+  mitalarmiert: string;
   fahrzeuge: number[];
   mitglieder: number[];
   blaulichtsms_einsatz_id: string;
@@ -67,7 +63,6 @@ type EinsatzberichtDto = {
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
-    MatCheckboxModule,
     MatExpansionModule,
     MatAutocompleteModule,
     MatChipsModule,
@@ -96,26 +91,34 @@ export class EinsatzberichtComponent implements OnInit {
   versicherungFiles: File[] = [];
 
   einsatzarten = [
-    'Brand',
-    'Technisch',
+    'Brandeinsatz',
+    'Technischer Einsatz',
+    'Schadstoffeinsatz',
+    'Brandsicherheitswache',
     'Sonstiges'
   ];
 
   brandOptionen = [
-    'Zimmerbrand',
-    'Küchenbrand',
-    'Fahrzeugbrand',
-    'Flächenbrand',
-    'Rauchentwicklung',
-    'Brandmeldeanlage'
+    'Kleinbrand',
+    'Mittelbrand',
+    'Großbrand',
+    'Brand vor Eintreffen gelöscht oder erloschen'
   ];
 
+  brandOptionBeschreibungen: Record<string, string> = {
+    'Kleinbrand': 'Kleinere Brandausbreitung, meist auf einen begrenzten Bereich beschränkt.',
+    'Mittelbrand': 'Deutliche Brandausbreitung mit erhöhtem Kräfte- und Zeitaufwand.',
+    'Großbrand': 'Umfangreicher Brand mit großem Ressourcenbedarf und längerem Einsatzverlauf.',
+    'Brand vor Eintreffen gelöscht oder erloschen': 'Der Brand war bei Eintreffen bereits gelöscht oder selbst erloschen.',
+  };
+
   technischOptionen = [
-    'Verkehrsunfall',
-    'Ölspur',
-    'Türöffnung',
-    'Unwetterschaden',
-    'Geschädigter PKW'
+    'Tiere oder Menschen gerettet/befreit',
+    'Unfall mit Schadstoffen',
+    'Unfall mit Personenschaden',
+    'VU - LKW',
+    'VU - mehr als 2 beteiligte PKW',
+    'VU - mehr als 5 Verletzte oder min. ein Todesopfer'
   ];
 
   fahrzeugOptionen: FahrzeugOption[] = [];
@@ -134,6 +137,22 @@ export class EinsatzberichtComponent implements OnInit {
     { key: 'ABGESCHLOSSEN', label: 'Abgeschlossen' },
   ];
 
+  alarmierendeStelleOptionenBasis: string[] = [
+    'AAZ / BAZ / LWZ',
+    'Eigenalarmiert',
+    'Keine Alarmiert',
+  ];
+
+  mitalarmiertOptionenBasis: string[] = [
+    'Rettungsdienst',
+    'Polizei',
+    'Gemeinde',
+    'EVN / Wiener Netze',
+    'Flughafen Wien (FBL)',
+    'ÖBB Einsatzleiter',
+    'Andere'
+  ];
+
   formBericht = new FormGroup({
     id: new FormControl<string>('', { nonNullable: true }),
     status: new FormControl<string>('ENTWURF', { nonNullable: true, validators: [Validators.required] }),
@@ -149,24 +168,18 @@ export class EinsatzberichtComponent implements OnInit {
     gesetzteMassnahmen: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
     brandKategorie: new FormControl<string>('', { nonNullable: true }),
     technischKategorie: new FormControl<string>('', { nonNullable: true }),
-    geschaedigterPkw: new FormControl<boolean>(false, { nonNullable: true }),
-    fotoDoku: new FormControl<boolean>(false, { nonNullable: true }),
-    zulassungsschein: new FormControl<boolean>(false, { nonNullable: true }),
-    versicherungsschein: new FormControl<boolean>(false, { nonNullable: true }),
+    mitalarmiert: new FormControl<string>('', { nonNullable: true }),
+    mitalarmiertText: new FormControl<string>('', { nonNullable: true }),
     fahrzeuge: new FormControl<number[]>([], { nonNullable: true }),
     mitglieder: new FormControl<number[]>([], { nonNullable: true }),
   });
 
   get isBrand(): boolean {
-    return this.formBericht.controls.einsatzart.value === 'Brand';
+    return this.formBericht.controls.einsatzart.value === 'Brandeinsatz';
   }
 
   get isTechnisch(): boolean {
-    return this.formBericht.controls.einsatzart.value === 'Technisch';
-  }
-
-  get isTechnischPkw(): boolean {
-    return this.isTechnisch && this.formBericht.controls.technischKategorie.value === 'Geschädigter PKW';
+    return this.formBericht.controls.einsatzart.value === 'Technischer Einsatz';
   }
 
   get filteredFahrzeugOptionen(): FahrzeugOption[] {
@@ -215,6 +228,27 @@ export class EinsatzberichtComponent implements OnInit {
     return this.einsatzleiterOptionen.filter((einsatzleiter) => einsatzleiter.toLowerCase().includes(search));
   }
 
+  get alarmierendeStelleOptionen(): string[] {
+    const current = this.formBericht.controls.alarmierendeStelle.value?.trim();
+    if (current && !this.alarmierendeStelleOptionenBasis.includes(current)) {
+      return [current, ...this.alarmierendeStelleOptionenBasis];
+    }
+    return this.alarmierendeStelleOptionenBasis;
+  }
+
+  get mitalarmiertOptionen(): string[] {
+    return this.mitalarmiertOptionenBasis;
+  }
+
+  get isMitalarmiertAndere(): boolean {
+    return this.formBericht.controls.mitalarmiert.value === 'Andere';
+  }
+
+  get selectedBrandBeschreibung(): string {
+    const key = this.formBericht.controls.brandKategorie.value;
+    return this.brandOptionBeschreibungen[key] || '';
+  }
+
   get selectedFahrzeugOptionen(): FahrzeugOption[] {
     const selected = this.formBericht.controls.fahrzeuge.value;
     return this.fahrzeugOptionen.filter((fahrzeug) => selected.includes(fahrzeug.id));
@@ -260,6 +294,13 @@ export class EinsatzberichtComponent implements OnInit {
     const created = URL.createObjectURL(file);
     this.filePreviewUrlMap.set(file, created);
     return created;
+  }
+
+  openFoto(url: string | undefined): void {
+    if (!url) {
+      return;
+    }
+    window.open(url, '_blank');
   }
 
   removeSelectedDokument(index: number, dokumentTyp: 'fotoDoku' | 'zulassungsschein' | 'versicherungsschein'): void {
@@ -399,6 +440,10 @@ export class EinsatzberichtComponent implements OnInit {
       this.updateConditionalValidation();
     });
 
+    this.formBericht.controls.mitalarmiert.valueChanges.subscribe(() => {
+      this.updateConditionalValidation();
+    });
+
     this.updateConditionalValidation();
 
     this.globalDataService.get<any>('einsatzberichte/context').subscribe({
@@ -465,10 +510,8 @@ export class EinsatzberichtComponent implements OnInit {
       gesetzteMassnahmen: '',
       brandKategorie: '',
       technischKategorie: '',
-      geschaedigterPkw: false,
-      fotoDoku: false,
-      zulassungsschein: false,
-      versicherungsschein: false,
+      mitalarmiert: '',
+      mitalarmiertText: '',
       fahrzeuge: [],
       mitglieder: [],
     });
@@ -520,10 +563,8 @@ export class EinsatzberichtComponent implements OnInit {
       gesetzteMassnahmen: bericht.gesetzte_massnahmen || '',
       brandKategorie: bericht.brand_kategorie || '',
       technischKategorie: bericht.technisch_kategorie || '',
-      geschaedigterPkw: !!bericht.geschaedigter_pkw,
-      fotoDoku: !!bericht.foto_doku,
-      zulassungsschein: !!bericht.zulassungsschein,
-      versicherungsschein: !!bericht.versicherungsschein,
+      mitalarmiert: this.resolveMitalarmiertSelectValue(bericht.mitalarmiert || ''),
+      mitalarmiertText: this.resolveMitalarmiertTextValue(bericht.mitalarmiert || ''),
       fahrzeuge: bericht.fahrzeuge || [],
       mitglieder: bericht.mitglieder || [],
     });
@@ -677,12 +718,12 @@ export class EinsatzberichtComponent implements OnInit {
     fd.append('eingerueckt', form.eingerueckt || '');
     fd.append('lage_beim_eintreffen', form.lageBeimEintreffen);
     fd.append('gesetzte_massnahmen', form.gesetzteMassnahmen);
-    fd.append('brand_kategorie', form.brandKategorie || '');
+    fd.append('brand_kategorie', this.isBrand ? (form.brandKategorie || '') : '');
     fd.append('technisch_kategorie', form.technischKategorie || '');
-    fd.append('geschaedigter_pkw', String(form.geschaedigterPkw));
-    fd.append('foto_doku', String(form.fotoDoku));
-    fd.append('zulassungsschein', String(form.zulassungsschein));
-    fd.append('versicherungsschein', String(form.versicherungsschein));
+    const mitalarmiertValue = form.mitalarmiert === 'Andere'
+      ? (form.mitalarmiertText || '').trim()
+      : (form.mitalarmiert || '');
+    fd.append('mitalarmiert', mitalarmiertValue);
 
     form.fahrzeuge.forEach((fahrzeugId) => fd.append('fahrzeuge', String(fahrzeugId)));
     form.mitglieder.forEach((mitgliedId) => fd.append('mitglieder', String(mitgliedId)));
@@ -708,41 +749,56 @@ export class EinsatzberichtComponent implements OnInit {
   private updateConditionalValidation(): void {
     const brandKategorie = this.formBericht.controls.brandKategorie;
     const technischKategorie = this.formBericht.controls.technischKategorie;
-    const geschaedigterPkw = this.formBericht.controls.geschaedigterPkw;
-    const fotoDoku = this.formBericht.controls.fotoDoku;
-    const zulassungsschein = this.formBericht.controls.zulassungsschein;
-    const versicherungsschein = this.formBericht.controls.versicherungsschein;
+    const mitalarmiertText = this.formBericht.controls.mitalarmiertText;
 
     brandKategorie.clearValidators();
     technischKategorie.clearValidators();
-    geschaedigterPkw.clearValidators();
-    fotoDoku.clearValidators();
-    zulassungsschein.clearValidators();
-    versicherungsschein.clearValidators();
+    mitalarmiertText.clearValidators();
 
     if (this.isBrand) {
       brandKategorie.setValidators([Validators.required]);
       technischKategorie.setValue('');
-      geschaedigterPkw.setValue(false);
+    } else {
+      brandKategorie.setValue('');
     }
 
     if (this.isTechnisch) {
       technischKategorie.setValidators([Validators.required]);
       brandKategorie.setValue('');
+    } else {
+      technischKategorie.setValue('');
     }
 
-    if (this.isTechnischPkw) {
-      geschaedigterPkw.setValidators([Validators.requiredTrue]);
-      fotoDoku.setValidators([Validators.requiredTrue]);
-      zulassungsschein.setValidators([Validators.requiredTrue]);
-      versicherungsschein.setValidators([Validators.requiredTrue]);
+    if (this.isMitalarmiertAndere) {
+      mitalarmiertText.setValidators([Validators.required]);
+    } else {
+      mitalarmiertText.setValue('');
     }
 
     brandKategorie.updateValueAndValidity({ emitEvent: false });
     technischKategorie.updateValueAndValidity({ emitEvent: false });
-    geschaedigterPkw.updateValueAndValidity({ emitEvent: false });
-    fotoDoku.updateValueAndValidity({ emitEvent: false });
-    zulassungsschein.updateValueAndValidity({ emitEvent: false });
-    versicherungsschein.updateValueAndValidity({ emitEvent: false });
+    mitalarmiertText.updateValueAndValidity({ emitEvent: false });
+  }
+
+  private resolveMitalarmiertSelectValue(value: string): string {
+    const trimmed = String(value || '').trim();
+    if (!trimmed) {
+      return '';
+    }
+    if (this.mitalarmiertOptionenBasis.includes(trimmed)) {
+      return trimmed;
+    }
+    return 'Andere';
+  }
+
+  private resolveMitalarmiertTextValue(value: string): string {
+    const trimmed = String(value || '').trim();
+    if (!trimmed) {
+      return '';
+    }
+    if (this.mitalarmiertOptionenBasis.includes(trimmed)) {
+      return '';
+    }
+    return trimmed;
   }
 }

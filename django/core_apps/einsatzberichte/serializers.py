@@ -44,10 +44,7 @@ class EinsatzberichtSerializer(serializers.ModelSerializer):
             "gesetzte_massnahmen",
             "brand_kategorie",
             "technisch_kategorie",
-            "geschaedigter_pkw",
-            "foto_doku",
-            "zulassungsschein",
-            "versicherungsschein",
+            "mitalarmiert",
             "blaulichtsms_einsatz_id",
             "blaulichtsms_payload",
             "fahrzeuge",
@@ -57,6 +54,21 @@ class EinsatzberichtSerializer(serializers.ModelSerializer):
             "updated_at",
         ]
         read_only_fields = ["id", "created_at", "updated_at"]
+
+    def validate(self, attrs):
+        instance = getattr(self, "instance", None)
+        einsatzart = attrs.get("einsatzart", getattr(instance, "einsatzart", ""))
+        brand_kategorie = attrs.get("brand_kategorie", getattr(instance, "brand_kategorie", ""))
+
+        is_brandeinsatz = str(einsatzart).strip() in {"Brandeinsatz", "Brand"}
+
+        if is_brandeinsatz:
+            if not str(brand_kategorie or "").strip():
+                raise serializers.ValidationError({"brand_kategorie": "Brand Kategorie ist bei Brandeinsatz erforderlich."})
+        else:
+            attrs["brand_kategorie"] = ""
+
+        return attrs
 
     def _create_uploaded_fotos(self, request, instance):
         if not request:

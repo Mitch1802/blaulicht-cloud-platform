@@ -128,7 +128,11 @@
 
             <mat-form-field class="full-width">
               <mat-label>Alarmierende Stelle</mat-label>
-              <input matInput formControlName="alarmierendeStelle" />
+              <mat-select formControlName="alarmierendeStelle">
+                @for (stelle of alarmierendeStelleOptionen; track stelle) {
+                  <mat-option [value]="stelle">{{ stelle }}</mat-option>
+                }
+              </mat-select>
             </mat-form-field>
           </section>
 
@@ -149,33 +153,6 @@
             </mat-form-field>
           </section>
 
-          @if (isBrand) {
-            <section class="conditional-block">
-              <h3>Brand-Details</h3>
-              <mat-form-field class="full-width">
-                <mat-label>Brand Kategorie</mat-label>
-                <mat-select formControlName="brandKategorie">
-                  @for (opt of brandOptionen; track opt) {
-                    <mat-option [value]="opt">{{ opt }}</mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
-            </section>
-          }
-
-          @if (isTechnisch) {
-            <section class="conditional-block">
-              <h3>Technische-Details</h3>
-              <mat-form-field class="full-width">
-                <mat-label>Technische Kategorie</mat-label>
-                <mat-select formControlName="technischKategorie">
-                  @for (opt of technischOptionen; track opt) {
-                    <mat-option [value]="opt">{{ opt }}</mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
-            </section>
-          }
             </div>
           </mat-expansion-panel>
 
@@ -207,7 +184,70 @@
           <mat-expansion-panel class="form-section">
             <mat-expansion-panel-header>
               <mat-panel-title>
-                <span class="form-section-title">3. Dokumentation</span>
+                <span class="form-section-title">3. Einsatzspezifisch</span>
+              </mat-panel-title>
+              <mat-panel-description>
+                <span class="form-section-subtitle">Brand/Technik und mitalarmierte Stelle</span>
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <div class="form-section-body">
+              <section class="grid two-col">
+                <div class="conditional-block">
+                  @if (isBrand) {
+                    <h3>Brand-Details</h3>
+                    <mat-form-field class="full-width">
+                      <mat-label>Brand Kategorie</mat-label>
+                      <mat-select formControlName="brandKategorie">
+                        @for (opt of brandOptionen; track opt) {
+                          <mat-option [value]="opt">{{ opt }}</mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
+                    @if (selectedBrandBeschreibung) {
+                      <p class="selection-description">{{ selectedBrandBeschreibung }}</p>
+                    }
+                  } @else if (isTechnisch) {
+                    <h3>Technische-Details</h3>
+                    <mat-form-field class="full-width">
+                      <mat-label>Technische Kategorie</mat-label>
+                      <mat-select formControlName="technischKategorie">
+                        @for (opt of technischOptionen; track opt) {
+                          <mat-option [value]="opt">{{ opt }}</mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
+                  } @else {
+                    <h3>Einsatzspezifische Details</h3>
+                    <p class="empty">Für diese Einsatzart gibt es keine zusätzlichen Kategorien.</p>
+                  }
+                </div>
+
+                <div class="conditional-block">
+                  <h3>Mitalarmiert</h3>
+                  <mat-form-field class="full-width">
+                    <mat-label>Mitalarmiert</mat-label>
+                    <mat-select formControlName="mitalarmiert">
+                      @for (opt of mitalarmiertOptionen; track opt) {
+                        <mat-option [value]="opt">{{ opt }}</mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+                  @if (isMitalarmiertAndere) {
+                    <mat-form-field class="full-width">
+                      <mat-label>Andere mitalarmierte Stelle</mat-label>
+                      <input matInput formControlName="mitalarmiertText" />
+                    </mat-form-field>
+                  }
+                </div>
+              </section>
+            </div>
+          </mat-expansion-panel>
+
+          <mat-expansion-panel class="form-section">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <span class="form-section-title">4. Dokumentation</span>
               </mat-panel-title>
               <mat-panel-description>
                 <span class="form-section-subtitle">Foto-Doku und Nachweise</span>
@@ -217,13 +257,6 @@
             <div class="form-section-body">
             <section class="conditional-block">
               <h3>Dokumentation & Nachweise</h3>
-
-              <div class="checkbox-grid">
-                <mat-checkbox formControlName="geschaedigterPkw">Geschädigter PKW erfasst</mat-checkbox>
-                <mat-checkbox formControlName="fotoDoku">Foto Doku vorhanden</mat-checkbox>
-                <mat-checkbox formControlName="zulassungsschein">Zulassungsschein vorhanden</mat-checkbox>
-                <mat-checkbox formControlName="versicherungsschein">Versicherungsschein vorhanden</mat-checkbox>
-              </div>
 
               <div class="upload-row">
                 <label class="upload-label" for="fotoDokuDateien">Foto Doku Dateien</label>
@@ -239,7 +272,7 @@
                           <div class="preview-file">PDF</div>
                         }
                         <div class="preview-meta">
-                          <span>{{ file.name }}</span>
+                          <button mat-stroked-button type="button" color="primary" (click)="openFoto(getFilePreviewUrl(file))">Bild öffnen</button>
                           <button mat-stroked-button type="button" color="warn" (click)="removeSelectedDokument(i, 'fotoDoku')">Entfernen</button>
                         </div>
                       </article>
@@ -257,7 +290,7 @@
                           <div class="preview-file">PDF</div>
                         }
                         <div class="preview-meta">
-                          <a [href]="foto.foto_url" target="_blank" rel="noopener">{{ getFileNameFromPath(foto.foto_url) }}</a>
+                          <button mat-stroked-button type="button" color="primary" (click)="openFoto(foto.foto_url)">Bild öffnen</button>
                           <button mat-stroked-button type="button" color="warn" (click)="loescheBestehendesFoto(foto)">Löschen</button>
                         </div>
                       </article>
@@ -280,7 +313,7 @@
                           <div class="preview-file">PDF</div>
                         }
                         <div class="preview-meta">
-                          <span>{{ file.name }}</span>
+                          <button mat-stroked-button type="button" color="primary" (click)="openFoto(getFilePreviewUrl(file))">Bild öffnen</button>
                           <button mat-stroked-button type="button" color="warn" (click)="removeSelectedDokument(i, 'zulassungsschein')">Entfernen</button>
                         </div>
                       </article>
@@ -298,7 +331,7 @@
                           <div class="preview-file">PDF</div>
                         }
                         <div class="preview-meta">
-                          <a [href]="foto.foto_url" target="_blank" rel="noopener">{{ getFileNameFromPath(foto.foto_url) }}</a>
+                          <button mat-stroked-button type="button" color="primary" (click)="openFoto(foto.foto_url)">Bild öffnen</button>
                           <button mat-stroked-button type="button" color="warn" (click)="loescheBestehendesFoto(foto)">Löschen</button>
                         </div>
                       </article>
@@ -321,7 +354,7 @@
                           <div class="preview-file">PDF</div>
                         }
                         <div class="preview-meta">
-                          <span>{{ file.name }}</span>
+                          <button mat-stroked-button type="button" color="primary" (click)="openFoto(getFilePreviewUrl(file))">Bild öffnen</button>
                           <button mat-stroked-button type="button" color="warn" (click)="removeSelectedDokument(i, 'versicherungsschein')">Entfernen</button>
                         </div>
                       </article>
@@ -339,7 +372,7 @@
                           <div class="preview-file">PDF</div>
                         }
                         <div class="preview-meta">
-                          <a [href]="foto.foto_url" target="_blank" rel="noopener">{{ getFileNameFromPath(foto.foto_url) }}</a>
+                          <button mat-stroked-button type="button" color="primary" (click)="openFoto(foto.foto_url)">Bild öffnen</button>
                           <button mat-stroked-button type="button" color="warn" (click)="loescheBestehendesFoto(foto)">Löschen</button>
                         </div>
                       </article>
@@ -354,7 +387,7 @@
           <mat-expansion-panel class="form-section">
             <mat-expansion-panel-header>
               <mat-panel-title>
-                <span class="form-section-title">4. Fahrzeuge &amp; Mitglieder</span>
+                <span class="form-section-title">5. Fahrzeuge &amp; Mitglieder</span>
               </mat-panel-title>
               <mat-panel-description>
                 <span class="form-section-subtitle">Auswahl der eingesetzten Ressourcen</span>

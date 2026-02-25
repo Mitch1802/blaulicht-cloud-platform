@@ -37,11 +37,7 @@ class Einsatzbericht(TimeStampedModel):
 
     brand_kategorie = models.CharField(_("Brand Kategorie"), max_length=120, blank=True, default="")
     technisch_kategorie = models.CharField(_("Technisch Kategorie"), max_length=120, blank=True, default="")
-
-    geschaedigter_pkw = models.BooleanField(_("Geschädigter PKW"), default=False)
-    foto_doku = models.BooleanField(_("Foto Doku"), default=False)
-    zulassungsschein = models.BooleanField(_("Zulassungsschein"), default=False)
-    versicherungsschein = models.BooleanField(_("Versicherungsschein"), default=False)
+    mitalarmiert = models.CharField(_("Mitalarmiert"), max_length=120, blank=True, default="")
 
     status = models.CharField(_("Status"), choices=Status.choices, default=Status.ENTWURF, max_length=20)
 
