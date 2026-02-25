@@ -2,9 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatSnackBarHorizontalPosition } from '@angular/material/snack-bar';
-import { MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 import { Observable, BehaviorSubject, finalize } from 'rxjs';
 import { environment } from "src/environments/environment";
 
@@ -16,6 +14,13 @@ export class GlobalDataService {
   private http = inject(HttpClient);
   private router = inject(Router);
   private _snackBar = inject(MatSnackBar);
+
+  private readonly snackBarBaseClass = 'app-snackbar';
+  private readonly snackBarTypeClassMap: Record<string, string> = {
+    success: 'app-snackbar--success',
+    info: 'app-snackbar--info',
+    error: 'app-snackbar--error',
+  };
 
   Demo = false;
   Author = "Ing. M. Reichenauer";
@@ -476,15 +481,8 @@ export class GlobalDataService {
   erstelleMessage(art: string, msg: string) {
     const horizontalPosition: MatSnackBarHorizontalPosition = 'center';
     const verticalPosition: MatSnackBarVerticalPosition = 'bottom';
-    let panelClass = '';
-
-    if (art == 'success') {
-      panelClass = 'msg-snackbar-success';
-    } else if (art == 'info') {
-      panelClass = 'msg-snackbar-info';
-    } else if (art == 'error') {
-      panelClass = 'msg-snackbar-error';
-    }
+    const variantClass = this.snackBarTypeClassMap[art] ?? this.snackBarTypeClassMap.info;
+    const panelClass = [this.snackBarBaseClass, variantClass];
 
     this._snackBar.open(msg, 'X', {
       horizontalPosition: horizontalPosition,

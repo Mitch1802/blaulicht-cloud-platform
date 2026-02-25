@@ -155,32 +155,41 @@ mat-select
     margin: 0px
     padding: 0px
 
-.msg-snackbar-success
-    --mdc-snackbar-supporting-text-size: 1.2rem
-    --mdc-snackbar-container-color: #{theme.$app-success}
-    --mdc-snackbar-supporting-text-color: white
-    --mat-snack-bar-button-color: white
+.app-snackbar
+    --mdc-snackbar-supporting-text-size: 1rem
+    --mdc-snackbar-supporting-text-line-height: 1.35rem
+    --mdc-snackbar-supporting-text-color: #fff
+    --mat-snack-bar-button-color: #fff
+    border-radius: .75rem !important
     white-space: pre-line !important
-    word-wrap: break-word !important
-    opacity: 0.8 !important
+    word-break: break-word !important
+    box-shadow: 0 10px 24px rgba(0, 0, 0, .28) !important
+    opacity: .96 !important
+
+    .mdc-snackbar__surface
+        border-left: 5px solid rgba(255, 255, 255, .55)
+
+.app-snackbar--success
+    --mdc-snackbar-container-color: #{theme.$app-success}
+
+.app-snackbar--info
+    --mdc-snackbar-container-color: #{theme.$app-primary}
+
+.app-snackbar--error
+    --mdc-snackbar-container-color: #{theme.$app-error}
+
+// Backward compatibility (falls noch ältere panelClass-Namen verwendet werden)
+.msg-snackbar-success
+    @extend .app-snackbar
+    @extend .app-snackbar--success
 
 .msg-snackbar-info
-    --mdc-snackbar-supporting-text-size: 1.2rem
-    --mdc-snackbar-container-color: #{theme.$app-error}
-    --mdc-snackbar-supporting-text-color: black
-    --mat-snack-bar-button-color: black
-    white-space: pre-line !important
-    word-wrap: break-word !important
-    opacity: 0.8 !important
+    @extend .app-snackbar
+    @extend .app-snackbar--info
 
 .msg-snackbar-error
-    --mdc-snackbar-supporting-text-size: 1.2rem
-    --mdc-snackbar-container-color: #{theme.$app-error}
-    --mdc-snackbar-supporting-text-color: white
-    --mat-snack-bar-button-color: white
-    white-space: pre-line !important
-    word-wrap: break-word !important
-    opacity: 0.8 !important
+    @extend .app-snackbar
+    @extend .app-snackbar--error
 
 .footer
     color: grey
