@@ -194,6 +194,7 @@ export class UserComponent implements OnInit {
 
     const idValue = this.formModul.controls["id"].value;
     const payloadCreate = {
+      id: this.formModul.controls["id"].value || '',
       username: this.formModul.controls["username"].value || '',
       first_name: this.formModul.controls["first_name"].value || '',
       last_name: this.formModul.controls["last_name"].value || '',
@@ -203,10 +204,11 @@ export class UserComponent implements OnInit {
     };
 
     const payloadUpdate = {
+      id: this.formModul.controls["id"].value || '',
       username: this.formModul.controls["username"].value || '',
       first_name: this.formModul.controls["first_name"].value || '',
       last_name: this.formModul.controls["last_name"].value || '',
-      roles: rollen
+      roles: rollen,
     };
 
     if (idValue === '' || idValue === null) {
