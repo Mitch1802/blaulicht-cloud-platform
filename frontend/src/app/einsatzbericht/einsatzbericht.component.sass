@@ -17,20 +17,20 @@
 .settings-card
     margin-bottom: 1rem
     border-radius: .9rem
-
-    mat-card-content
-        padding-top: .5rem
+    border: 1px solid rgba(theme.$app-border, .95)
 
 .section-head
     display: flex
     align-items: center
     justify-content: space-between
     padding: 1rem 1rem 0
+    margin-bottom: .2rem
 
     h2
         margin: 0
         color: theme.$app-primary
-        font-size: 1.1rem
+        font-size: 1.14rem
+        letter-spacing: .1px
 
 .bericht-form
     margin-top: .2rem
@@ -41,10 +41,20 @@
     margin-bottom: .9rem
 
 .form-section
-    border: 1px solid rgba(0, 0, 0, .08)
-    border-radius: .75rem !important
-    background: #fff
-    box-shadow: none !important
+    border: 1px solid rgba(theme.$app-border, .95)
+    border-radius: .75rem
+    background: rgba(theme.$app-surface, .92)
+    box-shadow: none
+    overflow: hidden
+
+    &:hover
+        border-color: rgba(theme.$app-primary, .3)
+
+    .mat-expansion-panel-header
+        background: rgba(theme.$app-surface-variant, .62)
+
+        &:hover
+            background: rgba(theme.$app-surface-variant, .78)
 
 .form-section-title
     color: theme.$app-primary
@@ -56,6 +66,7 @@
 
 .form-section-body
     margin-top: .35rem
+    padding-top: .2rem
 
 .grid
     display: grid
@@ -76,11 +87,11 @@
     width: 100%
 
 .conditional-block
-    border: 1px solid rgba(0, 0, 0, .08)
+    border: 1px solid rgba(theme.$app-border, .95)
     border-radius: .7rem
     padding: .8rem
     margin-bottom: .85rem
-    background: #fff
+    background: rgba(theme.$app-surface, .9)
 
     h3
         margin: 0 0 .65rem
@@ -110,11 +121,13 @@
 
 .upload-row
     margin-top: .7rem
+    padding: 0
 
 .upload-label
     font-weight: 600
     display: inline-block
     margin-bottom: .35rem
+    color: theme.$app-primary
 
 .file-input-hidden
     position: absolute
@@ -130,12 +143,13 @@
     display: inline-flex
     align-items: center
     justify-content: center
-    border: 1px solid rgba(0, 0, 0, .2)
+    border: 1px solid rgba(theme.$app-border, .95)
     border-radius: .45rem
     padding: .38rem .7rem
+    margin-left: .5rem
     cursor: pointer
     font-size: .86rem
-    background: #fff
+    background: rgba(theme.$app-surface, .95)
 
 .file-list
     margin: .45rem 0 0
@@ -148,10 +162,11 @@
     margin-top: .6rem
 
 .preview-card
-    border: 1px solid rgba(0, 0, 0, .1)
+    border: 1px solid rgba(theme.$app-border, .95)
     border-radius: .55rem
-    background: #fff
+    background: rgba(theme.$app-surface, .94)
     overflow: hidden
+    box-shadow: 0 3px 12px rgba(theme.$app-primary-dark, .08)
 
 .preview-image
     width: 100%
@@ -168,9 +183,17 @@
     color: theme.$app-primary
 
 .preview-meta
-    display: grid
-    gap: .35rem
+    display: flex
+    align-items: center
+    justify-content: flex-end
+    gap: .2rem
     padding: .45rem
+    border-top: 1px solid rgba(theme.$app-border, .72)
+
+    .mat-mdc-icon-button
+        width: 32px
+        height: 32px
+        padding: 4px
 
     a,
     span
@@ -178,6 +201,27 @@
         overflow: hidden
         text-overflow: ellipsis
         white-space: nowrap
+
+.documentation-block
+    border: 0
+
+    .upload-button,
+    .preview-card
+        border: 0
+
+    .upload-button
+        background: rgba(theme.$app-primary, .18)
+        color: theme.$app-primary-dark
+        font-weight: 600
+
+        &:hover
+            background: rgba(theme.$app-primary, .28)
+
+    .preview-card
+        box-shadow: none
+
+    .preview-meta
+        border-top: 0
 
 .existing-previews
     margin-top: .4rem
@@ -211,6 +255,7 @@
     flex-wrap: wrap
     gap: .6rem
     margin: .25rem 0 .8rem
+    justify-content: flex-start
 
 .form-actions
     display: flex
@@ -218,11 +263,17 @@
     gap: .6rem
     margin-bottom: .8rem
 
+    button
+        min-width: 210px
+
 .top-actions
     display: flex
     gap: .6rem
     flex-wrap: wrap
     margin: .25rem 0 .8rem
+
+    button
+        min-width: 190px
 
 .drafts-section
     margin-top: 1.2rem
@@ -235,23 +286,43 @@
     &.list-only
         margin-top: .2rem
 
+.list-title
+    display: inline-flex
+    align-items: center
+    gap: .45rem
+
+    &::before
+        content: ''
+        width: .5rem
+        height: .5rem
+        border-radius: 999px
+        background: theme.$app-primary
+
 .draft-list
     display: grid
     gap: .5rem
 
 .draft-item
-    border: 1px solid rgba(0, 0, 0, .08)
+    border: 1px solid rgba(theme.$app-border, .95)
     border-radius: .5rem
     padding: .6rem
     display: flex
     justify-content: space-between
     gap: .8rem
     align-items: center
-    background: #fff
+    background: rgba(theme.$app-surface, .92)
+    transition: border-color .15s ease, box-shadow .15s ease
+
+    &:hover
+        border-color: rgba(theme.$app-primary, .3)
+        box-shadow: 0 6px 18px rgba(theme.$app-primary-dark, .11)
 
 .draft-main
     display: grid
     gap: .2rem
+
+    strong
+        color: theme.$app-primary
 
     span
         opacity: .85
@@ -268,12 +339,14 @@
 .status-badge
     border-radius: 999px
     padding: .15rem .55rem
-    background: rgba(0, 0, 0, .08)
+    background: rgba(theme.$app-warning, .22)
+    color: theme.$app-primary-deep
     font-weight: 600
     font-size: .78rem
 
     &.done
-        background: rgba(theme.$app-primary, .16)
+        background: rgba(theme.$app-success, .16)
+        color: theme.$app-success
 
 .empty
     opacity: .75
@@ -300,12 +373,8 @@
         h2
             font-size: 1rem
 
-    .settings-card
-        mat-card-content
-            padding: .35rem .25rem .25rem
-
     .form-section
-        border-radius: .6rem !important
+        border-radius: .6rem
 
     .form-section-subtitle
         display: none
@@ -318,6 +387,10 @@
     .top-actions
         button
             width: 100%
+            min-width: 0
+
+    .upload-row
+        padding: .55rem .55rem .5rem
 
     .draft-item
         flex-direction: column

@@ -12,8 +12,8 @@
 
     <mat-card-content>
       <form [formGroup]="formAuswahl" (ngSubmit)="auswahlBearbeiten()" [hidden]="!formModul.disabled">
-        <section class="row selector-row">
-          <div class="col-12 col-lg-9">
+        <section class="app-grid selector-row">
+          <div class="app-col-12 app-col-lg-9">
             <mat-form-field class="full-width">
               <mat-label>Benutzer auswählen</mat-label>
               <mat-select formControlName="benutzer">
@@ -23,10 +23,10 @@
               </mat-select>
             </mat-form-field>
           </div>
-          <div class="col-12 col-lg-3 selector-action">
+          <div class="app-col-12 app-col-lg-3 selector-action">
             <button
               type="submit"
-              mat-raised-button
+              mat-flat-button
               color="primary"
               [disabled]="!formAuswahl.controls['benutzer'].value"
             >
@@ -37,7 +37,7 @@
       </form>
 
       <div class="top-actions" [hidden]="!formModul.disabled">
-        <button mat-raised-button color="accent" (click)="neueDetails()" type="button">
+        <button mat-flat-button color="accent" (click)="neueDetails()" type="button">
           Hinzufügen
         </button>
       </div>
@@ -46,10 +46,10 @@
         <input hidden type="text" class="form-control" formControlName="id" />
 
         <div class="form-actions">
-          <button mat-raised-button color="accent" [hidden]="!formModul.valid" type="submit">
+          <button mat-flat-button color="accent" [hidden]="!formModul.valid" type="submit">
             Daten speichern
           </button>
-          <button mat-raised-button color="primary" [hidden]="formModul.disabled" type="button" (click)="abbrechen()">
+          <button mat-flat-button color="primary" [hidden]="formModul.disabled" type="button" (click)="abbrechen()">
             Abbrechen
           </button>
         </div>
@@ -57,8 +57,8 @@
         @if (username === "admin") {
           <input hidden type="text" formControlName="username" />
         } @else {
-          <section class="row form-grid">
-            <div class="col-12 col-lg-6 mb-3">
+          <section class="app-grid form-grid">
+            <div class="app-col-12 app-col-lg-6 mb-3">
               <mat-form-field hintLabel="* Pflichtfeld" class="full-width">
                 <mat-label>Benutzername</mat-label>
                 <input matInput type="text" formControlName="username" />
@@ -70,8 +70,8 @@
           </section>
         }
 
-        <section class="row form-grid">
-          <div class="col-12 col-lg-6 mb-3">
+        <section class="app-grid form-grid">
+          <div class="app-col-12 app-col-lg-6 mb-3">
             <mat-form-field hintLabel="* Pflichtfeld" class="full-width">
               <mat-label>Vorname</mat-label>
               <input matInput type="text" formControlName="first_name" />
@@ -80,7 +80,7 @@
               }
             </mat-form-field>
           </div>
-          <div class="col-12 col-lg-6 mb-3">
+          <div class="app-col-12 app-col-lg-6 mb-3">
             <mat-form-field hintLabel="* Pflichtfeld" class="full-width">
               <mat-label>Nachname</mat-label>
               <input matInput type="text" formControlName="last_name" />
@@ -91,10 +91,10 @@
           </div>
         </section>
 
-        <section class="row role-row">
+        <section class="app-grid role-row">
           @for (rolle of rollen; track rolle) {
             @if (rolle.key !== 'MITGLIED') {
-              <div class="col-auto mb-3">
+              <div class="app-col-auto mb-3">
                 <mat-checkbox
                   [checked]="formModul.controls['roles'].value?.includes(rolle.key)"
                   (change)="rolleToggle(rolle.key, $event)"
@@ -113,8 +113,8 @@
           </section>
         }
 
-        <section class="row form-grid">
-          <div class="col-12 col-lg-4 mb-3">
+        <section class="app-grid form-grid">
+          <div class="app-col-12 app-col-lg-4 mb-3">
             <mat-form-field class="full-width">
               <mat-label>Passwort</mat-label>
               <input matInput type="password" formControlName="password1" />
@@ -123,7 +123,7 @@
               <mat-error>Das Passwort muss mindestens 8 Zeichen lang sein!</mat-error>
             }
           </div>
-          <div class="col-12 col-lg-4 mb-3">
+          <div class="app-col-12 app-col-lg-4 mb-3">
             <mat-form-field class="full-width">
               <mat-label>Passwort wiederholen</mat-label>
               <input matInput type="password" formControlName="password2" />
@@ -132,9 +132,9 @@
               <mat-error>Das Passwort muss mindestens 8 Zeichen lang sein!</mat-error>
             }
           </div>
-          <div class="col-12 col-lg-4 password-action">
+          <div class="app-col-12 app-col-lg-4 password-action">
             <button
-              mat-raised-button
+              mat-flat-button
               color="accent"
               [hidden]="!formModul.controls['id'].value"
               type="button"
@@ -150,7 +150,7 @@
             <hr />
           }
           <button
-            mat-raised-button
+            mat-flat-button
             color="warn"
             [hidden]="!formModul.controls['id'].value"
             type="button"

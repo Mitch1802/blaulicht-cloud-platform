@@ -17,9 +17,6 @@
 .settings-card
 	border-radius: .9rem
 
-	mat-card-content
-		padding-top: .6rem
-
 .section-head
 	display: flex
 	align-items: center
@@ -46,12 +43,12 @@
 	text-align: center
 	cursor: pointer
 	color: theme.$app-primary
-	border: 1px solid rgba(0, 0, 0, 0.05)
+	border: 1px solid rgba(theme.$app-border, .88)
 	transition: transform .15s ease, box-shadow .15s ease
 
 	&:hover
 		transform: translateY(-2px)
-		box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08)
+		box-shadow: 0 8px 20px rgba(theme.$app-primary-dark, 0.12)
 
 .module-icon
 	width: 3rem
@@ -80,7 +77,3 @@
 
 		h2
 			font-size: 1rem
-
-	.settings-card
-		mat-card-content
-			padding: .35rem .25rem .25rem

@@ -37,6 +37,7 @@ export class KonfigurationComponent implements OnInit {
   rollen: any = []
   backups: any = [];
   backupColumns: string[] = ['name', 'actions'];
+  cleanupColumns: string[] = ['target', 'filename'];
   backup_msg = "";
   cleanupTarget: 'all' | 'news' | 'inventar' = 'all';
   cleanupRunning = false;

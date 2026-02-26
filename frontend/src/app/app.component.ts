@@ -9,8 +9,7 @@ import { RouterOutlet } from '@angular/router';
         RouterOutlet
     ],
     styleUrls: [
-        './app.component.sass',
-        '../assets/css/bootstrap-grid.css'
+        './app.component.sass'
     ]
 })
 export class AppComponent {}

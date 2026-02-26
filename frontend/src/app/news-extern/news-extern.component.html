@@ -1,31 +1,31 @@
-<div class="row justify-content-center m-0 pt-3">
-  <div class="col-12">
+<div class="app-grid justify-content-center m-0 pt-3">
+  <div class="app-col-12">
     <mat-card>
       <mat-card-header>
         <mat-card-title>{{ title }}</mat-card-title>
       </mat-card-header>
 
       <mat-card-content>
-        <div class="row justify-content-center">
+        <div class="app-grid justify-content-center">
           @if (currentItem) {
             @if (currentItem.foto_url) {
-              <div class="col-4">
+              <div class="app-col-4">
                 <img [src]="currentItem.foto_url" alt="{{ currentItem.title }}" />
               </div>
-              <div class="col-8">
+              <div class="app-col-8">
                 <h1 class="mb-2">{{ currentItem.title }}</h1>
                 <p class="mb-0">{{ currentItem.text }}</p>
               </div>
             }
             @else if (currentItem.title && currentItem.text){
-              <div class="col-12">
+              <div class="app-col-12">
                 <h1 class="mb-2">{{ currentItem.title }}</h1>
                 <p class="mb-0">{{ currentItem.text }}</p>
               </div>
             }
           }
           @else {
-            <div class="col-12 text-center">
+            <div class="app-col-12 text-center">
               <p>Aktuell sind keine Informationen verfügbar!</p>
             </div>
           }

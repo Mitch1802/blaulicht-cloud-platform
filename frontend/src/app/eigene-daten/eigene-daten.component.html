@@ -1,7 +1,7 @@
 <app-header [breadcrumb]="breadcrumb"></app-header>
 
-<div class="row justify-content-center content">
-  <div class="col-12 col-md-10 col-lg-8 p-0 m-0">
+<div class="app-grid justify-content-center content">
+  <div class="app-col-12 app-col-md-10 app-col-lg-8 p-0 m-0">
     <mat-card>
       <mat-card-header>
         <mat-card-title>{{ title }}</mat-card-title>
@@ -10,7 +10,7 @@
         <form [formGroup]="formModul" (ngSubmit)="datenSpeichern()">
           <input hidden type="text" class="form-control" formControlName="id" />
           <button
-            mat-raised-button
+            mat-flat-button
             color="accent"
             class="me-3 mb-3"
             [hidden]="!formModul.valid"
@@ -18,8 +18,8 @@
           >
             Daten speichern
           </button>
-          <section class="row mt-2">
-            <div class="col-12 col-lg-6 mb-3">
+          <section class="app-grid mt-2">
+            <div class="app-col-12 app-col-lg-6 mb-3">
               <mat-form-field hintLabel="* Pflichtfeld">
                 <mat-label>Benutzername</mat-label>
                 <input matInput type="text" formControlName="username" />
@@ -29,8 +29,8 @@
               </mat-form-field>
             </div>
           </section>
-          <section class="row mt-2">
-            <div class="col-12 col-lg-6 mb-3">
+          <section class="app-grid mt-2">
+            <div class="app-col-12 app-col-lg-6 mb-3">
               <mat-form-field hintLabel="* Pflichtfeld">
                 <mat-label>Vorname</mat-label>
                 <input matInput type="text" formControlName="first_name" />
@@ -39,7 +39,7 @@
                 }
               </mat-form-field>
             </div>
-            <div class="col-12 col-lg-6 mb-3">
+            <div class="app-col-12 app-col-lg-6 mb-3">
               <mat-form-field hintLabel="* Pflichtfeld">
                 <mat-label>Nachname</mat-label>
                 <input matInput type="text" formControlName="last_name" />
@@ -50,8 +50,8 @@
             </div>
           </section>
           <hr />
-          <section class="row mt-3">
-            <div class="col-12 col-lg-4 mb-3">
+          <section class="app-grid mt-3">
+            <div class="app-col-12 app-col-lg-4 mb-3">
               <mat-form-field>
                 <mat-label>Passwort</mat-label>
                 <input matInput type="password" formControlName="password1" />
@@ -62,7 +62,7 @@
                 }
               </mat-form-field>
             </div>
-            <div class="col-12 col-lg-4 mb-3">
+            <div class="app-col-12 app-col-lg-4 mb-3">
               <mat-form-field>
                 <mat-label>Passwort wiederholen</mat-label>
                 <input matInput type="password" formControlName="password2" />
@@ -74,11 +74,11 @@
               </mat-form-field>
             </div>
             <div
-              class="col-12 col-lg-4 m-0 row align-items-center auswahl-button"
+              class="app-col-12 app-col-lg-4 m-0 app-grid align-items-center auswahl-button"
             >
               <button
-                mat-raised-button
-                class="col-auto"
+                mat-flat-button
+                class="app-col-auto"
                 color="accent"
                 [disabled]="!formModul.valid"
                 type="button"

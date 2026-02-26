@@ -1,0 +1,98 @@
+@use '../../../theme' as theme
+
+.app-header-toolbar
+	--mat-toolbar-container-background-color: #{theme.$app-primary-deep}
+	--mat-toolbar-container-text-color: #fff
+	background: theme.$app-primary-deep
+	box-shadow: 0 8px 20px rgba(theme.$app-primary-deep, .28)
+	padding-inline: .65rem .85rem
+
+.app-header-logo
+	width: 42px
+	height: 42px
+	border-radius: .5rem
+	object-fit: contain
+	cursor: pointer
+
+.app-header-title
+	margin-left: .7rem
+	line-height: 1
+	white-space: nowrap
+	cursor: pointer
+
+.app-header-logout
+	color: white
+
+.app-header-stepper-wrap
+	padding: .42rem .55rem
+	background: transparent
+
+.app-header-stepper
+	width: min(1280px, 100%)
+	margin: 0 auto
+	background: transparent
+
+	::ng-deep .mat-horizontal-stepper-header-container
+		border: none
+		background: transparent
+		overflow-x: auto
+		scrollbar-width: none
+
+	::ng-deep .mat-horizontal-stepper-header-container::-webkit-scrollbar
+		display: none
+
+	::ng-deep .mat-stepper-horizontal-line
+		display: none
+
+	::ng-deep .mat-step-header
+		height: 40px
+		border-radius: var(--app-control-radius)
+		border: 1px solid var(--app-control-border)
+		background: var(--app-control-bg)
+		padding-inline: .72rem
+		gap: 0
+
+	::ng-deep .mat-step-header .mat-step-label
+		font-weight: 600
+		color: theme.$app-primary-deep
+		opacity: 1
+		margin: 0
+
+	::ng-deep .mat-step-header.mat-step-header-selected
+		background: theme.$app-primary-deep
+		border-color: rgba(theme.$app-primary-deep, .8)
+
+	::ng-deep .mat-step-header.mat-step-header-selected .mat-step-label
+		color: #fff
+
+	::ng-deep .mat-step-header .mat-step-icon,
+	::ng-deep .mat-step-header .mat-step-icon-selected,
+	::ng-deep .mat-step-header .mat-step-icon-state-number,
+	::ng-deep .mat-step-header .mat-step-icon-state-edit
+		display: none
+
+	::ng-deep .mat-horizontal-content-container
+		display: none
+
+@media (max-width: 768px)
+	.app-header-toolbar
+		padding-inline: .45rem .55rem
+
+	.app-header-logo
+		width: 36px
+		height: 36px
+
+	.app-header-title
+		margin-left: .45rem
+		font-size: .98rem
+
+	.app-header-stepper-wrap
+		padding: .35rem .4rem
+
+	.app-header-stepper
+		::ng-deep .mat-step-header
+			height: 38px
+			padding-inline: .58rem
+
+		::ng-deep .mat-step-header .mat-step-label
+			font-size: .88rem

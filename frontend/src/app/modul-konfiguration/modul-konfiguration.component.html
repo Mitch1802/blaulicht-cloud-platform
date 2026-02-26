@@ -16,7 +16,7 @@
 
         <div class="form-actions">
           <button
-            mat-raised-button
+            mat-flat-button
             color="accent"
             [hidden]="!formModul.valid"
             type="submit"
@@ -24,7 +24,7 @@
             Daten speichern
           </button>
           <button
-            mat-raised-button
+            mat-flat-button
             color="warn"
             [hidden]="!formModul.controls['id'].value"
             type="button"
@@ -34,8 +34,8 @@
           </button>
         </div>
 
-        <section class="row form-grid">
-          <div class="col-12 col-lg-12 mb-3">
+        <section class="app-grid form-grid">
+          <div class="app-col-12 app-col-lg-12 mb-3">
             <mat-form-field class="full-width">
               <mat-label>Verfügbare Module auswählen</mat-label>
               <mat-select formControlName="modul" (selectionChange)="onModulChange()">
@@ -47,11 +47,11 @@
             </mat-form-field>
           </div>
 
-          <div class="col-12 col-lg-12 mb-3">
+          <div class="app-col-12 app-col-lg-12 mb-3">
             @if (formModul.controls['modul'].value === 'pdf') {
               <div [formGroup]="pdfMappingForm" class="pdf-mapping">
                 @for (ex of pdfExports; track ex.key) {
-                  <mat-form-field appearance="fill" class="full-width">
+                  <mat-form-field appearance="outline" class="full-width">
                     <mat-label>{{ ex.label }}</mat-label>
                     <mat-select [formControlName]="ex.key">
                       <mat-option [value]="null">Bitte auswählen</mat-option>
@@ -71,7 +71,7 @@
 
               <textarea hidden matInput formControlName="konfiguration"></textarea>
             } @else {
-              <mat-form-field appearance="fill" class="full-width">
+              <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Konfiguration (JSON)</mat-label>
                 <textarea
                   matInput

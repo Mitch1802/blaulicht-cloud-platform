@@ -1,7 +1,7 @@
 <app-header [breadcrumb]="breadcrumb"></app-header>
 
-<div class="row justify-content-center content">
-  <div class="col-12 col-md-10 col-lg-9 p-0 m-0">
+<div class="app-grid justify-content-center content">
+  <div class="app-col-12 app-col-md-10 app-col-lg-9 p-0 m-0">
     <mat-card>
       <mat-card-header>
         <mat-card-title>Fahrzeug Check – {{ fahrzeug?.name }}</mat-card-title>
@@ -27,14 +27,14 @@
                 <h3 class="m-0 mb-2">{{ raum.name }}</h3>
 
                 @for (item of raum.items; track item.index) {
-                  <div class="row align-items-center mb-2" [formGroupName]="item.index">
-                    <div class="col-12 col-md-6">
+                  <div class="app-grid align-items-center mb-2" [formGroupName]="item.index">
+                    <div class="app-col-12 app-col-md-6">
                       <mat-checkbox formControlName="checked">
                         {{ item.name }} (Soll: {{ item.menge }} {{ item.einheit }})
                       </mat-checkbox>
                     </div>
 
-                    <div class="col-12 col-md-6">
+                    <div class="app-col-12 app-col-md-6">
                       <mat-form-field class="w-100">
                         <mat-label>Notiz</mat-label>
                         <input matInput formControlName="notiz" placeholder="Optional" />
@@ -46,7 +46,7 @@
             }
           </div>
 
-          <button mat-raised-button color="accent" type="button" (click)="submit()">
+          <button mat-flat-button color="accent" type="button" (click)="submit()">
             Checkliste speichern
           </button>
         </form>

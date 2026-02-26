@@ -1,8 +1,8 @@
-<mat-toolbar>
-  <img src="../assets/images/icon.svg" width="60" alt="Logo" routerLink="/start"/>
-  <span class="ps-3 title" routerLink="/start">{{title}}</span>
+<mat-toolbar class="app-header-toolbar">
+  <img class="app-header-logo" src="../assets/images/icon.svg" alt="Logo" routerLink="/start"/>
+  <span class="title app-header-title" routerLink="/start">{{title}}</span>
   <span class="spacer"></span>
-  <button mat-icon-button (click)="this.globalDataService.abmelden()">
+  <button class="app-header-logout" mat-icon-button (click)="this.globalDataService.abmelden()">
     <mat-icon class="material-icons">logout</mat-icon>
   </button>
 </mat-toolbar>
@@ -11,14 +11,16 @@
 <mat-progress-bar mode="indeterminate"></mat-progress-bar>
 }
 
-<div class="breadcrumb">
-  @for (link of breadcrumb; track link) {
-    <div>
-      @if (link.active) {
-        <button mat-raised-button color="primary" (click)="onClick(link.link)">{{link.kuerzel}}</button>
-      } @else {
-        <button mat-raised-button (click)="onClick(link.link)">{{link.kuerzel}}</button>
-      }
-    </div>
-  }
+<div class="app-header-stepper-wrap">
+  <mat-stepper
+    class="app-header-stepper"
+    [selectedIndex]="activeBreadcrumbIndex"
+    (selectionChange)="onStepperSelection($event.selectedIndex)"
+  >
+    @for (link of breadcrumb; track link; let i = $index) {
+      <mat-step [completed]="i < activeBreadcrumbIndex" [editable]="true">
+        <ng-template matStepLabel>{{ link.kuerzel }}</ng-template>
+      </mat-step>
+    }
+  </mat-stepper>
 </div>

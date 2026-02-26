@@ -2,21 +2,41 @@
 
 @include mat.core()
 
-/* $variable: mat.m2-define-palette(mat.$m2-name-palette, default, lighter, darker, text)*/
-$blaulichtcloud-primary: mat.m2-define-palette(mat.$m2-blue-palette, 900)
-$blaulichtcloud-accent: mat.m2-define-palette(mat.$m2-green-palette, 800)
-$blaulichtcloud-warn: mat.m2-define-palette(mat.$m2-red-palette, 800)
-$blaulichtcloud-theme: mat.m2-define-light-theme((color: (primary: $blaulichtcloud-primary, accent: $blaulichtcloud-accent, warn: $blaulichtcloud-warn,)))
+
+$blaulichtcloud-theme: mat.define-theme((
+	color: (
+		theme-type: light,
+		primary: mat.$blue-palette,
+		tertiary: mat.$green-palette,
+	),
+	typography: (
+		plain-family: Roboto,
+		brand-family: Roboto,
+	),
+	density: (
+		scale: 0,
+	),
+))
 
 @include mat.all-component-themes($blaulichtcloud-theme)
+@include mat.color-variants-backwards-compatibility($blaulichtcloud-theme)
 
 
 
 /* Variablen */
-$app-primary: mat.get-theme-color($blaulichtcloud-theme, primary, default)
-/* $app-secondary: #dee1e2 */
+$app-primary: mat.get-theme-color($blaulichtcloud-theme, primary, 40)
+$app-primary-dark: mat.get-theme-color($blaulichtcloud-theme, primary, 30)
+$app-primary-deep: mat.get-theme-color($blaulichtcloud-theme, primary, 20)
+$app-primary-light: mat.get-theme-color($blaulichtcloud-theme, primary, 90)
+$app-secondary: mat.get-theme-color($blaulichtcloud-theme, tertiary, 40)
+$app-secondary-light: mat.get-theme-color($blaulichtcloud-theme, tertiary, 90)
 $app-warning: #e4c01e85
-$app-error: mat.get-theme-color($blaulichtcloud-theme, warn, default)
-$app-success: mat.get-theme-color($blaulichtcloud-theme, accent, default)
-$app-background: #f3f2f2
+$app-error: mat.get-theme-color($blaulichtcloud-theme, error, 40)
+$app-success: mat.get-theme-color($blaulichtcloud-theme, tertiary, 40)
+$app-background: mat.get-theme-color($blaulichtcloud-theme, surface)
+$app-surface: mat.get-theme-color($blaulichtcloud-theme, surface-container)
+$app-surface-variant: mat.get-theme-color($blaulichtcloud-theme, surface-container-high)
+$app-border: mat.get-theme-color($blaulichtcloud-theme, outline-variant)
+$app-text: mat.get-theme-color($blaulichtcloud-theme, on-surface)
+$app-text-muted: mat.get-theme-color($blaulichtcloud-theme, on-surface-variant)
 

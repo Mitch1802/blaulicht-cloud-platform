@@ -27,7 +27,7 @@
           <br>
         }
         <button
-          mat-raised-button
+          mat-flat-button
           color="accent"
           class="me-2 mb-3"
           [hidden]="!formModul.disabled"
@@ -37,7 +37,7 @@
           Hinzufügen
         </button>
         <button
-          mat-raised-button
+          mat-flat-button
           color="accent"
           class="me-2 mb-3"
           [hidden]="!formModul.disabled"
@@ -59,7 +59,7 @@
         >
           <input hidden type="text" class="form-control" formControlName="id" />
           <button
-            mat-raised-button
+            mat-flat-button
             color="accent"
             class="me-3 mb-3"
             [hidden]="!formModul.valid"
@@ -68,7 +68,7 @@
             Daten speichern
           </button>
           <button
-            mat-raised-button
+            mat-flat-button
             class="mb-3"
             color="primary"
             [hidden]="formModul.disabled"
@@ -77,8 +77,8 @@
           >
             Abbrechen
           </button>
-          <section class="row mt-2">
-            <div class="col-12 col-lg-6 mb-3">
+          <section class="app-grid mt-2">
+            <div class="app-col-12 app-col-lg-6 mb-3">
               <mat-form-field hintLabel="* Pflichtfeld">
                 <mat-label>Vorname</mat-label>
                 <input matInput type="text" formControlName="vorname" />
@@ -87,7 +87,7 @@
                 }
               </mat-form-field>
             </div>
-            <div class="col-12 col-lg-6 mb-3">
+            <div class="app-col-12 app-col-lg-6 mb-3">
               <mat-form-field hintLabel="* Pflichtfeld">
                 <mat-label>Nachname</mat-label>
                 <input matInput type="text" formControlName="nachname" />
@@ -96,7 +96,7 @@
                 }
               </mat-form-field>
             </div>
-            <div class="col-12 col-lg-4 mb-3">
+            <div class="app-col-12 app-col-lg-4 mb-3">
               <mat-form-field hintLabel="* Pflichtfeld">
                 <mat-label>Stbnr</mat-label>
                 <input matInput type="text" formControlName="stbnr" />
@@ -105,7 +105,7 @@
                 }
               </mat-form-field>
             </div>
-            <div class="col-12 col-lg-4 mb-3">
+            <div class="app-col-12 app-col-lg-4 mb-3">
               <mat-form-field>
                 <mat-label>SVNr</mat-label>
                 <input
@@ -127,7 +127,7 @@
                 }
               </mat-form-field>
             </div>
-            <div class="col-12 col-lg-4 mb-3">
+            <div class="app-col-12 app-col-lg-4 mb-3">
               <mat-form-field hintLabel="* Pflichtfeld">
                 <mat-label>Geburtsdatum</mat-label>
                 <input
@@ -151,7 +151,7 @@
                 }
               </mat-form-field>
             </div>
-            <div class="col-12 col-lg-6 mb-3">
+            <div class="app-col-12 app-col-lg-6 mb-3">
               <mat-checkbox formControlName="hauptberuflich"
                 >Hauptberuflich</mat-checkbox
               >
@@ -159,7 +159,7 @@
           </section>
 
           <button
-            mat-raised-button
+            mat-flat-button
             color="warn"
             [hidden]="!formModul.controls['id'].value"
             type="button"

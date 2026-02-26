@@ -1,7 +1,7 @@
 @use '../../theme' as theme
 
 .fahrzeug-page
-	max-width: 1400px
+	max-width: 1280px
 	margin: 0 auto
 	padding: 1rem 1rem 2rem
 
@@ -16,9 +16,6 @@
 
 .settings-card
 	border-radius: .9rem
-
-	mat-card-content
-		padding-top: .5rem
 
 .section-head
 	display: flex
@@ -45,7 +42,7 @@
 	cursor: pointer
 
 .selected-row
-	background: rgba(96, 125, 139, 0.12)
+	background: rgba(theme.$app-primary-light, .5)
 
 .form-grid
 	display: grid
@@ -76,7 +73,7 @@
 	align-items: center
 	gap: 10px
 	padding: 8px 0
-	border-bottom: 1px solid #0000001f
+	border-bottom: 1px solid rgba(theme.$app-border, .9)
 
 .item-text
 	display: flex
@@ -115,10 +112,6 @@
 
 		h2
 			font-size: 1rem
-
-	.settings-card
-		mat-card-content
-			padding: .35rem .25rem .25rem
 
 	.form-grid
 		grid-template-columns: 1fr

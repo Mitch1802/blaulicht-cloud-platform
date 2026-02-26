@@ -13,7 +13,7 @@
     <mat-card-content>
       <div class="top-actions">
         <button
-          mat-raised-button
+          mat-flat-button
           color="primary"
           type="button"
           (click)="newsfeedOeffnen()"
@@ -25,8 +25,8 @@
           (ngSubmit)="auswahlBearbeiten()"
           [hidden]="!formModul.disabled"
         >
-          <section class="row mt-3 mb-3">
-            <div class="col-12 col-lg-9">
+          <section class="app-grid mt-3 mb-3">
+            <div class="app-col-12 app-col-lg-9">
               <mat-form-field>
                 <mat-label>News auswählen</mat-label>
                 <mat-select formControlName="news">
@@ -37,13 +37,13 @@
               </mat-form-field>
             </div>
             <div
-            class="col-12 col-lg-3 m-0 row align-items-center auswahl-button"
+            class="app-col-12 app-col-lg-3 m-0 app-grid align-items-center auswahl-button"
           >
             <button
               type="submit"
-              mat-raised-button
+              mat-flat-button
               color="primary"
-              class="col-auto"
+              class="app-col-auto"
               [disabled]="!formAuswahl.controls['news'].value"
             >
               Auswahl bearbeiten
@@ -52,7 +52,7 @@
           </section>
         </form> -->
         <button
-          mat-raised-button
+          mat-flat-button
           color="accent"
           [hidden]="!formModul.disabled"
           (click)="neueDetails()"
@@ -72,7 +72,7 @@
 
           <div class="form-actions">
             <button
-            mat-raised-button
+            mat-flat-button
             color="accent"
             [hidden]="!formModul.valid"
             type="submit"
@@ -80,7 +80,7 @@
             Daten speichern
             </button>
             <button
-            mat-raised-button
+            mat-flat-button
             color="primary"
             [hidden]="formModul.disabled"
             type="button"
@@ -90,8 +90,8 @@
             </button>
           </div>
 
-          <section class="row form-grid">
-            <div class="col-12 col-lg-6 mb-3">
+          <section class="app-grid form-grid">
+            <div class="app-col-12 app-col-lg-6 mb-3">
               <mat-form-field hintLabel="* Pflichtfeld" class="full-width">
                 <mat-label>Titel</mat-label>
                 <input matInput type="text" formControlName="title">
@@ -102,7 +102,7 @@
                 }
               </mat-form-field>
             </div>
-            <div class="col-12 col-lg-6 mb-3">
+            <div class="app-col-12 app-col-lg-6 mb-3">
               <mat-form-field class="full-width">
                 <mat-label>Typ</mat-label>
                 <mat-select formControlName="typ">
@@ -111,7 +111,7 @@
                 </mat-select>
               </mat-form-field>
             </div>
-            <div class="col-12 col-lg-12 mb-3">
+            <div class="app-col-12 app-col-lg-12 mb-3">
               <mat-form-field hintLabel="* Pflichtfeld" class="full-width">
                 <mat-label>Text</mat-label>
                 <textarea
@@ -124,7 +124,7 @@
                 }
               </mat-form-field>
             </div>
-            <div class="col-12 col-lg-6 mb-3">
+            <div class="app-col-12 app-col-lg-6 mb-3">
               <div class="upload-btn-wrapper">
                 <mat-card [ngStyle]="{'background-color':!btnUploadStatus?'#0000001F':'#607d8b', 'color':!btnUploadStatus?'#00000061':'#ffffff'}">
                   <label>{{btnText}}</label>
@@ -133,13 +133,13 @@
               </div>
               <div class="alert alert-secondary">
                 @if (fileFound==true) {
-                  <button mat-raised-button color="primary" type="button" (click)="openModal()">Bild öffnen</button>
+                  <button mat-flat-button color="primary" type="button" (click)="openModal()">Bild öffnen</button>
                 }
               </div>
             </div>
           </section>
 
-          <button mat-raised-button color="warn" [hidden]="!formModul.controls['id'].value"
+          <button mat-flat-button color="warn" [hidden]="!formModul.controls['id'].value"
           type="button" (click)="datenLoeschen()">Daten löschen</button>
       </form>
 
@@ -164,7 +164,7 @@
                 </div>
                 <div class="news-actions">
                   <button
-                    mat-raised-button
+                    mat-flat-button
                     color="primary"
                     type="button"
                     (click)="auswahlBearbeiten(element)"
@@ -172,7 +172,7 @@
                     <mat-icon class="m-0">edit</mat-icon>
                   </button>
                   <button
-                    mat-raised-button
+                    mat-flat-button
                     color="warn"
                     type="button"
                     (click)="auswahlLoeschen(element.id)"

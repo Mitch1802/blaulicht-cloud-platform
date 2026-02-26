@@ -17,9 +17,6 @@
 .settings-card
   border-radius: .9rem
 
-  mat-card-content
-    padding-top: .5rem
-
 .section-head
   display: flex
   align-items: center
@@ -38,15 +35,15 @@
   width: 100%
 
 .red-cell
-  background-color: #fde2e2
-  color: #a00
+  background-color: rgba(theme.$app-error, .16)
+  color: theme.$app-error
 
 .green-cell
-  background-color: #e2fde6
-  color: #0a0
+  background-color: rgba(theme.$app-success, .16)
+  color: theme.$app-success
 
 .mat-mdc-header-row
-  font-weight: 600 !important
+  font-weight: 600
 
 @media (max-width: 768px)
   .fmd-page
@@ -64,6 +61,3 @@
     h2
       font-size: 1rem
 
-  .settings-card
-    mat-card-content
-      padding: .35rem .25rem .25rem

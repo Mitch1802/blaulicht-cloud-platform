@@ -12,14 +12,14 @@
 
     <mat-card-content>
         <div class="toolbar mb-3">
-          <button mat-raised-button color="accent" type="button" (click)="newFahrzeug()">
+          <button mat-flat-button color="accent" type="button" (click)="newFahrzeug()">
             <mat-icon>add</mat-icon>
             Neues Fahrzeug
           </button>
         </div>
 
-        <section class="row g-3">
-          <div class="col-12 col-lg-5">
+        <section class="app-grid g-3">
+          <div class="app-col-12 app-col-lg-5">
             <mat-card class="section-card">
               <mat-card-header>
                 <mat-card-title>Fahrzeugliste</mat-card-title>
@@ -67,7 +67,7 @@
             </mat-card>
           </div>
 
-          <div class="col-12 col-lg-7">
+          <div class="app-col-12 app-col-lg-7">
             <mat-card class="section-card">
               <mat-card-header>
                 <mat-card-title>Fahrzeug bearbeiten</mat-card-title>
@@ -90,7 +90,7 @@
                   </mat-form-field>
 
                   <div class="actions-row full-width">
-                    <button mat-raised-button color="accent" type="button" (click)="saveFahrzeug()">
+                    <button mat-flat-button color="accent" type="button" (click)="saveFahrzeug()">
                       <mat-icon>save</mat-icon>
                       Speichern
                     </button>
@@ -124,7 +124,7 @@
                       <input matInput type="number" formControlName="reihenfolge" />
                     </mat-form-field>
 
-                    <button mat-raised-button color="accent" type="button" (click)="addRaum()">
+                    <button mat-flat-button color="accent" type="button" (click)="addRaum()">
                       <mat-icon>add</mat-icon>
                       Raum
                     </button>
@@ -186,7 +186,7 @@
                             <input matInput type="number" formControlName="reihenfolge" />
                           </mat-form-field>
 
-                          <button mat-raised-button color="accent" type="button" (click)="addItem(raum)">
+                          <button mat-flat-button color="accent" type="button" (click)="addItem(raum)">
                             <mat-icon>add</mat-icon>
                             Item
                           </button>

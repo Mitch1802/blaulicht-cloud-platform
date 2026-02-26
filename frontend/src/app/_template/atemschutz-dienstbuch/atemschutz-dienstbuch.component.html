@@ -1,20 +1,20 @@
 <app-header [breadcrumb]="breadcrumb"></app-header>
 
-<div class="row justify-content-center content">
-  <div class="col-12 col-md-10 col-lg-8 p-0 m-0">
+<div class="app-grid justify-content-center content">
+  <div class="app-col-12 app-col-md-10 app-col-lg-8 p-0 m-0">
     <mat-card>
       <mat-card-header>
         <mat-card-title>{{ title }}</mat-card-title>
       </mat-card-header>
       <mat-card-content>
         <hr>
-        <div class="row">
-            <h4 class="col-6 col-lg-2 mb-0">{{ jahrHeuer }}:</h4>
-            <p class="col-6 col-lg-4 mb-0">
+        <div class="app-grid">
+            <h4 class="app-col-6 app-col-lg-2 mb-0">{{ jahrHeuer }}:</h4>
+            <p class="app-col-6 app-col-lg-4 mb-0">
               <span>{{ formatDauer(dauerHeuer) }}</span>
             </p>
-            <h4 class="col-6 col-lg-2 mb-0">{{ jahrLetztesJahr }}:</h4>
-            <p class="col-6 col-lg-4 mb-0">
+            <h4 class="app-col-6 app-col-lg-2 mb-0">{{ jahrLetztesJahr }}:</h4>
+            <p class="app-col-6 app-col-lg-4 mb-0">
               <span>{{ formatDauer(dauerLetztesJahr) }}</span>
             </p>
           </div>

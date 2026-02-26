@@ -14,10 +14,10 @@
       @if (viewMode === 'list') {
         <section class="drafts-section list-only">
           <div class="actions-row top-actions">
-            <button mat-raised-button type="button" color="accent" (click)="neuerEntwurf()">Neuen Einsatz anlegen</button>
+            <button mat-flat-button type="button" color="accent" (click)="neuerEntwurf()">Neuen Einsatz anlegen</button>
           </div>
 
-          <h3>Vorhandene Einsatzberichte</h3>
+          <h3 class="list-title">Vorhandene Einsatzberichte</h3>
 
           @if (berichte.length === 0) {
             <p class="empty">Noch keine Einsatzberichte vorhanden.</p>
@@ -32,16 +32,16 @@
                     <span class="status-badge" [class.done]="element.status === 'ABGESCHLOSSEN'">{{ element.status }}</span>
                   </div>
                   <div class="draft-actions">
-                    <button mat-raised-button color="primary" type="button" (click)="berichtBearbeiten(element)">
+                    <button mat-flat-button color="primary" type="button" (click)="berichtBearbeiten(element)">
                       <mat-icon class="m-0">edit</mat-icon>
                     </button>
                     @if (canManageStatus) {
-                      <button mat-raised-button type="button" (click)="statusUmschalten(element)">
+                      <button mat-flat-button type="button" (click)="statusUmschalten(element)">
                         <mat-icon class="m-0">check</mat-icon>
                       </button>
                     }
                     @if (canDeleteBerichte) {
-                      <button mat-raised-button color="warn" type="button" (click)="berichtLoeschen(element)">
+                      <button mat-flat-button color="warn" type="button" (click)="berichtLoeschen(element)">
                         <mat-icon class="m-0">delete</mat-icon>
                       </button>
                     }
@@ -257,9 +257,7 @@
             </mat-expansion-panel-header>
 
             <div class="form-section-body">
-            <section class="conditional-block">
-              <h3>Dokumentation & Nachweise</h3>
-
+            <section class="conditional-block documentation-block">
               <div class="upload-row">
                 <label class="upload-label" for="fotoDokuDateien">Foto Doku Dateien</label>
                 <input id="fotoDokuDateien" class="file-input-hidden" type="file" multiple accept=".jpg,.jpeg,.png,.pdf" (change)="onDokumentSelected($event, 'fotoDoku')" />
@@ -274,8 +272,12 @@
                           <div class="preview-file">PDF</div>
                         }
                         <div class="preview-meta">
-                          <button mat-stroked-button type="button" color="primary" (click)="openFoto(getFilePreviewUrl(file))">Bild öffnen</button>
-                          <button mat-stroked-button type="button" color="warn" (click)="removeSelectedDokument(i, 'fotoDoku')">Entfernen</button>
+                          <button mat-icon-button type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(getFilePreviewUrl(file))">
+                            <mat-icon>open_in_new</mat-icon>
+                          </button>
+                          <button mat-icon-button type="button" color="warn" aria-label="Datei entfernen" (click)="removeSelectedDokument(i, 'fotoDoku')">
+                            <mat-icon>delete</mat-icon>
+                          </button>
                         </div>
                       </article>
                     }
@@ -292,8 +294,12 @@
                           <div class="preview-file">PDF</div>
                         }
                         <div class="preview-meta">
-                          <button mat-stroked-button type="button" color="primary" (click)="openFoto(foto.foto_url)">Bild öffnen</button>
-                          <button mat-stroked-button type="button" color="warn" (click)="loescheBestehendesFoto(foto)">Löschen</button>
+                          <button mat-icon-button type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(foto.foto_url)">
+                            <mat-icon>open_in_new</mat-icon>
+                          </button>
+                          <button mat-icon-button type="button" color="warn" aria-label="Datei löschen" (click)="loescheBestehendesFoto(foto)">
+                            <mat-icon>delete</mat-icon>
+                          </button>
                         </div>
                       </article>
                     }
@@ -315,8 +321,12 @@
                           <div class="preview-file">PDF</div>
                         }
                         <div class="preview-meta">
-                          <button mat-stroked-button type="button" color="primary" (click)="openFoto(getFilePreviewUrl(file))">Bild öffnen</button>
-                          <button mat-stroked-button type="button" color="warn" (click)="removeSelectedDokument(i, 'zulassungsschein')">Entfernen</button>
+                          <button mat-icon-button type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(getFilePreviewUrl(file))">
+                            <mat-icon>open_in_new</mat-icon>
+                          </button>
+                          <button mat-icon-button type="button" color="warn" aria-label="Datei entfernen" (click)="removeSelectedDokument(i, 'zulassungsschein')">
+                            <mat-icon>delete</mat-icon>
+                          </button>
                         </div>
                       </article>
                     }
@@ -333,8 +343,12 @@
                           <div class="preview-file">PDF</div>
                         }
                         <div class="preview-meta">
-                          <button mat-stroked-button type="button" color="primary" (click)="openFoto(foto.foto_url)">Bild öffnen</button>
-                          <button mat-stroked-button type="button" color="warn" (click)="loescheBestehendesFoto(foto)">Löschen</button>
+                          <button mat-icon-button type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(foto.foto_url)">
+                            <mat-icon>open_in_new</mat-icon>
+                          </button>
+                          <button mat-icon-button type="button" color="warn" aria-label="Datei löschen" (click)="loescheBestehendesFoto(foto)">
+                            <mat-icon>delete</mat-icon>
+                          </button>
                         </div>
                       </article>
                     }
@@ -356,8 +370,12 @@
                           <div class="preview-file">PDF</div>
                         }
                         <div class="preview-meta">
-                          <button mat-stroked-button type="button" color="primary" (click)="openFoto(getFilePreviewUrl(file))">Bild öffnen</button>
-                          <button mat-stroked-button type="button" color="warn" (click)="removeSelectedDokument(i, 'versicherungsschein')">Entfernen</button>
+                          <button mat-icon-button type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(getFilePreviewUrl(file))">
+                            <mat-icon>open_in_new</mat-icon>
+                          </button>
+                          <button mat-icon-button type="button" color="warn" aria-label="Datei entfernen" (click)="removeSelectedDokument(i, 'versicherungsschein')">
+                            <mat-icon>delete</mat-icon>
+                          </button>
                         </div>
                       </article>
                     }
@@ -374,8 +392,12 @@
                           <div class="preview-file">PDF</div>
                         }
                         <div class="preview-meta">
-                          <button mat-stroked-button type="button" color="primary" (click)="openFoto(foto.foto_url)">Bild öffnen</button>
-                          <button mat-stroked-button type="button" color="warn" (click)="loescheBestehendesFoto(foto)">Löschen</button>
+                          <button mat-icon-button type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(foto.foto_url)">
+                            <mat-icon>open_in_new</mat-icon>
+                          </button>
+                          <button mat-icon-button type="button" color="warn" aria-label="Datei löschen" (click)="loescheBestehendesFoto(foto)">
+                            <mat-icon>delete</mat-icon>
+                          </button>
                         </div>
                       </article>
                     }
@@ -461,7 +483,7 @@
         </mat-accordion>
 
         <div class="form-actions">
-          <button mat-raised-button color="accent" type="submit">Einsatzbericht speichern</button>
+          <button mat-flat-button color="accent" type="submit">Einsatzbericht speichern</button>
         </div>
       </form>
       }

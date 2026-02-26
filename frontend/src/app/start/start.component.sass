@@ -15,7 +15,8 @@
         line-height: 1.2
 
 .module-section
-    background: #fff
+    background: rgba(theme.$app-surface, .92)
+    border: 1px solid rgba(theme.$app-border, .9)
     border-radius: .9rem
     padding: 1rem
     margin-bottom: 1rem
@@ -58,12 +59,12 @@
     text-align: center
     cursor: pointer
     color: theme.$app-primary
-    border: 1px solid rgba(0, 0, 0, 0.05)
+    border: 1px solid rgba(theme.$app-border, .88)
     transition: transform .15s ease, box-shadow .15s ease
 
     &:hover
         transform: translateY(-2px)
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08)
+        box-shadow: 0 8px 20px rgba(theme.$app-primary-dark, 0.12)
 
 .module-icon
     width: 3.2rem

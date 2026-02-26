@@ -13,7 +13,7 @@
     <mat-card-content>
       <div class="top-actions">
         <button
-          mat-raised-button
+          mat-flat-button
           color="accent"
           [hidden]="!formModul.disabled"
           (click)="neueDetails()"
@@ -33,7 +33,7 @@
 
           <div class="form-actions">
             <button
-            mat-raised-button
+            mat-flat-button
             color="accent"
             [hidden]="!formModul.valid"
             type="submit"
@@ -41,7 +41,7 @@
             Daten speichern
             </button>
             <button
-            mat-raised-button
+            mat-flat-button
             color="primary"
             [hidden]="formModul.disabled"
             type="button"
@@ -51,8 +51,8 @@
             </button>
           </div>
 
-          <section class="row form-grid">
-            <div class="col-12 col-lg-6 mb-3">
+          <section class="app-grid form-grid">
+            <div class="app-col-12 app-col-lg-6 mb-3">
               <mat-form-field hintLabel="* Pflichtfeld" class="full-width">
                 <mat-label>Bezeichnung</mat-label>
                 <input matInput type="text" formControlName="bezeichnung" />
@@ -61,25 +61,25 @@
                 }
               </mat-form-field>
             </div>
-            <div class="col-12 col-lg-6 mb-3">
+            <div class="app-col-12 app-col-lg-6 mb-3">
               <mat-form-field class="full-width">
                 <mat-label>Anzahl</mat-label>
                 <input matInput type="number" formControlName="anzahl" />
               </mat-form-field>
             </div>
-            <div class="col-12 col-lg-6 mb-3">
+            <div class="app-col-12 app-col-lg-6 mb-3">
               <mat-form-field class="full-width">
                 <mat-label>Lagerort</mat-label>
                 <input matInput type="text" formControlName="lagerort" />
               </mat-form-field>
             </div>
-            <div class="col-12 col-lg-12 mb-3">
+            <div class="app-col-12 app-col-lg-12 mb-3">
               <mat-form-field class="full-width">
                 <mat-label>Notiz</mat-label>
                 <textarea matInput formControlName="notiz" rows="5"></textarea>
               </mat-form-field>
             </div>
-            <div class="col-12 col-lg-6 mb-3">
+            <div class="app-col-12 app-col-lg-6 mb-3">
               <div class="upload-btn-wrapper">
                 <mat-card
                   [ngStyle]="{
@@ -105,7 +105,7 @@
                   {{ fileName }}
                 </div>
                 <button
-                  mat-raised-button
+                  mat-flat-button
                   color="primary"
                   type="button"
                   [hidden]="!formModul.controls['id'].value"
@@ -119,7 +119,7 @@
           </section>
 
           <button
-            mat-raised-button
+            mat-flat-button
             color="warn"
             [hidden]="!formModul.controls['id'].value"
             type="button"

@@ -1,37 +1,49 @@
+@use '../../theme' as theme
+
+:host
+    display: block
+    min-height: 100vh
+    padding-bottom: 8.5rem
+
 .mat-mdc-card
-    background-color: transparent !important
-    border-color: transparent !important
-    border-radius: 0px !important
-    box-shadow: none !important
+    background-color: transparent
+    border-color: transparent
+    border-radius: 0
+    box-shadow: none
 
     .mat-mdc-card-title
-        font-size: 5rem !important
+        font-size: clamp(2.2rem, 6vw, 5rem)
+        color: theme.$app-primary
 
     img
         width: 100%
-        border: 1px solid black
+        border: 1px solid rgba(theme.$app-border, .95)
+        border-radius: .75rem
     
     h1
-        font-size: 3rem
-        text-align: left !important
+        font-size: clamp(1.8rem, 4vw, 3rem)
+        text-align: left
     
     p
-        font-size: 1.5rem
-        content: "\A" !important
-        white-space: pre-wrap !important
+        font-size: clamp(1.05rem, 2.1vw, 1.5rem)
+        white-space: pre-wrap
     
 .termine
-    position: fixed !important
-    bottom: 0px !important
+    position: fixed
+    left: 0
+    right: 0
+    bottom: 0
     width: 100%
-    background-color: rgb(185, 188, 236)
+    background-color: rgba(theme.$app-primary, .12)
     padding: 10px
+    border-top: 1px solid rgba(theme.$app-border, .95)
 
     h1
-        text-align: left !important
-        font-size: 3rem  
-        margin: 5px 
+        text-align: left
+        font-size: clamp(1.4rem, 3vw, 3rem)
+        margin: 5px
+        color: theme.$app-primary
 
     p
-        font-size: 2rem  
+        font-size: clamp(1rem, 2.4vw, 2rem)
         margin: 5px
