@@ -57,6 +57,21 @@
         </div>
 
         <section class="app-grid form-grid">
+          <div class="app-col-12 app-col-lg-6 mb-3">
+            <mat-form-field class="full-width" hintLabel="* Pflichtfeld">
+              <mat-label>Mitglied auswählen</mat-label>
+              <mat-select formControlName="mitglied_id">
+                @for (opt of dropdownMitglieder; track opt) {
+                  <mat-option [value]="opt.pkid">
+                    {{ opt.stbnr }} - {{ opt.vorname }} {{ opt.nachname }}
+                  </mat-option>
+                }
+              </mat-select>
+              @if (formModul.controls['mitglied_id'].hasError('required')) {
+                <mat-error>Mitglied ist erforderlich!</mat-error>
+              }
+            </mat-form-field>
+          </div>
           <div class="app-col-12 app-col-lg-8 mb-3">
             <mat-form-field hintLabel="* Pflichtfeld" class="full-width">
               <mat-label>Titel</mat-label>
@@ -101,7 +116,26 @@
       </form>
 
       <div class="table-wrap" [hidden]="!formModul.disabled">
-        <table mat-table [dataSource]="dataSource" matSort>
+        <table
+          mat-table
+          [dataSource]="dataSource"
+          matSort
+          matSortDisableClear
+          matSortActive="stbnr"
+          matSortDirection="asc"
+        >
+          <ng-container matColumnDef="stbnr">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Stbnr.</th>
+            <td mat-cell *matCellDef="let element">{{ element.stbnr }}</td>
+          </ng-container>
+          <ng-container matColumnDef="vorname">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Vorname</th>
+            <td mat-cell *matCellDef="let element">{{ element.vorname }}</td>
+          </ng-container>
+          <ng-container matColumnDef="nachname">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Nachname</th>
+            <td mat-cell *matCellDef="let element">{{ element.nachname }}</td>
+          </ng-container>
           <ng-container matColumnDef="datum">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Datum</th>
             <td mat-cell *matCellDef="let element">{{ element.datum }}</td>
@@ -117,8 +151,13 @@
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef>Aktionen</th>
             <td mat-cell *matCellDef="let element" class="action-cell">
-              <button mat-icon-button color="primary" (click)="auswahlBearbeiten(element)">
-                <mat-icon>edit</mat-icon>
+              <button
+                mat-flat-button
+                class="ms-2"
+                color="primary"
+                (click)="auswahlBearbeiten(element)"
+              >
+                <mat-icon class="m-0">edit</mat-icon>
               </button>
             </td>
           </ng-container>

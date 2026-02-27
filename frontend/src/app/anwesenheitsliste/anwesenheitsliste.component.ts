@@ -1,10 +1,13 @@
 import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { forkJoin } from 'rxjs';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
 import { MatButton } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
+import { MatOption } from '@angular/material/core';
+import { MatSelect } from '@angular/material/select';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatIcon } from '@angular/material/icon';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
@@ -13,6 +16,7 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { HeaderComponent } from '../_template/header/header.component';
 import { GlobalDataService } from '../_service/global-data.service';
 import { IAnwesenheitsliste } from '../_interface/anwesenheitsliste';
+import { IMitglied } from '../_interface/mitglied';
 
 @Component({
   selector: 'app-anwesenheitsliste',
@@ -25,6 +29,8 @@ import { IAnwesenheitsliste } from '../_interface/anwesenheitsliste';
     MatLabel,
     MatButton,
     MatInputModule,
+    MatSelect,
+    MatOption,
     MatError,
     MatTableModule,
     MatSortModule,
@@ -45,12 +51,26 @@ export class AnwesenheitslisteComponent implements OnInit {
   modul = 'anwesenheitsliste';
 
   eintraege: IAnwesenheitsliste[] = [];
+  mitglieder: IMitglied[] = [];
   breadcrumb: any = [];
   dataSource = new MatTableDataSource<IAnwesenheitsliste>(this.eintraege);
-  sichtbareSpalten: string[] = ['datum', 'titel', 'ort', 'actions'];
+  sichtbareSpalten: string[] = ['stbnr', 'vorname', 'nachname', 'datum', 'titel', 'ort', 'actions'];
+
+  private sortEintraegeByStbnr(): void {
+    this.eintraege = [...this.eintraege].sort((a, b) => {
+      const stbnrA = Number(a.stbnr ?? Number.MAX_SAFE_INTEGER);
+      const stbnrB = Number(b.stbnr ?? Number.MAX_SAFE_INTEGER);
+      if (stbnrA === stbnrB) {
+        return String(a.titel ?? '').localeCompare(String(b.titel ?? ''), 'de');
+      }
+      return stbnrA - stbnrB;
+    });
+    this.dataSource.data = this.eintraege;
+  }
 
   formModul = new FormGroup({
     id: new FormControl<string | ''>(''),
+    mitglied_id: new FormControl<number>(0, { nonNullable: true, validators: [Validators.required] }),
     titel: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
     datum: new FormControl<string>('', {
       nonNullable: true,
@@ -67,11 +87,26 @@ export class AnwesenheitslisteComponent implements OnInit {
 
     this.formModul.disable();
 
-    this.globalDataService.get(this.modul).subscribe({
-      next: (erg: any) => {
+    forkJoin({
+      main: this.globalDataService.get<any[]>(this.modul),
+      context: this.globalDataService.get<any>(`${this.modul}/context`),
+    }).subscribe({
+      next: ({ main, context }) => {
         try {
-          this.eintraege = (erg as IAnwesenheitsliste[]) ?? [];
-          this.dataSource.data = this.eintraege;
+          this.mitglieder = (context.mitglieder as IMitglied[]) ?? [];
+          this.mitglieder = this.globalDataService.arraySortByKey(this.mitglieder, 'stbnr');
+
+          const mitgliederMap = new Map<number, IMitglied>(this.mitglieder.map((m) => [m.pkid, m]));
+          this.eintraege = (main as IAnwesenheitsliste[]).map((item) => {
+            const mitglied = item.mitglied_id ? mitgliederMap.get(item.mitglied_id) : undefined;
+            return {
+              ...item,
+              stbnr: mitglied?.stbnr,
+              vorname: mitglied?.vorname,
+              nachname: mitglied?.nachname,
+            };
+          });
+          this.sortEintraegeByStbnr();
           this.bindTableControls();
         } catch (e: any) {
           this.globalDataService.erstelleMessage('error', e);
@@ -93,9 +128,13 @@ export class AnwesenheitslisteComponent implements OnInit {
     this.paginator?.firstPage();
   }
 
+  get dropdownMitglieder(): IMitglied[] {
+    return this.globalDataService.arraySortByKey(this.mitglieder, 'stbnr');
+  }
+
   neueDetails(): void {
     this.formModul.enable();
-    this.formModul.patchValue({ id: '', titel: '', datum: '', ort: '', notiz: '' });
+    this.formModul.patchValue({ id: '', mitglied_id: 0, titel: '', datum: '', ort: '', notiz: '' });
   }
 
   auswahlBearbeiten(element: IAnwesenheitsliste): void {
@@ -111,6 +150,7 @@ export class AnwesenheitslisteComponent implements OnInit {
           this.formModul.enable();
           this.formModul.setValue({
             id: details.id || '',
+            mitglied_id: details.mitglied_id || 0,
             titel: details.titel || '',
             datum: details.datum || '',
             ort: details.ort || '',
@@ -137,9 +177,16 @@ export class AnwesenheitslisteComponent implements OnInit {
       this.globalDataService.post(this.modul, objekt, false).subscribe({
         next: (erg: any) => {
           try {
-            const neu = erg as IAnwesenheitsliste;
+            const neuRaw = erg as IAnwesenheitsliste;
+            const mitglied = this.mitglieder.find((m) => m.pkid === neuRaw.mitglied_id);
+            const neu: IAnwesenheitsliste = {
+              ...neuRaw,
+              stbnr: mitglied?.stbnr,
+              vorname: mitglied?.vorname,
+              nachname: mitglied?.nachname,
+            };
             this.eintraege.push(neu);
-            this.dataSource.data = this.eintraege;
+            this.sortEintraegeByStbnr();
             this.resetFormNachAktion();
             this.globalDataService.erstelleMessage('success', 'Eintrag erfolgreich gespeichert!');
           } catch (e: any) {
@@ -152,9 +199,16 @@ export class AnwesenheitslisteComponent implements OnInit {
       this.globalDataService.patch(this.modul, idValue, objekt, false).subscribe({
         next: (erg: any) => {
           try {
-            const geaendert = erg as IAnwesenheitsliste;
+            const geaendertRaw = erg as IAnwesenheitsliste;
+            const mitglied = this.mitglieder.find((m) => m.pkid === geaendertRaw.mitglied_id);
+            const geaendert: IAnwesenheitsliste = {
+              ...geaendertRaw,
+              stbnr: mitglied?.stbnr,
+              vorname: mitglied?.vorname,
+              nachname: mitglied?.nachname,
+            };
             this.eintraege = this.eintraege.map(item => item.id === geaendert.id ? geaendert : item);
-            this.dataSource.data = this.eintraege;
+            this.sortEintraegeByStbnr();
             this.resetFormNachAktion();
             this.globalDataService.erstelleMessage('success', 'Eintrag erfolgreich gespeichert!');
           } catch (e: any) {
@@ -173,7 +227,7 @@ export class AnwesenheitslisteComponent implements OnInit {
     this.globalDataService.delete(this.modul, idValue).subscribe({
       next: () => {
         this.eintraege = this.eintraege.filter(item => item.id !== idValue);
-        this.dataSource.data = this.eintraege;
+        this.sortEintraegeByStbnr();
         this.resetFormNachAktion();
         this.globalDataService.erstelleMessage('success', 'Eintrag erfolgreich gelöscht!');
       },
@@ -188,6 +242,6 @@ export class AnwesenheitslisteComponent implements OnInit {
 
   private resetFormNachAktion(): void {
     this.formModul.disable();
-    this.formModul.reset({ id: '', titel: '', datum: '', ort: '', notiz: '' });
+    this.formModul.reset({ id: '', mitglied_id: 0, titel: '', datum: '', ort: '', notiz: '' });
   }
 }
