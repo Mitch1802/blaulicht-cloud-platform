@@ -421,6 +421,9 @@ export class GlobalDataService {
     } else if (page == 'BER') {
       link = '/einsatzbericht';
       kuerzel = 'Einsatzbericht';
+    } else if (page == 'ANW') {
+      link = '/anwesenheitsliste';
+      kuerzel = 'Anwesenheitsliste';
     } else if (page == 'PDF') {
       link = '/pdf_template';
       kuerzel = 'PDF Templates';

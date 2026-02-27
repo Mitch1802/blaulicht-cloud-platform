@@ -71,6 +71,11 @@ export const routes: Routes = [
     loadComponent: () => import("./einsatzbericht/einsatzbericht.component").then(m => m.EinsatzberichtComponent),
   },
   {
+    path: 'anwesenheitsliste',
+    canActivate: [authGuard],
+    loadComponent: () => import("./anwesenheitsliste/anwesenheitsliste.component").then(m => m.AnwesenheitslisteComponent),
+  },
+  {
     path: "fahrzeuge",
     canActivate: [authGuard],
     loadComponent: () => import("./fahrzeug/fahrzeug.component").then(m => m.FahrzeugComponent),
