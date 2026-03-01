@@ -7,7 +7,11 @@
     "build": "ng build web-app --configuration production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "storybook": "ng run web-app:storybook",
+    "storybook:ci": "ng run web-app:storybook --ci --no-open --port=7009",
+    "build-storybook": "ng run web-app:build-storybook",
+    "verify:ui-catalog": "node ./scripts/verify-ui-catalog.mjs"
   },
   "private": true,
   "dependencies": {
@@ -44,6 +48,16 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.0.0",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.56.1"
+    "typescript-eslint": "^8.56.1",
+    "storybook": "^10.2.13",
+    "@storybook/angular": "^10.2.13",
+    "@storybook/addon-a11y": "^10.2.13",
+    "@storybook/addon-docs": "^10.2.13",
+    "@storybook/addon-onboarding": "^10.2.13",
+    "@angular-devkit/build-angular": "^21.2.0",
+    "@angular-devkit/architect": "^0.2102.0",
+    "@angular-devkit/core": "^21.2.0",
+    "@compodoc/compodoc": "^1.2.1",
+    "eslint-plugin-storybook": "^10.2.13"
   }
 }

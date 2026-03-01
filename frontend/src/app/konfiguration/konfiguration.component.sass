@@ -17,6 +17,8 @@
 .settings-card
     margin-bottom: 1.1rem
     border-radius: .9rem
+    border: 1px solid rgba(theme.$app-border, .9)
+    background-color: rgba(theme.$app-surface, .92)
 
 .section-head
     display: flex
@@ -58,12 +60,6 @@
 .config-page .mat-mdc-chip .mat-mdc-chip-remove,
 .config-page .mat-mdc-chip [matChipRemove]
     border-radius: var(--app-control-radius)
-
-.config-page .action-cell .mat-mdc-icon-button
-    min-height: var(--app-control-height)
-    min-width: var(--app-control-height)
-    height: var(--app-control-height)
-    width: var(--app-control-height)
 
 .actions-top
     margin: .3rem 0 .95rem
@@ -111,10 +107,6 @@
     white-space: nowrap
     overflow: hidden
     text-overflow: ellipsis
-
-.action-cell
-    display: flex
-    gap: .35rem
 
 .backup-empty
     margin: .7rem 0 .15rem
@@ -192,10 +184,6 @@
     .actions-top
         button
             width: 100%
-
-    .action-cell
-        justify-content: flex-start
-        gap: .2rem
 
     .backup-legend
         gap: .55rem .9rem

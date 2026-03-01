@@ -2,7 +2,6 @@ import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
-import { MatCardModule } from '@angular/material/card';
 import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
 import { MatButton } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
@@ -18,12 +17,14 @@ import { HeaderComponent } from '../_template/header/header.component';
 import { GlobalDataService } from '../_service/global-data.service';
 import { IAnwesenheitsliste } from '../_interface/anwesenheitsliste';
 import { IMitglied } from '../_interface/mitglied';
+import { UiPageLayoutComponent, UiSectionCardComponent } from '../ui-library';
 
 @Component({
   selector: 'app-anwesenheitsliste',
   imports: [
     HeaderComponent,
-    MatCardModule,
+    UiPageLayoutComponent,
+    UiSectionCardComponent,
     FormsModule,
     ReactiveFormsModule,
     MatFormField,
@@ -40,7 +41,6 @@ import { IMitglied } from '../_interface/mitglied';
     MatIcon
   ],
   templateUrl: './anwesenheitsliste.component.html',
-  styleUrl: './anwesenheitsliste.component.sass'
 })
 export class AnwesenheitslisteComponent implements OnInit {
   @ViewChild(MatPaginator) paginator?: MatPaginator;
@@ -58,7 +58,7 @@ export class AnwesenheitslisteComponent implements OnInit {
   mitgliedSuche = new FormControl<string>('', { nonNullable: true });
   breadcrumb: any = [];
   dataSource = new MatTableDataSource<IAnwesenheitsliste>(this.eintraege);
-  sichtbareSpalten: string[] = ['mitglieder', 'datum', 'titel', 'ort', 'actions'];
+  sichtbareSpalten: string[] = ['datum', 'titel', 'ort', 'mitglieder', 'actions'];
 
   private buildMitgliederAnzeige(mitgliedIds: number[] = []): string {
     return mitgliedIds
@@ -71,19 +71,20 @@ export class AnwesenheitslisteComponent implements OnInit {
   private mapEintragMitMitgliedern(item: IAnwesenheitsliste): IAnwesenheitsliste {
     return {
       ...item,
+      mitglieder_anzahl: (item.mitglied_ids || []).length,
       mitglieder_anzeige: this.buildMitgliederAnzeige(item.mitglied_ids || []),
     };
   }
 
   private sortEintraege(): void {
     this.eintraege = [...this.eintraege].sort((a, b) => {
-      const mitgliederA = String(a.mitglieder_anzeige ?? '');
-      const mitgliederB = String(b.mitglieder_anzeige ?? '');
-      const mitgliederVergleich = mitgliederA.localeCompare(mitgliederB, 'de');
-      if (mitgliederVergleich === 0) {
+      const anzahlA = Number(a.mitglieder_anzahl ?? 0);
+      const anzahlB = Number(b.mitglieder_anzahl ?? 0);
+      const anzahlVergleich = anzahlA - anzahlB;
+      if (anzahlVergleich === 0) {
         return String(a.titel ?? '').localeCompare(String(b.titel ?? ''), 'de');
       }
-      return mitgliederVergleich;
+      return anzahlVergleich;
     });
     this.dataSource.data = this.eintraege;
   }

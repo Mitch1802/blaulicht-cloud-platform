@@ -31,6 +31,18 @@ is_superuser==true dann nicht löschbar
 ## Homepage News
 https://blaulichtcloud.at/api/v3/news/public/?typ=extern
 
+## Storybook
+
+Storybook-Doku und UI-Katalog-Regeln:
+
+- [STORYBOOK.md](STORYBOOK.md)
+
+## Layout
+
+Layout-Guide für responsive Grid-/Tabellenaufteilung (z. B. col-12, col-6, col-4 inkl. Mobile/Desktop):
+
+- [LAYOUT.md](LAYOUT.md)
+
 ## Tests (lokal)
 
 Für lokale Django-Tests werden ein paar Environment-Variablen benötigt.

@@ -37,7 +37,7 @@
               </mat-form-field>
             </div>
             <div
-            class="app-col-12 app-col-lg-3 m-0 app-grid align-items-center auswahl-button"
+            class="app-col-12 app-col-lg-3 m-0 app-grid auswahl-button"
           >
             <button
               type="submit"
@@ -68,7 +68,7 @@
         [hidden]="formModul.disabled"
         class="edit-form"
       >
-          <input hidden type="text" class="form-control" formControlName="id" />
+          <input hidden type="text"  formControlName="id" />
 
           <div class="form-actions">
             <button
@@ -131,7 +131,7 @@
                 </mat-card>
                 <input #fotoUpload type="file" id="fotoUpload" accept=".jpg,.jpeg,.png" (change)="onFotoSelected($event)" />
               </div>
-              <div class="alert alert-secondary">
+              <div >
                 @if (fileFound==true) {
                   <button mat-flat-button color="primary" type="button" (click)="openModal()">Bild öffnen</button>
                 }

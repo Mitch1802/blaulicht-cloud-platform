@@ -34,7 +34,7 @@
 
       <div class="module-grid">
         @for (item of adminItems; track item) {
-          <mat-card class="module-card admin" [routerLink]="item.routerlink">
+          <mat-card class="module-card" [routerLink]="item.routerlink">
             <mat-icon class="module-icon material-icons-outlined">{{ item.icon }}</mat-icon>
             <div class="module-title">{{ item.modul }}</div>
           </mat-card>

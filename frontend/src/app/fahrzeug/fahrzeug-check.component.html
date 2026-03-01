@@ -1,6 +1,6 @@
 <app-header [breadcrumb]="breadcrumb"></app-header>
 
-<div class="app-grid justify-content-center content">
+<div class="app-grid content">
   <div class="app-col-12 app-col-md-10 app-col-lg-9 p-0 m-0">
     <mat-card>
       <mat-card-header>
@@ -8,7 +8,7 @@
       </mat-card-header>
 
       <mat-card-content>
-        <form [formGroup]="form" class="d-flex flex-column gap-3">
+        <form [formGroup]="form" >
           <mat-form-field>
             <mat-label>Titel</mat-label>
             <input matInput formControlName="title" placeholder="z. B. Tagescheck" />
@@ -21,13 +21,13 @@
 
           <mat-divider></mat-divider>
 
-          <div formArrayName="results" class="d-flex flex-column gap-3">
+          <div formArrayName="results" >
             @for (raum of raeumeView; track raum.name) {
               <mat-card class="p-2">
                 <h3 class="m-0 mb-2">{{ raum.name }}</h3>
 
                 @for (item of raum.items; track item.index) {
-                  <div class="app-grid align-items-center mb-2" [formGroupName]="item.index">
+                  <div class="app-grid mb-2" [formGroupName]="item.index">
                     <div class="app-col-12 app-col-md-6">
                       <mat-checkbox formControlName="checked">
                         {{ item.name }} (Soll: {{ item.menge }} {{ item.einheit }})
@@ -35,7 +35,7 @@
                     </div>
 
                     <div class="app-col-12 app-col-md-6">
-                      <mat-form-field class="w-100">
+                      <mat-form-field >
                         <mat-label>Notiz</mat-label>
                         <input matInput formControlName="notiz" placeholder="Optional" />
                       </mat-form-field>

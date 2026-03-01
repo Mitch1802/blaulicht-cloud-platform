@@ -1,6 +1,6 @@
 <app-header [breadcrumb]="breadcrumb"></app-header>
 
-<div class="app-grid justify-content-center content">
+<div class="app-grid content">
   <div class="app-col-12 app-col-md-10 app-col-lg-8 p-0 m-0">
     <mat-card>
       <mat-card-header>
@@ -8,11 +8,10 @@
       </mat-card-header>
       <mat-card-content>
         <form [formGroup]="formModul" (ngSubmit)="datenSpeichern()">
-          <input hidden type="text" class="form-control" formControlName="id" />
+          <input hidden type="text"  formControlName="id" />
           <button
             mat-flat-button
             color="accent"
-            class="me-3 mb-3"
             [hidden]="!formModul.valid"
             type="submit"
           >
@@ -74,7 +73,7 @@
               </mat-form-field>
             </div>
             <div
-              class="app-col-12 app-col-lg-4 m-0 app-grid align-items-center auswahl-button"
+              class="app-col-12 app-col-lg-4 m-0 app-grid auswahl-button"
             >
               <button
                 mat-flat-button

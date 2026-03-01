@@ -43,7 +43,7 @@
       </div>
 
       <form [formGroup]="formModul" (ngSubmit)="datenSpeichern()" [hidden]="formModul.disabled" class="edit-form">
-        <input hidden type="text" class="form-control" formControlName="id" />
+        <input hidden type="text"  formControlName="id" />
 
         <div class="form-actions">
           <button mat-flat-button color="accent" [hidden]="!formModul.valid" type="submit">

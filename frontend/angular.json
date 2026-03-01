@@ -36,19 +36,24 @@
               "src/assets/test"
             ],
             "styles": [
+              "src/assets/css/material-design-icons.css",
+              "src/assets/css/material-design-icons-outlined.css",
               "src/theme.sass",
               "src/styles.sass"
             ],
             "optimization": {
-                "scripts": true,
-                "styles":  {
-                "minify": true, 
+              "scripts": true,
+              "styles": {
+                "minify": true,
                 "inlineCritical": true
               }
             },
             "scripts": [],
             "allowedCommonJsDependencies": [
-              "papaparse"
+              "papaparse",
+              "axe-core",
+              "semver",
+              "strip-ansi"
             ],
             "serviceWorker": false,
             "baseHref": "/",
@@ -126,6 +131,8 @@
               }
             ],
             "styles": [
+              "src/assets/css/material-design-icons.css",
+              "src/assets/css/material-design-icons-outlined.css",
               "src/styles.sass"
             ],
             "scripts": []
@@ -138,6 +145,36 @@
               "src/**/*.ts",
               "src/**/*.html"
             ]
+          }
+        },
+        "storybook": {
+          "builder": "@storybook/angular:start-storybook",
+          "options": {
+            "configDir": ".storybook",
+            "browserTarget": "web-app:build:development",
+            "compodoc": false,
+            "compodocArgs": [
+              "-e",
+              "json",
+              "-d",
+              "."
+            ],
+            "port": 6006
+          }
+        },
+        "build-storybook": {
+          "builder": "@storybook/angular:build-storybook",
+          "options": {
+            "configDir": ".storybook",
+            "browserTarget": "web-app:build",
+            "compodoc": true,
+            "compodocArgs": [
+              "-e",
+              "json",
+              "-d",
+              "."
+            ],
+            "outputDir": "storybook-static"
           }
         }
       }

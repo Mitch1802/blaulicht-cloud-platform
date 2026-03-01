@@ -130,6 +130,7 @@ jobs:
         run: |
           cd frontend
           npm ci --no-audit --no-fund
+          npm run verify:ui-catalog
           npm run build
 
       - name: Set up Docker Buildx

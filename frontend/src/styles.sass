@@ -1,7 +1,5 @@
 /* You can add global styles to this file, and also import other style files */
 @use './theme' as theme
-@import './assets/css/material-design-icons.css'
-@import './assets/css/material-design-icons-outlined.css'
 
 
 :root
@@ -218,6 +216,258 @@ div:has(> .mat-mdc-button-disabled)
     background: rgba(theme.$app-error, .12)
     border-color: rgba(theme.$app-error, .45)
 
+.ui-page,
+.app-page,
+section[class$='-page'],
+.anwesenheitsliste-page,
+.fmd-page
+    max-width: 1280px
+    margin: 0 auto
+    padding: 1rem 1rem 2rem
+
+.ui-page__head,
+.page-head
+    margin: 0 0 1.5rem
+
+    h1
+        margin: 0
+        color: theme.$app-primary
+        font-size: clamp(1.5rem, 2.4vw, 2.1rem)
+        line-height: 1.2
+
+.ui-card,
+.settings-card
+    border-radius: .9rem !important
+
+.ui-card__head,
+.section-head
+    display: flex
+    align-items: center
+    justify-content: space-between
+    padding: 1rem 1rem 0
+
+    h2
+        margin: 0
+        color: theme.$app-primary
+        font-size: 1.1rem
+
+.ui-card__content,
+.settings-card > .mat-mdc-card-content,
+.settings-card mat-card-content
+    padding: 1rem !important
+
+.ui-top-actions,
+.top-actions,
+.actions-row
+    display: flex
+    gap: .6rem
+    flex-wrap: wrap
+    margin: .25rem 0 .8rem
+
+.ui-form,
+.edit-form
+    margin-top: .2rem
+
+.ui-actions,
+.form-actions
+    display: flex
+    flex-wrap: wrap
+    gap: .6rem
+    margin-bottom: .8rem
+
+.ui-top-actions,
+.top-actions,
+.actions-row,
+.ui-actions,
+.form-actions
+    > .mat-mdc-button-base,
+    > a.mat-mdc-button-base,
+    > [mat-flat-button],
+    > [mat-stroked-button],
+    > [mat-raised-button],
+    > [mat-button],
+    > [mat-icon-button]
+        min-height: var(--app-control-height)
+        height: var(--app-control-height)
+
+.ui-form-grid,
+.form-grid
+    margin-top: .2rem
+
+.selector-row,
+.role-row
+    margin-top: .2rem
+
+.password-action,
+.actions-row.full-width
+    display: flex
+    align-items: end
+
+.ui-two-col-md
+    grid-column: span 12
+
+.ui-full-width,
+.full-width
+    width: 100%
+
+.ui-chips,
+.role-chips
+    margin-top: .3rem
+    display: flex
+    flex-wrap: wrap
+    gap: .4rem
+
+.ui-chips .mat-mdc-chip,
+.role-chips .mat-mdc-chip
+    min-height: var(--app-control-height)
+    height: var(--app-control-height)
+    border-radius: var(--app-control-radius)
+    border: 1px solid var(--app-control-border)
+    background: var(--app-control-bg)
+    color: theme.$app-primary-deep
+
+.ui-chips .mat-mdc-chip .mat-mdc-chip-action,
+.ui-chips .mat-mdc-chip .mdc-evolution-chip__action,
+.role-chips .mat-mdc-chip .mat-mdc-chip-action,
+.role-chips .mat-mdc-chip .mdc-evolution-chip__action
+    min-height: var(--app-control-height)
+
+.ui-chips .mat-mdc-chip .mat-mdc-chip-remove,
+.ui-chips .mat-mdc-chip [matChipRemove],
+.role-chips .mat-mdc-chip .mat-mdc-chip-remove,
+.role-chips .mat-mdc-chip [matChipRemove]
+    border-radius: var(--app-control-radius)
+
+.ui-table-wrap,
+.table-wrap
+    overflow-x: auto
+    margin-top: .5rem
+
+.backup-table-wrap,
+.cleanup-table-wrap
+    border-radius: .8rem
+
+    table
+        width: 100%
+
+        .mat-mdc-row
+            min-height: 3rem
+
+        .mat-mdc-cell,
+        .mat-mdc-header-cell
+            vertical-align: middle
+
+.ui-action-cell
+    display: flex
+    gap: .35rem
+    align-items: center
+
+td.ui-action-cell
+    display: table-cell
+    vertical-align: middle
+    white-space: nowrap
+
+    > * + *
+        margin-left: .35rem
+
+    .mat-icon
+        margin: 0
+        font-size: 20px
+        width: 20px
+        height: 20px
+        line-height: 20px
+
+    > .mat-mdc-button-base,
+    > a.mat-mdc-button-base,
+    > [mat-flat-button],
+    > [mat-stroked-button],
+    > [mat-raised-button],
+    > [mat-button],
+    > [mat-icon-button],
+    > .ui-action-btn
+        min-width: 2.25rem
+        width: 2.25rem
+        min-height: 2.25rem
+        height: 2.25rem
+        padding: 0
+        box-shadow: none
+
+    > .ms-2
+        margin-left: 0 !important
+
+    > .px-0
+        padding-left: 0 !important
+        padding-right: 0 !important
+
+.ui-action-btn
+    min-width: 2.25rem
+    width: 2.25rem
+    height: 2.25rem
+    padding: 0
+
+.form-section
+    border-radius: .75rem !important
+    border: 1px solid rgba(theme.$app-border, .9)
+    background: rgba(theme.$app-surface, .94)
+
+.form-section-title
+    color: theme.$app-primary-deep
+    font-weight: 600
+
+.form-section-subtitle
+    color: theme.$app-text-muted
+
+.form-section-body
+    padding-top: .35rem
+
+.autocomplete-multi
+    display: flex
+    flex-direction: column
+    gap: .25rem
+
+@media only screen and (min-width: 768px)
+    .ui-two-col-md
+        grid-column: span 6
+
+    .ui-two-col-md.mb-3,
+    .ui-form-grid .app-col-lg-12.mb-3,
+    .form-grid .app-col-lg-12.mb-3
+        margin-bottom: .6rem !important
+
+@media only screen and (max-width: 700px)
+    .ui-page,
+    .app-page,
+    section[class$='-page'],
+    .anwesenheitsliste-page,
+    .fmd-page
+        padding: .75rem .75rem 1.5rem
+
+    .ui-page__head,
+    .page-head
+        margin-bottom: 1rem
+
+        h1
+            font-size: 1.4rem
+
+    .ui-card__head,
+    .section-head
+        padding: .85rem .85rem 0
+
+        h2
+            font-size: 1rem
+
+    .ui-top-actions,
+    .ui-actions,
+    .top-actions,
+    .form-actions,
+    .actions-row
+        button
+            width: 100%
+
+    .password-action,
+    .actions-row.full-width
+        align-items: stretch
+
 .mat-mdc-button-base:disabled
     opacity: .55
     box-shadow: none
@@ -230,10 +480,6 @@ div:has(> .mat-mdc-button-disabled)
     border: 1px solid rgba(theme.$app-border, .9)
     background-color: rgba(theme.$app-surface, .92)
     box-shadow: 0 8px 28px rgba(theme.$app-primary-dark, .08)
-
-.settings-card > .mat-mdc-card-content,
-.settings-card mat-card-content
-    padding: var(--app-card-content-padding) !important
 
 .mat-mdc-table
     background: transparent
@@ -329,23 +575,23 @@ mat-card
     gap: var(--app-grid-row-gap) var(--app-grid-col-gap)
     margin: 0
 
-.row > [class*='col-'],
-.row > [class*='app-col-'],
-.row > .col,
-.app-grid > [class*='col-'],
-.app-grid > [class*='app-col-'],
-.app-grid > .col,
-.app-grid > .app-col
+.row > :where([class*='col-']),
+.row > :where([class*='app-col-']),
+.row > :where(.col),
+.app-grid > :where([class*='col-']),
+.app-grid > :where([class*='app-col-']),
+.app-grid > :where(.col),
+.app-grid > :where(.app-col)
     grid-column: span 12
     min-width: 0
 
-.row.justify-content-center > [class*='col-'],
-.row.justify-content-center > [class*='app-col-'],
-.row.justify-content-center > .col,
-.app-grid.justify-content-center > [class*='col-'],
-.app-grid.justify-content-center > [class*='app-col-'],
-.app-grid.justify-content-center > .col,
-.app-grid.justify-content-center > .app-col
+.row.justify-content-center > :where([class*='col-']),
+.row.justify-content-center > :where([class*='app-col-']),
+.row.justify-content-center > :where(.col),
+.app-grid.justify-content-center > :where([class*='col-']),
+.app-grid.justify-content-center > :where([class*='app-col-']),
+.app-grid.justify-content-center > :where(.col),
+.app-grid.justify-content-center > :where(.app-col)
     justify-self: center
 
 .row.align-items-center,
