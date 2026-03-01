@@ -20,13 +20,13 @@ class AnwesenheitslisteEndpointTests(EndpointSmokeMixin, APITestCase):
             svnr="9876",
             geburtsdatum=date(1995, 5, 5),
         )
-        Anwesenheitsliste.objects.create(
-            mitglied_id=self.mitglied,
+        eintrag = Anwesenheitsliste.objects.create(
             titel="Monatsübung",
             datum=date(2026, 2, 20),
             ort="Feuerwehrhaus",
             notiz="Vollzählig",
         )
+        eintrag.mitglieder.add(self.mitglied)
 
     def test_all_endpoints_resolve(self):
         endpoints = [
@@ -64,4 +64,4 @@ class AnwesenheitslisteEndpointTests(EndpointSmokeMixin, APITestCase):
 
         serializer = AnwesenheitslisteSerializer()
         self.assertEqual(serializer.Meta.model, Anwesenheitsliste)
-        self.assertEqual(serializer.Meta.fields, "__all__")
+        self.assertIn("mitglied_ids", serializer.Meta.fields)

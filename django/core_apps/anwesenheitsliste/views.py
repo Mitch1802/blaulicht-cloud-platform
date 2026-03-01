@@ -13,7 +13,7 @@ from .serializers import AnwesenheitslisteSerializer
 
 
 class AnwesenheitslisteViewSet(ModelViewSet):
-    queryset = Anwesenheitsliste.objects.select_related("mitglied_id").all()
+    queryset = Anwesenheitsliste.objects.prefetch_related("mitglieder").all()
     serializer_class = AnwesenheitslisteSerializer
     permission_classes = [
         permissions.IsAuthenticated,

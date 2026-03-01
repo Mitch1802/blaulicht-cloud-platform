@@ -6,7 +6,7 @@ from core_apps.mitglieder.models import Mitglied
 
 
 class Anwesenheitsliste(TimeStampedModel):
-    mitglied_id = models.ForeignKey(Mitglied, on_delete=models.CASCADE, blank=True, null=True)
+    mitglieder = models.ManyToManyField(Mitglied, blank=True, related_name="anwesenheitslisten")
     titel = models.CharField(verbose_name=_("Titel"), max_length=255)
     datum = models.DateField(verbose_name=_("Datum"), blank=True, null=True)
     ort = models.CharField(verbose_name=_("Ort"), max_length=255, blank=True)

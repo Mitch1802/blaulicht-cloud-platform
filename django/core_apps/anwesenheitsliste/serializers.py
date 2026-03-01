@@ -1,5 +1,7 @@
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
+from core_apps.mitglieder.models import Mitglied
 from .models import Anwesenheitsliste
 
 
@@ -17,7 +19,28 @@ class AnwesenheitslisteSerializer(serializers.ModelSerializer):
         required=False,
         allow_null=True,
     )
+    mitglied_ids = serializers.PrimaryKeyRelatedField(
+        source="mitglieder",
+        queryset=Mitglied.objects.all(),
+        many=True,
+        required=True,
+    )
+
+    def validate_mitglied_ids(self, value):
+        if not value:
+            raise ValidationError("Mindestens ein Mitglied ist erforderlich.")
+        return value
 
     class Meta:
         model = Anwesenheitsliste
-        fields = "__all__"
+        fields = [
+            "pkid",
+            "id",
+            "titel",
+            "datum",
+            "ort",
+            "notiz",
+            "created_at",
+            "updated_at",
+            "mitglied_ids",
+        ]
