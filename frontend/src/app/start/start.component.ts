@@ -30,6 +30,8 @@ export class StartComponent implements OnInit {
 
   visibleItems: any[] = [];
   adminItems: any[] = [];
+  visibleCategories: { name: string; items: any[] }[] = [];
+  adminCategories: { name: string; items: any[] }[] = [];
 
   defaultKonfig: any[] = [
     {
@@ -91,6 +93,9 @@ export class StartComponent implements OnInit {
             !this.isPureAdminItem(item)
           );
 
+          this.visibleCategories = this.buildCategories(this.visibleItems);
+          this.adminCategories = this.buildCategories(this.adminItems);
+
         } catch (e: any) {
           this.globalDataService.erstelleMessage("error", e);
         }
@@ -136,5 +141,26 @@ export class StartComponent implements OnInit {
   private isPureAdminItem(item: any): boolean {
     const roles = this.normalizeRoles(item?.rolle);
     return roles.length === 1 && roles[0] === 'ADMIN';
+  }
+
+  private buildCategories(items: any[]): { name: string; items: any[] }[] {
+    const map = new Map<string, any[]>();
+
+    for (const item of items) {
+      const category = this.normalizeCategory(item);
+      const list = map.get(category) ?? [];
+      list.push(item);
+      map.set(category, list);
+    }
+
+    return Array.from(map.entries()).map(([name, groupedItems]) => ({
+      name,
+      items: groupedItems,
+    }));
+  }
+
+  private normalizeCategory(item: any): string {
+    const raw = String(item?.kategorie ?? item?.category ?? '').trim();
+    return raw || 'Allgemein';
   }
 }

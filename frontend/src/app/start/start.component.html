@@ -14,14 +14,19 @@
     @if (visibleItems.length === 0) {
       <p class="empty">Für deine Rollen sind aktuell keine Module freigeschaltet.</p>
     } @else {
-      <div class="module-grid">
-        @for (item of visibleItems; track item) {
-          <mat-card class="module-card" [routerLink]="item.routerlink">
-            <mat-icon class="module-icon material-icons-outlined">{{ item.icon }}</mat-icon>
-            <div class="module-title">{{ item.modul }}</div>
-          </mat-card>
-        }
-      </div>
+      @for (category of visibleCategories; track category.name) {
+        <section class="category-block">
+          <h3 class="category-title">{{ category.name }}</h3>
+          <div class="module-grid">
+            @for (item of category.items; track item) {
+              <mat-card class="module-card" [routerLink]="item.routerlink">
+                <mat-icon class="module-icon material-icons-outlined">{{ item.icon }}</mat-icon>
+                <div class="module-title">{{ item.modul }}</div>
+              </mat-card>
+            }
+          </div>
+        </section>
+      }
     }
   </section>
 
@@ -32,14 +37,19 @@
         <span class="count">{{ adminItems.length }}</span>
       </div>
 
-      <div class="module-grid">
-        @for (item of adminItems; track item) {
-          <mat-card class="module-card" [routerLink]="item.routerlink">
-            <mat-icon class="module-icon material-icons-outlined">{{ item.icon }}</mat-icon>
-            <div class="module-title">{{ item.modul }}</div>
-          </mat-card>
-        }
-      </div>
+      @for (category of adminCategories; track category.name) {
+        <section class="category-block">
+          <h3 class="category-title">{{ category.name }}</h3>
+          <div class="module-grid">
+            @for (item of category.items; track item) {
+              <mat-card class="module-card" [routerLink]="item.routerlink">
+                <mat-icon class="module-icon material-icons-outlined">{{ item.icon }}</mat-icon>
+                <div class="module-title">{{ item.modul }}</div>
+              </mat-card>
+            }
+          </div>
+        </section>
+      }
     </section>
   }
 </section>
