@@ -46,6 +46,7 @@ class Einsatzbericht(TimeStampedModel):
     gesetzte_massnahmen = models.TextField(_("Gesetzte Maßnahmen"), blank=True, default="")
 
     brand_kategorie = models.CharField(_("Brand Kategorie"), max_length=120, blank=True, default="")
+    brand_aus = models.TimeField(_("Brand aus"), null=True, blank=True)
     technisch_kategorie = models.CharField(_("Technisch Kategorie"), max_length=120, blank=True, default="")
     mitalarmierte_stellen = models.ManyToManyField(MitalarmierteStelle, related_name="einsatzberichte", blank=True)
 

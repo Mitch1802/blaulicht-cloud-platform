@@ -209,6 +209,10 @@
                         }
                       </mat-select>
                     </mat-form-field>
+                    <mat-form-field class="full-width">
+                      <mat-label>Brand aus</mat-label>
+                      <input matInput type="time" formControlName="brandAus" />
+                    </mat-form-field>
                   } @else if (isTechnisch) {
                     <h3>Technische-Details</h3>
                     <mat-form-field class="full-width">
@@ -275,7 +279,7 @@
               <div class="upload-row">
                 <label class="upload-label" for="fotoDokuDateien">Foto Doku Dateien</label>
                 <input #fotoDokuDateienInput id="fotoDokuDateien" class="file-input-hidden" type="file" multiple accept=".jpg,.jpeg,.png,.pdf" (change)="onDokumentSelected($event, 'fotoDoku')" />
-                <button mat-flat-button type="button" color="accent" class="upload-button" (click)="fotoDokuDateienInput.click()">Dateien auswählen</button>
+                <button mat-flat-button type="button" color="primary" class="upload-button" (click)="fotoDokuDateienInput.click()">Dateien auswählen</button>
                 @if (fotoDokuFiles.length > 0) {
                   <div class="preview-grid">
                     @for (file of fotoDokuFiles; track file; let i = $index) {
@@ -324,7 +328,7 @@
               <div class="upload-row">
                 <label class="upload-label" for="zulassungDateien">Zulassungsschein Dateien</label>
                 <input #zulassungDateienInput id="zulassungDateien" class="file-input-hidden" type="file" multiple accept=".jpg,.jpeg,.png,.pdf" (change)="onDokumentSelected($event, 'zulassungsschein')" />
-                <button mat-flat-button type="button" color="accent" class="upload-button" (click)="zulassungDateienInput.click()">Dateien auswählen</button>
+                <button mat-flat-button type="button" color="primary" class="upload-button" (click)="zulassungDateienInput.click()">Dateien auswählen</button>
                 @if (zulassungFiles.length > 0) {
                   <div class="preview-grid">
                     @for (file of zulassungFiles; track file; let i = $index) {
@@ -373,7 +377,7 @@
               <div class="upload-row">
                 <label class="upload-label" for="versicherungDateien">Versicherungsschein Dateien</label>
                 <input #versicherungDateienInput id="versicherungDateien" class="file-input-hidden" type="file" multiple accept=".jpg,.jpeg,.png,.pdf" (change)="onDokumentSelected($event, 'versicherungsschein')" />
-                <button mat-flat-button type="button" color="accent" class="upload-button" (click)="versicherungDateienInput.click()">Dateien auswählen</button>
+                <button mat-flat-button type="button" color="primary" class="upload-button" (click)="versicherungDateienInput.click()">Dateien auswählen</button>
                 @if (versicherungFiles.length > 0) {
                   <div class="preview-grid">
                     @for (file of versicherungFiles; track file; let i = $index) {

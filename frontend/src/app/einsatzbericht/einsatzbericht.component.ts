@@ -48,6 +48,7 @@ type EinsatzberichtDto = {
   lage_beim_eintreffen: string;
   gesetzte_massnahmen: string;
   brand_kategorie: string;
+  brand_aus: string;
   technisch_kategorie: string;
   mitalarmiert: number[];
   fahrzeuge: number[];
@@ -165,6 +166,7 @@ export class EinsatzberichtComponent implements OnInit {
     lageBeimEintreffen: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
     gesetzteMassnahmen: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
     brandKategorie: new FormControl<string>('', { nonNullable: true }),
+    brandAus: new FormControl<string>('', { nonNullable: true }),
     technischKategorie: new FormControl<string>('', { nonNullable: true }),
     mitalarmiert: new FormControl<number[]>([], { nonNullable: true }),
     fahrzeuge: new FormControl<number[]>([], { nonNullable: true }),
@@ -525,6 +527,7 @@ export class EinsatzberichtComponent implements OnInit {
       lageBeimEintreffen: '',
       gesetzteMassnahmen: '',
       brandKategorie: '',
+      brandAus: '',
       technischKategorie: '',
       mitalarmiert: [],
       fahrzeuge: [],
@@ -577,6 +580,7 @@ export class EinsatzberichtComponent implements OnInit {
       lageBeimEintreffen: bericht.lage_beim_eintreffen || '',
       gesetzteMassnahmen: bericht.gesetzte_massnahmen || '',
       brandKategorie: bericht.brand_kategorie || '',
+      brandAus: bericht.brand_aus || '',
       technischKategorie: bericht.technisch_kategorie || '',
       mitalarmiert: this.resolveMitalarmiertSelectValue(bericht.mitalarmiert),
       fahrzeuge: bericht.fahrzeuge || [],
@@ -753,6 +757,7 @@ export class EinsatzberichtComponent implements OnInit {
     fd.append('lage_beim_eintreffen', form.lageBeimEintreffen);
     fd.append('gesetzte_massnahmen', form.gesetzteMassnahmen);
     fd.append('brand_kategorie', this.isBrand ? (form.brandKategorie || '') : '');
+    fd.append('brand_aus', this.isBrand ? (form.brandAus || '') : '');
     fd.append('technisch_kategorie', form.technischKategorie || '');
     form.mitalarmiert.forEach((stelleId) => fd.append('mitalarmiert', String(stelleId)));
 
@@ -779,9 +784,11 @@ export class EinsatzberichtComponent implements OnInit {
 
   private updateConditionalValidation(): void {
     const brandKategorie = this.formBericht.controls.brandKategorie;
+    const brandAus = this.formBericht.controls.brandAus;
     const technischKategorie = this.formBericht.controls.technischKategorie;
 
     brandKategorie.clearValidators();
+    brandAus.clearValidators();
     technischKategorie.clearValidators();
 
     if (this.isBrand) {
@@ -791,6 +798,9 @@ export class EinsatzberichtComponent implements OnInit {
     } else {
       if (brandKategorie.value) {
         brandKategorie.setValue('', { emitEvent: false });
+      }
+      if (brandAus.value) {
+        brandAus.setValue('', { emitEvent: false });
       }
     }
 
@@ -805,6 +815,7 @@ export class EinsatzberichtComponent implements OnInit {
     }
 
     brandKategorie.updateValueAndValidity({ emitEvent: false });
+    brandAus.updateValueAndValidity({ emitEvent: false });
     technischKategorie.updateValueAndValidity({ emitEvent: false });
   }
 

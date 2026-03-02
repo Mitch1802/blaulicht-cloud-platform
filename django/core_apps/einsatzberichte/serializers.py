@@ -49,6 +49,7 @@ class EinsatzberichtSerializer(serializers.ModelSerializer):
             "lage_beim_eintreffen",
             "gesetzte_massnahmen",
             "brand_kategorie",
+            "brand_aus",
             "technisch_kategorie",
             "mitalarmiert",
             "blaulichtsms_einsatz_id",
@@ -70,6 +71,7 @@ class EinsatzberichtSerializer(serializers.ModelSerializer):
 
         if not is_brandeinsatz:
             attrs["brand_kategorie"] = ""
+            attrs["brand_aus"] = None
 
         if not is_technisch:
             attrs["technisch_kategorie"] = ""
