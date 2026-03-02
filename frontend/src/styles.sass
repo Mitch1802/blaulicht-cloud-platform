@@ -536,24 +536,97 @@ mat-card
     padding: 12px
     color: theme.$app-text-muted
 
-@media (min-width: 1200px)
-    .content
-        padding-top: 5vh
-
 .content
     width: min(1280px, 100%)
-    margin: 5px auto
+    margin: 1rem auto 0
+    padding: 0 1rem 2rem
     color: theme.$app-text
 
 .content > [class*='app-col-'],
 .content > [class*='col-']
-    grid-column: 1 / -1 !important
-    width: min(1280px, 100%)
-    max-width: 1280px
+    display: block
+    grid-column: auto !important
+    margin-left: auto !important
+    margin-right: auto !important
+    width: min(980px, 100%)
+    max-width: 980px
 
 .content > [class*='app-col-'] > .mat-mdc-card,
 .content > [class*='col-'] > .mat-mdc-card
     width: 100%
+
+.atemschutz-subcontent
+    margin-top: 0
+
+    .mat-mdc-card
+        border-radius: .9rem
+        border: 1px solid rgba(theme.$app-border, .9)
+        background-color: rgba(theme.$app-surface, .92)
+
+    .mat-mdc-card-header
+        display: flex
+        align-items: center
+        justify-content: space-between
+        padding: 1rem 1rem 0
+
+    .mat-mdc-card-title
+        margin: 0
+        padding-bottom: 0
+        color: theme.$app-primary
+        font-size: 1.1rem
+        line-height: 1.25
+
+    .mat-mdc-card-content
+        padding: 1rem !important
+
+    table[mat-table]
+        width: 100%
+
+    .mat-mdc-row
+        min-height: 3rem
+
+    .mat-mdc-cell,
+    .mat-mdc-header-cell
+        vertical-align: middle
+        padding-left: .7rem
+        padding-right: .7rem
+
+    .mat-mdc-header-cell
+        font-weight: 600
+
+    .mat-column-actions
+        width: 150px
+        min-width: 150px
+
+    .mat-mdc-card-content > button[mat-flat-button] + button[mat-flat-button],
+    .mat-mdc-card-content > button[mat-button] + button[mat-button],
+    .mat-mdc-card-content > button[mat-raised-button] + button[mat-raised-button]
+        margin-left: .6rem
+
+@media (min-width: 1200px)
+    .atemschutz-subcontent
+        padding-top: .25rem
+
+@media (max-width: 768px)
+    .atemschutz-subcontent
+        padding: .75rem .75rem 1.5rem
+
+        .mat-mdc-card-content > button[mat-flat-button] + button[mat-flat-button],
+        .mat-mdc-card-content > button[mat-button] + button[mat-button],
+        .mat-mdc-card-content > button[mat-raised-button] + button[mat-raised-button]
+            margin-left: .4rem
+            margin-top: .4rem
+
+        .mat-mdc-header-cell
+            font-size: .78rem
+
+        .mat-mdc-cell
+            font-size: .83rem
+
+        .mat-mdc-header-cell,
+        .mat-mdc-cell
+            padding-left: .45rem
+            padding-right: .45rem
 
 :root
     --app-grid-columns: 12

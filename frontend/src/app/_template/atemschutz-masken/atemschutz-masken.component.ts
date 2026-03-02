@@ -51,9 +51,9 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 export class AtemschutzMaskenComponent implements OnInit {
   globalDataService = inject(GlobalDataService);
 
-  title = 'Masken';
+  title = 'Masken verwalten';
   title_modul = this.title;
-  title_pruefung = 'Masken Prüfung';
+  title_pruefung = 'Masken prüfen';
   modul = 'atemschutz/masken';
   showPruefungForm: boolean = false;
   showPruefungTable: boolean = false;

@@ -107,6 +107,7 @@ Beispiele in Storybook:
 - `Design System/Layout/Section Card`
 - `Design System/Layout/Grid Recipes`
 - `Design System/Patterns/Form`
+- `Design System/Patterns/Configuration Surface`
 - `Design System/Patterns/Table`
 - `Design System/Catalog/All App Elements`
 - `Design System/Catalog/Allowed Action Icons`

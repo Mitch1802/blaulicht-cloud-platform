@@ -12,15 +12,22 @@
 }
 
 <div class="app-header-stepper-wrap">
-  <mat-stepper
-    class="app-header-stepper"
-    [selectedIndex]="activeBreadcrumbIndex"
-    (selectionChange)="onStepperSelection($event.selectedIndex)"
-  >
-    @for (link of breadcrumb; track link; let i = $index) {
-      <mat-step [completed]="i < activeBreadcrumbIndex" [editable]="true">
-        <ng-template matStepLabel>{{ link.kuerzel }}</ng-template>
-      </mat-step>
+  <nav class="app-header-breadcrumb" aria-label="Breadcrumb">
+    @if (hasBreadcrumb) {
+      <a class="breadcrumb-item breadcrumb-home breadcrumb-link" aria-label="Startseite" routerLink="/start">
+        <mat-icon>home</mat-icon>
+      </a>
+
+      @for (link of breadcrumb; track link; let i = $index) {
+        @if (i > 0) {
+          <span class="breadcrumb-separator" aria-hidden="true">&gt;</span>
+          @if (link.link) {
+            <a class="breadcrumb-item breadcrumb-link" [routerLink]="link.link">{{ link.kuerzel }}</a>
+          } @else {
+            <span class="breadcrumb-item">{{ link.kuerzel }}</span>
+          }
+        }
+      }
     }
-  </mat-stepper>
+  </nav>
 </div>

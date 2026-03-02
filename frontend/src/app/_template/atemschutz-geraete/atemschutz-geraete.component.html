@@ -1,63 +1,72 @@
 <app-header [breadcrumb]="breadcrumb"></app-header>
 
-<div class="app-grid content">
-  <div class="app-col-12 app-col-md-10 app-col-lg-8 p-0 m-0">
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>{{ title }}</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
+<section class="atemschutz-geraete-page">
+  <header class="page-head">
+    <h1>Geräte verwalten</h1>
+  </header>
+
+  <mat-card class="settings-card">
+    <div class="section-head">
+      <h2>Geräte verwalten</h2>
+    </div>
+    <mat-card-content>
         @if (sichtbarkeitModul() == "tableListe")
         {
-        <button
-          mat-flat-button
-          color="accent"
-          (click)="neueDetails()"
-          type="button"
-        >
-          Hinzufügen
-        </button>
-        <button
-          mat-flat-button
-          color="accent"
-          (click)="neuePruefung()"
-          type="button"
-        >
-          Protokoll Eintrag
-        </button>
-        } 
-        @if (sichtbarkeitModul() == "tablePruefungen") {
-        <button
-          mat-flat-button
-          color="primary"
-          (click)="showMasken()"
-          type="button"
-        >
-          Zurück
-        </button>
-        }
-        <!-- MASKE FORM -->
-        @if (sichtbarkeitModul() == "formModul") {
-        <form [formGroup]="formModul" (ngSubmit)="datenSpeichern()">
-          <input hidden type="text"  formControlName="id" />
+        <div class="top-actions">
           <button
             mat-flat-button
             color="accent"
-            [hidden]="!formModul.valid"
-            type="submit"
+            (click)="neueDetails()"
+            type="button"
           >
-            Daten speichern
+            Hinzufügen
           </button>
           <button
             mat-flat-button
-            color="primary"
-            [hidden]="formModul.disabled"
+            color="accent"
+            (click)="neuePruefung()"
             type="button"
-            (click)="abbrechen()"
+          >
+            Protokoll Eintrag
+          </button>
+        </div>
+        } 
+        @if (sichtbarkeitModul() == "tablePruefungen") {
+        <div class="top-actions">
+          <button
+            mat-flat-button
+            color="primary"
+            (click)="showMasken()"
+            type="button"
           >
             Zurück
           </button>
-          <section class="app-grid mt-2 mx-0">
+        </div>
+        }
+        <!-- MASKE FORM -->
+        @if (sichtbarkeitModul() == "formModul") {
+        <form [formGroup]="formModul" (ngSubmit)="datenSpeichern()" class="edit-form">
+          <input hidden type="text"  formControlName="id" />
+          <div class="form-actions">
+            <button
+              mat-flat-button
+              color="accent"
+              [hidden]="!formModul.valid"
+              type="submit"
+            >
+              Daten speichern
+            </button>
+            <button
+              mat-flat-button
+              color="primary"
+              [hidden]="formModul.disabled"
+              type="button"
+              (click)="abbrechen()"
+            >
+              Zurück
+            </button>
+          </div>
+          <section class="app-grid form-grid">
             <div class="app-col-12 app-col-lg-4 mb-3">
               <mat-form-field hintLabel="* Pflichtfeld">
                 <mat-label>Inventar Nummer</mat-label>
@@ -135,39 +144,43 @@
             </div>
           </section>
 
-          <button
-            mat-flat-button
-            color="warn"
-            [hidden]="!formModul.controls['id'].value"
-            type="button"
-            (click)="datenLoeschen()"
-          >
-            Daten löschen
-          </button>
+          <div class="form-actions">
+            <button
+              mat-flat-button
+              color="warn"
+              [hidden]="!formModul.controls['id'].value"
+              type="button"
+              (click)="datenLoeschen()"
+            >
+              Daten löschen
+            </button>
+          </div>
         </form>
         }
         <!-- MASKE FORM ENDE -->
         <!-- PRÜFUNG FORM -->
         @if (sichtbarkeitModul() == "formPruefung") {
-        <form [formGroup]="formPruefung" (ngSubmit)="datenSpeichernProtokoll()">
+        <form [formGroup]="formPruefung" (ngSubmit)="datenSpeichernProtokoll()" class="edit-form">
           <input hidden type="text"  formControlName="id" />
-          <button
-            mat-flat-button
-            color="accent"
-            [hidden]="!formPruefung.valid"
-            type="submit"
-          >
-            Daten speichern
-          </button>
-          <button
-            mat-flat-button
-            color="primary"
-            type="button"
-            (click)="pruefungAbbrechen()"
-          >
-            Zurück
-          </button>
-          <section class="app-grid mt-2 mx-0">
+          <div class="form-actions">
+            <button
+              mat-flat-button
+              color="accent"
+              [hidden]="!formPruefung.valid"
+              type="submit"
+            >
+              Daten speichern
+            </button>
+            <button
+              mat-flat-button
+              color="primary"
+              type="button"
+              (click)="pruefungAbbrechen()"
+            >
+              Zurück
+            </button>
+          </div>
+          <section class="app-grid form-grid">
             <div class="app-col-12 app-col-lg-12 mb-3">
               <mat-form-field hintLabel="* Pflichtfeld">
                 <mat-label>Gerät</mat-label>
@@ -285,15 +298,17 @@
             </div>
           </section>
 
-          <button
-            mat-flat-button
-            color="warn"
-            [hidden]="!formPruefung.controls['id'].value"
-            type="button"
-            (click)="datenProtokollLoeschen()"
-          >
-            Daten löschen
-          </button>
+          <div class="form-actions">
+            <button
+              mat-flat-button
+              color="warn"
+              [hidden]="!formPruefung.controls['id'].value"
+              type="button"
+              (click)="datenProtokollLoeschen()"
+            >
+              Daten löschen
+            </button>
+          </div>
         </form>
         }
         <!-- PRÜFUNG FORM ENDE -->
@@ -413,7 +428,6 @@
         </table>
         }
         <!-- TABELLE MASKEN PRÜFUNGEN ENDE -->
-      </mat-card-content>
-    </mat-card>
-  </div>
-</div>
+    </mat-card-content>
+  </mat-card>
+</section>

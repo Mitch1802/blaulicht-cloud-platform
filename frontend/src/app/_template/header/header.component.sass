@@ -27,52 +27,51 @@
 	padding: .42rem .55rem
 	background: transparent
 
-.app-header-stepper
+
+.app-header-breadcrumb
 	width: min(1280px, 100%)
 	margin: 0 auto
-	background: transparent
+	display: flex
+	align-items: center
+	gap: .45rem
+	padding: .35rem .1rem
+	overflow-x: auto
+	white-space: nowrap
+	scrollbar-width: none
 
-	::ng-deep .mat-horizontal-stepper-header-container
-		border: none
-		background: transparent
-		overflow-x: auto
-		scrollbar-width: none
-
-	::ng-deep .mat-horizontal-stepper-header-container::-webkit-scrollbar
+	&::-webkit-scrollbar
 		display: none
 
-	::ng-deep .mat-stepper-horizontal-line
-		display: none
+.breadcrumb-item
+	font-size: .92rem
+	font-weight: 600
+	color: theme.$app-primary-deep
 
-	::ng-deep .mat-step-header
-		height: 40px
-		border-radius: var(--app-control-radius)
-		border: 1px solid var(--app-control-border)
-		background: var(--app-control-bg)
-		padding-inline: .72rem
-		gap: 0
+.breadcrumb-link
+	text-decoration: none
+	cursor: pointer
+	transition: opacity .16s ease
 
-	::ng-deep .mat-step-header .mat-step-label
-		font-weight: 600
-		color: theme.$app-primary-deep
-		opacity: 1
-		margin: 0
+	&:hover
+		opacity: .75
 
-	::ng-deep .mat-step-header.mat-step-header-selected
-		background: theme.$app-primary-deep
-		border-color: rgba(theme.$app-primary-deep, .8)
+	&:focus-visible
+		outline: 2px solid rgba(theme.$app-primary-deep, .35)
+		outline-offset: 2px
+		border-radius: .25rem
 
-	::ng-deep .mat-step-header.mat-step-header-selected .mat-step-label
-		color: #fff
+.breadcrumb-home
+	display: inline-flex
+	align-items: center
 
-	::ng-deep .mat-step-header .mat-step-icon,
-	::ng-deep .mat-step-header .mat-step-icon-selected,
-	::ng-deep .mat-step-header .mat-step-icon-state-number,
-	::ng-deep .mat-step-header .mat-step-icon-state-edit
-		display: none
+	mat-icon
+		font-size: 18px
+		width: 18px
+		height: 18px
 
-	::ng-deep .mat-horizontal-content-container
-		display: none
+.breadcrumb-separator
+	color: theme.$app-text-muted
+	opacity: .8
 
 @media (max-width: 768px)
 	.app-header-toolbar
@@ -89,10 +88,8 @@
 	.app-header-stepper-wrap
 		padding: .35rem .4rem
 
-	.app-header-stepper
-		::ng-deep .mat-step-header
-			height: 38px
-			padding-inline: .58rem
+	.app-header-breadcrumb
+		gap: .35rem
 
-		::ng-deep .mat-step-header .mat-step-label
-			font-size: .88rem
+	.breadcrumb-item
+		font-size: .86rem

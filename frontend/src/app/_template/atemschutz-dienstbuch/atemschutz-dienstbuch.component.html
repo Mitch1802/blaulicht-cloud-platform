@@ -1,12 +1,15 @@
 <app-header [breadcrumb]="breadcrumb"></app-header>
 
-<div class="app-grid content">
-  <div class="app-col-12 app-col-md-10 app-col-lg-8 p-0 m-0">
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>{{ title }}</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
+<section class="atemschutz-dienstbuch-page">
+  <header class="page-head">
+    <h1>Dienstbuch verwalten</h1>
+  </header>
+
+  <mat-card class="settings-card">
+    <div class="section-head">
+      <h2>Dienstbuch verwalten</h2>
+    </div>
+    <mat-card-content>
         <hr>
         <div class="app-grid">
             <h4 class="app-col-6 app-col-lg-2 mb-0">{{ jahrHeuer }}:</h4>
@@ -81,7 +84,6 @@
           aria-label="Auswahl Anzahl der sichtbaren Elemente"
         >
         </mat-paginator>
-      </mat-card-content>
-    </mat-card>
-  </div>
-</div>
+    </mat-card-content>
+  </mat-card>
+</section>

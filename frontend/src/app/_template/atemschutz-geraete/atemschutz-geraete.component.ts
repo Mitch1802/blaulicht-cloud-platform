@@ -44,9 +44,9 @@ import { IMitglied } from 'src/app/_interface/mitglied';
 export class AtemschutzGeraeteComponent implements OnInit {
   globalDataService = inject(GlobalDataService);
 
-  title = "Geräte";
+  title = "Geräte verwalten";
   title_modul = this.title;
-  title_pruefung = "Geräte Prüfung";
+  title_pruefung = "Geräte prüfen";
   modul = "atemschutz/geraete";
   showPruefungForm: boolean = false;
   showPruefungTable: boolean = false;

@@ -29,7 +29,7 @@ import { MatInputModule } from '@angular/material/input';
 export class AtemschutzDienstbuchComponent implements OnInit {
   globalDataService = inject(GlobalDataService);
 
-  title = "Dienstbuch";
+  title = "Dienstbuch verwalten";
   modul = "atemschutz/geraete/dienstbuch";
 
   breadcrumb: any = [];

@@ -60,7 +60,7 @@ export class InventarComponent implements OnInit, AfterViewInit {
   formatService = inject(FormatService);
   router = inject(Router);
 
-  title = 'Inventar';
+  title = 'Inventar verwalten';
   modul = 'inventar';
 
   inventarArray: IInventar[] = [];

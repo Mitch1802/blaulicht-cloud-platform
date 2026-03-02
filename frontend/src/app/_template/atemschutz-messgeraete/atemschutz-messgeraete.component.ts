@@ -51,9 +51,9 @@ import { IMessgeraetProtokoll } from 'src/app/_interface/messgeraet_protokoll';
 export class AtemschutzMessgeraeteComponent implements OnInit {
   globalDataService = inject(GlobalDataService);
 
-  title = 'Messgeräte';
+  title = 'Messgeräte verwalten';
   title_modul = this.title;
-  title_pruefung = 'Messgeräte Prüfung';
+  title_pruefung = 'Messgeräte prüfen';
   modul = 'atemschutz/messgeraete';
   showPruefungForm: boolean = false;
   showPruefungTable: boolean = false;
