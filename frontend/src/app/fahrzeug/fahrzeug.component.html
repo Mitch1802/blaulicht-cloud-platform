@@ -45,7 +45,7 @@
                     <ng-container matColumnDef="actions">
                       <th mat-header-cell *matHeaderCellDef>Aktionen</th>
                       <td mat-cell *matCellDef="let row">
-                        <button mat-icon-button color="warn" type="button" (click)="$event.stopPropagation(); deleteFahrzeug(row)">
+                        <button mat-flat-button class="ui-action-btn" color="warn" type="button" (click)="$event.stopPropagation(); deleteFahrzeug(row)">
                           <mat-icon>delete</mat-icon>
                         </button>
                       </td>
@@ -95,12 +95,12 @@
                       Speichern
                     </button>
 
-                    <button mat-stroked-button type="button" (click)="newFahrzeug()">
+                    <button mat-flat-button color="primary" type="button" (click)="newFahrzeug()">
                       Zurücksetzen
                     </button>
 
                     @if (selectedId) {
-                      <a mat-stroked-button color="primary" [routerLink]="['/fahrzeuge', selectedId, 'check']">
+                      <a mat-flat-button color="primary" [routerLink]="['/fahrzeuge', selectedId, 'check']">
                         <mat-icon>checklist</mat-icon>
                         Check öffnen
                       </a>
@@ -138,7 +138,7 @@
                             {{ raum.name }} ({{ raum.items.length }} Items)
                           </mat-panel-title>
                           <mat-panel-description>
-                            <button mat-icon-button color="warn" type="button" (click)="onDeleteRaum($event, raum)">
+                            <button mat-flat-button class="ui-action-btn" color="warn" type="button" (click)="onDeleteRaum($event, raum)">
                               <mat-icon>delete</mat-icon>
                             </button>
                           </mat-panel-description>
@@ -154,7 +154,7 @@
                               }
                             </div>
 
-                            <button mat-icon-button color="warn" type="button" (click)="deleteItem(raum, item)">
+                            <button mat-flat-button class="ui-action-btn" color="warn" type="button" (click)="deleteItem(raum, item)">
                               <mat-icon>delete</mat-icon>
                             </button>
                           </div>

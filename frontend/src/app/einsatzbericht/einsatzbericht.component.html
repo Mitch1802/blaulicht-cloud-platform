@@ -32,16 +32,16 @@
                     <span class="status-badge" [class.done]="element.status === 'ABGESCHLOSSEN'">{{ element.status }}</span>
                   </div>
                   <div class="draft-actions">
-                    <button mat-flat-button color="primary" type="button" (click)="berichtBearbeiten(element)">
+                    <button mat-flat-button class="ui-action-btn" color="primary" type="button" (click)="berichtBearbeiten(element)">
                       <mat-icon class="m-0">edit</mat-icon>
                     </button>
                     @if (canManageStatus) {
-                      <button mat-flat-button type="button" (click)="statusUmschalten(element)">
+                      <button mat-flat-button class="ui-action-btn" color="primary" type="button" (click)="statusUmschalten(element)">
                         <mat-icon class="m-0">check</mat-icon>
                       </button>
                     }
                     @if (canDeleteBerichte) {
-                      <button mat-flat-button color="warn" type="button" (click)="berichtLoeschen(element)">
+                      <button mat-flat-button class="ui-action-btn" color="warn" type="button" (click)="berichtLoeschen(element)">
                         <mat-icon class="m-0">delete</mat-icon>
                       </button>
                     }
@@ -54,7 +54,7 @@
       } @else {
       <form [formGroup]="formBericht" (ngSubmit)="speichereBericht()" class="bericht-form">
         <div class="actions-row top-actions">
-          <button mat-stroked-button type="button" color="primary" (click)="zurueckZurListe()">Zur Liste</button>
+          <button mat-flat-button type="button" color="primary" (click)="zurueckZurListe()">Zur Liste</button>
         </div>
 
         <mat-accordion class="bericht-accordion" [multi]="false">
@@ -80,7 +80,7 @@
             </mat-form-field>
 
             <div class="prefill-row">
-              <button mat-stroked-button type="button" color="accent" (click)="uebernehmeLetztenEinsatz()">
+              <button mat-flat-button type="button" color="accent" (click)="uebernehmeLetztenEinsatz()">
                 Daten BlaulichtSMS übernehmen
               </button>
             </div>
@@ -274,8 +274,8 @@
             <section class="conditional-block documentation-block">
               <div class="upload-row">
                 <label class="upload-label" for="fotoDokuDateien">Foto Doku Dateien</label>
-                <input id="fotoDokuDateien" class="file-input-hidden" type="file" multiple accept=".jpg,.jpeg,.png,.pdf" (change)="onDokumentSelected($event, 'fotoDoku')" />
-                <label for="fotoDokuDateien" class="upload-button" mat-stroked-button>Dateien auswählen</label>
+                <input #fotoDokuDateienInput id="fotoDokuDateien" class="file-input-hidden" type="file" multiple accept=".jpg,.jpeg,.png,.pdf" (change)="onDokumentSelected($event, 'fotoDoku')" />
+                <button mat-flat-button type="button" color="primary" class="upload-button" (click)="fotoDokuDateienInput.click()">Dateien auswählen</button>
                 @if (fotoDokuFiles.length > 0) {
                   <div class="preview-grid">
                     @for (file of fotoDokuFiles; track file; let i = $index) {
@@ -286,10 +286,10 @@
                           <div class="preview-file">PDF</div>
                         }
                         <div class="preview-meta">
-                          <button mat-icon-button type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(getFilePreviewUrl(file))">
+                          <button mat-flat-button class="ui-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(getFilePreviewUrl(file))">
                             <mat-icon>open_in_new</mat-icon>
                           </button>
-                          <button mat-icon-button type="button" color="warn" aria-label="Datei entfernen" (click)="removeSelectedDokument(i, 'fotoDoku')">
+                          <button mat-flat-button class="ui-action-btn" type="button" color="warn" aria-label="Datei entfernen" (click)="removeSelectedDokument(i, 'fotoDoku')">
                             <mat-icon>delete</mat-icon>
                           </button>
                         </div>
@@ -308,10 +308,10 @@
                           <div class="preview-file">PDF</div>
                         }
                         <div class="preview-meta">
-                          <button mat-icon-button type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(foto.foto_url)">
+                          <button mat-flat-button class="ui-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(foto.foto_url)">
                             <mat-icon>open_in_new</mat-icon>
                           </button>
-                          <button mat-icon-button type="button" color="warn" aria-label="Datei löschen" (click)="loescheBestehendesFoto(foto)">
+                          <button mat-flat-button class="ui-action-btn" type="button" color="warn" aria-label="Datei löschen" (click)="loescheBestehendesFoto(foto)">
                             <mat-icon>delete</mat-icon>
                           </button>
                         </div>
@@ -323,8 +323,8 @@
 
               <div class="upload-row">
                 <label class="upload-label" for="zulassungDateien">Zulassungsschein Dateien</label>
-                <input id="zulassungDateien" class="file-input-hidden" type="file" multiple accept=".jpg,.jpeg,.png,.pdf" (change)="onDokumentSelected($event, 'zulassungsschein')" />
-                <label for="zulassungDateien" class="upload-button" mat-stroked-button>Dateien auswählen</label>
+                <input #zulassungDateienInput id="zulassungDateien" class="file-input-hidden" type="file" multiple accept=".jpg,.jpeg,.png,.pdf" (change)="onDokumentSelected($event, 'zulassungsschein')" />
+                <button mat-flat-button type="button" color="primary" class="upload-button" (click)="zulassungDateienInput.click()">Dateien auswählen</button>
                 @if (zulassungFiles.length > 0) {
                   <div class="preview-grid">
                     @for (file of zulassungFiles; track file; let i = $index) {
@@ -335,10 +335,10 @@
                           <div class="preview-file">PDF</div>
                         }
                         <div class="preview-meta">
-                          <button mat-icon-button type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(getFilePreviewUrl(file))">
+                          <button mat-flat-button class="ui-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(getFilePreviewUrl(file))">
                             <mat-icon>open_in_new</mat-icon>
                           </button>
-                          <button mat-icon-button type="button" color="warn" aria-label="Datei entfernen" (click)="removeSelectedDokument(i, 'zulassungsschein')">
+                          <button mat-flat-button class="ui-action-btn" type="button" color="warn" aria-label="Datei entfernen" (click)="removeSelectedDokument(i, 'zulassungsschein')">
                             <mat-icon>delete</mat-icon>
                           </button>
                         </div>
@@ -357,10 +357,10 @@
                           <div class="preview-file">PDF</div>
                         }
                         <div class="preview-meta">
-                          <button mat-icon-button type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(foto.foto_url)">
+                          <button mat-flat-button class="ui-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(foto.foto_url)">
                             <mat-icon>open_in_new</mat-icon>
                           </button>
-                          <button mat-icon-button type="button" color="warn" aria-label="Datei löschen" (click)="loescheBestehendesFoto(foto)">
+                          <button mat-flat-button class="ui-action-btn" type="button" color="warn" aria-label="Datei löschen" (click)="loescheBestehendesFoto(foto)">
                             <mat-icon>delete</mat-icon>
                           </button>
                         </div>
@@ -372,8 +372,8 @@
 
               <div class="upload-row">
                 <label class="upload-label" for="versicherungDateien">Versicherungsschein Dateien</label>
-                <input id="versicherungDateien" class="file-input-hidden" type="file" multiple accept=".jpg,.jpeg,.png,.pdf" (change)="onDokumentSelected($event, 'versicherungsschein')" />
-                <label for="versicherungDateien" class="upload-button" mat-stroked-button>Dateien auswählen</label>
+                <input #versicherungDateienInput id="versicherungDateien" class="file-input-hidden" type="file" multiple accept=".jpg,.jpeg,.png,.pdf" (change)="onDokumentSelected($event, 'versicherungsschein')" />
+                <button mat-flat-button type="button" color="primary" class="upload-button" (click)="versicherungDateienInput.click()">Dateien auswählen</button>
                 @if (versicherungFiles.length > 0) {
                   <div class="preview-grid">
                     @for (file of versicherungFiles; track file; let i = $index) {
@@ -384,10 +384,10 @@
                           <div class="preview-file">PDF</div>
                         }
                         <div class="preview-meta">
-                          <button mat-icon-button type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(getFilePreviewUrl(file))">
+                          <button mat-flat-button class="ui-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(getFilePreviewUrl(file))">
                             <mat-icon>open_in_new</mat-icon>
                           </button>
-                          <button mat-icon-button type="button" color="warn" aria-label="Datei entfernen" (click)="removeSelectedDokument(i, 'versicherungsschein')">
+                          <button mat-flat-button class="ui-action-btn" type="button" color="warn" aria-label="Datei entfernen" (click)="removeSelectedDokument(i, 'versicherungsschein')">
                             <mat-icon>delete</mat-icon>
                           </button>
                         </div>
@@ -406,10 +406,10 @@
                           <div class="preview-file">PDF</div>
                         }
                         <div class="preview-meta">
-                          <button mat-icon-button type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(foto.foto_url)">
+                          <button mat-flat-button class="ui-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(foto.foto_url)">
                             <mat-icon>open_in_new</mat-icon>
                           </button>
-                          <button mat-icon-button type="button" color="warn" aria-label="Datei löschen" (click)="loescheBestehendesFoto(foto)">
+                          <button mat-flat-button class="ui-action-btn" type="button" color="warn" aria-label="Datei löschen" (click)="loescheBestehendesFoto(foto)">
                             <mat-icon>delete</mat-icon>
                           </button>
                         </div>
