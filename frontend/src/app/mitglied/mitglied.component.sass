@@ -28,8 +28,37 @@
     color: theme.$app-primary
     font-size: 1.1rem
 
-.mitglied-page mat-form-field
+.top-actions
+  display: flex
+  gap: .6rem
+  flex-wrap: wrap
+  margin: .25rem 0 .8rem
+
+.filter-field
   width: 100%
+  max-width: 320px
+
+.edit-form
+  margin-top: .2rem
+
+.form-actions
+  display: flex
+  flex-wrap: wrap
+  gap: .6rem
+  margin-bottom: .8rem
+
+.form-grid
+  margin-top: .2rem
+
+.full-width
+  width: 100%
+
+.table-wrap
+  overflow-x: auto
+  margin-top: .5rem
+
+  table
+    width: 100%
 
 .mitglied-page table
   width: 100%
@@ -52,4 +81,9 @@
 
     h2
       font-size: 1rem
+
+  .top-actions,
+  .form-actions
+    button
+      width: 100%
 

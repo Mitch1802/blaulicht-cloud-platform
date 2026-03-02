@@ -143,6 +143,10 @@ export class StartComponent implements OnInit {
     return roles.length === 1 && roles[0] === 'ADMIN';
   }
 
+  isAdminOnly(item: any): boolean {
+    return this.isPureAdminItem(item);
+  }
+
   private buildCategories(items: any[]): { name: string; items: any[] }[] {
     const map = new Map<string, any[]>();
 
@@ -153,10 +157,19 @@ export class StartComponent implements OnInit {
       map.set(category, list);
     }
 
-    return Array.from(map.entries()).map(([name, groupedItems]) => ({
+    return Array.from(map.entries())
+      .sort(([a], [b]) => {
+        const aPlanned = a.trim().toLowerCase() === 'geplant';
+        const bPlanned = b.trim().toLowerCase() === 'geplant';
+
+        if (aPlanned && !bPlanned) return 1;
+        if (!aPlanned && bPlanned) return -1;
+        return 0;
+      })
+      .map(([name, groupedItems]) => ({
       name,
       items: groupedItems,
-    }));
+      }));
   }
 
   private normalizeCategory(item: any): string {

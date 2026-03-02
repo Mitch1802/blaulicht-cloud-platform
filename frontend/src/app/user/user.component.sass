@@ -31,15 +31,22 @@
 .full-width
     width: 100%
 
-.selector-row
-    margin: .25rem 0 .5rem
-
-.selector-action
-    display: flex
-    align-items: center
-
 .top-actions
+    display: flex
+    gap: .6rem
+    flex-wrap: wrap
     margin: .2rem 0 .75rem
+
+.filter-field
+    width: 100%
+    max-width: 320px
+
+.table-wrap
+    overflow-x: auto
+    margin-top: .5rem
+
+    table
+        width: 100%
 
 .edit-form
     margin-top: .2rem
@@ -81,7 +88,6 @@
         h2
             font-size: 1rem
 
-    .selector-action,
     .password-action
         button
             width: 100%

@@ -11,10 +11,10 @@
     </div>
 
     <mat-card-content>
+      <div class="top-actions" [hidden]="!formModul.disabled">
         @if (formModul.disabled) {
           <mat-form-field
-            class="mb-2"
-            style="max-width: 320px"
+            class="filter-field"
           >
             <mat-label>Filter</mat-label>
             <input
@@ -24,12 +24,10 @@
               placeholder="Suchen..."
             />
           </mat-form-field>
-          <br>
         }
         <button
           mat-flat-button
           color="accent"
-          [hidden]="!formModul.disabled"
           (click)="neueDetails()"
           type="button"
         >
@@ -38,11 +36,11 @@
         <button
           mat-flat-button
           color="accent"
-          [hidden]="!formModul.disabled"
           (click)="fileInput.click()"
         >
           FDISK CSV Import
         </button>
+      </div>
         <input
           #fileInput
           type="file"
@@ -54,28 +52,33 @@
           [formGroup]="formModul"
           (ngSubmit)="datenSpeichern()"
           [hidden]="formModul.disabled"
+          class="edit-form"
         >
           <input hidden type="text"  formControlName="id" />
-          <button
-            mat-flat-button
-            color="accent"
-            [hidden]="!formModul.valid"
-            type="submit"
-          >
-            Daten speichern
-          </button>
-          <button
-            mat-flat-button
-            color="primary"
-            [hidden]="formModul.disabled"
-            type="button"
-            (click)="abbrechen()"
-          >
-            Abbrechen
-          </button>
-          <section class="app-grid mt-2">
+
+          <div class="form-actions">
+            <button
+              mat-flat-button
+              color="accent"
+              [hidden]="!formModul.valid"
+              type="submit"
+            >
+              Daten speichern
+            </button>
+            <button
+              mat-flat-button
+              color="primary"
+              [hidden]="formModul.disabled"
+              type="button"
+              (click)="abbrechen()"
+            >
+              Abbrechen
+            </button>
+          </div>
+
+          <section class="app-grid form-grid">
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <mat-form-field hintLabel="* Pflichtfeld">
+              <mat-form-field hintLabel="* Pflichtfeld" class="full-width">
                 <mat-label>Vorname</mat-label>
                 <input matInput type="text" formControlName="vorname" />
                 @if (formModul.controls["vorname"].hasError("required")) {
@@ -84,7 +87,7 @@
               </mat-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <mat-form-field hintLabel="* Pflichtfeld">
+              <mat-form-field hintLabel="* Pflichtfeld" class="full-width">
                 <mat-label>Nachname</mat-label>
                 <input matInput type="text" formControlName="nachname" />
                 @if (formModul.controls["nachname"].hasError("required")) {
@@ -93,7 +96,7 @@
               </mat-form-field>
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3">
-              <mat-form-field hintLabel="* Pflichtfeld">
+              <mat-form-field hintLabel="* Pflichtfeld" class="full-width">
                 <mat-label>Stbnr</mat-label>
                 <input matInput type="text" formControlName="stbnr" />
                 @if (formModul.controls["stbnr"].hasError("required")) {
@@ -102,7 +105,7 @@
               </mat-form-field>
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3">
-              <mat-form-field>
+              <mat-form-field class="full-width">
                 <mat-label>SVNr</mat-label>
                 <input
                   matInput
@@ -124,7 +127,7 @@
               </mat-form-field>
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3">
-              <mat-form-field hintLabel="* Pflichtfeld">
+              <mat-form-field hintLabel="* Pflichtfeld" class="full-width">
                 <mat-label>Geburtsdatum</mat-label>
                 <input
                   matInput
@@ -164,51 +167,55 @@
             Daten löschen
           </button>
         </form>
+
         @if (formModul.disabled) {
-          <table mat-table [dataSource]="dataSource" matSort>
-            <ng-container matColumnDef="stbnr">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>Stbnr.</th>
-              <td mat-cell *matCellDef="let element">{{ element.stbnr }}</td>
-            </ng-container>
-            <ng-container matColumnDef="vorname">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>Vorname</th>
-              <td mat-cell *matCellDef="let element">
-                {{ element.vorname }}
-              </td>
-            </ng-container>
-            <ng-container matColumnDef="nachname">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>Nachname</th>
-              <td mat-cell *matCellDef="let element">
-                {{ element.nachname }}
-              </td>
-            </ng-container>
-            <ng-container matColumnDef="actions">
-              <th mat-header-cell *matHeaderCellDef>Aktionen</th>
-              <td mat-cell *matCellDef="let element" class="ui-action-cell">
-                <button
-                  mat-icon-button
-                  color="primary"
-                  (click)="auswahlBearbeiten(element)"
-                >
-                  <mat-icon>edit</mat-icon>
-                </button>
-              </td>
-            </ng-container>
-            <tr
-              mat-header-row
-              *matHeaderRowDef="sichtbareSpaltenMitglieder"
-            ></tr>
-            <tr
-              mat-row
-              *matRowDef="let row; columns: sichtbareSpaltenMitglieder"
-            ></tr>
-          </table>
-          <mat-paginator
-            [pageSizeOptions]="[10, 50, 100]"
-            showFirstLastButtons
-            aria-label="Auswahl Anzahl der sichtbaren Elemente"
-          >
-          </mat-paginator>
+          <div class="table-wrap">
+            <table mat-table [dataSource]="dataSource" matSort>
+              <ng-container matColumnDef="stbnr">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Stbnr.</th>
+                <td mat-cell *matCellDef="let element">{{ element.stbnr }}</td>
+              </ng-container>
+              <ng-container matColumnDef="vorname">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Vorname</th>
+                <td mat-cell *matCellDef="let element">
+                  {{ element.vorname }}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="nachname">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Nachname</th>
+                <td mat-cell *matCellDef="let element">
+                  {{ element.nachname }}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Aktionen</th>
+                <td mat-cell *matCellDef="let element" class="ui-action-cell">
+                  <button
+                    mat-flat-button
+                    class="ui-action-btn"
+                    color="primary"
+                    (click)="auswahlBearbeiten(element)"
+                  >
+                    <mat-icon class="m-0">edit</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+              <tr
+                mat-header-row
+                *matHeaderRowDef="sichtbareSpaltenMitglieder"
+              ></tr>
+              <tr
+                mat-row
+                *matRowDef="let row; columns: sichtbareSpaltenMitglieder"
+              ></tr>
+            </table>
+            <mat-paginator
+              [pageSizeOptions]="[10, 50, 100]"
+              showFirstLastButtons
+              aria-label="Auswahl Anzahl der sichtbaren Elemente"
+            >
+            </mat-paginator>
+          </div>
         }
     </mat-card-content>
   </mat-card>

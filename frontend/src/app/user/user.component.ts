@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ViewChild } from '@angular/core';
 
 import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IBenutzer } from 'src/app/_interface/benutzer';
@@ -6,13 +6,15 @@ import { GlobalDataService } from 'src/app/_service/global-data.service';
 import { HeaderComponent } from '../_template/header/header.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
-import { MatSelect } from '@angular/material/select';
-import { MatOption } from '@angular/material/core';
 import { MatButton } from '@angular/material/button';
 import { MatInput } from '@angular/material/input';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
     selector: 'app-user',
@@ -25,12 +27,14 @@ import { forkJoin } from 'rxjs';
     ReactiveFormsModule,
     MatFormField,
     MatLabel,
-    MatSelect,
-    MatOption,
     MatButton,
     MatInput,
     MatError,
-    MatCheckbox
+    MatCheckbox,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSort,
+    MatIconModule
 ]
 })
 export class UserComponent implements OnInit {
@@ -41,9 +45,20 @@ export class UserComponent implements OnInit {
   modul = "users";
   username = "";
 
+  dataSource = new MatTableDataSource<IBenutzer>([]);
+
+  @ViewChild(MatPaginator) set matPaginator(p: MatPaginator | undefined) {
+    if (p) this.dataSource.paginator = p;
+  }
+
+  @ViewChild(MatSort) set matSort(s: MatSort | undefined) {
+    if (s) this.dataSource.sort = s;
+  }
+
   benutzer: IBenutzer[] = [];
   breadcrumb: any = [];
   rollen: any = [];
+  sichtbareSpaltenBenutzer: string[] = ['username', 'first_name', 'last_name', 'actions'];
 
   private normalizeRoleKeys(raw: any): string[] {
     let values: any[] = [];
@@ -70,10 +85,6 @@ export class UserComponent implements OnInit {
     return Array.from(new Set(filtered));
   }
 
-  formAuswahl = new FormGroup({
-    benutzer: new FormControl(0)
-  });
-
   formModul = new FormGroup({
     id: new FormControl(''),
     username: new FormControl('', Validators.required),
@@ -99,6 +110,7 @@ export class UserComponent implements OnInit {
           this.benutzer = usersResponse.data;
           this.rollen = contextResponse.data.rollen;
           this.benutzer = this.globalDataService.arraySortByKey(this.benutzer, 'username');
+          this.dataSource.data = this.benutzer;
         } catch (e: any) {
           this.globalDataService.erstelleMessage("error", e);
         }
@@ -109,9 +121,9 @@ export class UserComponent implements OnInit {
     });
   }
 
-  auswahlBearbeiten(): void {
-    const id = this.formAuswahl.controls["benutzer"].value;
-    if (id == 0) {
+  auswahlBearbeiten(element: IBenutzer): void {
+    const id = element?.id;
+    if (!id) {
       return;
     }
     const abfrageUrl = this.modul + "/" + id;
@@ -132,8 +144,6 @@ export class UserComponent implements OnInit {
             password1: "",
             password2: ""
           })
-
-          this.setzeSelectZurueck();
         } catch (e: any) {
           this.globalDataService.erstelleMessage("error", e);
         }
@@ -146,7 +156,6 @@ export class UserComponent implements OnInit {
 
   neueDetails(): void {
     this.formModul.enable();
-    this.setzeSelectZurueck();
   }
 
   datenLoeschen(): void {
@@ -164,9 +173,9 @@ export class UserComponent implements OnInit {
           }
           this.username = "";
           this.benutzer = dataNew;
+          this.dataSource.data = this.benutzer;
           this.formModul.reset({ username: '', first_name: '', last_name: '', roles: [], password1: '', password2: '' });
           this.formModul.disable();
-          this.setzeSelectZurueck();
           this.globalDataService.erstelleMessage("success","Benutzer erfolgreich gelöscht!");
         } catch (e: any) {
           this.globalDataService.erstelleMessage("error", e);
@@ -224,9 +233,10 @@ export class UserComponent implements OnInit {
           try {
             this.username = "";
             this.benutzer.push(erg.user);
+            this.benutzer = this.globalDataService.arraySortByKey(this.benutzer, 'username');
+            this.dataSource.data = this.benutzer;
             this.formModul.reset({ username: '', first_name: '', last_name: '', roles: [], password1: '', password2: '' });
             this.formModul.disable();
-            this.setzeSelectZurueck();
             this.globalDataService.erstelleMessage("success","Benutzer erfolgreich gespeichert!");
           } catch (e: any) {
             this.globalDataService.erstelleMessage("error", e);
@@ -251,6 +261,8 @@ export class UserComponent implements OnInit {
             }
             this.username = "";
             this.benutzer = dataNew;
+            this.benutzer = this.globalDataService.arraySortByKey(this.benutzer, 'username');
+            this.dataSource.data = this.benutzer;
             this.formModul.reset({ username: '', first_name: '', last_name: '', roles: [], password1: '', password2: '' });
             this.formModul.disable();
             this.globalDataService.erstelleMessage("success","Benutzer erfolgreich geändert!");
@@ -265,8 +277,9 @@ export class UserComponent implements OnInit {
     }
   }
 
-  setzeSelectZurueck(): void {
-    this.formAuswahl.controls["benutzer"].setValue(0, { onlySelf: true });
+  applyFilter(value: string): void {
+    this.dataSource.filter = (value || '').trim().toLowerCase();
+    this.matPaginator?.firstPage();
   }
 
   passwortAendern(): void {

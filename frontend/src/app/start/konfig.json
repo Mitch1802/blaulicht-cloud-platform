@@ -3,102 +3,119 @@
     "icon": "healing",
     "modul": "FMD",
     "rolle": "ADMIN, FMD",
-    "routerlink": "/fmd"
+    "routerlink": "/fmd",
+    "kategorie": "Einsatz"
   },
   {
     "icon": "battery_alert",
     "modul": "Atemschutz",
     "rolle": "ADMIN, ATEMSCHUTZ",
-    "routerlink": "/atemschutz"
+    "routerlink": "/atemschutz",
+    "kategorie": "Einsatz"
   },
   {
     "icon": "event",
-    "modul": "Newsfeed",
+    "modul": "News",
     "rolle": "ADMIN, NEWS",
-    "routerlink": "/news"
-  },
-  {
-    "icon": "pending_actions",
-    "modul": "Aufgaben/Tickets",
-    "rolle": "ADMIN, MITGLIED",
-    "routerlink": "/aufgaben"
+    "routerlink": "/news",
+    "kategorie": "Öffentlichkeit"
   },
   {
     "icon": "construction",
     "modul": "Inventar",
     "rolle": "ADMIN, INVENTAR",
-    "routerlink": "/inventar"
+    "routerlink": "/inventar",
+    "kategorie": "Einsatzmittel"
   },
   {
     "icon": "book",
     "modul": "Einsatzbericht",
     "rolle": "ADMIN, BERICHT",
-    "routerlink": "/einsatzbericht"
+    "routerlink": "/einsatzbericht",
+    "kategorie": "Einsatz"
   },
   {
     "icon": "book",
     "modul": "Anwesenheitsliste",
     "rolle": "ADMIN, ANWESENHEIT",
-    "routerlink": "/anwesenheitsliste"
+    "routerlink": "/anwesenheitsliste",
+    "kategorie": "Einsatz"
   },
   {
     "icon": "fire_truck",
     "modul": "Fahrzeuge",
     "rolle": "ADMIN, FAHRZEUG",
-    "routerlink": "/fahrzeuge"
+    "routerlink": "/fahrzeuge",
+    "kategorie": "Einsatzmittel"
   },
   {
     "icon": "euro",
     "modul": "Verwaltung",
     "rolle": "ADMIN, VERWALTUNG",
-    "routerlink": "/verwaltung"
-  },
-  {
-    "icon": "child_care",
-    "modul": "Jugend",
-    "rolle": "ADMIN, JUGEND",
-    "routerlink": "/jugend"
-  },
-  {
-    "icon": "school",
-    "modul": "Ausbildung",
-    "rolle": "ADMIN, AUSBILDUNG",
-    "routerlink": "/ausbildung"
+    "routerlink": "/verwaltung",
+    "kategorie": "Verwaltung"
   },
   {
     "icon": "groups",
     "modul": "Mitglieder",
     "rolle": "ADMIN",
-    "routerlink": "/mitglied"
+    "routerlink": "/mitglied",
+    "kategorie": "Verwaltung"
   },
   {
     "icon": "tune",
     "modul": "Modul Konfiguration",
     "rolle": "ADMIN",
-    "routerlink": "/modul_konfiguration"
+    "routerlink": "/modul_konfiguration",
+    "kategorie": "Administration"
   },
   {
     "icon": "engineering",
     "modul": "Benutzerverwaltung",
     "rolle": "ADMIN",
-    "routerlink": "/benutzer"
+    "routerlink": "/benutzer",
+    "kategorie": "Administration"
   },
   {
     "icon": "picture_as_pdf",
     "modul": "PDF Templates",
     "rolle": "ADMIN",
-    "routerlink": "/pdf_template"
+    "routerlink": "/pdf_template",
+    "kategorie": "Administration"
   },
   {
     "icon": "settings",
     "modul": "Konfiguration",
     "rolle": "ADMIN",
-    "routerlink": "/konfiguration"
+    "routerlink": "/konfiguration",
+    "kategorie": "Administration"
   },
   {
     "icon": "manage_accounts",
     "modul": "Eigene Daten",
     "rolle": "ADMIN, MITGLIED",
-    "routerlink": "/eigene_daten"
+    "routerlink": "/eigene_daten",
+    "kategorie": "Persönlich"
+  },
+  {
+    "icon": "pending_actions",
+    "modul": "Aufgaben/Tickets",
+    "rolle": "ADMIN, MITGLIED",
+    "routerlink": "/aufgaben",
+    "kategorie": "Geplant"
+  },
+  {
+    "icon": "child_care",
+    "modul": "Jugend",
+    "rolle": "ADMIN, JUGEND",
+    "routerlink": "/jugend",
+    "kategorie": "Geplant"
+  },
+  {
+    "icon": "school",
+    "modul": "Ausbildung",
+    "rolle": "ADMIN, AUSBILDUNG",
+    "routerlink": "/ausbildung",
+    "kategorie": "Geplant"
   }
 ]

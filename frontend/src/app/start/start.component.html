@@ -19,7 +19,10 @@
           <h3 class="category-title">{{ category.name }}</h3>
           <div class="module-grid">
             @for (item of category.items; track item) {
-              <mat-card class="module-card" [routerLink]="item.routerlink">
+              <mat-card class="module-card" [class.admin-only]="isAdminOnly(item)" [routerLink]="item.routerlink">
+                @if (isAdminOnly(item)) {
+                  <span class="admin-badge">ADMIN</span>
+                }
                 <mat-icon class="module-icon material-icons-outlined">{{ item.icon }}</mat-icon>
                 <div class="module-title">{{ item.modul }}</div>
               </mat-card>
@@ -42,7 +45,10 @@
           <h3 class="category-title">{{ category.name }}</h3>
           <div class="module-grid">
             @for (item of category.items; track item) {
-              <mat-card class="module-card" [routerLink]="item.routerlink">
+              <mat-card class="module-card" [class.admin-only]="isAdminOnly(item)" [routerLink]="item.routerlink">
+                @if (isAdminOnly(item)) {
+                  <span class="admin-badge">ADMIN</span>
+                }
                 <mat-icon class="module-icon material-icons-outlined">{{ item.icon }}</mat-icon>
                 <div class="module-title">{{ item.modul }}</div>
               </mat-card>

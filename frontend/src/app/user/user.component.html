@@ -11,35 +11,62 @@
     </div>
 
     <mat-card-content>
-      <form [formGroup]="formAuswahl" (ngSubmit)="auswahlBearbeiten()" [hidden]="!formModul.disabled">
-        <section class="app-grid selector-row">
-          <div class="app-col-12 app-col-lg-9">
-            <mat-form-field class="full-width">
-              <mat-label>Benutzer auswählen</mat-label>
-              <mat-select formControlName="benutzer">
-                @for (opt of benutzer; track opt) {
-                  <mat-option [value]="opt.id"> {{ opt.username }} </mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-          </div>
-          <div class="app-col-12 app-col-lg-3 selector-action">
-            <button
-              type="submit"
-              mat-flat-button
-              color="primary"
-              [disabled]="!formAuswahl.controls['benutzer'].value"
-            >
-              Auswahl bearbeiten
-            </button>
-          </div>
-        </section>
-      </form>
-
       <div class="top-actions" [hidden]="!formModul.disabled">
+        <mat-form-field class="filter-field">
+          <mat-label>Filter</mat-label>
+          <input
+            matInput
+            #filterInput
+            (input)="applyFilter(filterInput.value)"
+            placeholder="Suchen..."
+          />
+        </mat-form-field>
         <button mat-flat-button color="accent" (click)="neueDetails()" type="button">
           Hinzufügen
         </button>
+      </div>
+
+      <div class="table-wrap" [hidden]="!formModul.disabled">
+        <table mat-table [dataSource]="dataSource" matSort>
+          <ng-container matColumnDef="username">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Benutzername</th>
+            <td mat-cell *matCellDef="let element">{{ element.username }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="first_name">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Vorname</th>
+            <td mat-cell *matCellDef="let element">{{ element.first_name }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="last_name">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Nachname</th>
+            <td mat-cell *matCellDef="let element">{{ element.last_name }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Aktionen</th>
+            <td mat-cell *matCellDef="let element" class="ui-action-cell">
+              <button
+                mat-flat-button
+                class="ui-action-btn"
+                color="primary"
+                (click)="auswahlBearbeiten(element)"
+              >
+                <mat-icon class="m-0">edit</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="sichtbareSpaltenBenutzer"></tr>
+          <tr mat-row *matRowDef="let row; columns: sichtbareSpaltenBenutzer"></tr>
+        </table>
+
+        <mat-paginator
+          [pageSizeOptions]="[10, 50, 100]"
+          showFirstLastButtons
+          aria-label="Auswahl Anzahl der sichtbaren Elemente"
+        >
+        </mat-paginator>
       </div>
 
       <form [formGroup]="formModul" (ngSubmit)="datenSpeichern()" [hidden]="formModul.disabled" class="edit-form">
