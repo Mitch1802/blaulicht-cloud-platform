@@ -2,6 +2,7 @@ import uuid
 
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -60,7 +61,18 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.first_name
     
     def has_role(self, key: str) -> bool:
-        return self.roles.filter(key=key).exists()
+        normalized = str(key or "").strip()
+        if not normalized:
+            return False
+        return self.roles.filter(key__iexact=normalized).exists()
 
     def has_any_role(self, *keys: str) -> bool:
-        return self.roles.filter(key__in=keys).exists()
+        normalized_keys = [str(k or "").strip() for k in keys if str(k or "").strip()]
+        if not normalized_keys:
+            return False
+
+        query = Q()
+        for role_key in normalized_keys:
+            query |= Q(key__iexact=role_key)
+
+        return self.roles.filter(query).exists()

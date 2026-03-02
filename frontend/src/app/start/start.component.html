@@ -18,7 +18,7 @@
                 <mat-card class="module-card planned">
                   <span class="planned-badge">GEPLANT</span>
                   <mat-icon class="module-icon material-icons-outlined">{{ item.icon }}</mat-icon>
-                  <div class="module-title">{{ item.modul }}</div>
+                  <div class="module-title" [matTooltip]="item.modul" matTooltipPosition="above">{{ item.modul }}</div>
                 </mat-card>
               } @else {
                 <mat-card class="module-card" [class.admin-only]="isAdminOnly(item)" [routerLink]="item.routerlink">
@@ -26,7 +26,7 @@
                     <span class="admin-badge">ADMIN</span>
                   }
                   <mat-icon class="module-icon material-icons-outlined">{{ item.icon }}</mat-icon>
-                  <div class="module-title">{{ item.modul }}</div>
+                  <div class="module-title" [matTooltip]="item.modul" matTooltipPosition="above">{{ item.modul }}</div>
                 </mat-card>
               }
             }

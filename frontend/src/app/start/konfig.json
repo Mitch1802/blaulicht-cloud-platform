@@ -1,52 +1,52 @@
 [
   {
-    "icon": "healing",
-    "modul": "FMD",
-    "rolle": "ADMIN, FMD",
-    "routerlink": "/fmd",
-    "kategorie": "Einsatz"
-  },
-  {
-    "icon": "battery_alert",
-    "modul": "Atemschutz",
-    "rolle": "ADMIN, ATEMSCHUTZ",
-    "routerlink": "/atemschutz",
-    "kategorie": "Einsatz"
-  },
-  {
-    "icon": "event",
-    "modul": "News",
-    "rolle": "ADMIN, NEWS",
-    "routerlink": "/news",
-    "kategorie": "Öffentlichkeit"
-  },
-  {
-    "icon": "construction",
-    "modul": "Inventar",
-    "rolle": "ADMIN, INVENTAR",
-    "routerlink": "/inventar",
-    "kategorie": "Einsatzmittel"
-  },
-  {
     "icon": "book",
     "modul": "Einsatzbericht",
     "rolle": "ADMIN, BERICHT",
     "routerlink": "/einsatzbericht",
-    "kategorie": "Einsatz"
+    "kategorie": "Dokumentation"
   },
   {
     "icon": "book",
     "modul": "Anwesenheitsliste",
     "rolle": "ADMIN, ANWESENHEIT",
     "routerlink": "/anwesenheitsliste",
-    "kategorie": "Einsatz"
+    "kategorie": "Dokumentation"
+  },
+  {
+    "icon": "event",
+    "modul": "News",
+    "rolle": "ADMIN, NEWS",
+    "routerlink": "/news",
+    "kategorie": "Fachchargen"
+  },
+  {
+    "icon": "healing",
+    "modul": "FMD",
+    "rolle": "ADMIN, FMD",
+    "routerlink": "/fmd",
+    "kategorie": "Fachchargen"
+  },
+  {
+    "icon": "battery_alert",
+    "modul": "Atemschutz",
+    "rolle": "ADMIN, ATEMSCHUTZ",
+    "routerlink": "/atemschutz",
+    "kategorie": "Fachchargen"
   },
   {
     "icon": "fire_truck",
     "modul": "Fahrzeuge",
     "rolle": "ADMIN, FAHRZEUG",
     "routerlink": "/fahrzeuge",
-    "kategorie": "Einsatzmittel"
+    "kategorie": "Fachchargen"
+  },
+  {
+    "icon": "construction",
+    "modul": "Inventar",
+    "rolle": "ADMIN, INVENTAR",
+    "routerlink": "/inventar",
+    "kategorie": "Verwaltung"
   },
   {
     "icon": "euro",
@@ -95,7 +95,7 @@
     "modul": "Eigene Daten",
     "rolle": "ADMIN, MITGLIED",
     "routerlink": "/eigene_daten",
-    "kategorie": "Persönlich"
+    "kategorie": "Administration"
   },
   {
     "icon": "pending_actions",

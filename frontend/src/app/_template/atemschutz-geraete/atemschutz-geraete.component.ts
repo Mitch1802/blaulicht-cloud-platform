@@ -54,6 +54,9 @@ export class AtemschutzGeraeteComponent implements OnInit {
   geraete: IAtemschutzGeraet[] = [];
   pruefungen: IAtemschutzGeraetProtokoll[] = [];
   mitglieder: IMitglied[] = [];
+  userRoles: string[] = [];
+  canEditProtocol = false;
+  rolesResolved = false;
   breadcrumb: any = [];
   dataSource = new MatTableDataSource<IAtemschutzGeraet>(this.geraete);
   dataSourcePruefungen = new MatTableDataSource<IAtemschutzGeraetProtokoll>(this.pruefungen);
@@ -105,6 +108,7 @@ export class AtemschutzGeraeteComponent implements OnInit {
     this.breadcrumb = this.globalDataService.ladeBreadcrumb();
     this.formModul.disable();
     this.formPruefung.disable();
+    this.loadCurrentUserRoles();
 
     this.globalDataService.get(this.modul).subscribe({
       next: (erg: any) => {
@@ -143,12 +147,20 @@ export class AtemschutzGeraeteComponent implements OnInit {
   }
 
   neuePruefung(): void {
+    if (this.rolesResolved && !this.canEditProtocol) {
+      this.globalDataService.erstelleMessage('info', 'Nur ADMIN/PROTOKOLL dürfen Protokolle anlegen.');
+      return;
+    }
     this.showPruefungForm = true;
     this.formPruefung.enable();
     this.title = this.title_pruefung;
   }
 
   neuePruefungVonMaske(element: any): void {
+    if (this.rolesResolved && !this.canEditProtocol) {
+      this.globalDataService.erstelleMessage('info', 'Nur ADMIN/PROTOKOLL dürfen Protokolle anlegen.');
+      return;
+    }
     this.showPruefungForm = true;
     this.formPruefung.enable();
     this.title = this.title_pruefung;
@@ -252,6 +264,11 @@ export class AtemschutzGeraeteComponent implements OnInit {
             preufung_monatlich: details.preufung_monatlich,
             notiz: details.notiz,
           });
+
+          this.formPruefung.enable();
+          if (this.rolesResolved && !this.canEditProtocol) {
+            this.applyNoteOnlyMode();
+          }
         } catch (e: any) {
           this.globalDataService.erstelleMessage('error', e);
         }
@@ -347,10 +364,15 @@ export class AtemschutzGeraeteComponent implements OnInit {
       this.globalDataService.erstelleMessage('error', 'Bitte alle Pflichtfelder korrekt ausfüllen!');
       return;
     }
-    const objekt: any = this.formPruefung.getRawValue();
     const idValue = this.formPruefung.controls['id'].value;
 
     if (!idValue) {
+      if (this.rolesResolved && !this.canEditProtocol) {
+        this.globalDataService.erstelleMessage('error', 'Nur ADMIN/PROTOKOLL dürfen Protokolle anlegen.');
+        return;
+      }
+
+      const objekt: any = this.formPruefung.getRawValue();
       this.globalDataService.post(`${this.modul}/protokoll`, objekt, false).subscribe({
         next: (erg: any) => {
           try {
@@ -386,43 +408,47 @@ export class AtemschutzGeraeteComponent implements OnInit {
         },
         error: (error: any) => this.globalDataService.errorAnzeigen(error)
       });
-    // } else {
-    //   this.globalDataService.patch(`${this.modul}/protokoll`, idValue, objekt, false).subscribe({
-    //     next: (erg: any) => {
-    //       try {
-    //         const updated: any = erg;
-    //         this.pruefungen = this.pruefungen
-    //           .map(m => m.id === updated.id ? updated : m)
-    //           .sort((a, b) => a.datum - b.datum);
+    } else {
+      const objekt: any = this.canEditProtocol
+        ? this.formPruefung.getRawValue()
+        : { notiz: this.formPruefung.controls['notiz'].value ?? '' };
 
-    //         this.dataSourcePruefungen.data = this.pruefungen;
+      this.globalDataService.patch(`${this.modul}/protokoll`, idValue, objekt, false).subscribe({
+        next: (erg: any) => {
+          try {
+            const updated: any = erg;
+            this.pruefungen = this.pruefungen
+              .map(m => m.id === updated.id ? updated : m)
+              .sort((a, b) => a.datum - b.datum);
 
-    //         this.formPruefung.reset({
-    //           id: '',
-    //           geraet_id: 0,
-    //           taetigkeit: '',
-    //           verwendung_typ: '',
-    //           verwendung_min: 0,
-    //           mitglied_id: 0,
-    //           geraet_ok: false,
-    //           name_pruefer: '',
-    //           tausch_hochdruckdichtring: false,
-    //           tausch_membran: false,
-    //           tausch_gleitring: false,
-    //           pruefung_10jahre: false,
-    //           pruefung_jaehrlich: false,
-    //           preufung_monatlich: false,
-    //           notiz: '',
-    //         });
-    //         this.formPruefung.disable();
-    //         this.showPruefungTable = true;
-    //         this.globalDataService.erstelleMessage('success', 'Protokoll geändert!');
-    //       } catch (e: any) {
-    //         this.globalDataService.erstelleMessage('error', e);
-    //       }
-    //     },
-    //     error: (error: any) => this.globalDataService.errorAnzeigen(error)
-    //   });
+            this.dataSourcePruefungen.data = this.pruefungen;
+
+            this.formPruefung.reset({
+              id: '',
+              geraet_id: 0,
+              taetigkeit: '',
+              verwendung_typ: '',
+              verwendung_min: 0,
+              mitglied_id: 0,
+              geraet_ok: false,
+              name_pruefer: '',
+              tausch_hochdruckdichtring: false,
+              tausch_membran: false,
+              tausch_gleitring: false,
+              pruefung_10jahre: false,
+              pruefung_jaehrlich: false,
+              preufung_monatlich: false,
+              notiz: '',
+            });
+            this.formPruefung.disable();
+            this.showPruefungTable = true;
+            this.globalDataService.erstelleMessage('success', 'Protokoll geändert!');
+          } catch (e: any) {
+            this.globalDataService.erstelleMessage('error', e);
+          }
+        },
+        error: (error: any) => this.globalDataService.errorAnzeigen(error)
+      });
     }
   }
 
@@ -513,6 +539,11 @@ export class AtemschutzGeraeteComponent implements OnInit {
   }
 
   datenProtokollLoeschen(): void {
+    if (this.rolesResolved && !this.canEditProtocol) {
+      this.globalDataService.erstelleMessage('error', 'Nur ADMIN/PROTOKOLL dürfen Protokolle löschen.');
+      return;
+    }
+
     const id = this.formPruefung.controls['id'].value!;
     if (!id) {
       this.globalDataService.erstelleMessage('error', 'Kein Protokoll ausgewählt zum Löschen!');
@@ -584,5 +615,68 @@ export class AtemschutzGeraeteComponent implements OnInit {
     }
 
     return modulSichtbar;
+  }
+
+  private loadCurrentUserRoles(): void {
+    this.globalDataService.get('users/self').subscribe({
+      next: (erg: any) => {
+        const roles = this.extractRolesFromResponse(erg);
+        if (roles.length > 0) {
+          this.applyRoleState(roles);
+          return;
+        }
+        this.loadRolesFromModulKonfiguration();
+      },
+      error: () => this.loadRolesFromModulKonfiguration()
+    });
+  }
+
+  private loadRolesFromModulKonfiguration(): void {
+    this.globalDataService.get('modul_konfiguration').subscribe({
+      next: (erg: any) => this.applyRoleState(this.extractRolesFromResponse(erg)),
+      error: () => this.applyRoleState([])
+    });
+  }
+
+  private extractRolesFromResponse(value: any): string[] {
+    return this.normalizeRoles(value?.roles ?? value?.user?.roles ?? value?.main?.user?.roles);
+  }
+
+  private applyRoleState(roles: string[]): void {
+    this.userRoles = roles;
+    this.canEditProtocol = this.userRoles.includes('ADMIN') || this.userRoles.includes('PROTOKOLL');
+    this.rolesResolved = true;
+
+    if (this.showPruefungForm) {
+      if (this.canEditProtocol) {
+        this.formPruefung.enable();
+      } else {
+        this.applyNoteOnlyMode();
+      }
+    }
+  }
+
+  private normalizeRoles(value: unknown): string[] {
+    if (Array.isArray(value)) {
+      return value
+        .flatMap((entry: any) =>
+          String(entry?.key ?? entry?.role ?? entry?.name ?? entry)
+            .split(',')
+            .map((part: string) => part.trim().toUpperCase())
+        )
+        .filter(Boolean);
+    }
+
+    return String(value ?? '')
+      .split(',')
+      .map((entry) => entry.trim().toUpperCase())
+      .filter(Boolean);
+  }
+
+  private applyNoteOnlyMode(): void {
+    Object.values(this.formPruefung.controls).forEach((control) => {
+      control.disable();
+    });
+    this.formPruefung.controls['notiz'].enable();
   }
 }

@@ -25,6 +25,7 @@
             mat-flat-button
             color="accent"
             (click)="neuePruefung()"
+            [hidden]="rolesResolved && !canEditProtocol"
             type="button"
           >
             Protokoll Eintrag
@@ -302,7 +303,7 @@
             <button
               mat-flat-button
               color="warn"
-              [hidden]="!formPruefung.controls['id'].value"
+              [hidden]="!formPruefung.controls['id'].value || !canEditProtocol"
               type="button"
               (click)="datenProtokollLoeschen()"
             >
@@ -354,6 +355,7 @@
                 class="ui-action-btn"
                 color="primary"
                 (click)="neuePruefungVonMaske(element)"
+                [hidden]="rolesResolved && !canEditProtocol"
               >
                 <mat-icon class="m-0">checklist</mat-icon>
               </button>
@@ -367,7 +369,7 @@
               </button>
             </td>
           </ng-container>
-          <tr mat-header-row *matHeaderRowDef="sichtbareSpalten"></tr>
+                [hidden]="!formPruefung.controls['id'].value || (rolesResolved && !canEditProtocol)"
           <tr mat-row *matRowDef="let row; columns: sichtbareSpalten"></tr>
         </table>
         }

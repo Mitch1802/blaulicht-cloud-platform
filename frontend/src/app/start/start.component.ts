@@ -4,6 +4,7 @@ import { HeaderComponent } from '../_template/header/header.component';
 import { MatCardModule } from '@angular/material/card';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-start',
@@ -14,7 +15,8 @@ import { MatIconModule } from '@angular/material/icon';
     HeaderComponent,
     MatCardModule,
     RouterLink,
-    MatIconModule
+    MatIconModule,
+    MatTooltipModule
   ]
 })
 export class StartComponent implements OnInit {

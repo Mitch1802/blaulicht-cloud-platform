@@ -13,6 +13,7 @@ from core_apps.mitglieder.models import Mitglied
 class AtemschutzGeraeteEndpointTests(EndpointSmokeMixin, APITestCase):
     def setUp(self):
         self.user = self.create_user_with_roles("ATEMSCHUTZ")
+        self.protokoll_user = self.create_user_with_roles("PROTOKOLL")
         self.mitglied = Mitglied.objects.create(
             stbnr=9001,
             vorname="A",
@@ -21,7 +22,7 @@ class AtemschutzGeraeteEndpointTests(EndpointSmokeMixin, APITestCase):
         )
         FMD.objects.create(mitglied_id=self.mitglied)
         self.geraet = AtemschutzGeraet.objects.create(inv_nr="AG-1")
-        AtemschutzGeraetProtokoll.objects.create(
+        self.protokoll = AtemschutzGeraetProtokoll.objects.create(
             geraet_id=self.geraet,
             datum=date(2024, 1, 1),
             name_pruefer="P",
@@ -72,3 +73,38 @@ class AtemschutzGeraeteEndpointTests(EndpointSmokeMixin, APITestCase):
         self.assertEqual(str(self.geraet), "AG-1")
         protokoll = AtemschutzGeraetProtokoll.objects.first()
         self.assertEqual(str(protokoll), "2024-01-01")
+
+    def test_protokoll_create_requires_admin_or_protokoll_role(self):
+        payload = {
+            "geraet_id": self.geraet.pkid,
+            "datum": "2024-02-01",
+            "name_pruefer": "Tester",
+        }
+
+        self.client.force_authenticate(user=self.user)
+        forbidden = self.request_method("post", "atemschutz/geraete/protokoll/", data=payload)
+        self.assertEqual(forbidden.status_code, status.HTTP_403_FORBIDDEN)
+
+        self.client.force_authenticate(user=self.protokoll_user)
+        allowed = self.request_method("post", "atemschutz/geraete/protokoll/", data=payload)
+        self.assertEqual(allowed.status_code, status.HTTP_201_CREATED)
+
+    def test_protokoll_notiz_patch_allowed_for_non_editor_roles(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.request_method(
+            "patch",
+            f"atemschutz/geraete/protokoll/{self.protokoll.id}/",
+            data={"notiz": "Hinweis vom Trupp"},
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.protokoll.refresh_from_db()
+        self.assertEqual(self.protokoll.notiz, "Hinweis vom Trupp")
+
+    def test_protokoll_non_editor_cannot_patch_other_fields(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.request_method(
+            "patch",
+            f"atemschutz/geraete/protokoll/{self.protokoll.id}/",
+            data={"name_pruefer": "Unzulässig"},
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
