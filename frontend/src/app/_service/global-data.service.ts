@@ -433,6 +433,9 @@ export class GlobalDataService {
     } else if (page == 'V_M') {
       link = '/mitglied';
       kuerzel = 'Mitglieder';
+    } else if (page == 'JUGEND') {
+      link = '/jugend';
+      kuerzel = 'Jugend';
     } else if (page == 'V_MK') {
       link = '/modul_konfiguration';
       kuerzel = 'Modul Konfiguration';

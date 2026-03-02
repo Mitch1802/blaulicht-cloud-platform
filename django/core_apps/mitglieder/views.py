@@ -4,8 +4,8 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from .models import Mitglied
-from .serializers import MitgliedSerializer
+from .models import Mitglied, JugendEvent
+from .serializers import MitgliedSerializer, JugendEventSerializer
 from core_apps.common.permissions import HasAnyRolePermission
 
 
@@ -81,3 +81,15 @@ class MitgliedViewSet(ModelViewSet):
             },
             status=status.HTTP_201_CREATED,
         )
+
+
+class JugendEventViewSet(ModelViewSet):
+    queryset = JugendEvent.objects.all().order_by("-datum", "titel")
+    serializer_class = JugendEventSerializer
+    permission_classes = [
+        permissions.IsAuthenticated,
+        HasAnyRolePermission.with_roles("ADMIN"),
+    ]
+    parser_classes = [JSONParser]
+    lookup_field = "id"
+    pagination_class = None

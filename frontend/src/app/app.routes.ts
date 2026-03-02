@@ -27,6 +27,11 @@ export const routes: Routes = [
     loadComponent: () => import("./mitglied/mitglied.component").then(m => m.MitgliedComponent),
   },
   {
+    path: 'jugend',
+    canActivate: [authGuard],
+    loadComponent: () => import("./jugend/jugend.component").then(m => m.JugendComponent),
+  },
+  {
     path: 'atemschutz',
     canActivate: [authGuard],
     loadComponent: () => import("./atemschutz/atemschutz.component").then(m => m.AtemschutzComponent),

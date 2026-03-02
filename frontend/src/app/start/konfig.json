@@ -107,9 +107,9 @@
   {
     "icon": "child_care",
     "modul": "Jugend",
-    "rolle": "ADMIN, JUGEND",
+    "rolle": "ADMIN",
     "routerlink": "/jugend",
-    "kategorie": "Geplant"
+    "kategorie": "Verwaltung"
   },
   {
     "icon": "school",

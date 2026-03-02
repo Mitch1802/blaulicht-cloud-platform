@@ -40,6 +40,12 @@ export class StartComponent implements OnInit {
       routerlink: "/modul_konfiguration"
     },
     {
+      icon: "child_care",
+      modul: "Jugend",
+      rolle: "ADMIN",
+      routerlink: "/jugend"
+    },
+    {
       icon: "engineering",
       modul: "Benutzerverwaltung",
       rolle: "ADMIN",

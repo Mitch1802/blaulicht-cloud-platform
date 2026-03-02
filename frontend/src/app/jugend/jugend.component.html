@@ -1,0 +1,192 @@
+<app-header [breadcrumb]="breadcrumb"></app-header>
+
+<section class="jugend-page">
+  <header class="page-head">
+    <h1>{{ title }}</h1>
+  </header>
+
+  <mat-card class="settings-card">
+    <div class="section-head">
+      <h2>Jugend-Mitglieder</h2>
+    </div>
+
+    <mat-card-content>
+      @if (showMitgliedForm) {
+        <form [formGroup]="formMitglied" (ngSubmit)="speichernMitglied()" class="edit-form">
+          <div class="form-actions">
+            <button mat-flat-button color="accent" type="submit">Daten speichern</button>
+            <button mat-flat-button color="primary" type="button" (click)="mitgliedFormAbbrechen()">Abbrechen</button>
+          </div>
+
+          <section class="app-grid form-grid">
+            <div class="app-col-12 app-col-lg-4 mb-3">
+              <mat-form-field class="full-width">
+                <mat-label>Status</mat-label>
+                <mat-select formControlName="dienststatus">
+                  <mat-option value="JUGEND">Jugend</mat-option>
+                  <mat-option value="AKTIV">Aktiv</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="app-col-12 app-col-lg-4 mb-3">
+              <mat-form-field class="full-width">
+                <mat-label>Überstellt am</mat-label>
+                <input matInput formControlName="aktiv_ueberstellt_am" placeholder="TT.MM.YYYY" />
+              </mat-form-field>
+            </div>
+
+            <div class="app-col-12 app-col-lg-4 mb-3">
+              <mat-checkbox formControlName="jugend_wissentest">Wissentest absolviert</mat-checkbox>
+            </div>
+
+            <div class="app-col-12 app-col-lg-4 mb-3">
+              <mat-form-field class="full-width">
+                <mat-label>Erprobung</mat-label>
+                <input matInput formControlName="jugend_erprobung" />
+              </mat-form-field>
+            </div>
+
+            <div class="app-col-12 app-col-lg-4 mb-3">
+              <mat-form-field class="full-width">
+                <mat-label>Fertigkeitsabzeichen</mat-label>
+                <input matInput formControlName="jugend_fertigkeitsabzeichen" />
+              </mat-form-field>
+            </div>
+
+            <div class="app-col-12 app-col-lg-4 mb-3">
+              <mat-form-field class="full-width">
+                <mat-label>Bewerb</mat-label>
+                <input matInput formControlName="jugend_bewerb" />
+              </mat-form-field>
+            </div>
+          </section>
+        </form>
+      }
+
+      @if (!showMitgliedForm) {
+      <div class="table-wrap">
+        <table mat-table [dataSource]="dataSourceJugend">
+          <ng-container matColumnDef="stbnr">
+            <th mat-header-cell *matHeaderCellDef>Stbnr.</th>
+            <td mat-cell *matCellDef="let element">{{ element.stbnr }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Name</th>
+            <td mat-cell *matCellDef="let element">{{ getVollerName(element) }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="alter">
+            <th mat-header-cell *matHeaderCellDef>Alter</th>
+            <td mat-cell *matCellDef="let element">{{ getAlter(element) }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="ueberstellung">
+            <th mat-header-cell *matHeaderCellDef>Überstellung Aktivstand</th>
+            <td mat-cell *matCellDef="let element">{{ getUeberstellungHinweis(element) }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Aktionen</th>
+            <td mat-cell *matCellDef="let element" class="ui-action-cell">
+              <button mat-flat-button class="ui-action-btn" color="primary" (click)="editMitglied(element)">
+                <mat-icon class="m-0">edit</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="sichtbareSpaltenJugend"></tr>
+          <tr mat-row *matRowDef="let row; columns: sichtbareSpaltenJugend"></tr>
+        </table>
+      </div>
+      }
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="settings-card mt-3">
+    <div class="section-head">
+      <h2>Jugend-Events</h2>
+      <button mat-flat-button color="accent" type="button" (click)="neuesEvent()">Neues Event</button>
+    </div>
+
+    <mat-card-content>
+      @if (showEventForm) {
+        <form [formGroup]="formEvent" (ngSubmit)="speichernEvent()" class="edit-form">
+          <div class="form-actions">
+            <button mat-flat-button color="accent" type="submit">Event speichern</button>
+            <button mat-flat-button color="warn" type="button" [hidden]="!formEvent.controls['id'].value" (click)="eventLoeschen()">Löschen</button>
+            <button mat-flat-button color="primary" type="button" (click)="eventFormAbbrechen()">Abbrechen</button>
+          </div>
+
+          <section class="app-grid form-grid">
+            <div class="app-col-12 app-col-lg-6 mb-3">
+              <mat-form-field class="full-width" hintLabel="* Pflichtfeld">
+                <mat-label>Titel</mat-label>
+                <input matInput formControlName="titel" />
+              </mat-form-field>
+            </div>
+
+            <div class="app-col-12 app-col-lg-6 mb-3">
+              <mat-form-field class="full-width" hintLabel="* Pflichtfeld">
+                <mat-label>Datum</mat-label>
+                <input matInput formControlName="datum" placeholder="TT.MM.YYYY" />
+              </mat-form-field>
+            </div>
+
+            <div class="app-col-12 app-col-lg-12 mb-3">
+              <mat-form-field class="full-width">
+                <mat-label>Teilnehmer</mat-label>
+                <mat-select formControlName="teilnehmer_ids" multiple>
+                  @for (member of jugendMitglieder; track member.pkid) {
+                    <mat-option [value]="member.pkid">{{ member.stbnr }} - {{ member.vorname }} {{ member.nachname }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="app-col-12 app-col-lg-12 mb-3">
+              <mat-form-field class="full-width">
+                <mat-label>Notiz</mat-label>
+                <textarea matInput rows="3" formControlName="notiz"></textarea>
+              </mat-form-field>
+            </div>
+          </section>
+        </form>
+      }
+
+      @if (!showEventForm) {
+      <div class="table-wrap">
+        <table mat-table [dataSource]="dataSourceEvents">
+          <ng-container matColumnDef="datum">
+            <th mat-header-cell *matHeaderCellDef>Datum</th>
+            <td mat-cell *matCellDef="let element">{{ element.datum }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="titel">
+            <th mat-header-cell *matHeaderCellDef>Titel</th>
+            <td mat-cell *matCellDef="let element">{{ element.titel }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="teilnehmer">
+            <th mat-header-cell *matHeaderCellDef>Teilnehmer</th>
+            <td mat-cell *matCellDef="let element">{{ getEventTeilnehmerText(element) }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Aktionen</th>
+            <td mat-cell *matCellDef="let element" class="ui-action-cell">
+              <button mat-flat-button class="ui-action-btn" color="primary" (click)="editEvent(element)">
+                <mat-icon class="m-0">edit</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="sichtbareSpaltenEvents"></tr>
+          <tr mat-row *matRowDef="let row; columns: sichtbareSpaltenEvents"></tr>
+        </table>
+      </div>
+      }
+    </mat-card-content>
+  </mat-card>
+</section>
