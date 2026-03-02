@@ -6,56 +6,33 @@
   </header>
 
   <section class="module-section">
-    <div class="section-head">
-      <h2>Einsatzmodule</h2>
-      <span class="count">{{ visibleItems.length }}</span>
-    </div>
-
-    @if (visibleItems.length === 0) {
+    @if (categorizedItems.length === 0) {
       <p class="empty">Für deine Rollen sind aktuell keine Module freigeschaltet.</p>
     } @else {
-      @for (category of visibleCategories; track category.name) {
+      @for (category of categorizedItems; track category.name) {
         <section class="category-block">
           <h3 class="category-title">{{ category.name }}</h3>
           <div class="module-grid">
             @for (item of category.items; track item) {
-              <mat-card class="module-card" [class.admin-only]="isAdminOnly(item)" [routerLink]="item.routerlink">
-                @if (isAdminOnly(item)) {
-                  <span class="admin-badge">ADMIN</span>
-                }
-                <mat-icon class="module-icon material-icons-outlined">{{ item.icon }}</mat-icon>
-                <div class="module-title">{{ item.modul }}</div>
-              </mat-card>
+              @if (isPlannedItem(item)) {
+                <mat-card class="module-card planned">
+                  <span class="planned-badge">GEPLANT</span>
+                  <mat-icon class="module-icon material-icons-outlined">{{ item.icon }}</mat-icon>
+                  <div class="module-title">{{ item.modul }}</div>
+                </mat-card>
+              } @else {
+                <mat-card class="module-card" [class.admin-only]="isAdminOnly(item)" [routerLink]="item.routerlink">
+                  @if (isAdminOnly(item)) {
+                    <span class="admin-badge">ADMIN</span>
+                  }
+                  <mat-icon class="module-icon material-icons-outlined">{{ item.icon }}</mat-icon>
+                  <div class="module-title">{{ item.modul }}</div>
+                </mat-card>
+              }
             }
           </div>
         </section>
       }
     }
   </section>
-
-  @if (adminItems.length > 0) {
-    <section class="module-section admin-section">
-      <div class="section-head">
-        <h2>Administration &amp; Einstellungen</h2>
-        <span class="count">{{ adminItems.length }}</span>
-      </div>
-
-      @for (category of adminCategories; track category.name) {
-        <section class="category-block">
-          <h3 class="category-title">{{ category.name }}</h3>
-          <div class="module-grid">
-            @for (item of category.items; track item) {
-              <mat-card class="module-card" [class.admin-only]="isAdminOnly(item)" [routerLink]="item.routerlink">
-                @if (isAdminOnly(item)) {
-                  <span class="admin-badge">ADMIN</span>
-                }
-                <mat-icon class="module-icon material-icons-outlined">{{ item.icon }}</mat-icon>
-                <div class="module-title">{{ item.modul }}</div>
-              </mat-card>
-            }
-          </div>
-        </section>
-      }
-    </section>
-  }
 </section>

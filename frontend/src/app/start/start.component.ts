@@ -28,10 +28,7 @@ export class StartComponent implements OnInit {
   last_name = '';
   meine_rollen: string[] = [];
 
-  visibleItems: any[] = [];
-  adminItems: any[] = [];
-  visibleCategories: { name: string; items: any[] }[] = [];
-  adminCategories: { name: string; items: any[] }[] = [];
+  categorizedItems: { name: string; items: any[] }[] = [];
 
   defaultKonfig: any[] = [
     {
@@ -83,18 +80,7 @@ export class StartComponent implements OnInit {
             this.userHasAccess(item) && !this.isHiddenItem(item)
           );
 
-          // 2️⃣ Reine ADMIN-Module separieren
-          this.adminItems = allowed.filter(item =>
-            this.isPureAdminItem(item)
-          );
-
-          // 3️⃣ Restliche Module
-          this.visibleItems = allowed.filter(item =>
-            !this.isPureAdminItem(item)
-          );
-
-          this.visibleCategories = this.buildCategories(this.visibleItems);
-          this.adminCategories = this.buildCategories(this.adminItems);
+          this.categorizedItems = this.buildCategories(allowed);
 
         } catch (e: any) {
           this.globalDataService.erstelleMessage("error", e);
@@ -145,6 +131,11 @@ export class StartComponent implements OnInit {
 
   isAdminOnly(item: any): boolean {
     return this.isPureAdminItem(item);
+  }
+
+  isPlannedItem(item: any): boolean {
+    const category = this.normalizeCategory(item).trim().toLowerCase();
+    return category === 'geplant';
   }
 
   private buildCategories(items: any[]): { name: string; items: any[] }[] {

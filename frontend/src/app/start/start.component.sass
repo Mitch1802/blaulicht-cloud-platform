@@ -99,6 +99,30 @@
     background: rgba(theme.$app-warning, 0.9)
     color: theme.$app-primary-deep
 
+.module-card.planned
+    cursor: not-allowed
+    pointer-events: none
+    background: rgba(theme.$app-surface-variant, 0.55)
+    border: 2px dashed rgba(theme.$app-border, 0.95)
+    color: theme.$app-text-muted
+    box-shadow: none
+
+    &:hover
+        transform: none
+        box-shadow: none
+
+.planned-badge
+    position: absolute
+    top: .45rem
+    right: .45rem
+    font-size: .65rem
+    font-weight: 700
+    letter-spacing: .04em
+    padding: .15rem .45rem
+    border-radius: 999px
+    background: rgba(theme.$app-border, 0.9)
+    color: theme.$app-text
+
 .module-icon
     width: 3.2rem
     height: 3.2rem
