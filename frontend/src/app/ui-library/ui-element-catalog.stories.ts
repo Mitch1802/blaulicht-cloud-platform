@@ -74,11 +74,35 @@ export const AllElements: Story = {
     },
     template: `
       <section class="ui-page">
-        <mat-toolbar>
-          <span class="title">Toolbar Beispiel</span>
+        <mat-toolbar
+          class="app-header-toolbar"
+          style="--mat-toolbar-container-background-color: var(--mat-sys-primary, #005cbb); --mat-toolbar-container-text-color: #fff; padding-inline: .65rem .85rem;"
+        >
+          <img
+            src="assets/images/icon.svg"
+            alt="Logo"
+            style="width:42px;height:42px;border-radius:.5rem;object-fit:contain;"
+          />
+          <span class="title app-header-title" style="margin-left:.7rem;line-height:1;white-space:nowrap;">Blaulicht Cloud</span>
           <span class="spacer"></span>
-          <button mat-flat-button color="primary" type="button">Aktion</button>
+          <button mat-icon-button type="button" aria-label="Abmelden" style="color:#fff;">
+            <mat-icon>logout</mat-icon>
+          </button>
         </mat-toolbar>
+
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+
+        <div class="app-header-stepper-wrap" style="padding:.42rem .55rem;">
+          <nav class="app-header-breadcrumb" aria-label="Breadcrumb" style="display:flex;align-items:center;gap:.45rem;white-space:nowrap;overflow-x:auto;">
+            <a class="breadcrumb-item breadcrumb-link breadcrumb-home" aria-label="Startseite" style="display:inline-flex;align-items:center;text-decoration:none;">
+              <mat-icon style="font-size:18px;width:18px;height:18px;">home</mat-icon>
+            </a>
+            <span class="breadcrumb-separator" aria-hidden="true">&gt;</span>
+            <a class="breadcrumb-item breadcrumb-link" style="text-decoration:none;">Einsatzberichte</a>
+            <span class="breadcrumb-separator" aria-hidden="true">&gt;</span>
+            <span class="breadcrumb-item">Neu</span>
+          </nav>
+        </div>
 
         <header class="page-head">
           <h1>UI Element-Katalog</h1>
@@ -168,7 +192,7 @@ export const AllElements: Story = {
                       <th mat-header-cell *matHeaderCellDef>Aktion</th>
                       <td mat-cell *matCellDef="let row" class="ui-action-cell">
                         <button mat-flat-button class="ui-action-btn" color="primary" type="button">
-                          <mat-icon>open_in_new</mat-icon>
+                          <mat-icon>remove_red_eye</mat-icon>
                         </button>
                       </td>
                     </ng-container>
