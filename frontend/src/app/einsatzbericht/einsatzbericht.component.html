@@ -17,21 +17,41 @@
             <button mat-flat-button type="button" color="accent" (click)="neuerEntwurf()">Neuen Einsatz anlegen</button>
           </div>
 
-          <h3 class="list-title">Vorhandene Einsatzberichte</h3>
-
           @if (berichte.length === 0) {
             <p class="empty">Noch keine Einsatzberichte vorhanden.</p>
           } @else {
-            <section class="draft-list">
-              @for (element of berichte; track element.id) {
-                <article class="draft-item">
-                  <div class="draft-main">
-                    <strong>{{ element.alarmstichwort || 'Ohne Stichwort' }}</strong>
-                    <span>{{ element.einsatzadresse || 'Ohne Adresse' }}</span>
-                    <small>{{ element.einsatz_datum || '-' }}</small>
+            <div class="table-wrap">
+              <mat-form-field>
+                <mat-label>Suchen</mat-label>
+                <input matInput #input (keyup)="applyFilter(input.value)" />
+              </mat-form-field>
+
+              <table mat-table [dataSource]="dataSource" matSort>
+                <ng-container matColumnDef="einsatz_datum">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Datum</th>
+                  <td mat-cell *matCellDef="let element">{{ formatListDateTime(element.einsatz_datum) || '-' }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="alarmstichwort">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Alarmstichwort</th>
+                  <td mat-cell *matCellDef="let element">{{ element.alarmstichwort || '-' }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="einsatzadresse">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Einsatzadresse</th>
+                  <td mat-cell *matCellDef="let element">{{ element.einsatzadresse || '-' }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="status">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+                  <td mat-cell *matCellDef="let element">
                     <span class="status-badge" [class.done]="element.status === 'ABGESCHLOSSEN'">{{ element.status }}</span>
-                  </div>
-                  <div class="draft-actions">
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef>Aktionen</th>
+                  <td mat-cell *matCellDef="let element" class="ui-action-cell">
                     <button mat-flat-button class="ui-action-btn" color="primary" type="button" (click)="berichtBearbeiten(element)">
                       <mat-icon class="m-0">edit</mat-icon>
                     </button>
@@ -45,10 +65,20 @@
                         <mat-icon class="m-0">delete</mat-icon>
                       </button>
                     }
-                  </div>
-                </article>
-              }
-            </section>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="sichtbareSpalten"></tr>
+                <tr mat-row *matRowDef="let row; columns: sichtbareSpalten"></tr>
+              </table>
+
+              <mat-paginator
+                [pageSizeOptions]="[10, 50, 100]"
+                showFirstLastButtons
+                aria-label="Auswahl Anzahl der sichtbaren Elemente"
+              >
+              </mat-paginator>
+            </div>
           }
         </section>
       } @else {

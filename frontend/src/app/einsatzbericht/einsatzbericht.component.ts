@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HeaderComponent } from '../_template/header/header.component';
 import { GlobalDataService } from '../_service/global-data.service';
@@ -11,7 +11,9 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSort, MatSortModule } from '@angular/material/sort';
 
 type FahrzeugOption = {
   id: number;
@@ -74,12 +76,22 @@ type EinsatzberichtDto = {
     MatChipsModule,
     MatIconModule,
     MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
   ],
   templateUrl: './einsatzbericht.component.html',
   styleUrl: './einsatzbericht.component.sass'
 })
 export class EinsatzberichtComponent implements OnInit {
   private globalDataService = inject(GlobalDataService);
+
+  @ViewChild(MatPaginator) set matPaginator(p: MatPaginator | undefined) {
+    if (p) this.dataSource.paginator = p;
+  }
+
+  @ViewChild(MatSort) set matSort(s: MatSort | undefined) {
+    if (s) this.dataSource.sort = s;
+  }
 
   title = 'Einsatzbericht';
   breadcrumb: any[] = [];
@@ -134,6 +146,7 @@ export class EinsatzberichtComponent implements OnInit {
   mitgliedSuche = new FormControl<string>('', { nonNullable: true });
   mitalarmiertSuche = new FormControl<string>('', { nonNullable: true });
   berichte: EinsatzberichtDto[] = [];
+  dataSource = new MatTableDataSource<EinsatzberichtDto>([]);
   viewMode: 'list' | 'form' = 'list';
   sichtbareSpalten: string[] = ['einsatz_datum', 'alarmstichwort', 'einsatzadresse', 'status', 'actions'];
   canDeleteBerichte = false;
@@ -506,9 +519,15 @@ export class EinsatzberichtComponent implements OnInit {
       next: (response: any) => {
         const data = Array.isArray(response) ? response : (response?.data ?? response?.results ?? []);
         this.berichte = data as EinsatzberichtDto[];
+        this.dataSource.data = this.berichte;
       },
       error: (error: any) => this.globalDataService.errorAnzeigen(error),
     });
+  }
+
+  applyFilter(value: string): void {
+    this.dataSource.filter = (value || '').trim().toLowerCase();
+    this.matPaginator?.firstPage();
   }
 
   neuerEntwurf(): void {
