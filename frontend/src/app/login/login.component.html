@@ -17,8 +17,9 @@
           </mat-icon>
         </mat-form-field>
         <div class="button">
-          <button type="submit" [disabled]="!form.valid" mat-flat-button color="primary">Anmelden</button>
+          <button type="submit" [hidden]="!form.valid" mat-flat-button color="primary">Anmelden</button>
         </div>
+        <p class="form-hint" [hidden]="form.valid">Pflichtfelder ausfüllen.</p>
 
       </form>
     </mat-card-content>

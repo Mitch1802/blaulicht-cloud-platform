@@ -369,7 +369,7 @@
               </button>
             </td>
           </ng-container>
-                [hidden]="!formPruefung.controls['id'].value || (rolesResolved && !canEditProtocol)"
+          <tr mat-header-row *matHeaderRowDef="sichtbareSpalten"></tr>
           <tr mat-row *matRowDef="let row; columns: sichtbareSpalten"></tr>
         </table>
         }
