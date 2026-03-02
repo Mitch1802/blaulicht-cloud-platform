@@ -3,7 +3,7 @@ from rest_framework import serializers
 from core_apps.fahrzeuge.models import Fahrzeug
 from core_apps.mitglieder.models import Mitglied
 
-from .models import Einsatzbericht, EinsatzberichtFoto
+from .models import Einsatzbericht, EinsatzberichtFoto, MitalarmierteStelle
 
 
 class EinsatzberichtFotoSerializer(serializers.ModelSerializer):
@@ -25,6 +25,12 @@ class EinsatzberichtFotoSerializer(serializers.ModelSerializer):
 class EinsatzberichtSerializer(serializers.ModelSerializer):
     fahrzeuge = serializers.PrimaryKeyRelatedField(queryset=Fahrzeug.objects.all(), many=True, required=False)
     mitglieder = serializers.PrimaryKeyRelatedField(queryset=Mitglied.objects.all(), many=True, required=False)
+    mitalarmiert = serializers.PrimaryKeyRelatedField(
+        source="mitalarmierte_stellen",
+        queryset=MitalarmierteStelle.objects.all(),
+        many=True,
+        required=False,
+    )
     fotos = EinsatzberichtFotoSerializer(many=True, read_only=True)
 
     class Meta:
@@ -93,10 +99,12 @@ class EinsatzberichtSerializer(serializers.ModelSerializer):
         request = self.context.get("request")
         fahrzeuge = validated_data.pop("fahrzeuge", [])
         mitglieder = validated_data.pop("mitglieder", [])
+        mitalarmierte_stellen = validated_data.pop("mitalarmierte_stellen", [])
 
         instance = Einsatzbericht.objects.create(**validated_data)
         instance.fahrzeuge.set(fahrzeuge)
         instance.mitglieder.set(mitglieder)
+        instance.mitalarmierte_stellen.set(mitalarmierte_stellen)
 
         if request and request.user and request.user.is_authenticated:
             instance.created_by = request.user
@@ -110,6 +118,7 @@ class EinsatzberichtSerializer(serializers.ModelSerializer):
         request = self.context.get("request")
         fahrzeuge = validated_data.pop("fahrzeuge", None)
         mitglieder = validated_data.pop("mitglieder", None)
+        mitalarmierte_stellen = validated_data.pop("mitalarmierte_stellen", None)
 
         for key, value in validated_data.items():
             setattr(instance, key, value)
@@ -119,6 +128,8 @@ class EinsatzberichtSerializer(serializers.ModelSerializer):
             instance.fahrzeuge.set(fahrzeuge)
         if mitglieder is not None:
             instance.mitglieder.set(mitglieder)
+        if mitalarmierte_stellen is not None:
+            instance.mitalarmierte_stellen.set(mitalarmierte_stellen)
 
         self._create_uploaded_fotos(request, instance)
 

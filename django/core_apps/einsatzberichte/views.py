@@ -14,7 +14,7 @@ from core_apps.common.permissions import HasAnyRolePermission
 from core_apps.fahrzeuge.models import Fahrzeug
 from core_apps.mitglieder.models import Mitglied
 
-from .models import Einsatzbericht, EinsatzberichtFoto
+from .models import Einsatzbericht, EinsatzberichtFoto, MitalarmierteStelle
 from .serializers import EinsatzberichtSerializer
 
 logger = logging.getLogger(__name__)
@@ -22,7 +22,7 @@ LOG_SOURCE = "einsatzberichte"
 
 
 class EinsatzberichtViewSet(ModelViewSet):
-    queryset = Einsatzbericht.objects.prefetch_related("fahrzeuge", "mitglieder", "fotos").all()
+    queryset = Einsatzbericht.objects.prefetch_related("fahrzeuge", "mitglieder", "mitalarmierte_stellen", "fotos").all()
     serializer_class = EinsatzberichtSerializer
     permission_classes = [
         permissions.IsAuthenticated,
@@ -129,7 +129,20 @@ class EinsatzberichtViewSet(ModelViewSet):
             for m in Mitglied.objects.all().order_by("stbnr")
         ]
 
-        return Response({"fahrzeuge": fahrzeuge, "mitglieder": mitglieder})
+        mitalarmiert_stellen = [
+            {
+                "pkid": stelle.pkid,
+                "id": str(stelle.id),
+                "name": stelle.name,
+            }
+            for stelle in MitalarmierteStelle.objects.all().order_by("name")
+        ]
+
+        return Response({
+            "fahrzeuge": fahrzeuge,
+            "mitglieder": mitglieder,
+            "mitalarmiert_stellen": mitalarmiert_stellen,
+        })
 
     @action(detail=False, methods=["get"], url_path="blaulichtsms/letzter")
     def blaulichtsms_letzter(self, request):

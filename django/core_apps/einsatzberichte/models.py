@@ -17,6 +17,16 @@ def einsatzbericht_foto_path(instance, filename):
     return os.path.join("einsatzberichte", str(report_id), cleaned)
 
 
+class MitalarmierteStelle(TimeStampedModel):
+    name = models.CharField(_("Name"), max_length=120, unique=True)
+
+    class Meta:
+        ordering = ["name", "pkid"]
+
+    def __str__(self):
+        return self.name
+
+
 class Einsatzbericht(TimeStampedModel):
     class Status(models.TextChoices):
         ENTWURF = "ENTWURF", "Entwurf"
@@ -37,7 +47,7 @@ class Einsatzbericht(TimeStampedModel):
 
     brand_kategorie = models.CharField(_("Brand Kategorie"), max_length=120, blank=True, default="")
     technisch_kategorie = models.CharField(_("Technisch Kategorie"), max_length=120, blank=True, default="")
-    mitalarmiert = models.CharField(_("Mitalarmiert"), max_length=120, blank=True, default="")
+    mitalarmierte_stellen = models.ManyToManyField(MitalarmierteStelle, related_name="einsatzberichte", blank=True)
 
     status = models.CharField(_("Status"), choices=Status.choices, default=Status.ENTWURF, max_length=20)
 

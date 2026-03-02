@@ -227,20 +227,34 @@
 
                 <div class="conditional-block">
                   <h3>Mitalarmiert</h3>
-                  <mat-form-field class="full-width">
-                    <mat-label>Mitalarmiert</mat-label>
-                    <mat-select formControlName="mitalarmiert">
-                      @for (opt of mitalarmiertOptionen; track opt) {
-                        <mat-option [value]="opt">{{ opt }}</mat-option>
-                      }
-                    </mat-select>
-                  </mat-form-field>
-                  @if (isMitalarmiertAndere) {
+                  <div class="autocomplete-multi">
                     <mat-form-field class="full-width">
-                      <mat-label>Andere mitalarmierte Stelle</mat-label>
-                      <input matInput formControlName="mitalarmiertText" />
+                      <mat-label>Mitalarmiert hinzufügen</mat-label>
+                      <input
+                        matInput
+                        [formControl]="mitalarmiertSuche"
+                        [matAutocomplete]="mitalarmiertAuto"
+                        placeholder="Stelle auswählen"
+                      />
+                      <mat-autocomplete #mitalarmiertAuto="matAutocomplete" (optionSelected)="onMitalarmiertSelected($event)">
+                        @for (opt of filteredMitalarmiertOptionen; track opt) {
+                          <mat-option [value]="opt.id">{{ opt.label }}</mat-option>
+                        }
+                        @if (filteredMitalarmiertOptionen.length === 0) {
+                          <mat-option disabled>Keine Stellen gefunden.</mat-option>
+                        }
+                      </mat-autocomplete>
                     </mat-form-field>
-                  }
+
+                    <mat-chip-set class="role-chips">
+                      @for (opt of selectedMitalarmiertOptionen; track opt) {
+                        <mat-chip [removable]="true" (removed)="removeMitalarmiert(opt.id)">
+                          {{ opt.label }}
+                          <mat-icon matChipRemove>cancel</mat-icon>
+                        </mat-chip>
+                      }
+                    </mat-chip-set>
+                  </div>
                 </div>
               </section>
             </div>

@@ -23,6 +23,11 @@ type MitgliedOption = {
   label: string;
 };
 
+type MitalarmiertStelleOption = {
+  id: number;
+  label: string;
+};
+
 type EinsatzberichtFotoDto = {
   id: string | number;
   foto_url?: string;
@@ -44,7 +49,7 @@ type EinsatzberichtDto = {
   gesetzte_massnahmen: string;
   brand_kategorie: string;
   technisch_kategorie: string;
-  mitalarmiert: string;
+  mitalarmiert: number[];
   fahrzeuge: number[];
   mitglieder: number[];
   blaulichtsms_einsatz_id: string;
@@ -126,6 +131,7 @@ export class EinsatzberichtComponent implements OnInit {
   einsatzleiterSuche = new FormControl<string>('', { nonNullable: true });
   fahrzeugSuche = new FormControl<string>('', { nonNullable: true });
   mitgliedSuche = new FormControl<string>('', { nonNullable: true });
+  mitalarmiertSuche = new FormControl<string>('', { nonNullable: true });
   berichte: EinsatzberichtDto[] = [];
   viewMode: 'list' | 'form' = 'list';
   sichtbareSpalten: string[] = ['einsatz_datum', 'alarmstichwort', 'einsatzadresse', 'status', 'actions'];
@@ -143,15 +149,7 @@ export class EinsatzberichtComponent implements OnInit {
     'Keine Alarmiert',
   ];
 
-  mitalarmiertOptionenBasis: string[] = [
-    'Rettungsdienst',
-    'Polizei',
-    'Gemeinde',
-    'EVN / Wiener Netze',
-    'Flughafen Wien (FBL)',
-    'ÖBB Einsatzleiter',
-    'Andere'
-  ];
+  mitalarmiertOptionen: MitalarmiertStelleOption[] = [];
 
   formBericht = new FormGroup({
     id: new FormControl<string>('', { nonNullable: true }),
@@ -168,8 +166,7 @@ export class EinsatzberichtComponent implements OnInit {
     gesetzteMassnahmen: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
     brandKategorie: new FormControl<string>('', { nonNullable: true }),
     technischKategorie: new FormControl<string>('', { nonNullable: true }),
-    mitalarmiert: new FormControl<string>('', { nonNullable: true }),
-    mitalarmiertText: new FormControl<string>('', { nonNullable: true }),
+    mitalarmiert: new FormControl<number[]>([], { nonNullable: true }),
     fahrzeuge: new FormControl<number[]>([], { nonNullable: true }),
     mitglieder: new FormControl<number[]>([], { nonNullable: true }),
   });
@@ -236,12 +233,24 @@ export class EinsatzberichtComponent implements OnInit {
     return this.alarmierendeStelleOptionenBasis;
   }
 
-  get mitalarmiertOptionen(): string[] {
-    return this.mitalarmiertOptionenBasis;
+  get filteredMitalarmiertOptionen(): MitalarmiertStelleOption[] {
+    const selected = new Set(this.formBericht.controls.mitalarmiert.value);
+    const search = this.mitalarmiertSuche.value.trim().toLowerCase();
+
+    return this.mitalarmiertOptionen.filter((option) => {
+      if (selected.has(option.id)) {
+        return false;
+      }
+      if (!search) {
+        return true;
+      }
+      return option.label.toLowerCase().includes(search);
+    });
   }
 
-  get isMitalarmiertAndere(): boolean {
-    return this.formBericht.controls.mitalarmiert.value === 'Andere';
+  get selectedMitalarmiertOptionen(): MitalarmiertStelleOption[] {
+    const selected = this.formBericht.controls.mitalarmiert.value;
+    return this.mitalarmiertOptionen.filter((option) => selected.includes(option.id));
   }
 
   get brandOptionenMitBeschreibung(): Array<{ titel: string; beschreibung: string }> {
@@ -459,6 +468,11 @@ export class EinsatzberichtComponent implements OnInit {
           id: Number(item.pkid),
           label: `${item.stbnr ?? ''} ${item.vorname ?? ''} ${item.nachname ?? ''}`.trim(),
         }));
+
+        this.mitalarmiertOptionen = (context?.mitalarmiert_stellen ?? []).map((item: any) => ({
+          id: Number(item.pkid),
+          label: item.name ?? `Stelle ${item.pkid}`,
+        }));
       },
       error: (error: any) => this.globalDataService.errorAnzeigen(error),
     });
@@ -512,8 +526,7 @@ export class EinsatzberichtComponent implements OnInit {
       gesetzteMassnahmen: '',
       brandKategorie: '',
       technischKategorie: '',
-      mitalarmiert: '',
-      mitalarmiertText: '',
+      mitalarmiert: [],
       fahrzeuge: [],
       mitglieder: [],
     });
@@ -565,8 +578,7 @@ export class EinsatzberichtComponent implements OnInit {
       gesetzteMassnahmen: bericht.gesetzte_massnahmen || '',
       brandKategorie: bericht.brand_kategorie || '',
       technischKategorie: bericht.technisch_kategorie || '',
-      mitalarmiert: this.resolveMitalarmiertSelectValue(bericht.mitalarmiert || ''),
-      mitalarmiertText: this.resolveMitalarmiertTextValue(bericht.mitalarmiert || ''),
+      mitalarmiert: this.resolveMitalarmiertSelectValue(bericht.mitalarmiert),
       fahrzeuge: bericht.fahrzeuge || [],
       mitglieder: bericht.mitglieder || [],
     });
@@ -678,6 +690,25 @@ export class EinsatzberichtComponent implements OnInit {
     this.formBericht.controls.mitglieder.setValue(next);
   }
 
+  onMitalarmiertSelected(event: MatAutocompleteSelectedEvent): void {
+    const optionId = Number(event.option.value);
+    if (!optionId) {
+      return;
+    }
+
+    const current = this.formBericht.controls.mitalarmiert.value;
+    if (!current.includes(optionId)) {
+      this.formBericht.controls.mitalarmiert.setValue([...current, optionId]);
+    }
+
+    this.mitalarmiertSuche.setValue('');
+  }
+
+  removeMitalarmiert(optionId: number): void {
+    const next = this.formBericht.controls.mitalarmiert.value.filter((entry) => entry !== optionId);
+    this.formBericht.controls.mitalarmiert.setValue(next);
+  }
+
   private resetDokumentUploads(): void {
     this.filePreviewUrlMap.forEach((url) => URL.revokeObjectURL(url));
     this.filePreviewUrlMap.clear();
@@ -696,6 +727,7 @@ export class EinsatzberichtComponent implements OnInit {
     }
     this.fahrzeugSuche.setValue('');
     this.mitgliedSuche.setValue('');
+    this.mitalarmiertSuche.setValue('');
   }
 
   speichereBericht(): void {
@@ -722,10 +754,7 @@ export class EinsatzberichtComponent implements OnInit {
     fd.append('gesetzte_massnahmen', form.gesetzteMassnahmen);
     fd.append('brand_kategorie', this.isBrand ? (form.brandKategorie || '') : '');
     fd.append('technisch_kategorie', form.technischKategorie || '');
-    const mitalarmiertValue = form.mitalarmiert === 'Andere'
-      ? (form.mitalarmiertText || '').trim()
-      : (form.mitalarmiert || '');
-    fd.append('mitalarmiert', mitalarmiertValue);
+    form.mitalarmiert.forEach((stelleId) => fd.append('mitalarmiert', String(stelleId)));
 
     form.fahrzeuge.forEach((fahrzeugId) => fd.append('fahrzeuge', String(fahrzeugId)));
     form.mitglieder.forEach((mitgliedId) => fd.append('mitglieder', String(mitgliedId)));
@@ -751,11 +780,9 @@ export class EinsatzberichtComponent implements OnInit {
   private updateConditionalValidation(): void {
     const brandKategorie = this.formBericht.controls.brandKategorie;
     const technischKategorie = this.formBericht.controls.technischKategorie;
-    const mitalarmiertText = this.formBericht.controls.mitalarmiertText;
 
     brandKategorie.clearValidators();
     technischKategorie.clearValidators();
-    mitalarmiertText.clearValidators();
 
     if (this.isBrand) {
       if (technischKategorie.value) {
@@ -777,38 +804,20 @@ export class EinsatzberichtComponent implements OnInit {
       }
     }
 
-    if (this.isMitalarmiertAndere) {
-      mitalarmiertText.setValidators([Validators.required]);
-    } else {
-      if (mitalarmiertText.value) {
-        mitalarmiertText.setValue('', { emitEvent: false });
-      }
-    }
-
     brandKategorie.updateValueAndValidity({ emitEvent: false });
     technischKategorie.updateValueAndValidity({ emitEvent: false });
-    mitalarmiertText.updateValueAndValidity({ emitEvent: false });
   }
 
-  private resolveMitalarmiertSelectValue(value: string): string {
-    const trimmed = String(value || '').trim();
-    if (!trimmed) {
-      return '';
+  private normalizeMitalarmiertValues(value: unknown): number[] {
+    if (Array.isArray(value)) {
+      return value
+        .map((entry) => Number(entry))
+        .filter((entry) => Number.isFinite(entry) && entry > 0);
     }
-    if (this.mitalarmiertOptionenBasis.includes(trimmed)) {
-      return trimmed;
-    }
-    return 'Andere';
+    return [];
   }
 
-  private resolveMitalarmiertTextValue(value: string): string {
-    const trimmed = String(value || '').trim();
-    if (!trimmed) {
-      return '';
-    }
-    if (this.mitalarmiertOptionenBasis.includes(trimmed)) {
-      return '';
-    }
-    return trimmed;
+  private resolveMitalarmiertSelectValue(value: unknown): number[] {
+    return Array.from(new Set(this.normalizeMitalarmiertValues(value)));
   }
 }
