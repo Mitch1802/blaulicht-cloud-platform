@@ -11,6 +11,6 @@ export interface IJugendEvent {
   pkid: number;
   titel: string;
   datum: string;
-  notiz: string;
+  ort: string;
   teilnehmer: IJugendEventTeilnehmer[];
 }

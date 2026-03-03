@@ -13,9 +13,7 @@ class MitgliederEndpointTests(EndpointSmokeMixin, APITestCase):
         endpoints = [
             "mitglieder/",
             "mitglieder/import/",
-            "mitglieder/jugend-events/",
             f"mitglieder/{uuid4()}/",
-            f"mitglieder/jugend-events/{uuid4()}/",
         ]
 
         for endpoint in endpoints:
@@ -31,33 +29,6 @@ class MitgliederEndpointTests(EndpointSmokeMixin, APITestCase):
     def test_mitglieder_method_matrix_no_server_error(self):
         self.assert_method_matrix_no_server_error("mitglieder/")
         self.assert_method_matrix_no_server_error("mitglieder/import/", data={"mode": "preview", "rows": []})
-        self.assert_method_matrix_no_server_error("mitglieder/jugend-events/")
-
-    def test_jugend_events_requires_auth_and_role(self):
-        self.assert_endpoint_contract("mitglieder/jugend-events/")
-
-    def test_jugend_event_can_be_created_with_participants(self):
-        admin = self.create_user_with_roles("ADMIN")
-        self.client.force_authenticate(user=admin)
-
-        member = Mitglied.objects.create(
-            stbnr=9100,
-            vorname="Jugend",
-            nachname="Test",
-            geburtsdatum=date(2011, 6, 1),
-        )
-
-        payload = {
-            "titel": "Wissentest März",
-            "datum": "01.03.2026",
-            "notiz": "Basisstufe",
-            "teilnehmer_ids": [member.pkid],
-        }
-        response = self.request_method("post", "mitglieder/jugend-events/", data=payload)
-
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data.get("titel"), "Wissentest März")
-        self.assertEqual(len(response.data.get("teilnehmer", [])), 1)
 
     def test_mitglieder_import_rejects_invalid_payload(self):
         admin = self.create_user_with_roles("ADMIN")

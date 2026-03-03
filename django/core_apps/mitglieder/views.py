@@ -5,8 +5,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from datetime import datetime
 
-from .models import Mitglied, JugendEvent
-from .serializers import MitgliedSerializer, JugendEventSerializer
+from .models import Mitglied
+from .serializers import MitgliedSerializer
 from core_apps.common.permissions import HasAnyRolePermission
 
 
@@ -230,15 +230,3 @@ class MitgliedViewSet(ModelViewSet):
         if incoming == "RESERVIST":
             return Mitglied.Dienststatus.RESERVE
         return Mitglied.Dienststatus.AKTIV
-
-
-class JugendEventViewSet(ModelViewSet):
-    queryset = JugendEvent.objects.all().order_by("-datum", "titel")
-    serializer_class = JugendEventSerializer
-    permission_classes = [
-        permissions.IsAuthenticated,
-        HasAnyRolePermission.with_roles("ADMIN"),
-    ]
-    parser_classes = [JSONParser]
-    lookup_field = "id"
-    pagination_class = None

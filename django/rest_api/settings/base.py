@@ -44,6 +44,7 @@ LOCAL_APPS = [
     "core_apps.verwaltung",
     "core_apps.einsatzberichte",
     "core_apps.anwesenheitsliste",
+    "core_apps.jugend",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS

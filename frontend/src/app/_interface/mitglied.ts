@@ -8,9 +8,5 @@ export interface IMitglied {
     svnr: string,
     geburtsdatum: string,
     hauptberuflich: boolean,
-    dienststatus?: 'JUGEND' | 'AKTIV' | 'RESERVE' | 'ABGEMELDET',
-    jugend_wissentest?: string,
-    jugend_erprobung?: string,
-    jugend_fertigkeitsabzeichen?: string,
-    jugend_bewerb?: string
+    dienststatus?: 'JUGEND' | 'AKTIV' | 'RESERVE' | 'ABGEMELDET'
 }

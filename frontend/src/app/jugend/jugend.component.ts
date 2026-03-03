@@ -52,17 +52,13 @@ export class JugendComponent implements OnInit {
   formMitglied = new FormGroup({
     id: new FormControl<string>(''),
     dienststatus: new FormControl<'JUGEND' | 'AKTIV'>('JUGEND', { nonNullable: true }),
-    jugend_wissentest: new FormControl<string>(''),
-    jugend_erprobung: new FormControl<string>(''),
-    jugend_fertigkeitsabzeichen: new FormControl<string>(''),
-    jugend_bewerb: new FormControl<string>(''),
   });
 
   formEvent = new FormGroup({
     id: new FormControl<string>(''),
     titel: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
     datum: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
-    notiz: new FormControl<string>('', { nonNullable: true }),
+    ort: new FormControl<string>('', { nonNullable: true }),
     teilnehmer_ids: new FormControl<number[]>([], { nonNullable: true }),
   });
 
@@ -87,7 +83,7 @@ export class JugendComponent implements OnInit {
   }
 
   loadEvents(): void {
-    this.globalDataService.get<IJugendEvent[]>('mitglieder/jugend-events').subscribe({
+    this.globalDataService.get<IJugendEvent[]>('jugend/events').subscribe({
       next: (erg) => {
         this.events = erg;
         this.dataSourceEvents.data = erg;
@@ -101,10 +97,6 @@ export class JugendComponent implements OnInit {
     this.formMitglied.setValue({
       id: element.id,
       dienststatus: this.normalizeStatus(element.dienststatus),
-      jugend_wissentest: element.jugend_wissentest ?? '',
-      jugend_erprobung: element.jugend_erprobung ?? '',
-      jugend_fertigkeitsabzeichen: element.jugend_fertigkeitsabzeichen ?? '',
-      jugend_bewerb: element.jugend_bewerb ?? '',
     });
   }
 
@@ -114,7 +106,7 @@ export class JugendComponent implements OnInit {
       id: '',
       titel: '',
       datum: '',
-      notiz: '',
+      ort: '',
       teilnehmer_ids: [],
     });
   }
@@ -125,7 +117,7 @@ export class JugendComponent implements OnInit {
       id: event.id,
       titel: event.titel,
       datum: event.datum,
-      notiz: event.notiz ?? '',
+      ort: event.ort ?? '',
       teilnehmer_ids: (event.teilnehmer ?? []).map((m) => m.pkid),
     });
   }
@@ -138,10 +130,6 @@ export class JugendComponent implements OnInit {
 
     const payload = {
       dienststatus: this.formMitglied.controls.dienststatus.value,
-      jugend_wissentest: this.formMitglied.controls.jugend_wissentest.value || '',
-      jugend_erprobung: this.formMitglied.controls.jugend_erprobung.value || '',
-      jugend_fertigkeitsabzeichen: this.formMitglied.controls.jugend_fertigkeitsabzeichen.value || '',
-      jugend_bewerb: this.formMitglied.controls.jugend_bewerb.value || '',
     };
 
     this.globalDataService.patch('mitglieder', id, payload, false).subscribe({
@@ -163,13 +151,13 @@ export class JugendComponent implements OnInit {
     const payload = {
       titel: this.formEvent.controls.titel.value,
       datum: this.formEvent.controls.datum.value,
-      notiz: this.formEvent.controls.notiz.value,
+      ort: this.formEvent.controls.ort.value,
       teilnehmer_ids: this.formEvent.controls.teilnehmer_ids.value,
     };
 
     const id = this.formEvent.controls.id.value;
     if (!id) {
-      this.globalDataService.post('mitglieder/jugend-events', payload, false).subscribe({
+      this.globalDataService.post('jugend/events', payload, false).subscribe({
         next: () => {
           this.globalDataService.erstelleMessage('success', 'Event gespeichert.');
           this.showEventForm = false;
@@ -180,7 +168,7 @@ export class JugendComponent implements OnInit {
       return;
     }
 
-    this.globalDataService.patch('mitglieder/jugend-events', id, payload, false).subscribe({
+    this.globalDataService.patch('jugend/events', id, payload, false).subscribe({
       next: () => {
         this.globalDataService.erstelleMessage('success', 'Event aktualisiert.');
         this.showEventForm = false;
@@ -195,7 +183,7 @@ export class JugendComponent implements OnInit {
     if (!id) {
       return;
     }
-    this.globalDataService.delete('mitglieder/jugend-events', id).subscribe({
+    this.globalDataService.delete('jugend/events', id).subscribe({
       next: () => {
         this.globalDataService.erstelleMessage('success', 'Event gelöscht.');
         this.showEventForm = false;

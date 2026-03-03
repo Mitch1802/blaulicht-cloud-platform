@@ -24,14 +24,6 @@ class Mitglied(TimeStampedModel):
         choices=Dienststatus.choices,
         default=Dienststatus.AKTIV,
     )
-    jugend_wissentest = models.CharField(verbose_name=_("Wissentest"), max_length=255, blank=True)
-    jugend_erprobung = models.CharField(verbose_name=_("Erprobung"), max_length=255, blank=True)
-    jugend_fertigkeitsabzeichen = models.CharField(
-        verbose_name=_("Fertigkeitsabzeichen"),
-        max_length=255,
-        blank=True,
-    )
-    jugend_bewerb = models.CharField(verbose_name=_("Bewerb"), max_length=255, blank=True)
 
     def __str__(self):
         return f"{self.vorname} {self.nachname}"
