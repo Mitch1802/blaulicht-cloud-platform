@@ -41,6 +41,50 @@
           FDISK CSV Import
         </button>
       </div>
+
+      @if (importSummary) {
+        <div class="import-preview">
+          <h3>Import Vorschau</h3>
+          <p>
+            Zeilen: {{ importSummary.total_rows }} · Änderungen: {{ importSummary.total_changes }} ·
+            Neu: {{ importSummary.created }} · Update: {{ importSummary.updated }} ·
+            Unverändert: {{ importSummary.unchanged }}
+          </p>
+
+          <div class="form-actions">
+            <button mat-flat-button color="accent" type="button" (click)="importBestaetigen()">
+              Import bestätigen
+            </button>
+            <button mat-flat-button color="primary" type="button" (click)="importAbbrechen()">
+              Abbrechen
+            </button>
+          </div>
+
+          <div class="table-wrap" [hidden]="importChanges.length === 0">
+            <table mat-table [dataSource]="importChanges">
+              <ng-container matColumnDef="action">
+                <th mat-header-cell *matHeaderCellDef>Aktion</th>
+                <td mat-cell *matCellDef="let c">{{ c.action }}</td>
+              </ng-container>
+              <ng-container matColumnDef="stbnr">
+                <th mat-header-cell *matHeaderCellDef>Stbnr.</th>
+                <td mat-cell *matCellDef="let c">{{ c.stbnr }}</td>
+              </ng-container>
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef>Name</th>
+                <td mat-cell *matCellDef="let c">{{ c.name }}</td>
+              </ng-container>
+              <ng-container matColumnDef="fields">
+                <th mat-header-cell *matHeaderCellDef>Geändert</th>
+                <td mat-cell *matCellDef="let c">{{ c.changed_fields.join(', ') }}</td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="['action','stbnr','name','fields']"></tr>
+              <tr mat-row *matRowDef="let row; columns: ['action','stbnr','name','fields']"></tr>
+            </table>
+          </div>
+        </div>
+      }
+
         <input
           #fileInput
           type="file"
@@ -102,6 +146,26 @@
                 @if (formModul.controls["stbnr"].hasError("required")) {
                   <mat-error> Standesbuchnummer ist erforderlich! </mat-error>
                 }
+              </mat-form-field>
+            </div>
+            <div class="app-col-12 app-col-lg-4 mb-3">
+              <mat-form-field hintLabel="* Pflichtfeld" class="full-width">
+                <mat-label>Status</mat-label>
+                <mat-select formControlName="dienststatus">
+                  <mat-option value="JUGEND">Jugend</mat-option>
+                  <mat-option value="AKTIV">Aktiv</mat-option>
+                  <mat-option value="RESERVE">Reserve</mat-option>
+                  <mat-option value="ABGEMELDET">Abgemeldet</mat-option>
+                </mat-select>
+                @if (formModul.controls["dienststatus"].hasError("required")) {
+                  <mat-error>Status ist erforderlich!</mat-error>
+                }
+              </mat-form-field>
+            </div>
+            <div class="app-col-12 app-col-lg-4 mb-3">
+              <mat-form-field class="full-width">
+                <mat-label>Dienstgrad</mat-label>
+                <input matInput type="text" formControlName="dienstgrad" />
               </mat-form-field>
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3">
@@ -185,6 +249,18 @@
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Nachname</th>
                 <td mat-cell *matCellDef="let element">
                   {{ element.nachname }}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="dienstgrad">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Dienstgrad</th>
+                <td mat-cell *matCellDef="let element">
+                  {{ element.dienstgrad || '-' }}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="dienststatus">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+                <td mat-cell *matCellDef="let element">
+                  {{ element.dienststatus || 'AKTIV' }}
                 </td>
               </ng-container>
               <ng-container matColumnDef="actions">

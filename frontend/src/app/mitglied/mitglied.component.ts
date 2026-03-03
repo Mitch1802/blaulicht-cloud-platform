@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, inject, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, inject, ViewChild, ElementRef } from '@angular/core';
 
 import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule, ValidatorFn, AbstractControl } from '@angular/forms';
 import { IMitglied } from 'src/app/_interface/mitglied';
@@ -9,6 +9,7 @@ import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
 import { MatButton } from '@angular/material/button';
 import { MatInput } from '@angular/material/input';
 import { MatCheckbox } from '@angular/material/checkbox';
+import { MatOption, MatSelect } from '@angular/material/select';
 import { Router } from '@angular/router';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
@@ -18,6 +19,23 @@ import { MatSort } from '@angular/material/sort';
 
 type RenameMap = {
   [originalKey: string]: string;
+};
+
+type ImportChange = {
+  action: 'CREATE' | 'UPDATE';
+  row: number;
+  stbnr: number;
+  geburtsdatum: string;
+  name: string;
+  changed_fields: string[];
+};
+
+type ImportSummary = {
+  created: number;
+  updated: number;
+  unchanged: number;
+  total_changes: number;
+  total_rows: number;
 };
 
 @Component({
@@ -33,6 +51,8 @@ type RenameMap = {
     MatInput,
     MatError,
     MatCheckbox,
+    MatSelect,
+    MatOption,
     MatTableModule,
     MatPaginatorModule,
     MatSort,
@@ -63,6 +83,9 @@ export class MitgliedComponent implements OnInit {
 
   mitglieder: IMitglied[] = [];
   breadcrumb: any = [];
+  importRows: any[] = [];
+  importChanges: ImportChange[] = [];
+  importSummary: ImportSummary | null = null;
 
   formAuswahl = new FormGroup({
     mitglied: new FormControl(0)
@@ -73,6 +96,7 @@ export class MitgliedComponent implements OnInit {
     stbnr: new FormControl(0, Validators.required),
     vorname: new FormControl('', Validators.required),
     nachname: new FormControl('', Validators.required),
+    dienstgrad: new FormControl(''),
     svnr: new FormControl('', [
       Validators.minLength(4),
       Validators.maxLength(4),
@@ -83,10 +107,11 @@ export class MitgliedComponent implements OnInit {
       Validators.pattern(/^([0-3]\d)\.([0-1]\d)\.(\d{4})$/),
       this.validDateDDMMYYYY()
     ]),
-    hauptberuflich: new FormControl(false)
+    hauptberuflich: new FormControl(false),
+    dienststatus: new FormControl<'JUGEND' | 'AKTIV' | 'RESERVE' | 'ABGEMELDET'>('AKTIV', Validators.required)
   });
 
-  sichtbareSpaltenMitglieder: string[] = ['stbnr', 'vorname', 'nachname', 'actions'];
+  sichtbareSpaltenMitglieder: string[] = ['stbnr', 'vorname', 'nachname', 'dienstgrad', 'dienststatus', 'actions'];
 
   ngOnInit(): void {
     sessionStorage.setItem("PageNumber", "2");
@@ -116,24 +141,22 @@ export class MitgliedComponent implements OnInit {
     }
     const file = input.files[0];
 
-    Papa.parse<IMitglied>(file, {
+    Papa.parse<any>(file, {
       header: true,
       skipEmptyLines: true,
+      delimiter: ';',
       complete: (results: any) => {
         const parsed: any[] = results.data;
 
-        // Filtere nur neue Einträge (z.B. anhand der ID)
-        const toImport = parsed.filter(item =>
-          !this.mitglieder.some(existing => existing.stbnr === Number(item.STBNR))
-        );
-
-        if (toImport.length > 0) {
-          this.sendToBackend(toImport);
+        if (parsed.length > 0) {
+          this.previewImport(parsed);
         } else {
-          console.log('Keine neuen Mitglieder zum Importieren.');
+          this.globalDataService.erstelleMessage('info', 'Keine CSV-Daten gefunden.');
         }
+
+        input.value = '';
       },
-      error: (err: any) => console.error('CSV Parsing Error:', err)
+      error: () => this.globalDataService.erstelleMessage('error', 'CSV Parsing Fehler.')
     });
   }
 
@@ -157,33 +180,48 @@ export class MitgliedComponent implements OnInit {
     this.matPaginator?.firstPage();
   }
 
-  sendToBackend(entries: any[]): void {
-    // keyAlt: "keyNeu"
-    let result = this.transformArray(entries, {
-      "STBNR": "stbnr",
-      "VORNAME": "vorname",
-      "ZUNAME": "nachname",
-      "GEBURTSDATUM": "geburtsdatum"
+  previewImport(entries: any[]): void {
+    this.importRows = entries;
+    const url = `${this.modul}/import`;
+    this.globalDataService.post(url, { mode: 'preview', rows: entries }, false).subscribe({
+      next: (erg: any) => {
+        this.importChanges = erg?.changes ?? [];
+        this.importSummary = erg?.summary ?? null;
+        this.globalDataService.erstelleMessage('info', `${this.importChanges.length} Änderungen in der Vorschau gefunden.`);
+      },
+      error: (error: any) => this.globalDataService.errorAnzeigen(error)
     });
+  }
 
-    let url = `${this.modul}/import`;
-    this.globalDataService.post(url, result, false).subscribe({
-        next: (erg: any) => {
-          this.globalDataService.erstelleMessage(
-            'success',
-            `${erg.created} importiert, ${erg.skipped.length} übersprungen`
-          );
+  importBestaetigen(): void {
+    if (this.importRows.length === 0) {
+      this.globalDataService.erstelleMessage('info', 'Keine Importdaten vorhanden.');
+      return;
+    }
 
-          this.globalDataService.get(this.modul).subscribe({
-            next: (list: any) => {
-              this.mitglieder = this.globalDataService.arraySortByKey(list, 'stbnr');
-              this.dataSource.data = this.mitglieder;
-            },
-            error: (error: any) => this.globalDataService.errorAnzeigen(error)
-          });
-        },
-        error: (error: any) => this.globalDataService.errorAnzeigen(error)
-      });
+    const url = `${this.modul}/import`;
+    this.globalDataService.post(url, { mode: 'apply', rows: this.importRows }, false).subscribe({
+      next: (erg: any) => {
+        const summary = erg?.summary ?? { created: 0, updated: 0 };
+        this.globalDataService.erstelleMessage('success', `${summary.created} neu, ${summary.updated} aktualisiert.`);
+        this.importAbbrechen();
+
+        this.globalDataService.get(this.modul).subscribe({
+          next: (list: any) => {
+            this.mitglieder = this.globalDataService.arraySortByKey(list, 'stbnr');
+            this.dataSource.data = this.mitglieder;
+          },
+          error: (error: any) => this.globalDataService.errorAnzeigen(error)
+        });
+      },
+      error: (error: any) => this.globalDataService.errorAnzeigen(error)
+    });
+  }
+
+  importAbbrechen(): void {
+    this.importRows = [];
+    this.importChanges = [];
+    this.importSummary = null;
   }
 
   validDateDDMMYYYY(): ValidatorFn {
@@ -217,9 +255,11 @@ export class MitgliedComponent implements OnInit {
             stbnr: details.stbnr,
             vorname: details.vorname,
             nachname: details.nachname,
+            dienstgrad: details.dienstgrad ?? '',
             svnr: details.svnr ?? '',
             geburtsdatum: details.geburtsdatum ?? '',
-            hauptberuflich: details.hauptberuflich ?? false
+            hauptberuflich: details.hauptberuflich ?? false,
+            dienststatus: details.dienststatus ?? 'AKTIV'
           });
         } catch (e: any) {
           this.globalDataService.erstelleMessage('error', e);
@@ -253,9 +293,11 @@ export class MitgliedComponent implements OnInit {
             stbnr: 0,
             vorname: '',
             nachname: '',
+            dienstgrad: '',
             svnr: '',
             geburtsdatum: '',
-            hauptberuflich: false
+            hauptberuflich: false,
+            dienststatus: 'AKTIV'
           });
           this.formModul.disable();
 
@@ -277,9 +319,11 @@ export class MitgliedComponent implements OnInit {
       stbnr: 0,
       vorname: '',
       nachname: '',
+      dienstgrad: '',
       svnr: '',
       geburtsdatum: '',
-      hauptberuflich: false
+      hauptberuflich: false,
+      dienststatus: 'AKTIV'
     });
     this.formModul.disable();
   }
@@ -306,9 +350,11 @@ export class MitgliedComponent implements OnInit {
               stbnr: 0,
               vorname: '',
               nachname: '',
+              dienstgrad: '',
               svnr: '',
               geburtsdatum: '',
-              hauptberuflich: false
+              hauptberuflich: false,
+              dienststatus: 'AKTIV'
             });
             this.formModul.disable();
 
@@ -333,9 +379,11 @@ export class MitgliedComponent implements OnInit {
               stbnr: 0,
               vorname: '',
               nachname: '',
+              dienstgrad: '',
               svnr: '',
               geburtsdatum: '',
-              hauptberuflich: false
+              hauptberuflich: false,
+              dienststatus: 'AKTIV'
             });
             this.formModul.disable();
 

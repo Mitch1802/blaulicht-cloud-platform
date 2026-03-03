@@ -26,11 +26,11 @@ class MitgliederEndpointTests(EndpointSmokeMixin, APITestCase):
         self.assert_endpoint_contract("mitglieder/")
 
     def test_mitglieder_import_requires_auth_and_role(self):
-        self.assert_endpoint_contract("mitglieder/import/", method="post", data=[])
+        self.assert_endpoint_contract("mitglieder/import/", method="post", data={"mode": "preview", "rows": []})
 
     def test_mitglieder_method_matrix_no_server_error(self):
         self.assert_method_matrix_no_server_error("mitglieder/")
-        self.assert_method_matrix_no_server_error("mitglieder/import/", data=[])
+        self.assert_method_matrix_no_server_error("mitglieder/import/", data={"mode": "preview", "rows": []})
         self.assert_method_matrix_no_server_error("mitglieder/jugend-events/")
 
     def test_jugend_events_requires_auth_and_role(self):
@@ -59,11 +59,11 @@ class MitgliederEndpointTests(EndpointSmokeMixin, APITestCase):
         self.assertEqual(response.data.get("titel"), "Wissentest März")
         self.assertEqual(len(response.data.get("teilnehmer", [])), 1)
 
-    def test_mitglieder_import_rejects_non_list_payload(self):
+    def test_mitglieder_import_rejects_invalid_payload(self):
         admin = self.create_user_with_roles("ADMIN")
         self.client.force_authenticate(user=admin)
 
-        response = self.request_method("post", "mitglieder/import/", data={"stbnr": 1})
+        response = self.request_method("post", "mitglieder/import/", data={"mode": "preview", "rows": {"stbnr": 1}})
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -71,53 +71,97 @@ class MitgliederEndpointTests(EndpointSmokeMixin, APITestCase):
         admin = self.create_user_with_roles("ADMIN")
         self.client.force_authenticate(user=admin)
 
-        payload = [
-            {
-                "vorname": "Max",
-                "nachname": "Mustermann",
-                "geburtsdatum": "01.01.2000",
-            }
-        ]
+        payload = {
+            "mode": "preview",
+            "rows": [
+                {
+                    "vorname": "Max",
+                    "nachname": "Mustermann",
+                    "geburtsdatum": "01.01.2000",
+                }
+            ],
+        }
         response = self.request_method("post", "mitglieder/import/", data=payload)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_mitglieder_import_creates_new_member(self):
+    def test_mitglieder_import_preview_and_apply_creates_member(self):
         admin = self.create_user_with_roles("ADMIN")
         self.client.force_authenticate(user=admin)
 
-        payload = [
+        rows = [
             {
-                "stbnr": 12345,
-                "vorname": "Erika",
-                "nachname": "Musterfrau",
-                "geburtsdatum": "01.01.2000",
-                "svnr": "1234",
-                "hauptberuflich": False,
+                "STBNR": 12345,
+                "VORNAME": "Erika",
+                "ZUNAME": "Musterfrau",
+                "GEBURTSDATUM": "01.01.2000",
+                "STATUS": "AKTIV",
+                "DIENSTGRAD": "FM",
             }
         ]
-        response = self.request_method("post", "mitglieder/import/", data=payload)
+        preview = self.request_method("post", "mitglieder/import/", data={"mode": "preview", "rows": rows})
+        self.assertEqual(preview.status_code, status.HTTP_200_OK)
+        self.assertEqual(preview.data.get("summary", {}).get("total_changes"), 1)
 
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data.get("created"), 1)
-        self.assertTrue(Mitglied.objects.filter(stbnr=12345).exists())
+        response = self.request_method("post", "mitglieder/import/", data={"mode": "apply", "rows": rows})
 
-    def test_mitglieder_import_skips_existing_member(self):
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get("summary", {}).get("created"), 1)
+        self.assertTrue(Mitglied.objects.filter(stbnr=12345, geburtsdatum=date(2000, 1, 1)).exists())
+
+    def test_mitglieder_import_updates_existing_member(self):
         admin = self.create_user_with_roles("ADMIN")
         self.client.force_authenticate(user=admin)
-        Mitglied.objects.create(
+
+        existing = Mitglied.objects.create(
             stbnr=777,
             vorname="Vor",
             nachname="Nach",
+            dienstgrad="FM",
+            dienststatus="AKTIV",
             geburtsdatum=date(1990, 1, 1),
         )
 
-        payload = [{"stbnr": 777, "vorname": "Neu", "nachname": "N", "geburtsdatum": "01.01.2000"}]
-        response = self.request_method("post", "mitglieder/import/", data=payload)
+        rows = [
+            {
+                "STBNR": 777,
+                "VORNAME": "Neu",
+                "ZUNAME": "Name",
+                "GEBURTSDATUM": "01.01.1990",
+                "STATUS": "RESERVE",
+                "DIENSTGRAD": "OFM",
+            }
+        ]
+        response = self.request_method("post", "mitglieder/import/", data={"mode": "apply", "rows": rows})
 
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data.get("created"), 0)
-        self.assertEqual(len(response.data.get("skipped", [])), 1)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get("summary", {}).get("updated"), 1)
+
+        existing.refresh_from_db()
+        self.assertEqual(existing.vorname, "Neu")
+        self.assertEqual(existing.nachname, "Name")
+        self.assertEqual(existing.dienstgrad, "OFM")
+        self.assertEqual(existing.dienststatus, "RESERVE")
+
+    def test_mitglieder_import_maps_abgemeldet_status(self):
+        admin = self.create_user_with_roles("ADMIN")
+        self.client.force_authenticate(user=admin)
+
+        rows = [
+            {
+                "STBNR": 901,
+                "VORNAME": "Ab",
+                "ZUNAME": "Gemeldet",
+                "GEBURTSDATUM": "01.01.2001",
+                "STATUS": "ABGEMELDET",
+                "DIENSTGRAD": "FM",
+            }
+        ]
+        apply_resp = self.request_method("post", "mitglieder/import/", data={"mode": "apply", "rows": rows})
+        self.assertEqual(apply_resp.status_code, status.HTTP_200_OK)
+
+        stored = Mitglied.objects.get(stbnr=901)
+        self.assertEqual(stored.dienststatus, "ABGEMELDET")
 
     def test_mitglied_model_str(self):
         member = Mitglied.objects.create(

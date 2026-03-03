@@ -6,7 +6,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSelectModule } from '@angular/material/select';
 import { HeaderComponent } from '../_template/header/header.component';
 import { GlobalDataService } from '../_service/global-data.service';
@@ -26,7 +25,6 @@ import { IJugendEvent } from '../_interface/jugend_event';
     MatInputModule,
     MatFormFieldModule,
     MatIconModule,
-    MatCheckboxModule,
     MatSelectModule,
   ],
   templateUrl: './jugend.component.html',
@@ -54,8 +52,7 @@ export class JugendComponent implements OnInit {
   formMitglied = new FormGroup({
     id: new FormControl<string>(''),
     dienststatus: new FormControl<'JUGEND' | 'AKTIV'>('JUGEND', { nonNullable: true }),
-    aktiv_ueberstellt_am: new FormControl<string>(''),
-    jugend_wissentest: new FormControl<boolean>(false, { nonNullable: true }),
+    jugend_wissentest: new FormControl<string>(''),
     jugend_erprobung: new FormControl<string>(''),
     jugend_fertigkeitsabzeichen: new FormControl<string>(''),
     jugend_bewerb: new FormControl<string>(''),
@@ -104,8 +101,7 @@ export class JugendComponent implements OnInit {
     this.formMitglied.setValue({
       id: element.id,
       dienststatus: this.normalizeStatus(element.dienststatus),
-      aktiv_ueberstellt_am: element.aktiv_ueberstellt_am ?? '',
-      jugend_wissentest: !!element.jugend_wissentest,
+      jugend_wissentest: element.jugend_wissentest ?? '',
       jugend_erprobung: element.jugend_erprobung ?? '',
       jugend_fertigkeitsabzeichen: element.jugend_fertigkeitsabzeichen ?? '',
       jugend_bewerb: element.jugend_bewerb ?? '',
@@ -142,8 +138,7 @@ export class JugendComponent implements OnInit {
 
     const payload = {
       dienststatus: this.formMitglied.controls.dienststatus.value,
-      aktiv_ueberstellt_am: this.formMitglied.controls.aktiv_ueberstellt_am.value || null,
-      jugend_wissentest: this.formMitglied.controls.jugend_wissentest.value,
+      jugend_wissentest: this.formMitglied.controls.jugend_wissentest.value || '',
       jugend_erprobung: this.formMitglied.controls.jugend_erprobung.value || '',
       jugend_fertigkeitsabzeichen: this.formMitglied.controls.jugend_fertigkeitsabzeichen.value || '',
       jugend_bewerb: this.formMitglied.controls.jugend_bewerb.value || '',
@@ -237,7 +232,7 @@ export class JugendComponent implements OnInit {
 
   getUeberstellungHinweis(m: IMitglied): string {
     if (this.normalizeStatus(m.dienststatus) !== 'JUGEND') {
-      return m.aktiv_ueberstellt_am ? `Überstellt am ${m.aktiv_ueberstellt_am}` : 'Aktiv';
+      return 'Aktiv';
     }
 
     const age = this.getAlter(m);

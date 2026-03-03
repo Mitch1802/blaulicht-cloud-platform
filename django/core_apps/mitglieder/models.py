@@ -8,10 +8,13 @@ class Mitglied(TimeStampedModel):
     class Dienststatus(models.TextChoices):
         JUGEND = "JUGEND", _("Jugend")
         AKTIV = "AKTIV", _("Aktiv")
+        RESERVE = "RESERVE", _("Reserve")
+        ABGEMELDET = "ABGEMELDET", _("Abgemeldet")
 
     stbnr = models.IntegerField(verbose_name=_("Standesbuchnummer"), unique=True)
     vorname = models.CharField(verbose_name=_("Vorname"), max_length=255)
     nachname = models.CharField(verbose_name=_("Nachname"), max_length=255)
+    dienstgrad = models.CharField(verbose_name=_("Dienstgrad"), max_length=50, blank=True)
     svnr = models.CharField(verbose_name=_("Sozialversichungsnummer"), max_length=4, blank=True)
     geburtsdatum = models.DateField(verbose_name=_("Geburtsdatum"), max_length=10)
     hauptberuflich = models.BooleanField(verbose_name=_("Hauptberuflich"), default=False)
@@ -21,12 +24,7 @@ class Mitglied(TimeStampedModel):
         choices=Dienststatus.choices,
         default=Dienststatus.AKTIV,
     )
-    aktiv_ueberstellt_am = models.DateField(
-        verbose_name=_("In Aktivstand überstellt am"),
-        null=True,
-        blank=True,
-    )
-    jugend_wissentest = models.BooleanField(verbose_name=_("Wissentest absolviert"), default=False)
+    jugend_wissentest = models.CharField(verbose_name=_("Wissentest"), max_length=255, blank=True)
     jugend_erprobung = models.CharField(verbose_name=_("Erprobung"), max_length=255, blank=True)
     jugend_fertigkeitsabzeichen = models.CharField(
         verbose_name=_("Fertigkeitsabzeichen"),
