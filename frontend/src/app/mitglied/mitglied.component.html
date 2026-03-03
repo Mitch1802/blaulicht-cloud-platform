@@ -11,7 +11,7 @@
     </div>
 
     <mat-card-content>
-      <div class="top-actions" [hidden]="!formModul.disabled">
+      <div class="top-actions">
         @if (formModul.disabled) {
           <mat-form-field
             class="filter-field"
@@ -24,22 +24,22 @@
               placeholder="Suchen..."
             />
           </mat-form-field>
+          <button
+            mat-flat-button
+            color="accent"
+            (click)="neueDetails()"
+            type="button"
+          >
+            Hinzufügen
+          </button>
+          <button
+            mat-flat-button
+            color="accent"
+            (click)="fileInput.click()"
+          >
+            FDISK CSV Import
+          </button>
         }
-        <button
-          mat-flat-button
-          color="accent"
-          (click)="neueDetails()"
-          type="button"
-        >
-          Hinzufügen
-        </button>
-        <button
-          mat-flat-button
-          color="accent"
-          (click)="fileInput.click()"
-        >
-          FDISK CSV Import
-        </button>
       </div>
 
       @if (importSummary) {

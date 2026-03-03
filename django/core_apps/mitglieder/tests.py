@@ -163,6 +163,32 @@ class MitgliederEndpointTests(EndpointSmokeMixin, APITestCase):
         stored = Mitglied.objects.get(stbnr=901)
         self.assertEqual(stored.dienststatus, "ABGEMELDET")
 
+    def test_mitglieder_list_filters_abgemeldet_status(self):
+        admin = self.create_user_with_roles("ADMIN")
+        self.client.force_authenticate(user=admin)
+
+        Mitglied.objects.create(
+            stbnr=1001,
+            vorname="Aktiv",
+            nachname="Mitglied",
+            geburtsdatum=date(1990, 1, 1),
+            dienststatus="AKTIV",
+        )
+        Mitglied.objects.create(
+            stbnr=1002,
+            vorname="Ab",
+            nachname="Gemeldet",
+            geburtsdatum=date(1991, 1, 1),
+            dienststatus="ABGEMELDET",
+        )
+
+        list_resp = self.request_method("get", "mitglieder/")
+        self.assertEqual(list_resp.status_code, status.HTTP_200_OK)
+
+        stbnr_list = [item.get("stbnr") for item in list_resp.data]
+        self.assertIn(1001, stbnr_list)
+        self.assertNotIn(1002, stbnr_list)
+
     def test_mitglied_model_str(self):
         member = Mitglied.objects.create(
             stbnr=888,
