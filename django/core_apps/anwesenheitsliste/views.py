@@ -31,5 +31,8 @@ class AnwesenheitslisteContextView(APIView):
     ]
 
     def get(self, request):
-        mitglieder = MitgliedSerializer(Mitglied.objects.all(), many=True).data
+        mitglieder = MitgliedSerializer(
+            Mitglied.objects.exclude(dienststatus=Mitglied.Dienststatus.RESERVE),
+            many=True,
+        ).data
         return Response({"mitglieder": mitglieder})

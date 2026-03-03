@@ -74,6 +74,30 @@ class AtemschutzGeraeteEndpointTests(EndpointSmokeMixin, APITestCase):
         protokoll = AtemschutzGeraetProtokoll.objects.first()
         self.assertEqual(str(protokoll), "2024-01-01")
 
+    def test_atemschutz_list_excludes_reserve_members(self):
+        Mitglied.objects.create(
+            stbnr=9002,
+            vorname="Reserve",
+            nachname="Excluded",
+            svnr="2222",
+            geburtsdatum=date(1991, 1, 1),
+            dienststatus="RESERVE",
+        )
+
+        self.client.force_authenticate(user=self.user)
+
+        list_resp = self.request_method("get", "atemschutz/geraete/")
+        self.assertEqual(list_resp.status_code, status.HTTP_200_OK)
+        stbnr_main = [item.get("stbnr") for item in list_resp.data.get("mitglieder", [])]
+        self.assertIn(9001, stbnr_main)
+        self.assertNotIn(9002, stbnr_main)
+
+        dienstbuch_resp = self.request_method("get", "atemschutz/geraete/dienstbuch/")
+        self.assertEqual(dienstbuch_resp.status_code, status.HTTP_200_OK)
+        stbnr_dienstbuch = [item.get("stbnr") for item in dienstbuch_resp.data.get("mitglieder", [])]
+        self.assertIn(9001, stbnr_dienstbuch)
+        self.assertNotIn(9002, stbnr_dienstbuch)
+
     def test_protokoll_create_requires_admin_or_protokoll_role(self):
         payload = {
             "geraet_id": self.geraet.pkid,

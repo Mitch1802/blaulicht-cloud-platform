@@ -58,6 +58,24 @@ class FMDEndpointTests(EndpointSmokeMixin, APITestCase):
         self.assertIn("modul_konfig", response.data)
         self.assertIn("konfig", response.data)
 
+    def test_fmd_context_excludes_reserve_members(self):
+        Mitglied.objects.create(
+            stbnr=2,
+            vorname="Res",
+            nachname="Member",
+            svnr="5678",
+            geburtsdatum=date(1991, 1, 1),
+            dienststatus="RESERVE",
+        )
+
+        self.client.force_authenticate(user=self.fmd_user)
+        response = self.request_method("get", "fmd/context/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        stbnr_list = [item.get("stbnr") for item in response.data.get("mitglieder", [])]
+        self.assertIn(1, stbnr_list)
+        self.assertNotIn(2, stbnr_list)
+
     def test_nullable_fields_and_serializer_meta(self):
         date_field = NullableDateField()
         int_field = NullableIntegerField()

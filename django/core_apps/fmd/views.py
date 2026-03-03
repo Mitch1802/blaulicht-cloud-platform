@@ -28,7 +28,10 @@ class FMDContextView(APIView):
     permission_classes = [permissions.IsAuthenticated, HasAnyRolePermission.with_roles("ADMIN", "FMD")]
 
     def get(self, request):
-        mitglieder = MitgliedSerializer(Mitglied.objects.all(), many=True).data
+        mitglieder = MitgliedSerializer(
+            Mitglied.objects.exclude(dienststatus=Mitglied.Dienststatus.RESERVE),
+            many=True,
+        ).data
         modul_konfig = ModulKonfigurationSerializer(ModulKonfiguration.objects.all(), many=True).data
         konfig = KonfigurationSerializer(Konfiguration.objects.all(), many=True).data
         return Response({"mitglieder": mitglieder, "modul_konfig": modul_konfig, "konfig": konfig})

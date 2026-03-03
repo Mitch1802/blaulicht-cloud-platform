@@ -27,7 +27,10 @@ class AtemschutzGeraeteViewSet(ModelViewSet):
     def list(self, request, *args, **kwargs):
         resp = super().list(request, *args, **kwargs)
         fmd = FMDSerializer(FMD.objects.all(), many=True).data
-        mitglieder = MitgliedSerializer(Mitglied.objects.all(), many=True).data
+        mitglieder = MitgliedSerializer(
+            Mitglied.objects.exclude(dienststatus=Mitglied.Dienststatus.RESERVE),
+            many=True,
+        ).data
         return Response({"main": resp.data, "fmd": fmd, "mitglieder": mitglieder})
 
 class AtemschutzGeraeteProtokollViewSet(ModelViewSet):
@@ -87,5 +90,8 @@ class AtemschutzGeraeteDienstbuchViewSet(ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         resp = super().list(request, *args, **kwargs)
-        mitglieder = MitgliedSerializer(Mitglied.objects.all(), many=True).data
+        mitglieder = MitgliedSerializer(
+            Mitglied.objects.exclude(dienststatus=Mitglied.Dienststatus.RESERVE),
+            many=True,
+        ).data
         return Response({"protokoll": resp.data, "mitglieder": mitglieder})

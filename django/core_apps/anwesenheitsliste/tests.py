@@ -57,6 +57,24 @@ class AnwesenheitslisteEndpointTests(EndpointSmokeMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("mitglieder", response.data)
 
+    def test_context_excludes_reserve_members(self):
+        Mitglied.objects.create(
+            stbnr=78,
+            vorname="Reserve",
+            nachname="Mitglied",
+            svnr="1111",
+            geburtsdatum=date(1994, 4, 4),
+            dienststatus="RESERVE",
+        )
+
+        self.client.force_authenticate(user=self.user)
+        response = self.request_method("get", "anwesenheitsliste/context/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        stbnr_list = [item.get("stbnr") for item in response.data.get("mitglieder", [])]
+        self.assertIn(77, stbnr_list)
+        self.assertNotIn(78, stbnr_list)
+
     def test_serializer_meta_and_nullable_date(self):
         date_field = NullableDateField()
         self.assertIsNone(date_field.to_internal_value(""))

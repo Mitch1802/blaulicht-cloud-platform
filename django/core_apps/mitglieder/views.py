@@ -11,7 +11,9 @@ from core_apps.common.permissions import HasAnyRolePermission
 
 
 class MitgliedViewSet(ModelViewSet):
-    queryset = Mitglied.objects.exclude(dienststatus=Mitglied.Dienststatus.ABGEMELDET).order_by("stbnr")
+    queryset = Mitglied.objects.exclude(
+        dienststatus__in=[Mitglied.Dienststatus.ABGEMELDET, Mitglied.Dienststatus.RESERVE]
+    ).order_by("stbnr")
     serializer_class = MitgliedSerializer
     permission_classes = [
         permissions.IsAuthenticated,
