@@ -275,9 +275,11 @@
                 [(ngModel)]="cleanupTarget"
                 [ngModelOptions]="{ standalone: true }"
               >
-                <mat-option value="all">Alle</mat-option>
-                <mat-option value="news">News</mat-option>
-                <mat-option value="inventar">Inventar</mat-option>
+                <mat-option value="all">Alle Pfade</mat-option>
+                <mat-option value="news">News (files/news)</mat-option>
+                <mat-option value="inventar">Inventar (files/inventar)</mat-option>
+                <mat-option value="einsatzberichte">Einsatzberichte (files/einsatzberichte)</mat-option>
+                <mat-option value="anwesenheitsliste">Anwesenheitsliste (files/anwesenheitsliste)</mat-option>
               </mat-select>
             </mat-form-field>
           </div>
@@ -318,7 +320,7 @@
             <table mat-table [dataSource]="cleanupFiles">
               <ng-container matColumnDef="target">
                 <th mat-header-cell *matHeaderCellDef>Bereich</th>
-                <td mat-cell *matCellDef="let element">{{ element.target }}</td>
+                <td mat-cell *matCellDef="let element">{{ element.targetLabel }}</td>
               </ng-container>
 
               <ng-container matColumnDef="filename">

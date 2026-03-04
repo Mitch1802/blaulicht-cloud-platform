@@ -16,6 +16,8 @@ class MediaEndpointTests(EndpointSmokeMixin, APITestCase):
         endpoints = [
             "files/news/example.png",
             "files/inventar/example.png",
+            "files/einsatzberichte/example.png",
+            "files/anwesenheitsliste/example.png",
             "files/cleanup-orphans/",
         ]
 
@@ -29,10 +31,14 @@ class MediaEndpointTests(EndpointSmokeMixin, APITestCase):
 
     def test_media_inventar_file_requires_authentication(self):
         self.assert_requires_authentication("files/inventar/example.png")
+        self.assert_requires_authentication("files/einsatzberichte/example.png")
+        self.assert_requires_authentication("files/anwesenheitsliste/example.png")
 
     def test_media_method_matrix_no_server_error(self):
         self.assert_method_matrix_no_server_error("files/news/example.png")
         self.assert_method_matrix_no_server_error("files/inventar/example.png")
+        self.assert_method_matrix_no_server_error("files/einsatzberichte/example.png")
+        self.assert_method_matrix_no_server_error("files/anwesenheitsliste/example.png")
         self.assert_method_matrix_no_server_error("files/cleanup-orphans/")
 
     def test_media_news_returns_404_for_missing_file(self):
@@ -67,16 +73,22 @@ class MediaEndpointTests(EndpointSmokeMixin, APITestCase):
         with tempfile.TemporaryDirectory() as tmp:
             news_dir = Path(tmp) / "news"
             inventar_dir = Path(tmp) / "inventar"
+            einsatzberichte_dir = Path(tmp) / "einsatzberichte" / "2026"
+            anwesenheitsliste_dir = Path(tmp) / "anwesenheitsliste" / "42"
             news_dir.mkdir(parents=True, exist_ok=True)
             inventar_dir.mkdir(parents=True, exist_ok=True)
+            einsatzberichte_dir.mkdir(parents=True, exist_ok=True)
+            anwesenheitsliste_dir.mkdir(parents=True, exist_ok=True)
             (news_dir / "old.png").write_bytes(b"x")
             (inventar_dir / "old2.png").write_bytes(b"x")
+            (einsatzberichte_dir / "old3.png").write_bytes(b"x")
+            (anwesenheitsliste_dir / "old4.png").write_bytes(b"x")
 
             with override_settings(MEDIA_ROOT=tmp):
                 dry = self.request_method("post", "files/cleanup-orphans/", data={"target": "all"})
                 self.assertEqual(dry.status_code, 200)
                 self.assertTrue(dry.data["dry_run"])
-                self.assertEqual(dry.data["summary"]["orphan"], 2)
+                self.assertEqual(dry.data["summary"]["orphan"], 4)
 
                 deleted = self.request_method(
                     "post",
@@ -84,9 +96,11 @@ class MediaEndpointTests(EndpointSmokeMixin, APITestCase):
                     data={"target": "all", "delete": True},
                 )
                 self.assertEqual(deleted.status_code, 200)
-                self.assertEqual(deleted.data["deleted"], 2)
+                self.assertEqual(deleted.data["deleted"], 4)
                 self.assertFalse((news_dir / "old.png").exists())
                 self.assertFalse((inventar_dir / "old2.png").exists())
+                self.assertFalse((einsatzberichte_dir / "old3.png").exists())
+                self.assertFalse((anwesenheitsliste_dir / "old4.png").exists())
 
     def test_media_cleanup_invalid_target(self):
         admin = self.create_user_with_roles("ADMIN")
@@ -186,6 +200,28 @@ class MediaCleanupHelpersTests(APITestCase):
 
         self.assertFalse(missing)
         self.assertEqual(refs, {"a.png", "b.jpg"})
+
+    def test_safe_refset_handles_subdirectory_relative_paths(self):
+        class FakeQuerySet:
+            def exclude(self, **kwargs):
+                return self
+
+            def values_list(self, *args, **kwargs):
+                return [
+                    "einsatzberichte/12/a.png",
+                    "einsatzberichte/13/fotos/b.jpg",
+                    "c.pdf",
+                    "",
+                    None,
+                ]
+
+        class FakeModel:
+            objects = FakeQuerySet()
+
+        refs, missing = _safe_refset(FakeModel, "foto", "einsatzberichte")
+
+        self.assertFalse(missing)
+        self.assertEqual(refs, {"12/a.png", "13/fotos/b.jpg", "c.pdf"})
 
     def test_safe_refset_handles_db_errors(self):
         class FakeQuerySet:

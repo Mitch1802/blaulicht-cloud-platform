@@ -9,6 +9,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from core_apps.common.permissions import HasAnyRolePermission
+from core_apps.anwesenheitsliste.models import AnwesenheitslisteFoto
+from core_apps.einsatzberichte.models import EinsatzberichtFoto
 from core_apps.inventar.models import Inventar
 from core_apps.news.models import News
 
@@ -21,14 +23,41 @@ def _as_bool(value):
     return bool(value)
 
 
-def _safe_refset(model_class, image_field):
+def _safe_refset(model_class, image_field, subdirectory=None):
+    prefix = f"{str(subdirectory).strip('/')}/" if subdirectory else ""
+
     try:
         values = model_class.objects.exclude(**{f"{image_field}__isnull": True}).exclude(
             **{image_field: ""}
         ).values_list(image_field, flat=True)
-        return {Path(value).name for value in values if value}, False
+
+        references = set()
+        for value in values:
+            if not value:
+                continue
+
+            normalized = str(value).replace("\\", "/").lstrip("/")
+            if prefix and normalized.startswith(prefix):
+                references.add(normalized[len(prefix):])
+                continue
+
+            if prefix:
+                references.add(normalized if "/" in normalized else Path(normalized).name)
+                continue
+
+            references.add(Path(normalized).name)
+
+        return references, False
     except (OperationalError, ProgrammingError):
         return set(), True
+
+
+def _collect_media_files(base_folder):
+    return {
+        file_path.relative_to(base_folder).as_posix()
+        for file_path in base_folder.rglob("*")
+        if file_path.is_file()
+    }
 
 
 class BaseMediaGetFileView(APIView):
@@ -70,13 +99,20 @@ class MediaEinsatzberichteGetFileView(BaseMediaGetFileView):
     subdirectory = "einsatzberichte"
 
 
+class MediaAnwesenheitslisteGetFileView(BaseMediaGetFileView):
+    """Abruf von Anwesenheitslisten-Mediendateien."""
+    subdirectory = "anwesenheitsliste"
+
+
 class MediaCleanupOrphansView(APIView):
     permission_classes = [permissions.IsAuthenticated, HasAnyRolePermission.with_roles("ADMIN")]
 
     def post(self, request, *args, **kwargs):
         target = request.data.get("target", "all")
-        if target not in {"all", "news", "inventar"}:
-            return Response({"detail": "target muss all, news oder inventar sein."}, status=status.HTTP_400_BAD_REQUEST)
+        valid_targets = {"all", "news", "inventar", "einsatzberichte", "anwesenheitsliste"}
+        if target not in valid_targets:
+            allowed = ", ".join(sorted(valid_targets))
+            return Response({"detail": f"target muss einer der folgenden Werte sein: {allowed}."}, status=status.HTTP_400_BAD_REQUEST)
 
         should_delete = _as_bool(request.data.get("delete", False))
         allow_missing_db = _as_bool(request.data.get("allow_missing_db", False))
@@ -86,6 +122,10 @@ class MediaCleanupOrphansView(APIView):
             checks.append(("news", lambda: _safe_refset(News, "foto")))
         if target in ("all", "inventar"):
             checks.append(("inventar", lambda: _safe_refset(Inventar, "foto")))
+        if target in ("all", "einsatzberichte"):
+            checks.append(("einsatzberichte", lambda: _safe_refset(EinsatzberichtFoto, "foto", "einsatzberichte")))
+        if target in ("all", "anwesenheitsliste"):
+            checks.append(("anwesenheitsliste", lambda: _safe_refset(AnwesenheitslisteFoto, "foto", "anwesenheitsliste")))
 
         media_root = Path(settings.MEDIA_ROOT)
         if not media_root.exists():
@@ -122,7 +162,7 @@ class MediaCleanupOrphansView(APIView):
                 )
                 continue
 
-            files = {file_path.name for file_path in folder_path.iterdir() if file_path.is_file()}
+            files = _collect_media_files(folder_path)
             refs, missing_db = ref_loader()
             orphans = sorted(files - refs)
 

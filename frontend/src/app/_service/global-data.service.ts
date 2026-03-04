@@ -307,7 +307,7 @@ export class GlobalDataService {
   }
 
   cleanupOrphanMedia(payload: {
-    target?: 'all' | 'news' | 'inventar';
+    target?: 'all' | 'news' | 'inventar' | 'einsatzberichte' | 'anwesenheitsliste';
     delete?: boolean;
     allow_missing_db?: boolean;
   }): Observable<any> {

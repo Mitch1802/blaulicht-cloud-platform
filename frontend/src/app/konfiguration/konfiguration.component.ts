@@ -39,10 +39,18 @@ export class KonfigurationComponent implements OnInit {
   backupColumns: string[] = ['name', 'actions'];
   cleanupColumns: string[] = ['target', 'filename'];
   backup_msg = "";
-  cleanupTarget: 'all' | 'news' | 'inventar' = 'all';
+  cleanupTarget: 'all' | 'news' | 'inventar' | 'einsatzberichte' | 'anwesenheitsliste' = 'all';
   cleanupRunning = false;
   cleanupSummary = '';
-  cleanupFiles: Array<{ target: string; filename: string }> = [];
+  cleanupFiles: Array<{ target: string; targetLabel: string; filename: string }> = [];
+
+  private readonly cleanupTargetLabels: Record<string, string> = {
+    all: 'Alle Pfade',
+    news: 'News',
+    inventar: 'Inventar',
+    einsatzberichte: 'Einsatzberichte',
+    anwesenheitsliste: 'Anwesenheitsliste',
+  };
 
   formRolle = new FormGroup({
     rolle: new FormControl('')
@@ -323,9 +331,11 @@ export class KonfigurationComponent implements OnInit {
         this.cleanupFiles = [];
 
         for (const item of (erg?.items ?? [])) {
+          const target = String(item?.target ?? '');
           for (const orphan of (item?.orphans ?? [])) {
             this.cleanupFiles.push({
-              target: item.target,
+              target,
+              targetLabel: this.getCleanupTargetLabel(target),
               filename: orphan,
             });
           }
@@ -340,6 +350,10 @@ export class KonfigurationComponent implements OnInit {
         this.cleanupRunning = false;
       }
     });
+  }
+
+  getCleanupTargetLabel(target: string): string {
+    return this.cleanupTargetLabels[target] ?? target;
   }
 
   convertBackups(backup_array:any ): any {
