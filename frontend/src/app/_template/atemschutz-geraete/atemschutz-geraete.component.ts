@@ -90,7 +90,7 @@ export class AtemschutzGeraeteComponent implements OnInit {
     taetigkeit: new FormControl(''),
     verwendung_typ: new FormControl(''),
     verwendung_min: new FormControl(0),
-    mitglied_id: new FormControl(''),
+    mitglied_id: new FormControl(0),
     geraet_ok: new FormControl(false),
     name_pruefer: new FormControl('', Validators.required),
     tausch_gleitring: new FormControl(false),
@@ -373,6 +373,10 @@ export class AtemschutzGeraeteComponent implements OnInit {
       }
 
       const objekt: any = this.formPruefung.getRawValue();
+      if (objekt.mitglied_id == 0) {
+        objekt.mitglied_id = null;
+      }
+
       this.globalDataService.post(`${this.modul}/protokoll`, objekt, false).subscribe({
         next: (erg: any) => {
           try {
@@ -387,7 +391,7 @@ export class AtemschutzGeraeteComponent implements OnInit {
               taetigkeit: '',
               verwendung_typ: '',
               verwendung_min: 0,
-              mitglied_id: '',
+              mitglied_id: 0,
               geraet_ok: false,
               name_pruefer: '',
               tausch_hochdruckdichtring: false,
@@ -412,6 +416,10 @@ export class AtemschutzGeraeteComponent implements OnInit {
       const objekt: any = this.canEditProtocol
         ? this.formPruefung.getRawValue()
         : { notiz: this.formPruefung.controls['notiz'].value ?? '' };
+      
+      if (objekt.mitglied_id == 0) {
+        objekt.mitglied_id = null;
+      }
 
       this.globalDataService.patch(`${this.modul}/protokoll`, idValue, objekt, false).subscribe({
         next: (erg: any) => {
@@ -429,7 +437,7 @@ export class AtemschutzGeraeteComponent implements OnInit {
               taetigkeit: '',
               verwendung_typ: '',
               verwendung_min: 0,
-              mitglied_id: '',
+              mitglied_id: 0,
               geraet_ok: false,
               name_pruefer: '',
               tausch_hochdruckdichtring: false,
@@ -480,7 +488,7 @@ export class AtemschutzGeraeteComponent implements OnInit {
       taetigkeit: '',
       verwendung_typ: '',
       verwendung_min: 0,
-      mitglied_id: '',
+      mitglied_id: 0,
       geraet_ok: false,
       name_pruefer: '',
       tausch_hochdruckdichtring: false,
@@ -562,7 +570,7 @@ export class AtemschutzGeraeteComponent implements OnInit {
             taetigkeit: '',
             verwendung_typ: '',
             verwendung_min: 0,
-            mitglied_id: '',
+            mitglied_id: 0,
             geraet_ok: false,
             name_pruefer: '',
             tausch_hochdruckdichtring: false,
