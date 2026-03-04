@@ -48,6 +48,34 @@
     table
         width: 100%
 
+    .mat-column-rolle
+        width: 116px
+        min-width: 116px
+
+    .user-paginator
+        margin-top: .35rem
+
+.role-cell
+    white-space: nowrap
+
+.role-badge
+    display: inline-flex
+    align-items: center
+    justify-content: center
+    font-size: .65rem
+    font-weight: 700
+    letter-spacing: .04em
+    padding: .15rem .45rem
+    border-radius: 999px
+
+.admin-badge
+    background: rgba(theme.$app-warning, 0.9)
+    color: theme.$app-primary-deep
+
+.mitglied-badge
+    background: rgba(theme.$app-border, 0.9)
+    color: theme.$app-text
+
 .edit-form
     margin-top: .2rem
 
@@ -62,6 +90,22 @@
 
 .role-row
     margin-top: .2rem
+    display: grid
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr))
+    gap: .55rem .75rem
+
+.role-option
+    margin-bottom: 0
+    min-height: var(--app-control-height)
+    padding: .35rem .65rem
+    border: 1px solid var(--app-control-border)
+    border-radius: var(--app-control-radius)
+    background: var(--app-control-bg)
+    display: flex
+    align-items: center
+
+.role-checkbox
+    width: 100%
 
 .password-note
     p
@@ -91,6 +135,30 @@
     .password-action
         button
             width: 100%
+
+    .role-row
+        grid-template-columns: 1fr
+        gap: .45rem
+
+    .role-option
+        padding: .45rem .6rem
+
+    .table-wrap
+        margin-top: .35rem
+
+        .user-paginator
+            margin-top: .45rem
+
+        .mat-column-rolle
+            width: 94px
+            min-width: 94px
+
+        .mat-column-username
+            overflow-wrap: anywhere
+
+        .mat-column-actions
+            width: 72px
+            min-width: 72px
 
     .top-actions,
     .form-actions

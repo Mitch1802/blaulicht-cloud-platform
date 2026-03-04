@@ -1,4 +1,6 @@
-import { Component, OnInit, inject, ViewChild } from '@angular/core';
+import { Component, DestroyRef, OnInit, ViewChild, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { BreakpointObserver } from '@angular/cdk/layout';
 
 import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IBenutzer } from 'src/app/_interface/benutzer';
@@ -9,7 +11,6 @@ import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
 import { MatButton } from '@angular/material/button';
 import { MatInput } from '@angular/material/input';
 import { MatCheckbox } from '@angular/material/checkbox';
-import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
@@ -39,7 +40,8 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class UserComponent implements OnInit {
   globalDataService = inject(GlobalDataService);
-  router = inject(Router);
+  breakpointObserver = inject(BreakpointObserver);
+  destroyRef = inject(DestroyRef);
 
   title = "Benutzer Verwaltung";
   modul = "users";
@@ -58,7 +60,9 @@ export class UserComponent implements OnInit {
   benutzer: IBenutzer[] = [];
   breadcrumb: any = [];
   rollen: any = [];
-  sichtbareSpaltenBenutzer: string[] = ['username', 'first_name', 'last_name', 'actions'];
+  private readonly desktopSpaltenBenutzer = ['username', 'first_name', 'last_name', 'rolle', 'actions'];
+  private readonly mobileSpaltenBenutzer = ['username', 'rolle', 'actions'];
+  sichtbareSpaltenBenutzer: string[] = [...this.desktopSpaltenBenutzer];
 
   private normalizeRoleKeys(raw: any): string[] {
     let values: any[] = [];
@@ -100,6 +104,7 @@ export class UserComponent implements OnInit {
     sessionStorage.setItem("Page2", "V_B");
     this.breadcrumb = this.globalDataService.ladeBreadcrumb();
     this.formModul.disable();
+    this.observeViewport();
 
     forkJoin({
       usersResponse: this.globalDataService.get<any>(this.modul),
@@ -119,6 +124,17 @@ export class UserComponent implements OnInit {
         this.globalDataService.errorAnzeigen(error);
       }
     });
+  }
+
+  private observeViewport(): void {
+    this.breakpointObserver
+      .observe('(max-width: 768px)')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((state) => {
+        this.sichtbareSpaltenBenutzer = state.matches
+          ? [...this.mobileSpaltenBenutzer]
+          : [...this.desktopSpaltenBenutzer];
+      });
   }
 
   auswahlBearbeiten(element: IBenutzer): void {
@@ -189,7 +205,9 @@ export class UserComponent implements OnInit {
 
   abbrechen(): void {
     this.globalDataService.erstelleMessage("info", "Benutzer nicht gespeichert!");
-    this.router.navigate(['/benutzer']);
+    this.username = "";
+    this.formModul.reset({ username: '', first_name: '', last_name: '', roles: [], password1: '', password2: '' });
+    this.formModul.disable();
   }
 
   datenSpeichern(): void {
@@ -315,5 +333,9 @@ export class UserComponent implements OnInit {
     } else if (!event.checked) {
       this.formModul.controls["roles"].setValue(current.filter(r => r !== key));
     }
+  }
+
+  isAdminUser(user: IBenutzer): boolean {
+    return this.normalizeRoleKeys(user?.roles).includes('ADMIN');
   }
 }

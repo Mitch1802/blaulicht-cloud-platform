@@ -2,22 +2,37 @@
   <mat-card>
     <img mat-card-image src="../../assets/images/logo.svg" alt="Logo" />
     <mat-card-content>
-      <form [formGroup]="form" (ngSubmit)="anmelden()">
+      <form [formGroup]="form" (ngSubmit)="anmelden()" [attr.aria-busy]="isSubmitting">
         <p>
           <mat-form-field>
             <mat-label>Benutzername</mat-label>
-            <input matInput formControlName="user" type="text" >
+            <input matInput formControlName="user" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" autofocus>
+            @if (f['user'].touched && f['user'].hasError('required')) {
+              <mat-error>Benutzername ist erforderlich.</mat-error>
+            }
           </mat-form-field>
         </p>
         <mat-form-field>
           <mat-label>Passwort</mat-label>
-          <input matInput formControlName="pwd" [type]="showPassword ? 'text' : 'password'">
-          <mat-icon matSuffix (click)="togglePasswordVisibility()">
-            {{showPassword?'visibility_off':'visibility'}}
-          </mat-icon>
+          <input matInput formControlName="pwd" [type]="showPassword ? 'text' : 'password'" autocomplete="current-password">
+          <button
+            type="button"
+            mat-icon-button
+            matSuffix
+            (click)="togglePasswordVisibility()"
+            [attr.aria-label]="showPassword ? 'Passwort verbergen' : 'Passwort anzeigen'"
+            [attr.aria-pressed]="showPassword"
+          >
+            <mat-icon>{{showPassword?'visibility_off':'visibility'}}</mat-icon>
+          </button>
+          @if (f['pwd'].touched && f['pwd'].hasError('required')) {
+            <mat-error>Passwort ist erforderlich.</mat-error>
+          }
         </mat-form-field>
         <div class="button">
-          <button type="submit" [hidden]="!form.valid" mat-flat-button color="primary">Anmelden</button>
+          <button type="submit" mat-flat-button color="primary" class="submit-button" [disabled]="form.invalid || isSubmitting">
+            {{ isSubmitting ? 'Anmelden ...' : 'Anmelden' }}
+          </button>
         </div>
 
       </form>
@@ -25,7 +40,10 @@
   </mat-card>
   @if (versionInfo) {
   <div class="footer">
-  Version: {{ versionInfo.version }} ({{ versionInfo.commit }})
+    <div>Version: {{ versionInfo.version }} ({{ versionInfo.commit }})</div>
+    @if (isTestVersion && screenResolution) {
+      <div class="resolution">Auflösung: {{ screenResolution }}</div>
+    }
   </div>
   }
 </div>

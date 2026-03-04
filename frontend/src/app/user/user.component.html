@@ -11,7 +11,8 @@
     </div>
 
     <mat-card-content>
-      <div class="top-actions" [hidden]="!formModul.disabled">
+      @if (formModul.disabled) {
+      <div class="top-actions">
         <mat-form-field class="filter-field">
           <mat-label>Filter</mat-label>
           <input
@@ -25,6 +26,7 @@
           Hinzufügen
         </button>
       </div>
+      }
 
       <div class="table-wrap" [hidden]="!formModul.disabled">
         <table mat-table [dataSource]="dataSource" matSort>
@@ -41,6 +43,17 @@
           <ng-container matColumnDef="last_name">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Nachname</th>
             <td mat-cell *matCellDef="let element">{{ element.last_name }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="rolle">
+            <th mat-header-cell *matHeaderCellDef>Rolle</th>
+            <td mat-cell *matCellDef="let element" class="role-cell">
+              @if (isAdminUser(element)) {
+                <span class="role-badge admin-badge">ADMIN</span>
+              } @else {
+                <span class="role-badge mitglied-badge">MITGLIED</span>
+              }
+            </td>
           </ng-container>
 
           <ng-container matColumnDef="actions">
@@ -62,6 +75,7 @@
         </table>
 
         <mat-paginator
+          class="user-paginator"
           [pageSizeOptions]="[10, 50, 100]"
           showFirstLastButtons
           aria-label="Auswahl Anzahl der sichtbaren Elemente"
@@ -118,11 +132,12 @@
           </div>
         </section>
 
-        <section class="app-grid role-row">
+        <section class="role-row" aria-label="Rollen">
           @for (rolle of rollen; track rolle) {
             @if (rolle.key !== 'MITGLIED') {
-              <div class="app-col-auto mb-3">
+              <div class="role-option">
                 <mat-checkbox
+                  class="role-checkbox"
                   [checked]="formModul.controls['roles'].value?.includes(rolle.key)"
                   (change)="rolleToggle(rolle.key, $event)"
                 >

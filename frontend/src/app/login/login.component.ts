@@ -1,15 +1,16 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, HostListener, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { GlobalDataService } from '../_service/global-data.service';
 import { MatCardModule } from '@angular/material/card';
-import { MatFormField, MatLabel, MatSuffix } from '@angular/material/form-field';
+import { MatFormField, MatLabel, MatSuffix, MatError } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatIcon } from '@angular/material/icon';
-import { MatButton } from '@angular/material/button';
+import { MatButton, MatIconButton } from '@angular/material/button';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { CommonModule } from '@angular/common';
+import { finalize } from 'rxjs';
 
 type VersionInfo = {
   version: string;
@@ -30,9 +31,11 @@ type VersionInfo = {
       MatFormField,
       MatLabel,
       MatInput,
+      MatError,
       MatIcon,
       MatSuffix,
       MatButton,
+      MatIconButton,
       HttpClientModule
     ]
 })
@@ -47,6 +50,8 @@ export class LoginComponent implements OnInit {
   modul: string = "auth/login";
   form!: FormGroup;
   versionInfo?: VersionInfo;
+  screenResolution = '';
+  isSubmitting = false;
 
   public showPassword: boolean = false;
 
@@ -60,7 +65,9 @@ export class LoginComponent implements OnInit {
       error: () => (this.versionInfo = undefined),
     });
 
-    sessionStorage.clear();
+    this.updateScreenResolution();
+
+    this.clearLoginSessionState();
 
     this.form = this.formBuilder.group({
       user: ['', Validators.required],
@@ -68,25 +75,70 @@ export class LoginComponent implements OnInit {
     });
   }
 
+  get isTestVersion(): boolean {
+    const version = String(this.versionInfo?.version ?? '').toLowerCase();
+    const channel = String(this.versionInfo?.channel ?? '').toLowerCase();
+    return version.includes('test') || channel.includes('test');
+  }
+
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    this.updateScreenResolution();
+  }
+
+  private updateScreenResolution(): void {
+    if (typeof window === 'undefined') {
+      this.screenResolution = '';
+      return;
+    }
+    this.screenResolution = `${window.innerWidth} x ${window.innerHeight}px`;
+  }
+
+  private clearLoginSessionState(): void {
+    if (typeof sessionStorage === 'undefined') {
+      return;
+    }
+
+    const keysToClear = ['PageNumber', 'Benutzername', 'public_token_global', 'auth_guard_ok_until'];
+    keysToClear.forEach((key) => sessionStorage.removeItem(key));
+
+    for (let i = sessionStorage.length - 1; i >= 0; i--) {
+      const key = sessionStorage.key(i);
+      if (key && /^Page\d+$/.test(key)) {
+        sessionStorage.removeItem(key);
+      }
+    }
+  }
+
   get f() { return this.form.controls; }
 
   anmelden(): void {
-    let data = {
+    if (this.form.invalid || this.isSubmitting) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    this.isSubmitting = true;
+
+    const data = {
       "username": this.f.user.value,
       "password": this.f.pwd.value
     };
 
-    this.globalDataService.post(this.modul, data, false).subscribe({
-      next: (erg: any) => {
-        try {
-          this.router.navigate(['/start']);
-        } catch (e: any) {
-          this.globalDataService.erstelleMessage("error", e);
+    this.globalDataService
+      .post(this.modul, data, false)
+      .pipe(finalize(() => (this.isSubmitting = false)))
+      .subscribe({
+        next: (erg: any) => {
+          try {
+            this.router.navigate(['/start']);
+          } catch (e: any) {
+            this.globalDataService.erstelleMessage("error", e);
+          }
+        },
+        error: (error: any) => {
+          this.globalDataService.errorAnzeigen(error);
         }
-      },
-      error: (error: any) => {
-        this.globalDataService.errorAnzeigen(error);
-      }
-    });
+      });
   }
 }
