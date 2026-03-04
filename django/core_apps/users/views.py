@@ -1,16 +1,33 @@
 from django.contrib.auth import get_user_model
 from django.http import Http404
+from django.middleware.csrf import get_token
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import ensure_csrf_cookie
 from rest_framework import generics, permissions, status, viewsets
 from rest_framework.views import APIView
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
-from dj_rest_auth.views import LogoutView
+from dj_rest_auth.views import LoginView, LogoutView
 from dj_rest_auth.app_settings import api_settings as rest_auth_settings
 
 from .models import User, Role
 from .renderers import UserJSONRenderer
 from .serializers import UserSelfSerializer, UserSerializer, ChangePasswordSerializer, RoleSerializer, AdminCreateUserSerializer
 from core_apps.common.permissions import IsAdminPermission, HasAnyRolePermission
+
+
+@method_decorator(ensure_csrf_cookie, name="dispatch")
+class CsrfCookieView(APIView):
+    authentication_classes = []
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        return Response({"csrfToken": get_token(request)})
+
+
+class PublicLoginView(LoginView):
+    authentication_classes = []
+    permission_classes = [permissions.AllowAny]
 
 
 class CustomUserDetailsView(generics.RetrieveUpdateAPIView):
@@ -75,10 +92,7 @@ class ChangePasswordView(generics.UpdateAPIView):
 
 
 class ForceLogoutView(LogoutView):
-    def logout(self, request, *args, **kwargs):
-        if User.objects.filter(pk=request.user.pk).exists():
-            return super().logout(request, *args, **kwargs)
-
+    def _cookie_cleanup_response(self):
         response = Response({"detail": "Cookies removed."}, status=200)
         response.delete_cookie('sessionid')
 
@@ -98,6 +112,21 @@ class ForceLogoutView(LogoutView):
             )
 
         return response
+
+    def logout(self, request, *args, **kwargs):
+        if User.objects.filter(pk=request.user.pk).exists():
+            response = super().logout(request, *args, **kwargs)
+            response_status = getattr(response, "status_code", response)
+
+            if response_status == status.HTTP_200_OK:
+                return response
+
+            if response_status in (status.HTTP_400_BAD_REQUEST, status.HTTP_401_UNAUTHORIZED):
+                return self._cookie_cleanup_response()
+
+            return response
+
+        return self._cookie_cleanup_response()
 
 class RoleViewSet(viewsets.ModelViewSet):
     queryset = Role.objects.all()

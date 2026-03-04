@@ -26,10 +26,12 @@ describe('LoginComponent', () => {
     routerSpy.navigate.and.resolveTo(true);
 
     globalDataServiceSpy = jasmine.createSpyObj<GlobalDataService>('GlobalDataService', [
+      'get',
       'post',
       'errorAnzeigen',
       'erstelleMessage'
     ]);
+    globalDataServiceSpy.get.and.returnValue(of({ csrfToken: 'token' }));
     globalDataServiceSpy.post.and.returnValue(of({}));
 
     await TestBed.configureTestingModule({
@@ -92,9 +94,12 @@ describe('LoginComponent', () => {
 
   it('should submit login data and navigate on success', () => {
     component.form.setValue({ user: 'demo', pwd: 'secret' });
+    globalDataServiceSpy.get.and.returnValue(of({ csrfToken: 'token' }));
     globalDataServiceSpy.post.and.returnValue(of({}));
 
     component.anmelden();
+
+    expect(globalDataServiceSpy.get).toHaveBeenCalledWith('auth/csrf');
 
     expect(globalDataServiceSpy.post).toHaveBeenCalledWith('auth/login', {
       username: 'demo',
@@ -106,6 +111,7 @@ describe('LoginComponent', () => {
 
   it('should forward login errors to global error handler', () => {
     component.form.setValue({ user: 'demo', pwd: 'wrong' });
+    globalDataServiceSpy.get.and.returnValue(of({ csrfToken: 'token' }));
     globalDataServiceSpy.post.and.returnValue(throwError(() => ({ status: 401, error: { detail: 'unauthorized' } })));
 
     component.anmelden();

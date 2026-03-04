@@ -10,7 +10,7 @@ import { MatButton, MatIconButton } from '@angular/material/button';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { CommonModule } from '@angular/common';
-import { finalize } from 'rxjs';
+import { finalize, switchMap } from 'rxjs';
 
 type VersionInfo = {
   version: string;
@@ -126,7 +126,8 @@ export class LoginComponent implements OnInit {
     };
 
     this.globalDataService
-      .post(this.modul, data, false)
+      .get('auth/csrf')
+      .pipe(switchMap(() => this.globalDataService.post(this.modul, data, false)))
       .pipe(finalize(() => (this.isSubmitting = false)))
       .subscribe({
         next: (erg: any) => {

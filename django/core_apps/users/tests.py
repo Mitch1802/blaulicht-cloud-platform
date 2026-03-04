@@ -6,6 +6,7 @@ from unittest.mock import patch
 from django.contrib.auth import get_user_model
 from django.test import TestCase, override_settings
 from django.urls import reverse
+from dj_rest_auth.app_settings import api_settings as rest_auth_settings
 from rest_framework import status
 from rest_framework.test import APITestCase, APIRequestFactory
 
@@ -278,6 +279,7 @@ class UsersEndpointSmokeTests(EndpointSmokeMixin, APITestCase):
             f"users/change_password/{uuid4()}/",
             "users/rolle/",
             "users/rolle/1/",
+            "auth/csrf/",
             "auth/login/",
             "auth/logout/",
             "auth/token/refresh/",
@@ -289,6 +291,26 @@ class UsersEndpointSmokeTests(EndpointSmokeMixin, APITestCase):
 
     def test_login_endpoint_is_public(self):
         self.assert_not_auth_error("auth/login/", method="post", data={})
+
+    def test_login_endpoint_is_public_with_invalid_auth_cookie(self):
+        if rest_auth_settings.JWT_AUTH_COOKIE:
+            self.client.cookies[rest_auth_settings.JWT_AUTH_COOKIE] = "invalid.jwt.token"
+
+        response = self.request_method("post", "auth/login/", data={})
+        self.assertNotIn(response.status_code, [status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN])
+
+    def test_csrf_endpoint_is_public_and_sets_cookie(self):
+        response = self.request_method("get", "auth/csrf/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("csrftoken", response.cookies)
+
+    def test_csrf_endpoint_is_public_with_invalid_auth_cookie(self):
+        if rest_auth_settings.JWT_AUTH_COOKIE:
+            self.client.cookies[rest_auth_settings.JWT_AUTH_COOKIE] = "invalid.jwt.token"
+
+        response = self.request_method("get", "auth/csrf/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("csrftoken", response.cookies)
 
     def test_logout_endpoint_requires_auth(self):
         # Endpoint ist bewusst idempotent und liefert auch ohne gültige Session 200.
@@ -316,6 +338,7 @@ class UsersEndpointSmokeTests(EndpointSmokeMixin, APITestCase):
             f"users/change_password/{uuid4()}/",
             "users/rolle/",
             "users/rolle/1/",
+            "auth/csrf/",
             "auth/login/",
             "auth/logout/",
             "auth/token/refresh/",
