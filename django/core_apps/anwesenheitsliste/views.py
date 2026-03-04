@@ -1,5 +1,7 @@
 from rest_framework import permissions
-from rest_framework.parsers import JSONParser
+from rest_framework import status
+from rest_framework.decorators import action
+from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
@@ -13,15 +15,54 @@ from .serializers import AnwesenheitslisteSerializer
 
 
 class AnwesenheitslisteViewSet(ModelViewSet):
-    queryset = Anwesenheitsliste.objects.prefetch_related("mitglieder").all()
+    queryset = Anwesenheitsliste.objects.prefetch_related("mitglieder", "fotos").all()
     serializer_class = AnwesenheitslisteSerializer
     permission_classes = [
         permissions.IsAuthenticated,
         HasAnyRolePermission.with_roles("ADMIN", "VERWALTUNG", "MITGLIED"),
     ]
-    parser_classes = [JSONParser]
+    parser_classes = [JSONParser, MultiPartParser, FormParser]
     lookup_field = "id"
     pagination_class = None
+
+    def destroy(self, request, *args, **kwargs):
+        eintrag = self.get_object()
+        foto_files = [
+            (f.foto.storage, f.foto.name)
+            for f in eintrag.fotos.all()
+            if getattr(f, "foto", None) and getattr(f.foto, "name", "")
+        ]
+
+        response = super().destroy(request, *args, **kwargs)
+
+        for storage, name in foto_files:
+            try:
+                storage.delete(name)
+            except Exception:
+                pass
+
+        return response
+
+    @action(detail=True, methods=["delete"], url_path=r"fotos/(?P<foto_id>[^/.]+)")
+    def foto_loeschen(self, request, id=None, foto_id=None):
+        eintrag = self.get_object()
+        foto = eintrag.fotos.filter(id=foto_id).first()
+
+        if foto is None:
+            return Response({"detail": "Foto nicht gefunden."}, status=status.HTTP_404_NOT_FOUND)
+
+        storage = foto.foto.storage if foto.foto else None
+        name = foto.foto.name if foto.foto else ""
+
+        foto.delete()
+
+        if storage and name:
+            try:
+                storage.delete(name)
+            except Exception:
+                pass
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class AnwesenheitslisteContextView(APIView):

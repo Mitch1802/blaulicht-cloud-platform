@@ -1,10 +1,11 @@
 from datetime import date
 from uuid import uuid4
 
+from django.core.files.uploadedfile import SimpleUploadedFile
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from core_apps.anwesenheitsliste.models import Anwesenheitsliste
+from core_apps.anwesenheitsliste.models import Anwesenheitsliste, AnwesenheitslisteFoto
 from core_apps.anwesenheitsliste.serializers import AnwesenheitslisteSerializer, NullableDateField
 from core_apps.common.test_helpers import EndpointSmokeMixin
 from core_apps.mitglieder.models import Mitglied
@@ -83,3 +84,51 @@ class AnwesenheitslisteEndpointTests(EndpointSmokeMixin, APITestCase):
         serializer = AnwesenheitslisteSerializer()
         self.assertEqual(serializer.Meta.model, Anwesenheitsliste)
         self.assertIn("mitglied_ids", serializer.Meta.fields)
+
+    def test_create_with_fotodoku_upload(self):
+        self.client.force_authenticate(user=self.user)
+        upload = SimpleUploadedFile(
+            "fotodoku.png",
+            b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00\x00\x00\nIDATx\xdac\xf8\x0f\x00\x01\x01\x01\x00\x18\xdd\x8d\xb1\x00\x00\x00\x00IEND\xaeB`\x82",
+            content_type="image/png",
+        )
+
+        payload = {
+            "titel": "Monatsübung mit Fotodoku",
+            "datum": "20.02.2026",
+            "ort": "Feuerwehrhaus",
+            "notiz": "Fotos vorhanden",
+            "mitglied_ids": [self.mitglied.pkid],
+            "fotos_doku": [upload],
+        }
+
+        response = self.client.post(self.build_api_url("anwesenheitsliste/"), data=payload, format="multipart")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(len(response.data.get("fotos", [])), 1)
+
+    def test_foto_delete_endpoint(self):
+        eintrag = Anwesenheitsliste.objects.first()
+        self.assertIsNotNone(eintrag)
+        foto = AnwesenheitslisteFoto.objects.create(
+            anwesenheitsliste=eintrag,
+            foto=SimpleUploadedFile(
+                "delete-me.png",
+                b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00\x00\x00\nIDATx\xdac\xf8\x0f\x00\x01\x01\x01\x00\x18\xdd\x8d\xb1\x00\x00\x00\x00IEND\xaeB`\x82",
+                content_type="image/png",
+            ),
+        )
+
+        self.client.force_authenticate(user=self.user)
+        response = self.client.delete(self.build_api_url(f"anwesenheitsliste/{eintrag.id}/fotos/{foto.id}/"))
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(AnwesenheitslisteFoto.objects.filter(id=foto.id).exists())
+
+    def test_foto_delete_endpoint_returns_404_for_missing_photo(self):
+        eintrag = Anwesenheitsliste.objects.first()
+        self.assertIsNotNone(eintrag)
+
+        self.client.force_authenticate(user=self.user)
+        response = self.client.delete(self.build_api_url(f"anwesenheitsliste/{eintrag.id}/fotos/{uuid4()}/"))
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

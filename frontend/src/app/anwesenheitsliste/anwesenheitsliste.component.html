@@ -106,6 +106,70 @@
               }
             </mat-chip-set>
           </div>
+
+          <div class="app-col-12 app-col-lg-12 mb-3">
+            <div class="foto-doku-block">
+              <div class="upload-row">
+                <label class="upload-label" for="fotoDokuDateien">Foto Doku Dateien</label>
+                <input
+                  #fotoDokuDateienInput
+                  id="fotoDokuDateien"
+                  class="file-input-hidden"
+                  type="file"
+                  multiple
+                  accept=".jpg,.jpeg,.png,.pdf"
+                  (change)="onFotoDokuSelected($event)"
+                />
+                <button mat-flat-button type="button" color="primary" class="upload-button" (click)="fotoDokuDateienInput.click()">
+                  Dateien auswählen
+                </button>
+              </div>
+
+              @if (fotoDokuFiles.length > 0) {
+                <div class="preview-grid">
+                  @for (file of fotoDokuFiles; track file; let i = $index) {
+                    <article class="preview-card">
+                      @if (file.type.startsWith('image/')) {
+                        <img class="preview-image" [src]="getFilePreviewUrl(file)" [alt]="file.name" />
+                      } @else {
+                        <div class="preview-file">PDF</div>
+                      }
+                      <div class="preview-meta">
+                        <button mat-flat-button class="ui-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(getFilePreviewUrl(file))">
+                          <mat-icon>open_in_new</mat-icon>
+                        </button>
+                        <button mat-flat-button class="ui-action-btn" type="button" color="warn" aria-label="Datei entfernen" (click)="removeSelectedFoto(i)">
+                          <mat-icon>delete</mat-icon>
+                        </button>
+                      </div>
+                    </article>
+                  }
+                </div>
+              }
+
+              @if (bestehendeFotos && bestehendeFotos.length > 0) {
+                <div class="preview-grid existing-previews">
+                  @for (foto of bestehendeFotos; track foto.id) {
+                    <article class="preview-card">
+                      @if (isImagePath(foto.foto_url)) {
+                        <img class="preview-image" [src]="foto.foto_url" [alt]="getFileNameFromPath(foto.foto_url)" />
+                      } @else {
+                        <div class="preview-file">PDF</div>
+                      }
+                      <div class="preview-meta">
+                        <button mat-flat-button class="ui-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(foto.foto_url)">
+                          <mat-icon>open_in_new</mat-icon>
+                        </button>
+                        <button mat-flat-button class="ui-action-btn" type="button" color="warn" aria-label="Datei löschen" (click)="loescheBestehendesFoto(foto)">
+                          <mat-icon>delete</mat-icon>
+                        </button>
+                      </div>
+                    </article>
+                  }
+                </div>
+              }
+            </div>
+          </div>
         </section>
 
         <button

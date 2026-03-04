@@ -41,6 +41,7 @@ import { UiPageLayoutComponent, UiSectionCardComponent } from '../ui-library';
     MatIcon
   ],
   templateUrl: './anwesenheitsliste.component.html',
+  styleUrl: './anwesenheitsliste.component.sass',
 })
 export class AnwesenheitslisteComponent implements OnInit {
   @ViewChild(MatPaginator) paginator?: MatPaginator;
@@ -59,6 +60,11 @@ export class AnwesenheitslisteComponent implements OnInit {
   breadcrumb: any = [];
   dataSource = new MatTableDataSource<IAnwesenheitsliste>(this.eintraege);
   sichtbareSpalten: string[] = ['datum', 'titel', 'ort', 'mitglieder', 'actions'];
+  bestehendeFotos: IAnwesenheitsliste['fotos'] = [];
+  fotoDokuDateien: string[] = [];
+  fotoDokuFiles: File[] = [];
+
+  private filePreviewUrlMap = new Map<File, string>();
 
   private buildMitgliederAnzeige(mitgliedIds: number[] = []): string {
     return mitgliedIds
@@ -74,6 +80,94 @@ export class AnwesenheitslisteComponent implements OnInit {
       mitglieder_anzahl: (item.mitglied_ids || []).length,
       mitglieder_anzeige: this.buildMitgliederAnzeige(item.mitglied_ids || []),
     };
+  }
+
+  isImagePath(path: string | undefined): boolean {
+    if (!path) {
+      return false;
+    }
+    return /\.(jpg|jpeg|png|gif|webp|bmp|svg)(\?.*)?$/i.test(path);
+  }
+
+  getFileNameFromPath(path: string | undefined): string {
+    if (!path) {
+      return 'Datei';
+    }
+    const clean = path.split('?')[0];
+    return clean.split('/').pop() || clean;
+  }
+
+  getFilePreviewUrl(file: File): string {
+    const existing = this.filePreviewUrlMap.get(file);
+    if (existing) {
+      return existing;
+    }
+    const created = URL.createObjectURL(file);
+    this.filePreviewUrlMap.set(file, created);
+    return created;
+  }
+
+  openFoto(url: string | undefined): void {
+    if (!url) {
+      return;
+    }
+    window.open(url, '_blank');
+  }
+
+  onFotoDokuSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const files = input.files ? Array.from(input.files) : [];
+
+    this.fotoDokuFiles.forEach((file) => {
+      const previewUrl = this.filePreviewUrlMap.get(file);
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+        this.filePreviewUrlMap.delete(file);
+      }
+    });
+
+    this.fotoDokuFiles = files;
+    this.fotoDokuDateien = files.map((file) => file.name);
+  }
+
+  removeSelectedFoto(index: number): void {
+    const confirmDelete = window.confirm('Datei wirklich entfernen?');
+    if (!confirmDelete) {
+      return;
+    }
+
+    const removed = this.fotoDokuFiles[index];
+    if (removed) {
+      const previewUrl = this.filePreviewUrlMap.get(removed);
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+        this.filePreviewUrlMap.delete(removed);
+      }
+    }
+
+    this.fotoDokuFiles = this.fotoDokuFiles.filter((_, i) => i !== index);
+    this.fotoDokuDateien = this.fotoDokuFiles.map((file) => file.name);
+  }
+
+  loescheBestehendesFoto(foto: NonNullable<IAnwesenheitsliste['fotos']>[number]): void {
+    const eintragId = this.formModul.controls['id'].value || '';
+    if (!eintragId || !foto?.id) {
+      return;
+    }
+
+    const fileName = this.getFileNameFromPath(foto.foto_url);
+    const confirmDelete = window.confirm(`Foto "${fileName}" wirklich löschen?`);
+    if (!confirmDelete) {
+      return;
+    }
+
+    this.globalDataService.delete(`${this.modul}/${eintragId}/fotos`, foto.id).subscribe({
+      next: () => {
+        this.bestehendeFotos = (this.bestehendeFotos || []).filter((entry) => String(entry.id) !== String(foto.id));
+        this.globalDataService.erstelleMessage('success', 'Foto gelöscht.');
+      },
+      error: (error: any) => this.globalDataService.errorAnzeigen(error),
+    });
   }
 
   private sortEintraege(): void {
@@ -185,6 +279,8 @@ export class AnwesenheitslisteComponent implements OnInit {
     this.formModul.enable();
     this.formModul.patchValue({ id: '', mitglied_ids: [], titel: '', datum: '', ort: '', notiz: '' });
     this.mitgliedSuche.setValue('');
+    this.bestehendeFotos = [];
+    this.resetFotoUploads();
   }
 
   auswahlBearbeiten(element: IAnwesenheitsliste): void {
@@ -206,6 +302,8 @@ export class AnwesenheitslisteComponent implements OnInit {
             ort: details.ort || '',
             notiz: details.notiz || ''
           });
+          this.bestehendeFotos = details.fotos || [];
+          this.resetFotoUploads();
           this.mitgliedSuche.setValue('');
         } catch (e: any) {
           this.globalDataService.erstelleMessage('error', e);
@@ -223,15 +321,11 @@ export class AnwesenheitslisteComponent implements OnInit {
       return;
     }
 
-    const { id, mitglied_ids, ...rest } = this.formModul.getRawValue();
     const idValue = this.formModul.controls['id'].value || '';
-    const payload = {
-      ...rest,
-      mitglied_ids: selectedMitgliedIds,
-    };
+    const payload = this.buildFormDataPayload(selectedMitgliedIds);
 
     if (idValue === '') {
-      this.globalDataService.post(this.modul, payload, false).subscribe({
+      this.globalDataService.post(this.modul, payload, true).subscribe({
         next: (erg: any) => {
           try {
             const neu = this.mapEintragMitMitgliedern(erg as IAnwesenheitsliste);
@@ -246,7 +340,7 @@ export class AnwesenheitslisteComponent implements OnInit {
         error: (error: any) => this.globalDataService.errorAnzeigen(error)
       });
     } else {
-      this.globalDataService.patch(this.modul, idValue, payload, false).subscribe({
+      this.globalDataService.patch(this.modul, idValue, payload, true).subscribe({
         next: (erg: any) => {
           try {
             const geaendert = this.mapEintragMitMitgliedern(erg as IAnwesenheitsliste);
@@ -286,6 +380,31 @@ export class AnwesenheitslisteComponent implements OnInit {
   private resetFormNachAktion(): void {
     this.formModul.disable();
     this.formModul.reset({ id: '', mitglied_ids: [], titel: '', datum: '', ort: '', notiz: '' });
+    this.bestehendeFotos = [];
+    this.resetFotoUploads();
     this.mitgliedSuche.setValue('');
+  }
+
+  private buildFormDataPayload(selectedMitgliedIds: number[]): FormData {
+    const fd = new FormData();
+    const values = this.formModul.getRawValue();
+
+    fd.append('titel', values.titel || '');
+    fd.append('datum', values.datum || '');
+    fd.append('ort', values.ort || '');
+    fd.append('notiz', values.notiz || '');
+
+    selectedMitgliedIds.forEach((mitgliedId) => fd.append('mitglied_ids', String(mitgliedId)));
+    this.fotoDokuFiles.forEach((file) => fd.append('fotos_doku', file));
+
+    return fd;
+  }
+
+  private resetFotoUploads(): void {
+    this.filePreviewUrlMap.forEach((url) => URL.revokeObjectURL(url));
+    this.filePreviewUrlMap.clear();
+
+    this.fotoDokuDateien = [];
+    this.fotoDokuFiles = [];
   }
 }
