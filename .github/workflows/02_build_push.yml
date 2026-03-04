@@ -16,6 +16,11 @@ on:
     workflows: ["01 Generate Django Migrations"]
     types: [completed]
   workflow_dispatch:
+    inputs:
+      version:
+        description: "Version for prod build (e.g. 1.0.0). Leave empty for test build."
+        required: false
+        default: ""
 
 permissions:
   contents: read
@@ -67,9 +72,14 @@ jobs:
         run: |
           set -euo pipefail
 
+          DISPATCH_VERSION="${{ inputs.version }}"
+
           if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
             TAG="${GITHUB_REF#refs/tags/}"   # v1.2.3
             VERSION="${TAG#v}"              # 1.2.3
+            CHANNEL="prod"
+          elif [[ -n "${DISPATCH_VERSION}" ]]; then
+            VERSION="${DISPATCH_VERSION}"
             CHANNEL="prod"
           else
             VERSION="test"
