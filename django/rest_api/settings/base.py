@@ -23,6 +23,7 @@ THIRD_PARTY_APPS = [
     "rest_framework",
     "corsheaders",
     "rest_framework.authtoken",
+    "rest_framework_simplejwt.token_blacklist",
     "dj_rest_auth",
 ]
 
@@ -127,6 +128,8 @@ USE_I18N = True
 USE_TZ = True
 
 API_URL = env("DJANGO_API_URL")
+API_URL_PREFIX = f"/{str(API_URL).strip('/')}/"
+JWT_REFRESH_COOKIE_PATH = f"{API_URL_PREFIX}auth/token/refresh/"
 
 
 # Static files (CSS, JavaScript, Images)
@@ -172,13 +175,24 @@ REST_FRAMEWORK = {
 
 REST_AUTH = {
     "USE_JWT": True,
-    "SESSION_LOGIN": True,
+    "SESSION_LOGIN": False,
     "JWT_AUTH_COOKIE": "app-access-token",
+    "JWT_AUTH_REFRESH_COOKIE": "app-refresh-token",
+    "JWT_AUTH_REFRESH_COOKIE_PATH": JWT_REFRESH_COOKIE_PATH,
+    "JWT_AUTH_SECURE": not DEBUG,
+    "JWT_AUTH_HTTPONLY": True,
+    "JWT_AUTH_SAMESITE": "Lax",
+    "JWT_AUTH_RETURN_EXPIRATION": True,
+    "JWT_AUTH_COOKIE_USE_CSRF": True,
+    "JWT_AUTH_COOKIE_ENFORCE_CSRF_ON_UNAUTHENTICATED": True,
     "USER_DETAILS_SERIALIZER": "core_apps.users.serializers.UserDetailSerializer",
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
 }
 
 AUTHENTICATION_BACKENDS = [

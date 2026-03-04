@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 from dj_rest_auth.views import LogoutView
+from dj_rest_auth.app_settings import api_settings as rest_auth_settings
 
 from .models import User, Role
 from .renderers import UserJSONRenderer
@@ -80,7 +81,22 @@ class ForceLogoutView(LogoutView):
 
         response = Response({"detail": "Cookies removed."}, status=200)
         response.delete_cookie('sessionid')
-        response.delete_cookie('app-access-token')
+
+        if rest_auth_settings.JWT_AUTH_COOKIE:
+            response.delete_cookie(
+                rest_auth_settings.JWT_AUTH_COOKIE,
+                samesite=rest_auth_settings.JWT_AUTH_SAMESITE,
+                domain=rest_auth_settings.JWT_AUTH_COOKIE_DOMAIN,
+            )
+
+        if rest_auth_settings.JWT_AUTH_REFRESH_COOKIE:
+            response.delete_cookie(
+                rest_auth_settings.JWT_AUTH_REFRESH_COOKIE,
+                path=rest_auth_settings.JWT_AUTH_REFRESH_COOKIE_PATH,
+                samesite=rest_auth_settings.JWT_AUTH_SAMESITE,
+                domain=rest_auth_settings.JWT_AUTH_COOKIE_DOMAIN,
+            )
+
         return response
 
 class RoleViewSet(viewsets.ModelViewSet):

@@ -5,6 +5,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.http import FileResponse
+from dj_rest_auth.app_settings import api_settings as rest_auth_settings
 from core_apps.common.logging_utils import log_event, log_exception
 from core_apps.common.permissions import HasAnyRolePermission
 
@@ -192,7 +193,22 @@ class RestorePostView(APIView):
             'msg': msg,
         })
         response.delete_cookie('sessionid')
-        response.delete_cookie('app-access-token')
+
+        if rest_auth_settings.JWT_AUTH_COOKIE:
+            response.delete_cookie(
+                rest_auth_settings.JWT_AUTH_COOKIE,
+                samesite=rest_auth_settings.JWT_AUTH_SAMESITE,
+                domain=rest_auth_settings.JWT_AUTH_COOKIE_DOMAIN,
+            )
+
+        if rest_auth_settings.JWT_AUTH_REFRESH_COOKIE:
+            response.delete_cookie(
+                rest_auth_settings.JWT_AUTH_REFRESH_COOKIE,
+                path=rest_auth_settings.JWT_AUTH_REFRESH_COOKIE_PATH,
+                samesite=rest_auth_settings.JWT_AUTH_SAMESITE,
+                domain=rest_auth_settings.JWT_AUTH_COOKIE_DOMAIN,
+            )
+
         return response
 
 

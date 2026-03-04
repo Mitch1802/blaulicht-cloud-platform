@@ -280,6 +280,7 @@ class UsersEndpointSmokeTests(EndpointSmokeMixin, APITestCase):
             "users/rolle/1/",
             "auth/login/",
             "auth/logout/",
+            "auth/token/refresh/",
         ]
 
         for endpoint in endpoints:
@@ -317,6 +318,7 @@ class UsersEndpointSmokeTests(EndpointSmokeMixin, APITestCase):
             "users/rolle/1/",
             "auth/login/",
             "auth/logout/",
+            "auth/token/refresh/",
         ]:
             self.assert_method_matrix_no_server_error(endpoint)
 
