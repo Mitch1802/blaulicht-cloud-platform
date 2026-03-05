@@ -18,6 +18,22 @@ class NoReuseStrategy implements RouteReuseStrategy {
 }
 
 
+function registerInstallableServiceWorker(): void {
+  if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
+    return;
+  }
+
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch((error) => {
+      console.error('Service worker registration failed:', error);
+    });
+  });
+}
+
+
+registerInstallableServiceWorker();
+
+
 bootstrapApplication(AppComponent, {
   providers: [
     provideRouter(routes, withRouterConfig({ onSameUrlNavigation: 'reload' })),
