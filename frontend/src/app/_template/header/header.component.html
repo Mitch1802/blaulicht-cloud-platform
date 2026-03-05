@@ -7,10 +7,6 @@
   </button>
 </mat-toolbar>
 
-@if (loading$ | async) {
-<mat-progress-bar mode="indeterminate"></mat-progress-bar>
-}
-
 <div class="app-header-stepper-wrap">
   <nav class="app-header-breadcrumb" aria-label="Breadcrumb">
     @if (hasBreadcrumb) {

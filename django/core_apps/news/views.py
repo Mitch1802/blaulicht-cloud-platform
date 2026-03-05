@@ -5,8 +5,8 @@ from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from django_filters.rest_framework import DjangoFilterBackend
 
 from core_apps.common.logging_utils import log_event, log_exception
-from .models import News
-from .serializers import NewsSerializer
+from .models import News, NewsTemplate
+from .serializers import NewsSerializer, NewsTemplateSerializer
 from core_apps.common.permissions import HasAnyRolePermission
 
 logger = logging.getLogger(__name__)
@@ -73,3 +73,16 @@ class PublicNewsViewSet(ReadOnlyModelViewSet):
     filterset_fields = ['typ']
     ordering_fields = ["created_at", "title"]
     ordering = ["created_at", "title"]
+
+
+class NewsTemplateViewSet(ModelViewSet):
+    queryset = NewsTemplate.objects.all()
+    serializer_class = NewsTemplateSerializer
+    permission_classes = [permissions.IsAuthenticated, HasAnyRolePermission.with_roles("ADMIN", "NEWS")]
+    parser_classes = [JSONParser, MultiPartParser, FormParser]
+    lookup_field = "id"
+    pagination_class = None
+    filter_backends = [filters.OrderingFilter, DjangoFilterBackend]
+    filterset_fields = ["typ", "active"]
+    ordering_fields = ["name", "title", "typ", "created_at"]
+    ordering = ["name", "created_at"]

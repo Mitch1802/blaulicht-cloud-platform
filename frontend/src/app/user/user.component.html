@@ -139,6 +139,7 @@
                 <mat-checkbox
                   class="role-checkbox"
                   [checked]="formModul.controls['roles'].value?.includes(rolle.key)"
+                  [disabled]="isRoleDisabled(rolle.key)"
                   (change)="rolleToggle(rolle.key, $event)"
                 >
                   {{ rolle.verbose_name }}

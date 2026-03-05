@@ -37,9 +37,9 @@
 
     <mat-divider class="my-2"></mat-divider>
 
-    @if (!fahrzeug) {
-      <div style="opacity:.7;">Lade Daten…</div>
-    } @else {
+    @if (!fahrzeug && !loading) {
+      <div style="opacity:.7;">Keine Daten verfuegbar.</div>
+    } @else if (fahrzeug) {
       <div style="opacity:.75; margin-bottom:10px;">
         Hinweis: Dieser Check ist nur lokal im Browser (kein Speichern).
       </div>

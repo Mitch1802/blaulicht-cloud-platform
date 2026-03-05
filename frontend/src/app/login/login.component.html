@@ -2,7 +2,7 @@
   <mat-card>
     <img mat-card-image src="../../assets/images/logo.svg" alt="Logo" />
     <mat-card-content>
-      <form [formGroup]="form" (ngSubmit)="anmelden()" [attr.aria-busy]="isSubmitting">
+      <form [formGroup]="form" (ngSubmit)="anmelden()">
         <p>
           <mat-form-field>
             <mat-label>Benutzername</mat-label>
@@ -31,7 +31,7 @@
         </mat-form-field>
         <div class="button">
           <button type="submit" mat-flat-button color="primary" class="submit-button" [disabled]="form.invalid || isSubmitting">
-            {{ isSubmitting ? 'Anmelden ...' : 'Anmelden' }}
+            Anmelden
           </button>
         </div>
 

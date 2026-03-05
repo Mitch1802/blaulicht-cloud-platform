@@ -1,1 +1,5 @@
+@if (loading$ | async) {
+	<mat-progress-bar class="app-global-loader" mode="indeterminate"></mat-progress-bar>
+}
+
 <router-outlet></router-outlet>

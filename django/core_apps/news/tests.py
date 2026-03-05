@@ -11,7 +11,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from core_apps.common.test_helpers import EndpointSmokeMixin
-from core_apps.news.models import _clean_filename, _coerce_ext, news_filename, News
+from core_apps.news.models import _clean_filename, _coerce_ext, news_filename, News, NewsTemplate
 from core_apps.news.serializers import NewsSerializer
 from core_apps.news.views import NewsViewSet
 
@@ -22,6 +22,7 @@ class NewsEndpointTests(EndpointSmokeMixin, APITestCase):
         self.admin = self.create_user_with_roles("ADMIN")
         News.objects.create(title="Intern", text="i", typ="intern")
         News.objects.create(title="Extern", text="e", typ="extern")
+        NewsTemplate.objects.create(name="Geburtstag", title="Alles Gute!", text="Wir gratulieren herzlich.", typ="intern")
 
     def test_all_news_endpoints_resolve(self):
         endpoints = [
@@ -29,6 +30,8 @@ class NewsEndpointTests(EndpointSmokeMixin, APITestCase):
             f"news/intern/{uuid4()}/",
             "news/public/",
             f"news/public/{uuid4()}/",
+            "news/templates/",
+            f"news/templates/{uuid4()}/",
         ]
 
         for endpoint in endpoints:
@@ -45,11 +48,27 @@ class NewsEndpointTests(EndpointSmokeMixin, APITestCase):
     def test_news_method_matrix_no_server_error(self):
         self.assert_method_matrix_no_server_error("news/intern/")
         self.assert_method_matrix_no_server_error("news/public/")
+        self.assert_method_matrix_no_server_error("news/templates/")
 
     def test_news_role_user_can_create_news(self):
         self.client.force_authenticate(user=self.news_role_user)
 
         response = self.request_method("post", "news/intern/", data={"title": "Neu", "text": "Text"})
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_news_templates_require_auth_and_role(self):
+        self.assert_requires_authentication("news/templates/")
+        self.assert_forbidden_without_role("news/templates/")
+
+    def test_news_role_user_can_create_template(self):
+        self.client.force_authenticate(user=self.news_role_user)
+
+        response = self.request_method(
+            "post",
+            "news/templates/",
+            data={"name": "Weihnachten", "title": "Frohe Weihnachten", "text": "Wir wuenschen frohe Feiertage.", "typ": "extern"},
+        )
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 

@@ -7,7 +7,6 @@ import { MatFormField, MatLabel, MatSuffix, MatError } from '@angular/material/f
 import { MatInput } from '@angular/material/input';
 import { MatIcon } from '@angular/material/icon';
 import { MatButton, MatIconButton } from '@angular/material/button';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { CommonModule } from '@angular/common';
 import { finalize, switchMap } from 'rxjs';
@@ -35,8 +34,7 @@ type VersionInfo = {
       MatIcon,
       MatSuffix,
       MatButton,
-      MatIconButton,
-      HttpClientModule
+      MatIconButton
     ]
 })
 
@@ -44,7 +42,6 @@ export class LoginComponent implements OnInit {
   private formBuilder = inject(FormBuilder);
   private router = inject(Router);
   private globalDataService = inject(GlobalDataService);
-  private http = inject(HttpClient);
 
   title: string = environment.title;
   modul: string = "auth/login";
@@ -60,7 +57,7 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.http.get<VersionInfo>('/assets/version.json').subscribe({
+    this.globalDataService.getURL<VersionInfo>('/assets/version.json').subscribe({
       next: (v) => (this.versionInfo = v),
       error: () => (this.versionInfo = undefined),
     });

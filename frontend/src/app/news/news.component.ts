@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, ViewChild, ElementRef } from '@angular/core';
 import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { INews } from 'src/app/_interface/news';
+import { INewsTemplate } from 'src/app/_interface/news-template';
 import { GlobalDataService } from 'src/app/_service/global-data.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
@@ -13,6 +14,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { Router } from '@angular/router';
 import { HeaderComponent } from '../_template/header/header.component';
 import { MatIcon } from '@angular/material/icon';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-news',
@@ -43,9 +45,11 @@ export class NewsComponent implements OnInit {
 
   title = 'News Verwaltung';
   modul = 'news/intern';
+  modulTemplates = 'news/templates';
   breadcrumb: any[] = [];
 
   newsArray: INews[] = [];
+  templateArray: INewsTemplate[] = [];
   btnText = 'Bild auswählen';
   fileName = '';
   filePfad = '';
@@ -59,6 +63,8 @@ export class NewsComponent implements OnInit {
 
   formModul = new FormGroup({
     id: new FormControl<string | ''>(''),
+    template_id: new FormControl<string | ''>(''),
+    template_name: new FormControl<string>('', { nonNullable: true }),
     title: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
     text: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
     typ: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
@@ -73,10 +79,14 @@ export class NewsComponent implements OnInit {
 
     this.formModul.disable();
 
-    this.globalDataService.get(this.modul).subscribe({
-      next: (erg: any) => {
+    forkJoin({
+      newsResponse: this.globalDataService.get(this.modul),
+      templateResponse: this.globalDataService.get(this.modulTemplates),
+    }).subscribe({
+      next: ({ newsResponse, templateResponse }: any) => {
         try {
-          this.newsArray = this.convertNewsDate(erg) as INews[];
+          this.newsArray = this.convertNewsDate(newsResponse) as INews[];
+          this.templateArray = this.sortTemplates(templateResponse as INewsTemplate[]);
         } catch (e: any) {
           this.globalDataService.erstelleMessage('error', e);
         }
@@ -84,6 +94,77 @@ export class NewsComponent implements OnInit {
       error: (error: any) => {
         this.globalDataService.errorAnzeigen(error);
       }
+    });
+  }
+
+  private sortTemplates(data: INewsTemplate[] = []): INewsTemplate[] {
+    return [...(data || [])].sort((a, b) =>
+      String(a?.name || '').localeCompare(String(b?.name || ''), 'de')
+    );
+  }
+
+  vorlageAnwenden(): void {
+    const templateId = this.formModul.controls['template_id'].value;
+    if (!templateId) {
+      this.globalDataService.erstelleMessage('info', 'Bitte zuerst eine Vorlage auswählen.');
+      return;
+    }
+
+    const selected = this.templateArray.find((tpl) => String(tpl.id) === String(templateId));
+    if (!selected) {
+      this.globalDataService.erstelleMessage('error', 'Vorlage konnte nicht geladen werden.');
+      return;
+    }
+
+    this.formModul.patchValue({
+      template_name: selected.name || '',
+      title: selected.title || '',
+      text: selected.text || '',
+      typ: selected.typ || 'intern',
+    });
+    this.globalDataService.erstelleMessage('success', 'Vorlage in das Formular geladen.');
+  }
+
+  vorlageSpeichern(): void {
+    const templateId = this.formModul.controls['template_id'].value;
+    const name = (this.formModul.controls['template_name'].value || '').trim();
+    const title = this.formModul.controls['title'].value || '';
+    const text = this.formModul.controls['text'].value || '';
+    const typ = this.formModul.controls['typ'].value || 'intern';
+
+    if (!name || !title || !text) {
+      this.globalDataService.erstelleMessage('error', 'Vorlagenname, Titel und Text sind erforderlich.');
+      return;
+    }
+
+    const payload = {
+      name,
+      title,
+      text,
+      typ,
+      active: true,
+    };
+
+    const request$ = templateId
+      ? this.globalDataService.patch(this.modulTemplates, templateId, payload, false)
+      : this.globalDataService.post(this.modulTemplates, payload, false);
+
+    request$.subscribe({
+      next: (erg: any) => {
+        const savedId = String(erg?.id || templateId || '');
+        this.globalDataService.get(this.modulTemplates).subscribe({
+          next: (templates: any) => {
+            this.templateArray = this.sortTemplates(templates as INewsTemplate[]);
+            this.formModul.patchValue({
+              template_id: savedId,
+              template_name: String(erg?.name || name),
+            });
+            this.globalDataService.erstelleMessage('success', templateId ? 'Vorlage aktualisiert.' : 'Vorlage gespeichert.');
+          },
+          error: (error: any) => this.globalDataService.errorAnzeigen(error),
+        });
+      },
+      error: (error: any) => this.globalDataService.errorAnzeigen(error),
     });
   }
 
@@ -164,6 +245,8 @@ export class NewsComponent implements OnInit {
 
           this.formModul.setValue({
             id: details.id!,
+            template_id: '',
+            template_name: '',
             title: details.title,
             text: details.text,
             typ: details.typ,
@@ -190,7 +273,7 @@ export class NewsComponent implements OnInit {
     this.fileName = '';
     this.filePfad = '';
     this.fileFound = false;
-    this.formModul.patchValue({ id: '', title: '', text: '', typ: 'intern', foto_url: '' });
+    this.formModul.patchValue({ id: '', template_id: '', template_name: '', title: '', text: '', typ: 'intern', foto_url: '' });
     this.setzeSelectZurueck();
 
     // Datei-Auswahl im Input zurücksetzen
@@ -326,7 +409,7 @@ export class NewsComponent implements OnInit {
 
   /** Nach Create/Update Formular, UI & File-Input zurücksetzen */
   private resetFormNachAktion(): void {
-    this.formModul.reset({ id: '', title: '', text: '', typ: '', foto_url: '' });
+    this.formModul.reset({ id: '', template_id: '', template_name: '', title: '', text: '', typ: '', foto_url: '' });
     this.formModul.disable();
     this.btnUploadStatus = false;
     this.btnText = 'Bild auswählen';

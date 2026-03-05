@@ -56,3 +56,19 @@ class News(TimeStampedModel):
 
     def __str__(self):
         return f"{self.title}"
+
+
+class NewsTemplate(TimeStampedModel):
+    name = models.CharField(verbose_name=_("Vorlagenname"), max_length=120, unique=True)
+    title = models.CharField(verbose_name=_("Titel"), max_length=255)
+    text = models.TextField(verbose_name=_("Text"))
+    typ = models.CharField(verbose_name=_("Typ"), max_length=255, default="intern")
+    active = models.BooleanField(verbose_name=_("Aktiv"), default=True)
+
+    class Meta:
+        verbose_name = _("News-Vorlage")
+        verbose_name_plural = _("News-Vorlagen")
+        ordering = ["name", "created_at"]
+
+    def __str__(self):
+        return f"{self.name}"

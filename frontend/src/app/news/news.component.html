@@ -92,6 +92,49 @@
 
           <section class="app-grid form-grid">
             <div class="app-col-12 app-col-lg-6 mb-3">
+              <mat-form-field class="full-width">
+                <mat-label>Vorlage auswählen</mat-label>
+                <mat-select formControlName="template_id">
+                  <mat-option value="">Keine Vorlage</mat-option>
+                  @for (tpl of templateArray; track tpl.id) {
+                    <mat-option [value]="tpl.id">{{ tpl.name }} ({{ tpl.typ }})</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="app-col-12 app-col-lg-6 mb-3 template-actions">
+              <button
+                mat-flat-button
+                color="primary"
+                type="button"
+                [disabled]="!formModul.controls['template_id'].value"
+                (click)="vorlageAnwenden()"
+              >
+                Vorlage laden
+              </button>
+            </div>
+            <div class="app-col-12 app-col-lg-6 mb-3">
+              <mat-form-field class="full-width">
+                <mat-label>Vorlagenname</mat-label>
+                <input matInput type="text" formControlName="template_name" placeholder="z. B. Geburtstagswünsche" />
+              </mat-form-field>
+            </div>
+            <div class="app-col-12 app-col-lg-6 mb-3 template-actions">
+              <button
+                mat-flat-button
+                color="accent"
+                type="button"
+                [disabled]="!formModul.controls['template_name'].value || !formModul.controls['title'].value || !formModul.controls['text'].value"
+                (click)="vorlageSpeichern()"
+              >
+                Als Vorlage speichern
+              </button>
+            </div>
+            @if (templateArray.length === 0) {
+              <div class="app-col-12 template-hint">Noch keine Vorlagen vorhanden.</div>
+            }
+
+            <div class="app-col-12 app-col-lg-6 mb-3">
               <mat-form-field hintLabel="* Pflichtfeld" class="full-width">
                 <mat-label>Titel</mat-label>
                 <input matInput type="text" formControlName="title">

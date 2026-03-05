@@ -42,6 +42,7 @@ export class UserComponent implements OnInit {
   globalDataService = inject(GlobalDataService);
   breakpointObserver = inject(BreakpointObserver);
   destroyRef = inject(DestroyRef);
+  private readonly adminRoleKey = 'ADMIN';
 
   title = "Benutzer Verwaltung";
   modul = "users";
@@ -87,6 +88,30 @@ export class UserComponent implements OnInit {
     const filtered = extracted.filter((key: string) => allowed.size === 0 || allowed.has(key));
 
     return Array.from(new Set(filtered));
+  }
+
+  private normalizeRolesWithAdminRule(raw: any): string[] {
+    const normalized = this.normalizeRoleKeys(raw);
+    if (normalized.includes(this.adminRoleKey)) {
+      return [this.adminRoleKey];
+    }
+    return normalized.filter((key) => key !== this.adminRoleKey);
+  }
+
+  private setRolesWithAdminRule(raw: any): void {
+    this.formModul.controls['roles'].setValue(this.normalizeRolesWithAdminRule(raw));
+  }
+
+  isAdminRoleSelected(): boolean {
+    return this.normalizeRoleKeys(this.formModul.controls['roles'].value).includes(this.adminRoleKey);
+  }
+
+  isRoleDisabled(roleKey: string): boolean {
+    const key = String(roleKey ?? '').trim();
+    if (!key) {
+      return false;
+    }
+    return key !== this.adminRoleKey && this.isAdminRoleSelected();
   }
 
   formModul = new FormGroup({
@@ -150,7 +175,7 @@ export class UserComponent implements OnInit {
           const details: IBenutzer = erg.data.user;
           this.username = details.username;
           this.formModul.enable();
-          const normalizedRoles = this.normalizeRoleKeys(details.roles);
+          const normalizedRoles = this.normalizeRolesWithAdminRule(details.roles);
           this.formModul.setValue({
             id: details.id,
             username: details.username,
@@ -159,7 +184,8 @@ export class UserComponent implements OnInit {
             roles: normalizedRoles,
             password1: "",
             password2: ""
-          })
+          });
+          this.setRolesWithAdminRule(this.formModul.controls['roles'].value);
         } catch (e: any) {
           this.globalDataService.erstelleMessage("error", e);
         }
@@ -326,12 +352,22 @@ export class UserComponent implements OnInit {
   }
 
   rolleToggle(key: string, event: any): void {
-    const current = this.normalizeRoleKeys(this.formModul.controls["roles"].value);
+    const roleKey = String(key ?? '').trim();
+    const current = this.normalizeRoleKeys(this.formModul.controls['roles'].value);
 
-    if (event.checked && !current.includes(key)) {
-      this.formModul.controls["roles"].setValue([...current, key]);
+    if (roleKey === this.adminRoleKey) {
+      this.formModul.controls['roles'].setValue(event.checked ? [this.adminRoleKey] : []);
+      return;
+    }
+
+    if (this.isAdminRoleSelected()) {
+      return;
+    }
+
+    if (event.checked && !current.includes(roleKey)) {
+      this.formModul.controls['roles'].setValue([...current, roleKey]);
     } else if (!event.checked) {
-      this.formModul.controls["roles"].setValue(current.filter(r => r !== key));
+      this.formModul.controls['roles'].setValue(current.filter((r) => r !== roleKey));
     }
   }
 

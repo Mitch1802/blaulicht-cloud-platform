@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import News
+from .models import News, NewsTemplate
 
 class NewsSerializer(serializers.ModelSerializer):
     foto = serializers.ImageField(required=False, allow_null=True)
@@ -62,3 +62,15 @@ class NewsSerializer(serializers.ModelSerializer):
         model = News
         fields = "__all__"
         extra_kwargs = {"foto": {"required": False, "allow_null": True}}
+
+
+class NewsTemplateSerializer(serializers.ModelSerializer):
+    def validate_name(self, value: str) -> str:
+        cleaned = (value or "").strip()
+        if not cleaned:
+            raise serializers.ValidationError("Vorlagenname ist erforderlich.")
+        return cleaned
+
+    class Meta:
+        model = NewsTemplate
+        fields = "__all__"

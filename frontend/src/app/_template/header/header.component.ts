@@ -5,8 +5,6 @@ import { MatToolbar } from '@angular/material/toolbar';
 import { MatIconButton } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { environment } from 'src/environments/environment';
-import { AsyncPipe } from '@angular/common';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 
 @Component({
@@ -17,17 +15,13 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
         MatToolbar,
         RouterLink,
         MatIconButton,
-        MatIconModule,
-        MatProgressBarModule,
-        AsyncPipe
+        MatIconModule
     ]
 })
 export class HeaderComponent {
   globalDataService = inject(GlobalDataService);
 
   title: string = environment.title;
-
-  loading$ = this.globalDataService.loading$;
 
   @Input() breadcrumb!: any;
 

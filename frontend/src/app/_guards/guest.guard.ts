@@ -1,14 +1,13 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { catchError, map, of } from 'rxjs';
-import { environment } from 'src/environments/environment';
+import { GlobalDataService } from '../_service/global-data.service';
 
 export const guestGuard: CanActivateFn = () => {
-  const http = inject(HttpClient);
+  const globalDataService = inject(GlobalDataService);
   const router = inject(Router);
 
-  return http.get(`${environment.apiUrl}users/self/`).pipe(
+  return globalDataService.get('users/self').pipe(
     map(() => router.createUrlTree(['/start'])),
     catchError(() => of(true))
   );
