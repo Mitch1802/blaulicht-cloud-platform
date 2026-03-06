@@ -32,7 +32,7 @@
     display: flex
     gap: .6rem
     flex-wrap: wrap
-    margin: .25rem 0 .8rem
+    margin: .2rem 0 .75rem
 
 .edit-form
     margin-top: .2rem
@@ -44,55 +44,101 @@
     margin-bottom: .8rem
 
 .form-grid
-    margin-top: .2rem
+    margin-top: .15rem
 
 .full-width
     width: 100%
 
+.template-block,
+.news-block
+    border: 1px solid rgba(theme.$app-border, .9)
+    border-radius: .7rem
+    background: rgba(theme.$app-surface, .94)
+    padding: .8rem .85rem .5rem
+
+.news-block
+    margin-top: .75rem
+
+.block-title
+    margin: 0 0 .45rem
+    color: theme.$app-primary-deep
+    font-size: .95rem
+    font-weight: 600
+
+.template-grid,
+.news-grid
+    margin-top: .22rem
+
+.news-grid
+    margin-top: .38rem
+
+.delete-action
+    margin-top: .9rem
+    margin-bottom: .2rem
+
 .template-actions
     display: flex
-    align-items: end
+    align-items: center
+    gap: .55rem
+    flex-wrap: wrap
+    min-height: var(--app-control-height)
+    margin-top: .05rem
+
+    > .mat-mdc-button-base,
+    > button[mat-flat-button]
+        min-height: var(--app-control-height)
+        height: var(--app-control-height)
 
 .template-hint
     opacity: .75
-    margin-top: -.2rem
-    margin-bottom: .35rem
+    margin-top: 0
+    margin-bottom: .3rem
 
 .news-list-wrap
-    margin-top: .5rem
+    margin-top: .65rem
 
-.news-list
+.news-table-wrap
     display: grid
-    gap: .5rem
+    gap: .55rem
 
-.news-item
-    border: 1px solid rgba(theme.$app-border, .95)
-    border-radius: .5rem
-    padding: .6rem
-    display: flex
-    justify-content: space-between
-    gap: .8rem
+.filter-field
+    width: 100%
+    max-width: 360px
+
+.news-table
+    width: 100%
+
+.mat-column-created_at
+    width: 170px
+    min-width: 170px
+
+.mat-column-typ
+    width: 72px
+    min-width: 72px
+
+.mat-column-actions
+    width: 130px
+    min-width: 130px
+
+.type-cell
+    white-space: nowrap
+    text-align: center
+
+.type-indicator
+    display: inline-flex
     align-items: center
-    background: rgba(theme.$app-surface, .92)
+    justify-content: center
+    line-height: 1.1
 
-.news-main
-    display: grid
-    gap: .2rem
+    .mat-icon
+        margin: 0
+        font-size: 20px
+        width: 20px
+        height: 20px
+        line-height: 20px
 
-    span
-        opacity: .85
-
-    small
-        display: flex
-        align-items: center
-        gap: .15rem
-        opacity: .7
-
-.news-actions
-    display: flex
-    gap: .45rem
-    flex-wrap: wrap
-    align-items: center
+.news-paginator
+    margin-top: .35rem
 
 .empty
     opacity: .75
@@ -176,15 +222,45 @@
         button
             width: 100%
 
-    .news-item
-        flex-direction: column
-        align-items: flex-start
+    .template-block,
+    .news-block
+        padding: .75rem .7rem .35rem
 
-    .news-actions
-        width: 100%
+    .news-block
+        margin-top: .55rem
 
-        button
-            width: 100%
+    .block-title
+        margin-bottom: .2rem
+        font-size: .9rem
+
+    .template-grid,
+    .news-grid
+        margin-top: .15rem
+
+    .news-grid
+        margin-top: .22rem
+
+    .delete-action
+        margin-top: .6rem
+        margin-bottom: .1rem
+
+    .mat-column-created_at
+        width: 130px
+        min-width: 130px
+
+    .mat-column-title
+        min-width: 180px
+
+    .mat-column-typ
+        width: 72px
+        min-width: 72px
+
+    .mat-column-actions
+        width: 116px
+        min-width: 116px
+
+    .news-paginator
+        margin-top: .45rem
 
     .modal-content 
         width: 100%

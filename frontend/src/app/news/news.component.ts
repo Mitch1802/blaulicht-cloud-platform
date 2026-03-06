@@ -15,6 +15,9 @@ import { Router } from '@angular/router';
 import { HeaderComponent } from '../_template/header/header.component';
 import { MatIcon } from '@angular/material/icon';
 import { forkJoin } from 'rxjs';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSort, MatSortModule } from '@angular/material/sort';
 
 @Component({
   selector: 'app-news',
@@ -32,13 +35,28 @@ import { forkJoin } from 'rxjs';
     MatIcon,
     MatError,
     NgStyle,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule
   ],
   templateUrl: './news.component.html',
   styleUrl: './news.component.sass'
 })
 export class NewsComponent implements OnInit {
   @ViewChild('fotoUpload', { static: false }) fotoRef!: ElementRef<HTMLInputElement>;
+
+  @ViewChild(MatPaginator) set matPaginator(p: MatPaginator | undefined) {
+    if (p) {
+      this.newsDataSource.paginator = p;
+    }
+  }
+
+  @ViewChild(MatSort) set matSort(s: MatSort | undefined) {
+    if (s) {
+      this.newsDataSource.sort = s;
+    }
+  }
 
   globalDataService = inject(GlobalDataService);
   router = inject(Router);
@@ -49,6 +67,8 @@ export class NewsComponent implements OnInit {
   breadcrumb: any[] = [];
 
   newsArray: INews[] = [];
+  newsDataSource = new MatTableDataSource<INews>([]);
+  sichtbareSpaltenNews: string[] = ['created_at', 'title', 'typ', 'actions'];
   templateArray: INewsTemplate[] = [];
   btnText = 'Bild auswählen';
   fileName = '';
@@ -86,6 +106,7 @@ export class NewsComponent implements OnInit {
       next: ({ newsResponse, templateResponse }: any) => {
         try {
           this.newsArray = this.convertNewsDate(newsResponse) as INews[];
+          this.newsDataSource.data = this.newsArray;
           this.templateArray = this.sortTemplates(templateResponse as INewsTemplate[]);
         } catch (e: any) {
           this.globalDataService.erstelleMessage('error', e);
@@ -122,7 +143,31 @@ export class NewsComponent implements OnInit {
       text: selected.text || '',
       typ: selected.typ || 'intern',
     });
-    this.globalDataService.erstelleMessage('success', 'Vorlage in das Formular geladen.');
+    this.globalDataService.erstelleMessage('success', 'Vorlage zum Bearbeiten geladen.');
+  }
+
+  vorlageLoeschen(): void {
+    const templateId = this.formModul.controls['template_id'].value;
+    if (!templateId) {
+      this.globalDataService.erstelleMessage('info', 'Bitte zuerst eine Vorlage auswählen.');
+      return;
+    }
+
+    const selected = this.templateArray.find((tpl) => String(tpl.id) === String(templateId));
+    const templateName = selected?.name || 'Vorlage';
+    const confirmDelete = window.confirm(`Vorlage "${templateName}" wirklich löschen?`);
+    if (!confirmDelete) {
+      return;
+    }
+
+    this.globalDataService.delete(this.modulTemplates, templateId).subscribe({
+      next: () => {
+        this.templateArray = this.templateArray.filter((tpl) => String(tpl.id) !== String(templateId));
+        this.formModul.patchValue({ template_id: '', template_name: '' });
+        this.globalDataService.erstelleMessage('success', 'Vorlage gelöscht.');
+      },
+      error: (error: any) => this.globalDataService.errorAnzeigen(error),
+    });
   }
 
   vorlageSpeichern(): void {
@@ -190,6 +235,11 @@ export class NewsComponent implements OnInit {
     return data;
   }
 
+  private normalizeNewsItem(item: any): INews {
+    const normalized = this.convertNewsDate([item])[0];
+    return normalized as INews;
+  }
+
   setzeSelectZurueck(): void {
     this.formAuswahl.controls['news'].setValue('', { onlySelf: true });
   }
@@ -207,6 +257,7 @@ export class NewsComponent implements OnInit {
       next: (erg: any) => {
         try {
           this.newsArray = this.newsArray.filter(n => n.id !== id);
+          this.newsDataSource.data = this.newsArray;
           this.resetFormNachAktion();
           this.globalDataService.erstelleMessage('success', 'News erfolgreich gelöscht!');
         } catch (e: any) {
@@ -301,7 +352,9 @@ export class NewsComponent implements OnInit {
         this.globalDataService.post(this.modul, fd, true).subscribe({
           next: (erg: any) => {
             try {
-              this.newsArray.push(erg);
+              const normalized = this.normalizeNewsItem(erg);
+              this.newsArray.push(normalized);
+              this.newsDataSource.data = this.newsArray;
               this.resetFormNachAktion();
               this.globalDataService.erstelleMessage('success', 'News erfolgreich gespeichert!');
             } catch (e: any) {
@@ -315,7 +368,9 @@ export class NewsComponent implements OnInit {
         this.globalDataService.post(this.modul, { title, text, typ }, false).subscribe({
           next: (erg: any) => {
             try {
-              this.newsArray.push(erg);
+              const normalized = this.normalizeNewsItem(erg);
+              this.newsArray.push(normalized);
+              this.newsDataSource.data = this.newsArray;
               this.resetFormNachAktion();
               this.globalDataService.erstelleMessage('success', 'News erfolgreich gespeichert!');
             } catch (e: any) {
@@ -337,7 +392,9 @@ export class NewsComponent implements OnInit {
         this.globalDataService.patch(this.modul, idValue, fd, true).subscribe({
           next: (erg: any) => {
             try {
-              this.newsArray = this.newsArray.map(n => (n.id === erg.id ? erg : n));
+              const normalized = this.normalizeNewsItem(erg);
+              this.newsArray = this.newsArray.map(n => (n.id === normalized.id ? normalized : n));
+              this.newsDataSource.data = this.newsArray;
               this.resetFormNachAktion();
               this.globalDataService.erstelleMessage('success', 'News erfolgreich geändert!');
             } catch (e: any) {
@@ -351,7 +408,9 @@ export class NewsComponent implements OnInit {
         this.globalDataService.patch(this.modul, idValue, { title, text, typ }, false).subscribe({
           next: (erg: any) => {
             try {
-              this.newsArray = this.newsArray.map(n => (n.id === erg.id ? erg : n));
+              const normalized = this.normalizeNewsItem(erg);
+              this.newsArray = this.newsArray.map(n => (n.id === normalized.id ? normalized : n));
+              this.newsDataSource.data = this.newsArray;
               this.resetFormNachAktion();
               this.globalDataService.erstelleMessage('success', 'News erfolgreich geändert!');
             } catch (e: any) {
@@ -405,6 +464,11 @@ export class NewsComponent implements OnInit {
 
   newsfeedOeffnen(): void {
     window.open('https://blaulichtcloud.at/newsfeed', '_blank');
+  }
+
+  applyFilter(value: string): void {
+    this.newsDataSource.filter = (value || '').trim().toLowerCase();
+    this.newsDataSource.paginator?.firstPage();
   }
 
   /** Nach Create/Update Formular, UI & File-Input zurücksetzen */

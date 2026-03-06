@@ -90,141 +90,198 @@
             </button>
           </div>
 
-          <section class="app-grid form-grid">
-            <div class="app-col-12 app-col-lg-6 mb-3">
-              <mat-form-field class="full-width">
-                <mat-label>Vorlage auswählen</mat-label>
-                <mat-select formControlName="template_id">
-                  <mat-option value="">Keine Vorlage</mat-option>
-                  @for (tpl of templateArray; track tpl.id) {
-                    <mat-option [value]="tpl.id">{{ tpl.name }} ({{ tpl.typ }})</mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
-            </div>
-            <div class="app-col-12 app-col-lg-6 mb-3 template-actions">
-              <button
-                mat-flat-button
-                color="primary"
-                type="button"
-                [disabled]="!formModul.controls['template_id'].value"
-                (click)="vorlageAnwenden()"
-              >
-                Vorlage laden
-              </button>
-            </div>
-            <div class="app-col-12 app-col-lg-6 mb-3">
-              <mat-form-field class="full-width">
-                <mat-label>Vorlagenname</mat-label>
-                <input matInput type="text" formControlName="template_name" placeholder="z. B. Geburtstagswünsche" />
-              </mat-form-field>
-            </div>
-            <div class="app-col-12 app-col-lg-6 mb-3 template-actions">
-              <button
-                mat-flat-button
-                color="accent"
-                type="button"
-                [disabled]="!formModul.controls['template_name'].value || !formModul.controls['title'].value || !formModul.controls['text'].value"
-                (click)="vorlageSpeichern()"
-              >
-                Als Vorlage speichern
-              </button>
-            </div>
-            @if (templateArray.length === 0) {
-              <div class="app-col-12 template-hint">Noch keine Vorlagen vorhanden.</div>
-            }
-
-            <div class="app-col-12 app-col-lg-6 mb-3">
-              <mat-form-field hintLabel="* Pflichtfeld" class="full-width">
-                <mat-label>Titel</mat-label>
-                <input matInput type="text" formControlName="title">
-                @if (formModul.controls['title'].hasError('required')) {
-                  <mat-error>
-                    Titel ist erforderlich!
-                  </mat-error>
-                }
-              </mat-form-field>
-            </div>
-            <div class="app-col-12 app-col-lg-6 mb-3">
-              <mat-form-field class="full-width">
-                <mat-label>Typ</mat-label>
-                <mat-select formControlName="typ">
-                    <mat-option value="intern">Intern</mat-option>
-                    <mat-option value="extern">Extern</mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
-            <div class="app-col-12 app-col-lg-12 mb-3">
-              <mat-form-field hintLabel="* Pflichtfeld" class="full-width">
-                <mat-label>Text</mat-label>
-                <textarea
-                  matInput
-                  formControlName="text"
-                  rows="5"
-                ></textarea>
-                @if (formModul.controls['text'].hasError('required')) {
-                <mat-error> Text ist erforderlich! </mat-error>
-                }
-              </mat-form-field>
-            </div>
-            <div class="app-col-12 app-col-lg-6 mb-3">
-              <div class="upload-btn-wrapper">
-                <mat-card [ngStyle]="{'background-color':!btnUploadStatus?'#0000001F':'#607d8b', 'color':!btnUploadStatus?'#00000061':'#ffffff'}">
-                  <label>{{btnText}}</label>
-                </mat-card>
-                <input #fotoUpload type="file" id="fotoUpload" accept=".jpg,.jpeg,.png" (change)="onFotoSelected($event)" />
+          <section class="template-block">
+            <h3 class="block-title">Vorlagenverwaltung</h3>
+            <section class="app-grid form-grid template-grid">
+              <div class="app-col-12 app-col-lg-6 mb-3">
+                <mat-form-field class="full-width" subscriptSizing="dynamic">
+                  <mat-label>Vorlage auswählen</mat-label>
+                  <mat-select formControlName="template_id">
+                    <mat-option value="">Keine Vorlage</mat-option>
+                    @for (tpl of templateArray; track tpl.id) {
+                      <mat-option [value]="tpl.id">{{ tpl.name }} ({{ tpl.typ }})</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
               </div>
-              <div >
-                @if (fileFound==true) {
-                  <button mat-flat-button color="primary" type="button" (click)="openModal()">Bild öffnen</button>
-                }
+              <div class="app-col-12 app-col-lg-6 mb-3 template-actions">
+                <button
+                  mat-flat-button
+                  color="primary"
+                  type="button"
+                  [disabled]="!formModul.controls['template_id'].value"
+                  (click)="vorlageAnwenden()"
+                >
+                  Vorlage bearbeiten
+                </button>
+                <button
+                  mat-flat-button
+                  color="warn"
+                  type="button"
+                  [disabled]="!formModul.controls['template_id'].value"
+                  (click)="vorlageLoeschen()"
+                >
+                  Vorlage löschen
+                </button>
               </div>
-            </div>
+              <div class="app-col-12 app-col-lg-6 mb-3">
+                <mat-form-field class="full-width" subscriptSizing="dynamic">
+                  <mat-label>Vorlagenname</mat-label>
+                  <input matInput type="text" formControlName="template_name" placeholder="z. B. Geburtstagswünsche" />
+                </mat-form-field>
+              </div>
+              <div class="app-col-12 app-col-lg-6 mb-3 template-actions">
+                <button
+                  mat-flat-button
+                  color="accent"
+                  type="button"
+                  [disabled]="!formModul.controls['template_name'].value || !formModul.controls['title'].value || !formModul.controls['text'].value"
+                  (click)="vorlageSpeichern()"
+                >
+                  {{ formModul.controls['template_id'].value ? 'Vorlage aktualisieren' : 'Als Vorlage speichern' }}
+                </button>
+              </div>
+              @if (templateArray.length === 0) {
+                <div class="app-col-12 template-hint">Noch keine Vorlagen vorhanden.</div>
+              }
+            </section>
           </section>
 
-          <button mat-flat-button color="warn" [hidden]="!formModul.controls['id'].value"
-          type="button" (click)="datenLoeschen()">Daten löschen</button>
+          <section class="news-block">
+            <h3 class="block-title">Newsbeitrag</h3>
+            <section class="app-grid form-grid news-grid">
+              <div class="app-col-12 app-col-lg-6 mb-3">
+                <mat-form-field hintLabel="* Pflichtfeld" class="full-width">
+                  <mat-label>Titel</mat-label>
+                  <input matInput type="text" formControlName="title">
+                  @if (formModul.controls['title'].hasError('required')) {
+                    <mat-error>
+                      Titel ist erforderlich!
+                    </mat-error>
+                  }
+                </mat-form-field>
+              </div>
+              <div class="app-col-12 app-col-lg-6 mb-3">
+                <mat-form-field class="full-width">
+                  <mat-label>Typ</mat-label>
+                  <mat-select formControlName="typ">
+                      <mat-option value="intern">Intern</mat-option>
+                      <mat-option value="extern">Extern</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <div class="app-col-12 app-col-lg-12 mb-3">
+                <mat-form-field hintLabel="* Pflichtfeld" class="full-width">
+                  <mat-label>Text</mat-label>
+                  <textarea
+                    matInput
+                    formControlName="text"
+                    rows="5"
+                  ></textarea>
+                  @if (formModul.controls['text'].hasError('required')) {
+                  <mat-error> Text ist erforderlich! </mat-error>
+                  }
+                </mat-form-field>
+              </div>
+              <div class="app-col-12 app-col-lg-6 mb-3">
+                <div class="upload-btn-wrapper">
+                  <mat-card [ngStyle]="{'background-color':!btnUploadStatus?'#0000001F':'#607d8b', 'color':!btnUploadStatus?'#00000061':'#ffffff'}">
+                    <label>{{btnText}}</label>
+                  </mat-card>
+                  <input #fotoUpload type="file" id="fotoUpload" accept=".jpg,.jpeg,.png" (change)="onFotoSelected($event)" />
+                </div>
+                <div >
+                  @if (fileFound==true) {
+                    <button mat-flat-button color="primary" type="button" (click)="openModal()">Bild öffnen</button>
+                  }
+                </div>
+              </div>
+            </section>
+          </section>
+
+            <button mat-flat-button class="delete-action" color="warn" [hidden]="!formModul.controls['id'].value"
+            type="button" (click)="datenLoeschen()">Daten löschen</button>
       </form>
 
       <section [hidden]="!formModul.disabled" class="news-list-wrap">
         @if (newsArray.length === 0) {
           <p class="empty">Noch keine News vorhanden.</p>
         } @else {
-          <section class="news-list">
-            @for (element of newsArray; track element.id) {
-              <article class="news-item">
-                <div class="news-main">
-                  <strong>{{ element.title }}</strong>
-                  <span>{{ element.created_at }}</span>
-                  <small>
+          <section class="news-table-wrap ui-table-wrap">
+            <mat-form-field class="filter-field" appearance="outline">
+              <mat-label>Suche</mat-label>
+              <input
+                matInput
+                type="text"
+                placeholder="Titel oder Typ filtern"
+                (keyup)="applyFilter($any($event.target).value)"
+              />
+              <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+
+            <table mat-table [dataSource]="newsDataSource" matSort class="news-table">
+                <ng-container matColumnDef="created_at">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Datum</th>
+                  <td mat-cell *matCellDef="let element">{{ element.created_at }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="title">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Titel</th>
+                  <td mat-cell *matCellDef="let element">{{ element.title }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="typ">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Typ</th>
+                  <td mat-cell *matCellDef="let element" class="type-cell">
                     @if (element.typ == 'extern') {
-                      <mat-icon class="m-0">home</mat-icon>
-                      <mat-icon class="m-0">public</mat-icon>
+                      <span class="type-indicator" aria-label="Extern">
+                        <mat-icon>public</mat-icon>
+                      </span>
                     } @else {
-                      <mat-icon class="m-0">home</mat-icon>
+                      <span class="type-indicator" aria-label="Intern">
+                        <mat-icon>home</mat-icon>
+                      </span>
                     }
-                  </small>
-                </div>
-                <div class="news-actions">
-                  <button
-                    mat-flat-button
-                    color="primary"
-                    type="button"
-                    (click)="auswahlBearbeiten(element)"
-                  >
-                    <mat-icon class="m-0">edit</mat-icon>
-                  </button>
-                  <button
-                    mat-flat-button
-                    color="warn"
-                    type="button"
-                    (click)="auswahlLoeschen(element.id)"
-                  >
-                    <mat-icon class="m-0">delete</mat-icon>
-                  </button>
-                </div>
-              </article>
-            }
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef>Aktionen</th>
+                  <td mat-cell *matCellDef="let element" class="ui-action-cell">
+                    <button
+                      mat-flat-button
+                      class="ui-action-btn"
+                      color="primary"
+                      type="button"
+                      (click)="auswahlBearbeiten(element)"
+                    >
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button
+                      mat-flat-button
+                      class="ui-action-btn"
+                      color="warn"
+                      type="button"
+                      (click)="auswahlLoeschen(element.id)"
+                    >
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="sichtbareSpaltenNews"></tr>
+                <tr mat-row *matRowDef="let row; columns: sichtbareSpaltenNews"></tr>
+                <tr class="mat-row" *matNoDataRow>
+                  <td class="mat-cell" colspan="4">Keine News passend zur Suche gefunden.</td>
+                </tr>
+            </table>
+
+            <mat-paginator
+              class="news-paginator"
+              [pageSize]="10"
+              [pageSizeOptions]="[10, 25, 50]"
+              showFirstLastButtons
+            ></mat-paginator>
           </section>
         }
       </section>
