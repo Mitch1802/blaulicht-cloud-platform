@@ -4,6 +4,8 @@ export interface IJugendEventTeilnehmer {
   stbnr: number;
   vorname: string;
   nachname: string;
+  dienstgrad?: string;
+  level?: number | null;
 }
 
 export interface IJugendEvent {
@@ -12,5 +14,7 @@ export interface IJugendEvent {
   titel: string;
   datum: string;
   ort: string;
+  kategorie: string;
+  kategorie_label?: string;
   teilnehmer: IJugendEventTeilnehmer[];
 }

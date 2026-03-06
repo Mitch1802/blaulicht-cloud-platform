@@ -16,6 +16,7 @@ class JugendApiTests(EndpointSmokeMixin, APITestCase):
             stbnr=3001,
             vorname="J",
             nachname="Mitglied",
+            dienstgrad="JFM",
             svnr="1234",
             geburtsdatum=date(2011, 1, 1),
             dienststatus=Mitglied.Dienststatus.JUGEND,
@@ -58,14 +59,30 @@ class JugendApiTests(EndpointSmokeMixin, APITestCase):
             "titel": "Wissentest März",
             "datum": "01.03.2026",
             "ort": "Feuerwehrhaus",
+            "kategorie": "WISSENSTEST",
             "teilnehmer_ids": [self.jugend_mitglied.pkid],
+            "teilnehmer_levels": [
+                {
+                    "pkid": self.jugend_mitglied.pkid,
+                    "level": 3,
+                }
+            ],
         }
 
         create_response = self.request_method("post", "jugend/events/", data=payload)
         self.assertEqual(create_response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(create_response.data.get("titel"), "Wissentest März")
         self.assertEqual(create_response.data.get("ort"), "Feuerwehrhaus")
+        self.assertEqual(create_response.data.get("kategorie"), "WISSENSTEST")
         self.assertEqual(len(create_response.data.get("teilnehmer", [])), 1)
+        self.assertEqual(create_response.data["teilnehmer"][0].get("dienstgrad"), "JFM")
+        self.assertEqual(create_response.data["teilnehmer"][0].get("level"), 3)
+
+        ausbildung = JugendAusbildung.objects.get(mitglied=self.jugend_mitglied)
+        self.assertTrue(ausbildung.wissentest_lv1)
+        self.assertTrue(ausbildung.wissentest_lv2)
+        self.assertTrue(ausbildung.wissentest_lv3)
+        self.assertFalse(ausbildung.wissentest_lv4)
 
         list_response = self.request_method("get", "jugend/events/")
         self.assertEqual(list_response.status_code, status.HTTP_200_OK)

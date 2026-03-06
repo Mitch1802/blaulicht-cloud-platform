@@ -18,6 +18,15 @@
             <button mat-flat-button color="primary" type="button" (click)="mitgliedFormAbbrechen()">Abbrechen</button>
           </div>
 
+          <div class="mitglied-info" [hidden]="!selectedMitglied">
+            <p><strong>Name:</strong> {{ selectedMitglied ? getVollerName(selectedMitglied) : '-' }}</p>
+            <p><strong>Status:</strong> {{ selectedMitglied ? getStatusText(selectedMitglied) : '-' }}</p>
+            <p><strong>Erprobung-Level:</strong> {{ selectedMitglied ? getErprobungLevelText(selectedMitglied) : '-' }}</p>
+            <p><strong>Wissentest-Level:</strong> {{ selectedMitglied ? getWissentestLevelText(selectedMitglied) : '-' }}</p>
+            <p><strong>Abzeichen:</strong> {{ selectedMitglied ? getAbzeichenText(selectedMitglied) : '-' }}</p>
+            <p><strong>Ausbildung:</strong> {{ selectedMitglied ? getAusbildungText(selectedMitglied) : '-' }}</p>
+          </div>
+
           <section class="app-grid form-grid">
             <div class="app-col-12 app-col-lg-4 mb-3">
               <mat-form-field class="full-width">
@@ -43,6 +52,21 @@
           <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef>Name</th>
             <td mat-cell *matCellDef="let element">{{ getVollerName(element) }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let element">{{ getStatusText(element) }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="abzeichen">
+            <th mat-header-cell *matHeaderCellDef>Abzeichen</th>
+            <td mat-cell *matCellDef="let element">{{ getAbzeichenText(element) }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="ausbildung">
+            <th mat-header-cell *matHeaderCellDef>Ausbildung</th>
+            <td mat-cell *matCellDef="let element">{{ getAusbildungText(element) }}</td>
           </ng-container>
 
           <ng-container matColumnDef="alter">
@@ -102,16 +126,55 @@
               </mat-form-field>
             </div>
 
-            <div class="app-col-12 app-col-lg-12 mb-3">
-              <mat-form-field class="full-width">
-                <mat-label>Teilnehmer</mat-label>
-                <mat-select formControlName="teilnehmer_ids" multiple>
-                  @for (member of jugendMitglieder; track member.pkid) {
-                    <mat-option [value]="member.pkid">{{ member.stbnr }} - {{ member.vorname }} {{ member.nachname }}</mat-option>
+            <div class="app-col-12 app-col-lg-6 mb-3">
+              <mat-form-field class="full-width" hintLabel="* Pflichtfeld">
+                <mat-label>Worum geht es?</mat-label>
+                <mat-select formControlName="kategorie">
+                  @for (option of eventKategorien; track option.value) {
+                    <mat-option [value]="option.value">{{ option.label }}</mat-option>
                   }
                 </mat-select>
               </mat-form-field>
             </div>
+
+            <div class="app-col-12 app-col-lg-12 mb-3">
+              <mat-form-field class="full-width">
+                <mat-label>Teilnehmer</mat-label>
+                <mat-select formControlName="teilnehmer_ids" multiple (selectionChange)="onEventTeilnehmerAuswahlGeaendert()">
+                  @for (member of jugendMitglieder; track member.pkid) {
+                    <mat-option [value]="member.pkid">{{ getMitgliedMitRangText(member) }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            @if (getAusgewaehlteEventMitglieder().length > 0) {
+              <div class="app-col-12 app-col-lg-12 mb-3">
+                <div class="teilnehmer-level-card">
+                  <h3>Erreichtes Level pro Mitglied</h3>
+
+                  @for (member of getAusgewaehlteEventMitglieder(); track member.pkid) {
+                    <div class="teilnehmer-level-row">
+                      <div class="teilnehmer-name">{{ getMitgliedMitRangText(member) }}</div>
+                      <mat-form-field class="teilnehmer-level-field">
+                        <mat-label>Level</mat-label>
+                        <mat-select
+                          [value]="getTeilnehmerLevel(member.pkid)"
+                          (selectionChange)="setTeilnehmerLevel(member.pkid, $event.value)"
+                        >
+                          <mat-option [value]="null">Kein Level</mat-option>
+                          <mat-option [value]="1">Level 1</mat-option>
+                          <mat-option [value]="2">Level 2</mat-option>
+                          <mat-option [value]="3">Level 3</mat-option>
+                          <mat-option [value]="4">Level 4</mat-option>
+                          <mat-option [value]="5">Level 5</mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
 
             <div class="app-col-12 app-col-lg-12 mb-3">
               <mat-form-field class="full-width">
@@ -129,6 +192,11 @@
           <ng-container matColumnDef="datum">
             <th mat-header-cell *matHeaderCellDef>Datum</th>
             <td mat-cell *matCellDef="let element">{{ element.datum }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="kategorie">
+            <th mat-header-cell *matHeaderCellDef>Thema</th>
+            <td mat-cell *matCellDef="let element">{{ getEventKategorieText(element) }}</td>
           </ng-container>
 
           <ng-container matColumnDef="titel">

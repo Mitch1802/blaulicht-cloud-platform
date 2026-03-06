@@ -32,7 +32,10 @@ class JugendAusbildungViewSet(ModelViewSet):
 
 
 class JugendEventViewSet(ModelViewSet):
-    queryset = JugendEvent.objects.prefetch_related("mitglieder_teilgenommen").all().order_by("-datum", "titel")
+    queryset = JugendEvent.objects.prefetch_related(
+        "mitglieder_teilgenommen",
+        "teilnahmen__mitglied",
+    ).all().order_by("-datum", "titel")
     serializer_class = JugendEventSerializer
     permission_classes = [
         permissions.IsAuthenticated,

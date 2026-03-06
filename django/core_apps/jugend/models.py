@@ -1,3 +1,4 @@
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -50,9 +51,23 @@ class JugendAusbildung(TimeStampedModel):
 
 
 class JugendEvent(TimeStampedModel):
+    class Kategorie(models.TextChoices):
+        WISSENSTEST = "WISSENSTEST", _("Wissentest")
+        ERPROBUNG = "ERPROBUNG", _("Erprobung")
+        FWTECHNIK = "FWTECHNIK", _("FW-Technik")
+        MELDER = "MELDER", _("Melder")
+        SICHER_ZU_WASSER = "SICHER_ZU_WASSER", _("Sicher zu Wasser")
+        SONSTIGES = "SONSTIGES", _("Sonstiges")
+
     titel = models.CharField(max_length=255, verbose_name=_("Titel"))
     datum = models.DateField(verbose_name=_("Datum"))
     ort = models.CharField(max_length=255, blank=True, verbose_name=_("Ort"))
+    kategorie = models.CharField(
+        max_length=32,
+        choices=Kategorie.choices,
+        default=Kategorie.SONSTIGES,
+        verbose_name=_("Kategorie"),
+    )
     mitglieder_teilgenommen = models.ManyToManyField(
         Mitglied,
         related_name="jugend_events_neu",
@@ -64,3 +79,33 @@ class JugendEvent(TimeStampedModel):
 
     def __str__(self):
         return f"{self.titel} ({self.datum})"
+
+
+class JugendEventTeilnahme(TimeStampedModel):
+    event = models.ForeignKey(
+        JugendEvent,
+        on_delete=models.CASCADE,
+        related_name="teilnahmen",
+        verbose_name=_("Event"),
+    )
+    mitglied = models.ForeignKey(
+        Mitglied,
+        on_delete=models.CASCADE,
+        related_name="jugend_event_teilnahmen",
+        verbose_name=_("Mitglied"),
+    )
+    level = models.PositiveSmallIntegerField(
+        blank=True,
+        null=True,
+        validators=[MinValueValidator(1), MaxValueValidator(5)],
+        verbose_name=_("Erreichtes Level"),
+    )
+
+    class Meta(TimeStampedModel.Meta):
+        ordering = ["event__datum", "mitglied__stbnr"]
+        unique_together = ("event", "mitglied")
+
+    def __str__(self):
+        if self.level is None:
+            return f"{self.event.titel} - {self.mitglied.stbnr}"
+        return f"{self.event.titel} - {self.mitglied.stbnr} (L{self.level})"

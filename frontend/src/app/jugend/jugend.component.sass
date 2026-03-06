@@ -41,6 +41,45 @@
 .form-grid
   margin-top: .2rem
 
+.mitglied-info
+  margin: 0 0 .8rem
+  padding: .75rem
+  border: 1px solid rgba(theme.$app-primary, .15)
+  border-radius: .6rem
+  background: rgba(theme.$app-primary, .04)
+
+  p
+    margin: 0 0 .25rem
+
+  p:last-child
+    margin-bottom: 0
+
+.teilnehmer-level-card
+  border: 1px solid rgba(theme.$app-primary, .15)
+  border-radius: .6rem
+  padding: .75rem
+  background: rgba(theme.$app-primary, .04)
+
+  h3
+    margin: 0 0 .6rem
+    color: theme.$app-primary
+    font-size: 1rem
+
+.teilnehmer-level-row
+  display: grid
+  grid-template-columns: 1fr minmax(180px, 220px)
+  gap: .75rem
+  align-items: center
+
+  & + &
+    margin-top: .45rem
+
+.teilnehmer-name
+  font-size: .95rem
+
+.teilnehmer-level-field
+  width: 100%
+
 .full-width
   width: 100%
 
@@ -70,3 +109,6 @@
   .form-actions
     button
       width: 100%
+
+  .teilnehmer-level-row
+    grid-template-columns: 1fr
