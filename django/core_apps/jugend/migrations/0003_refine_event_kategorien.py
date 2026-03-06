@@ -24,7 +24,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(migrate_kategorie_values, migrations.RunPython.noop),
         migrations.AlterField(
             model_name="jugendevent",
             name="kategorie",
@@ -44,4 +43,5 @@ class Migration(migrations.Migration):
                 verbose_name="Kategorie",
             ),
         ),
+        migrations.RunPython(migrate_kategorie_values, migrations.RunPython.noop),
     ]
