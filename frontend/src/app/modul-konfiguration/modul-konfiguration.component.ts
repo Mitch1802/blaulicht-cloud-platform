@@ -18,6 +18,7 @@ import { MatButton } from '@angular/material/button';
 import { MatInput } from '@angular/material/input';
 import { Router } from '@angular/router';
 import { IPdfTemplate } from '../_interface/pdf_template';
+import jugendRegelConfig from '../jugend/config.json';
 
 @Component({
   selector: 'app-modul-konfiguration',
@@ -48,11 +49,62 @@ export class ModulKonfigurationComponent implements OnInit {
   verfuegbareModulListe: any = [
     { key: 'start', label: 'Startseite' },
     { key: 'fmd', label: 'FMD' },
+    { key: 'jugend', label: 'Jugend' },
     { key: 'pdf', label: 'PDF Templates Zuweisung' },
   ];
 
   modulListe: any = [];
   private modulByKey = new Map<string, any>();
+
+  private readonly jugendDefaultKonfiguration = jugendRegelConfig;
+
+  readonly jugendTrackInfos: ReadonlyArray<{ key: string; label: string }> = [
+    { key: 'erprobung', label: 'Erprobung' },
+    { key: 'wissentest', label: 'Wissentest' },
+    { key: 'fertigkeit_melder', label: 'Fertigkeitsabzeichen Melder' },
+    { key: 'fertigkeit_fwtechnik', label: 'Fertigkeitsabzeichen FW-Technik' },
+    { key: 'fertigkeit_sicher_zu_wasser', label: 'Fertigkeitsabzeichen Sicher zu Wasser' },
+  ];
+
+  readonly jugendTokenInfos: ReadonlyArray<{ token: string; label: string }> = [
+    { token: 'erprobung_1', label: 'Erprobung Stufe 1' },
+    { token: 'erprobung_2', label: 'Erprobung Stufe 2' },
+    { token: 'erprobung_3', label: 'Erprobung Stufe 3' },
+    { token: 'erprobung_4', label: 'Erprobung Stufe 4' },
+    { token: 'erprobung_5', label: 'Erprobung Stufe 5' },
+    { token: 'wissentest_1', label: 'Wissentest Stufe 1' },
+    { token: 'wissentest_2', label: 'Wissentest Stufe 2' },
+    { token: 'wissentest_3', label: 'Wissentest Stufe 3' },
+    { token: 'wissentest_4', label: 'Wissentest Stufe 4' },
+    { token: 'wissentest_5', label: 'Wissentest Stufe 5' },
+    { token: 'fertigkeit_melder_1', label: 'Melder Spiel' },
+    { token: 'fertigkeit_melder_2', label: 'Melder Abzeichen' },
+    { token: 'fertigkeit_fwtechnik_1', label: 'FW-Technik Spiel' },
+    { token: 'fertigkeit_fwtechnik_2', label: 'FW-Technik Abzeichen' },
+    { token: 'fertigkeit_sicher_zu_wasser_1', label: 'Sicher zu Wasser Spiel' },
+    { token: 'fertigkeit_sicher_zu_wasser_2', label: 'Sicher zu Wasser Abzeichen' },
+  ];
+
+  readonly jugendKonfigBeispiel = JSON.stringify(
+    {
+      regeln: {
+        erprobung: {
+          '3': {
+            min_age: 12,
+            requires_all: ['erprobung_2'],
+          },
+        },
+        fertigkeit_melder: {
+          '2': {
+            min_age: 12,
+            requires_all: ['fertigkeit_melder_1'],
+          },
+        },
+      },
+    },
+    null,
+    2,
+  );
 
   formModul = new FormGroup({
     id: new FormControl<number | null>(null),
@@ -119,7 +171,7 @@ export class ModulKonfigurationComponent implements OnInit {
       this.formModul.patchValue({
         id: null,
         modul: key,
-        konfiguration: JSON.stringify({}, null, 2),
+        konfiguration: JSON.stringify(this.getDefaultKonfigurationForModul(key), null, 2),
       }, { emitEvent: false });
 
       if (key === 'pdf') {
@@ -261,6 +313,17 @@ export class ModulKonfigurationComponent implements OnInit {
   private syncPdfMappingToKonfigurationControl(): void {
     const json = JSON.stringify(this.pdfMappingForm.value ?? {}, null, 2);
     this.formModul.controls['konfiguration'].setValue(json, { emitEvent: false });
+  }
+
+  private getDefaultKonfigurationForModul(modul: string): Record<string, unknown> {
+    if (modul === 'jugend') {
+      return JSON.parse(JSON.stringify(this.jugendDefaultKonfiguration));
+    }
+    return {};
+  }
+
+  isJugendModulAusgewaehlt(): boolean {
+    return this.formModul.controls['modul'].value === 'jugend';
   }
 
   // -----------------------

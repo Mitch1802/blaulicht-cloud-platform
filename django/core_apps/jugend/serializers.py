@@ -58,6 +58,10 @@ class JugendEventSerializer(serializers.ModelSerializer):
         return value
 
     def validate(self, attrs):
+        kategorie = attrs.get("kategorie")
+        if self.instance is not None and kategorie is None:
+            kategorie = self.instance.kategorie
+
         teilnehmer_ids = attrs.get("teilnehmer_ids")
         teilnehmer_levels = attrs.get("teilnehmer_levels")
 
@@ -67,6 +71,22 @@ class JugendEventSerializer(serializers.ModelSerializer):
             if invalid:
                 raise serializers.ValidationError(
                     {"teilnehmer_levels": "Levels dürfen nur für ausgewählte Teilnehmer gesetzt werden."}
+                )
+
+        if kategorie is not None and teilnehmer_levels is not None:
+            max_level = self._get_max_level_for_category(kategorie)
+            invalid_levels = [
+                item["level"]
+                for item in teilnehmer_levels
+                if item.get("level") is not None and int(item["level"]) > max_level
+            ]
+            if invalid_levels:
+                raise serializers.ValidationError(
+                    {
+                        "teilnehmer_levels": (
+                            f"Für die gewählte Kategorie ist maximal Level {max_level} erlaubt."
+                        )
+                    }
                 )
 
         return attrs
@@ -189,10 +209,6 @@ class JugendEventSerializer(serializers.ModelSerializer):
             JugendEvent.Kategorie.WISSENSTEST: "wissentest",
             JugendEvent.Kategorie.ERPROBUNG: "erprobung",
         }
-        prefix = category_to_prefix.get(event.kategorie)
-        if prefix is None:
-            return
-
         level_by_pkid = {
             int(item["pkid"]): int(item["level"])
             for item in teilnehmer_levels
@@ -206,14 +222,31 @@ class JugendEventSerializer(serializers.ModelSerializer):
             dienststatus=Mitglied.Dienststatus.JUGEND,
         )
 
+        prefix = category_to_prefix.get(event.kategorie)
+        fertigkeit_fields = self._get_fertigkeitsabzeichen_fields(event.kategorie)
+
         for mitglied in mitglieder:
             ausbildung, _ = JugendAusbildung.objects.get_or_create(mitglied=mitglied)
-            changed = self._set_level_for_prefix(
-                ausbildung=ausbildung,
-                prefix=prefix,
-                level=level_by_pkid[mitglied.pkid],
-                datum=event.datum,
-            )
+            level = level_by_pkid[mitglied.pkid]
+
+            changed = False
+            if prefix is not None:
+                changed = self._set_level_for_prefix(
+                    ausbildung=ausbildung,
+                    prefix=prefix,
+                    level=level,
+                    datum=event.datum,
+                )
+
+            if fertigkeit_fields is not None:
+                changed = self._set_fertigkeitsabzeichen_level(
+                    ausbildung=ausbildung,
+                    spiel_field=fertigkeit_fields[0],
+                    abzeichen_field=fertigkeit_fields[1],
+                    level=level,
+                    datum=event.datum,
+                ) or changed
+
             if changed:
                 ausbildung.save()
 
@@ -234,3 +267,33 @@ class JugendEventSerializer(serializers.ModelSerializer):
                 changed = True
 
         return changed
+
+    def _set_fertigkeitsabzeichen_level(self, ausbildung, spiel_field, abzeichen_field, level, datum):
+        changed = False
+        bounded_level = max(1, min(int(level), 2))
+
+        if getattr(ausbildung, spiel_field) is None:
+            setattr(ausbildung, spiel_field, datum)
+            changed = True
+
+        if bounded_level >= 2 and getattr(ausbildung, abzeichen_field) is None:
+            setattr(ausbildung, abzeichen_field, datum)
+            changed = True
+
+        return changed
+
+    def _get_max_level_for_category(self, kategorie):
+        if kategorie in (JugendEvent.Kategorie.WISSENSTEST, JugendEvent.Kategorie.ERPROBUNG):
+            return 5
+        return 2
+
+    def _get_fertigkeitsabzeichen_fields(self, kategorie):
+        mapping = {
+            JugendEvent.Kategorie.FERTIGKEITSABZEICHEN_MELDER: ("melder_spiel_datum", "melder_datum"),
+            JugendEvent.Kategorie.FERTIGKEITSABZEICHEN_FWTECHNIK: ("fwtechnik_spiel_datum", "fwtechnik_datum"),
+            JugendEvent.Kategorie.FERTIGKEITSABZEICHEN_SICHER_ZU_WASSER: (
+                "sicher_zu_wasser_spiel_datum",
+                "sicher_zu_wasser_datum",
+            ),
+        }
+        return mapping.get(kategorie)

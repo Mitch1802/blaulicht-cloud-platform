@@ -48,6 +48,50 @@
 	grid-template-columns: 1fr
 	gap: .5rem
 
+.jugend-hilfe-box
+	margin-top: .75rem
+	padding: .85rem 1rem
+	border: 1px solid rgba(theme.$app-primary, .25)
+	border-radius: .75rem
+	background: rgba(theme.$app-primary, .05)
+
+	h3
+		margin: 0 0 .45rem
+		font-size: 1rem
+		color: theme.$app-primary
+
+	h4
+		margin: .65rem 0 .35rem
+		font-size: .92rem
+
+	p
+		margin: 0 0 .45rem
+
+	ul
+		margin: 0
+		padding-left: 1.1rem
+
+	pre
+		margin: .45rem 0 0
+		padding: .65rem
+		border-radius: .5rem
+		background: #fff
+		overflow: auto
+		font-size: .82rem
+
+.hilfe-grid
+	display: grid
+	grid-template-columns: repeat(2, minmax(0, 1fr))
+	gap: .65rem
+
+.token-grid
+	display: grid
+	grid-template-columns: repeat(2, minmax(0, 1fr))
+	gap: .35rem .85rem
+
+.token-item
+	font-size: .84rem
+
 @media (max-width: 768px)
 	.modul-page
 		padding: .75rem .75rem 1.5rem
@@ -67,3 +111,7 @@
 	.form-actions
 		button
 			width: 100%
+
+	.hilfe-grid,
+	.token-grid
+		grid-template-columns: 1fr

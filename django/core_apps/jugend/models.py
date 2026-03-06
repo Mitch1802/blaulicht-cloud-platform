@@ -54,18 +54,20 @@ class JugendEvent(TimeStampedModel):
     class Kategorie(models.TextChoices):
         WISSENSTEST = "WISSENSTEST", _("Wissentest")
         ERPROBUNG = "ERPROBUNG", _("Erprobung")
-        FWTECHNIK = "FWTECHNIK", _("FW-Technik")
-        MELDER = "MELDER", _("Melder")
-        SICHER_ZU_WASSER = "SICHER_ZU_WASSER", _("Sicher zu Wasser")
-        SONSTIGES = "SONSTIGES", _("Sonstiges")
+        FERTIGKEITSABZEICHEN_MELDER = "FERTIGKEITSABZEICHEN_MELDER", _("Fertigkeitsabzeichen Melder")
+        FERTIGKEITSABZEICHEN_FWTECHNIK = "FERTIGKEITSABZEICHEN_FWTECHNIK", _("Fertigkeitsabzeichen FW-Technik")
+        FERTIGKEITSABZEICHEN_SICHER_ZU_WASSER = (
+            "FERTIGKEITSABZEICHEN_SICHER_ZU_WASSER",
+            _("Fertigkeitsabzeichen Sicher zu Wasser"),
+        )
 
     titel = models.CharField(max_length=255, verbose_name=_("Titel"))
     datum = models.DateField(verbose_name=_("Datum"))
     ort = models.CharField(max_length=255, blank=True, verbose_name=_("Ort"))
     kategorie = models.CharField(
-        max_length=32,
+        max_length=64,
         choices=Kategorie.choices,
-        default=Kategorie.SONSTIGES,
+        default=Kategorie.ERPROBUNG,
         verbose_name=_("Kategorie"),
     )
     mitglieder_teilgenommen = models.ManyToManyField(

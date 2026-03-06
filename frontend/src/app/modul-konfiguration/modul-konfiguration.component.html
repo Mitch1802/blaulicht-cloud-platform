@@ -87,6 +87,43 @@
                   <mat-error>Ungültiges JSON!</mat-error>
                 }
               </mat-form-field>
+
+              @if (isJugendModulAusgewaehlt()) {
+                <section class="jugend-hilfe-box">
+                  <h3>Jugend-Konfiguration Hilfe</h3>
+                  <p>Regeln werden unter <code>regeln.&lt;track&gt;.&lt;level&gt;</code> definiert.</p>
+
+                  <div class="hilfe-grid">
+                    <div>
+                      <h4>Track-Keys</h4>
+                      <ul>
+                        @for (info of jugendTrackInfos; track info.key) {
+                          <li><code>{{ info.key }}</code> - {{ info.label }}</li>
+                        }
+                      </ul>
+                    </div>
+
+                    <div>
+                      <h4>Unterstützte Felder je Level</h4>
+                      <ul>
+                        <li><code>min_age</code>: Mindestalter in Jahren</li>
+                        <li><code>max_age</code>: Höchstalter in Jahren</li>
+                        <li><code>requires_all</code>: Liste erfüllter Tokens</li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <h4>Erlaubte Tokens für <code>requires_all</code></h4>
+                  <div class="token-grid">
+                    @for (token of jugendTokenInfos; track token.token) {
+                      <div class="token-item"><code>{{ token.token }}</code> - {{ token.label }}</div>
+                    }
+                  </div>
+
+                  <h4>Beispiel</h4>
+                  <pre><code>{{ jugendKonfigBeispiel }}</code></pre>
+                </section>
+              }
             }
           </div>
         </section>

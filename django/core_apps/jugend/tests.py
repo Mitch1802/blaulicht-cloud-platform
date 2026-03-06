@@ -88,6 +88,49 @@ class JugendApiTests(EndpointSmokeMixin, APITestCase):
         self.assertEqual(list_response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(list_response.data), 1)
 
+    def test_event_fertigkeitsabzeichen_updates_fields(self):
+        self.client.force_authenticate(user=self.user)
+        payload = {
+            "titel": "Melder-Abzeichen",
+            "datum": "02.03.2026",
+            "ort": "Feuerwehrhaus",
+            "kategorie": "FERTIGKEITSABZEICHEN_MELDER",
+            "teilnehmer_ids": [self.jugend_mitglied.pkid],
+            "teilnehmer_levels": [
+                {
+                    "pkid": self.jugend_mitglied.pkid,
+                    "level": 2,
+                }
+            ],
+        }
+
+        create_response = self.request_method("post", "jugend/events/", data=payload)
+        self.assertEqual(create_response.status_code, status.HTTP_201_CREATED)
+
+        ausbildung = JugendAusbildung.objects.get(mitglied=self.jugend_mitglied)
+        self.assertIsNotNone(ausbildung.melder_spiel_datum)
+        self.assertIsNotNone(ausbildung.melder_datum)
+
+    def test_event_fertigkeitsabzeichen_rejects_level_above_2(self):
+        self.client.force_authenticate(user=self.user)
+        payload = {
+            "titel": "FW-Technik",
+            "datum": "02.03.2026",
+            "ort": "Feuerwehrhaus",
+            "kategorie": "FERTIGKEITSABZEICHEN_FWTECHNIK",
+            "teilnehmer_ids": [self.jugend_mitglied.pkid],
+            "teilnehmer_levels": [
+                {
+                    "pkid": self.jugend_mitglied.pkid,
+                    "level": 3,
+                }
+            ],
+        }
+
+        response = self.request_method("post", "jugend/events/", data=payload)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("teilnehmer_levels", response.data)
+
     def test_model_str(self):
         event = JugendEvent.objects.create(titel="Probe", datum=date(2026, 3, 1), ort="Haus")
         ausbildung = JugendAusbildung.objects.create(mitglied=self.jugend_mitglied)

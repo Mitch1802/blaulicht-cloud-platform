@@ -1,0 +1,189 @@
+{
+  "schema_version": 1,
+  "quelle": "NOE Handbuch Feuerwehrjugend",
+  "letzte_aktualisierung": "2026-03-06",
+  "hinweis": "Aktuell werden min_age, max_age und requires_all technisch ausgewertet. Mitgliedschaftsdauer aus dem Handbuch ist dokumentiert, wird im UI derzeit aber nicht automatisch geprüft.",
+  "quellen": [
+    {
+      "titel": "4.5.6 Erprobungs-Spiel der Feuerwehrjugend",
+      "url": "https://www.noe122.at/handbuch-feuerwehrjugend/hbfj_4-5-6.pdf",
+      "kernaussagen": [
+        "Teilnahme 10- und 11-jaehrige Feuerwehrjugendmitglieder",
+        "2. Erprobungs-Spiel erfordert 1. Erprobungs-Spiel"
+      ]
+    },
+    {
+      "titel": "4.6 Erprobungen in der Feuerwehrjugend",
+      "url": "https://www.noe122.at/handbuch-feuerwehrjugend/hbfj_4-6.pdf",
+      "kernaussagen": [
+        "1. Erprobung ab vollendetem 12. Lebensjahr",
+        "2. Erprobung erfordert 1. Erprobung",
+        "3. Erprobung erfordert 2. Erprobung"
+      ]
+    },
+    {
+      "titel": "4.5.5 Wissenstest-Spiel der Feuerwehrjugend",
+      "url": "https://www.noe122.at/handbuch-feuerwehrjugend/hbfj_4-5-5.pdf",
+      "kernaussagen": [
+        "Teilnahme 10- und 11-jaehrige Feuerwehrjugendmitglieder",
+        "Stufen Bronze und Silber"
+      ]
+    },
+    {
+      "titel": "4.8 Wissenstest der Feuerwehrjugend",
+      "url": "https://www.noe122.at/handbuch-feuerwehrjugend/hbfj_4-8.pdf",
+      "kernaussagen": [
+        "Bronze ab vollendetem 12. Lebensjahr",
+        "Silber zweite erfolgreiche Teilnahme",
+        "Gold dritte erfolgreiche Teilnahme"
+      ]
+    },
+    {
+      "titel": "4.5.2 Feuerwehrtechnik-Spiel",
+      "url": "https://www.noe122.at/handbuch-feuerwehrjugend/hbfj_4-5-2.pdf",
+      "kernaussagen": [
+        "Teilnahme ab vollendetem 10. Lebensjahr",
+        "Hoechstalter 12. Geburtstag"
+      ]
+    },
+    {
+      "titel": "4.7.2 Fertigkeitsabzeichen Feuerwehrtechnik",
+      "url": "https://www.noe122.at/handbuch-feuerwehrjugend/hbfj_4-7-2.pdf",
+      "kernaussagen": [
+        "Erwerb ab vollendetem 12. Lebensjahr"
+      ]
+    },
+    {
+      "titel": "4.5.3 Melder-Spiel",
+      "url": "https://www.noe122.at/handbuch-feuerwehrjugend/hbfj_4-5-3.pdf",
+      "kernaussagen": [
+        "Teilnahme 10- und 11-jaehrige Feuerwehrjugendmitglieder"
+      ]
+    },
+    {
+      "titel": "4.7.3 Fertigkeitsabzeichen Melder",
+      "url": "https://www.noe122.at/handbuch-feuerwehrjugend/hbfj_4-7-3.pdf",
+      "kernaussagen": [
+        "Abzeichen aufbauend auf Melder-Spiel"
+      ]
+    },
+    {
+      "titel": "4.5.4 Sicher zu Wasser und am Land - Spiel",
+      "url": "https://www.noe122.at/handbuch-feuerwehrjugend/hbfj_4-5-4.pdf",
+      "kernaussagen": [
+        "Teilnahme 10- und 11-jaehrige Feuerwehrjugendmitglieder"
+      ]
+    },
+    {
+      "titel": "4.7.4 Fertigkeitsabzeichen Sicher zu Wasser und am Land",
+      "url": "https://www.noe122.at/handbuch-feuerwehrjugend/hbfj_4-7-4.pdf",
+      "kernaussagen": [
+        "Erwerb ab vollendetem 12. Lebensjahr"
+      ]
+    }
+  ],
+  "regeln": {
+    "erprobung": {
+      "1": {
+        "min_age": 10,
+        "max_age": 11,
+        "hinweis": "Bronze Spiel"
+      },
+      "2": {
+        "min_age": 10,
+        "max_age": 11,
+        "requires_all": [
+          "erprobung_1"
+        ],
+        "hinweis": "Silber Spiel"
+      },
+      "3": {
+        "min_age": 12,
+        "hinweis": "Bronze"
+      },
+      "4": {
+        "min_age": 12,
+        "requires_all": [
+          "erprobung_3"
+        ],
+        "hinweis": "Silber"
+      },
+      "5": {
+        "min_age": 12,
+        "requires_all": [
+          "erprobung_4"
+        ],
+        "hinweis": "Gold"
+      }
+    },
+    "wissentest": {
+      "1": {
+        "min_age": 10,
+        "max_age": 11,
+        "hinweis": "Bronze Spiel"
+      },
+      "2": {
+        "min_age": 10,
+        "max_age": 11,
+        "requires_all": [
+          "wissentest_1"
+        ],
+        "hinweis": "Silber Spiel"
+      },
+      "3": {
+        "min_age": 12,
+        "hinweis": "Bronze"
+      },
+      "4": {
+        "min_age": 12,
+        "requires_all": [
+          "wissentest_3"
+        ],
+        "hinweis": "Silber"
+      },
+      "5": {
+        "min_age": 12,
+        "requires_all": [
+          "wissentest_4"
+        ],
+        "hinweis": "Gold"
+      }
+    },
+    "fertigkeit_melder": {
+      "1": {
+        "min_age": 10,
+        "max_age": 11,
+        "hinweis": "Melder Spiel"
+      },
+      "2": {
+        "min_age": 12,
+        "requires_all": [
+          "fertigkeit_melder_1"
+        ],
+        "hinweis": "Fertigkeitsabzeichen Melder"
+      }
+    },
+    "fertigkeit_fwtechnik": {
+      "1": {
+        "min_age": 10,
+        "max_age": 11,
+        "hinweis": "FW-Technik Spiel"
+      },
+      "2": {
+        "min_age": 12,
+        "hinweis": "Fertigkeitsabzeichen FW-Technik"
+      }
+    },
+    "fertigkeit_sicher_zu_wasser": {
+      "1": {
+        "min_age": 10,
+        "max_age": 11,
+        "hinweis": "Sicher zu Wasser Spiel"
+      },
+      "2": {
+        "min_age": 12,
+        "hinweis": "Fertigkeitsabzeichen Sicher zu Wasser"
+      }
+    }
+  }
+}
