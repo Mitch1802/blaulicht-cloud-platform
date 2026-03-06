@@ -74,6 +74,32 @@
               </mat-form-field>
             </div>
             <div class="app-col-12 app-col-lg-12 mb-3">
+              <div class="leihstatus-checkbox">
+                <mat-checkbox formControlName="ist_verliehen">Aktuell verliehen</mat-checkbox>
+              </div>
+            </div>
+            @if (isVerliehenAktiv()) {
+            <div class="app-col-12 app-col-lg-6 mb-3">
+              <mat-form-field class="full-width">
+                <mat-label>Verliehen an</mat-label>
+                <input matInput type="text" formControlName="verliehen_an" />
+                @if (
+                  isVerliehenAktiv() &&
+                  !formModul.controls['verliehen_an'].value?.trim() &&
+                  formModul.controls['verliehen_an'].touched
+                ) {
+                <mat-error>Bitte Empfänger angeben.</mat-error>
+                }
+              </mat-form-field>
+            </div>
+            <div class="app-col-12 app-col-lg-6 mb-3">
+              <mat-form-field class="full-width">
+                <mat-label>Verliehen bis</mat-label>
+                <input matInput type="date" formControlName="verliehen_bis" />
+              </mat-form-field>
+            </div>
+            }
+            <div class="app-col-12 app-col-lg-12 mb-3">
               <mat-form-field class="full-width">
                 <mat-label>Notiz</mat-label>
                 <textarea matInput formControlName="notiz" rows="5"></textarea>
@@ -146,6 +172,10 @@
           <ng-container matColumnDef="lagerort">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Lagerort</th>
             <td mat-cell *matCellDef="let element">{{ element.lagerort }}</td>
+          </ng-container>
+          <ng-container matColumnDef="leihstatus">
+            <th mat-header-cell *matHeaderCellDef>Leihstatus</th>
+            <td mat-cell *matCellDef="let element">{{ getLeihstatusText(element) }}</td>
           </ng-container>
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef>Aktionen</th>

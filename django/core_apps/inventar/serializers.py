@@ -30,6 +30,25 @@ class InventarSerializer(serializers.ModelSerializer):
             file.name = base
         return file
 
+    def validate(self, attrs):
+        ist_verliehen = attrs.get("ist_verliehen", getattr(self.instance, "ist_verliehen", False))
+        verliehen_an = attrs.get("verliehen_an", getattr(self.instance, "verliehen_an", None))
+
+        if isinstance(verliehen_an, str):
+            verliehen_an = verliehen_an.strip()
+            attrs["verliehen_an"] = verliehen_an or None
+
+        if ist_verliehen and not verliehen_an:
+            raise serializers.ValidationError({
+                "verliehen_an": "Bitte angeben, an wen der Gegenstand verliehen wurde."
+            })
+
+        if not ist_verliehen:
+            attrs["verliehen_an"] = None
+            attrs["verliehen_bis"] = None
+
+        return attrs
+
     def create(self, validated_data):
         foto = validated_data.pop("foto", None)
         instance = Inventar.objects.create(**validated_data)

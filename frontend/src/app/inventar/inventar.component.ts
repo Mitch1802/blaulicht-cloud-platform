@@ -2,11 +2,13 @@ import { IInventar } from './../_interface/inventar';
 import {
   AfterViewInit,
   Component,
+  DestroyRef,
   OnInit,
   ViewChild,
   ElementRef,
   inject,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormControl,
   FormGroup,
@@ -21,6 +23,7 @@ import { NgStyle } from '@angular/common';
 import { MatButton } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Router } from '@angular/router';
 import { HeaderComponent } from '../_template/header/header.component';
 import { FormatService } from '../helpers/format.service';
@@ -43,6 +46,7 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
     MatError,
     NgStyle,
     MatAutocompleteModule,
+    MatCheckboxModule,
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
@@ -59,6 +63,7 @@ export class InventarComponent implements OnInit, AfterViewInit {
   globalDataService = inject(GlobalDataService);
   formatService = inject(FormatService);
   router = inject(Router);
+  destroyRef = inject(DestroyRef);
 
   title = 'Inventar verwalten';
   modul = 'inventar';
@@ -66,7 +71,7 @@ export class InventarComponent implements OnInit, AfterViewInit {
   inventarArray: IInventar[] = [];
   breadcrumb: any = [];
   dataSource = new MatTableDataSource<IInventar>(this.inventarArray);
-  sichtbareSpalten: string[] = ['bezeichnung', 'anzahl', 'lagerort', 'actions'];
+  sichtbareSpalten: string[] = ['bezeichnung', 'anzahl', 'lagerort', 'leihstatus', 'actions'];
 
   btnText = 'Bild auswählen';
   fileName = '';
@@ -79,6 +84,9 @@ export class InventarComponent implements OnInit, AfterViewInit {
     bezeichnung: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
     anzahl: new FormControl<number>(0),
     lagerort: new FormControl<string>(''),
+    ist_verliehen: new FormControl<boolean>(false, { nonNullable: true }),
+    verliehen_an: new FormControl<string>(''),
+    verliehen_bis: new FormControl<string>(''),
     notiz: new FormControl<string>(''),
     // nur für Anzeige/Modal – NICHT ans Backend senden
     foto_url: new FormControl<string>(''),
@@ -94,6 +102,7 @@ export class InventarComponent implements OnInit, AfterViewInit {
     this.breadcrumb = this.globalDataService.ladeBreadcrumb();
 
     this.formModul.disable();
+    this.observeLeihstatus();
 
     this.globalDataService.get(this.modul).subscribe({
       next: (erg: any) => {
@@ -131,6 +140,56 @@ export class InventarComponent implements OnInit, AfterViewInit {
       data[i].updated_at = updated_at_date + '_' + updated_at_time[0] + ':' + updated_at_time[1];
     }
     return data;
+  }
+
+  isVerliehenAktiv(): boolean {
+    return this.formModul.controls['ist_verliehen'].value === true;
+  }
+
+  getLeihstatusText(element: IInventar): string {
+    if (element.ist_verliehen !== true) {
+      return 'Verfügbar';
+    }
+
+    const verliehenAn = (element.verliehen_an ?? '').trim();
+    const verliehenBis = element.verliehen_bis
+      ? this.formatService.formatDatum(element.verliehen_bis)
+      : '';
+
+    if (verliehenAn && verliehenBis) {
+      return `Verliehen an ${verliehenAn} (bis ${verliehenBis})`;
+    }
+    if (verliehenAn) {
+      return `Verliehen an ${verliehenAn}`;
+    }
+    if (verliehenBis) {
+      return `Verliehen (bis ${verliehenBis})`;
+    }
+    return 'Verliehen';
+  }
+
+  private buildLeihdatenPayload(): {
+    ist_verliehen: boolean;
+    verliehen_an: string | null;
+    verliehen_bis: string | null;
+  } {
+    const istVerliehen = this.formModul.controls['ist_verliehen'].value === true;
+    const verliehenAn = (this.formModul.controls['verliehen_an'].value ?? '').trim();
+    const verliehenBis = (this.formModul.controls['verliehen_bis'].value ?? '').trim();
+
+    if (!istVerliehen) {
+      return {
+        ist_verliehen: false,
+        verliehen_an: null,
+        verliehen_bis: null,
+      };
+    }
+
+    return {
+      ist_verliehen: true,
+      verliehen_an: verliehenAn || null,
+      verliehen_bis: verliehenBis || null,
+    };
   }
 
   datenLoeschen(): void {
@@ -179,9 +238,12 @@ export class InventarComponent implements OnInit, AfterViewInit {
           this.formModul.setValue({
             id: details.id!,
             bezeichnung: details.bezeichnung,
-            anzahl: details.anzahl,
-            lagerort: details.lagerort,
-            notiz: details.notiz,
+            anzahl: details.anzahl ?? 0,
+            lagerort: details.lagerort ?? '',
+            ist_verliehen: details.ist_verliehen === true,
+            verliehen_an: details.verliehen_an ?? '',
+            verliehen_bis: details.verliehen_bis ?? '',
+            notiz: details.notiz ?? '',
             foto_url: ''
           });
         } catch (e: any) {
@@ -193,7 +255,7 @@ export class InventarComponent implements OnInit, AfterViewInit {
   }
 
   abbrechen(): void {
-    this.globalDataService.erstelleMessage('info', 'News nicht gespeichert!');
+    this.globalDataService.erstelleMessage('info', 'Inventar nicht gespeichert!');
     this.router.navigate(['/inventar']);
   }
 
@@ -204,7 +266,17 @@ export class InventarComponent implements OnInit, AfterViewInit {
     this.fileName = '';
     this.filePfad = '';
     this.fileFound = false;
-    this.formModul.patchValue({ id: '', bezeichnung: '', anzahl: 0, lagerort: '', notiz: '', foto_url: '' });
+    this.formModul.patchValue({
+      id: '',
+      bezeichnung: '',
+      anzahl: 0,
+      lagerort: '',
+      ist_verliehen: false,
+      verliehen_an: '',
+      verliehen_bis: '',
+      notiz: '',
+      foto_url: ''
+    });
 
     // Datei-Auswahl im Input zurücksetzen
     if (this.fotoRef?.nativeElement) {
@@ -215,19 +287,37 @@ export class InventarComponent implements OnInit, AfterViewInit {
   datenSpeichern(): void {
     const idValue = this.formModul.controls['id'].value || '';
     const bezeichnung = this.formModul.controls['bezeichnung'].value!;
-    const anzahl = this.formModul.controls['anzahl'].value!;
-    const lagerort = this.formModul.controls['lagerort'].value!;
-    const notiz = this.formModul.controls['notiz'].value!;
+    const anzahl = this.formModul.controls['anzahl'].value ?? 0;
+    const lagerort = this.formModul.controls['lagerort'].value ?? '';
+    const notiz = this.formModul.controls['notiz'].value ?? '';
+    const leihdaten = this.buildLeihdatenPayload();
     const file = this.getSelectedFile();
+
+    if (leihdaten.ist_verliehen && !leihdaten.verliehen_an) {
+      this.formModul.controls['verliehen_an'].markAsTouched();
+      this.globalDataService.erstelleMessage('error', 'Bitte angeben, an wen der Gegenstand verliehen wird.');
+      return;
+    }
+
+    const payload = {
+      bezeichnung,
+      anzahl,
+      lagerort,
+      notiz,
+      ...leihdaten,
+    };
 
     if (!idValue) {
       // CREATE
       if (file) {
         const fd = new FormData();
-        fd.append('bezeichnung', bezeichnung);
-        fd.append('anzahl', anzahl.toString());
-        fd.append('lagerort', lagerort);
-        fd.append('notiz', notiz);
+        fd.append('bezeichnung', payload.bezeichnung);
+        fd.append('anzahl', payload.anzahl.toString());
+        fd.append('lagerort', payload.lagerort);
+        fd.append('notiz', payload.notiz);
+        fd.append('ist_verliehen', `${payload.ist_verliehen}`);
+        fd.append('verliehen_an', payload.verliehen_an ?? '');
+        fd.append('verliehen_bis', payload.verliehen_bis ?? '');
         fd.append('foto', file, file.name || 'upload.png');
 
         this.globalDataService.post(this.modul, fd, true).subscribe({
@@ -248,7 +338,7 @@ export class InventarComponent implements OnInit, AfterViewInit {
         });
       } else {
         // JSON ohne Bild
-        this.globalDataService.post(this.modul, { bezeichnung, anzahl, lagerort, notiz }, false).subscribe({
+        this.globalDataService.post(this.modul, payload, false).subscribe({
           next: (erg: any) => {
             try {
               const newMask: IInventar = erg;
@@ -269,10 +359,13 @@ export class InventarComponent implements OnInit, AfterViewInit {
       // UPDATE
       if (file) {
         const fd = new FormData();
-        fd.append('bezeichnung', bezeichnung);
-        fd.append('anzahl', anzahl.toString());
-        fd.append('lagerort', lagerort);
-        fd.append('notiz', notiz);
+        fd.append('bezeichnung', payload.bezeichnung);
+        fd.append('anzahl', payload.anzahl.toString());
+        fd.append('lagerort', payload.lagerort);
+        fd.append('notiz', payload.notiz);
+        fd.append('ist_verliehen', `${payload.ist_verliehen}`);
+        fd.append('verliehen_an', payload.verliehen_an ?? '');
+        fd.append('verliehen_bis', payload.verliehen_bis ?? '');
         fd.append('foto', file, file.name || 'upload.png');
 
         this.globalDataService.patch(this.modul, idValue, fd, true).subscribe({
@@ -281,7 +374,7 @@ export class InventarComponent implements OnInit, AfterViewInit {
               const updated: any = erg;
               this.inventarArray = this.inventarArray
                 .map(m => m.id === updated.id ? updated : m)
-                .sort((a, b) => a.bezeichnung - b.bezeichnung);
+                .sort((a, b) => a.bezeichnung.localeCompare(b.bezeichnung, 'de'));
 
               this.dataSource.data = this.inventarArray;
               this.bindTableControls();
@@ -295,13 +388,13 @@ export class InventarComponent implements OnInit, AfterViewInit {
         });
       } else {
         // Nur Text/Titel ändern (JSON)
-        this.globalDataService.patch(this.modul, idValue, { bezeichnung, anzahl, lagerort, notiz }, false).subscribe({
+        this.globalDataService.patch(this.modul, idValue, payload, false).subscribe({
           next: (erg: any) => {
             try {
               const updated: any = erg;
               this.inventarArray = this.inventarArray
                 .map(m => m.id === updated.id ? updated : m)
-                .sort((a, b) => a.bezeichnung - b.bezeichnung);
+                .sort((a, b) => a.bezeichnung.localeCompare(b.bezeichnung, 'de'));
 
               this.dataSource.data = this.inventarArray;
               this.bindTableControls();
@@ -350,7 +443,17 @@ export class InventarComponent implements OnInit, AfterViewInit {
 
   /** Nach Create/Update Formular, UI & File-Input zurücksetzen */
   private resetFormNachAktion(): void {
-    this.formModul.reset({ id: '', bezeichnung: '', anzahl: 0, lagerort: '', notiz: '', foto_url: '' });
+    this.formModul.reset({
+      id: '',
+      bezeichnung: '',
+      anzahl: 0,
+      lagerort: '',
+      ist_verliehen: false,
+      verliehen_an: '',
+      verliehen_bis: '',
+      notiz: '',
+      foto_url: ''
+    });
     this.formModul.disable();
     this.btnUploadStatus = false;
     this.btnText = 'Bild auswählen';
@@ -361,6 +464,22 @@ export class InventarComponent implements OnInit, AfterViewInit {
     if (this.fotoRef?.nativeElement) {
       this.fotoRef.nativeElement.value = '';
     }
+  }
+
+  private observeLeihstatus(): void {
+    this.formModul.controls['ist_verliehen'].valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((istVerliehen) => {
+        if (istVerliehen !== true) {
+          this.formModul.patchValue(
+            {
+              verliehen_an: '',
+              verliehen_bis: '',
+            },
+            { emitEvent: false }
+          );
+        }
+      });
   }
 
   private bindTableControls(): void {

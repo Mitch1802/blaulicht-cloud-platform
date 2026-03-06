@@ -52,6 +52,9 @@ class Inventar(TimeStampedModel):
     bezeichnung = models.CharField(verbose_name=_("Bezeichnung"), max_length=255)
     anzahl = models.IntegerField(verbose_name=_("Anzahl"), blank=True, null=True)
     lagerort = models.CharField(verbose_name=_("Lagerort"), max_length=255, blank=True, null=True)
+    ist_verliehen = models.BooleanField(verbose_name=_("Verliehen"), default=False)
+    verliehen_an = models.CharField(verbose_name=_("Verliehen an"), max_length=255, blank=True, null=True)
+    verliehen_bis = models.DateField(verbose_name=_("Verliehen bis"), blank=True, null=True)
     notiz =  models.TextField(verbose_name=_("Notiz"), blank=True)
     foto = models.ImageField(_("Foto"), upload_to=inventar_filename, blank=True, null=True)
 

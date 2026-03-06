@@ -60,6 +60,67 @@ class InventarEndpointTests(EndpointSmokeMixin, APITestCase):
 
         self.assertTrue(validated.name.endswith(".png"))
 
+    def test_inventar_can_store_lending_data(self):
+        self.client.force_authenticate(user=self.inventar_role_user)
+
+        response = self.request_method(
+            "post",
+            "inventar/",
+            data={
+                "bezeichnung": "Leitkegel",
+                "ist_verliehen": True,
+                "verliehen_an": "FF Musterdorf",
+                "verliehen_bis": "2026-12-31",
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(response.data["ist_verliehen"])
+        self.assertEqual(response.data["verliehen_an"], "FF Musterdorf")
+
+    def test_inventar_lending_requires_borrower_name(self):
+        self.client.force_authenticate(user=self.inventar_role_user)
+
+        response = self.request_method(
+            "post",
+            "inventar/",
+            data={
+                "bezeichnung": "Absperrband",
+                "ist_verliehen": True,
+                "verliehen_bis": "2026-12-31",
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("verliehen_an", response.data)
+
+    def test_inventar_patch_to_available_clears_lending_fields(self):
+        self.client.force_authenticate(user=self.inventar_role_user)
+
+        created = self.request_method(
+            "post",
+            "inventar/",
+            data={
+                "bezeichnung": "Handlampe",
+                "ist_verliehen": True,
+                "verliehen_an": "FF Nachbarort",
+                "verliehen_bis": "2026-12-31",
+            },
+        )
+        self.assertEqual(created.status_code, status.HTTP_201_CREATED)
+
+        item_id = created.data["id"]
+        response = self.request_method(
+            "patch",
+            f"inventar/{item_id}/",
+            data={"ist_verliehen": False},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertFalse(response.data["ist_verliehen"])
+        self.assertIsNone(response.data["verliehen_an"])
+        self.assertIsNone(response.data["verliehen_bis"])
+
     def test_inventar_update_can_remove_photo(self):
         self.client.force_authenticate(user=self.inventar_role_user)
         create_file = self._png_file("img.png")
@@ -134,6 +195,40 @@ class InventarBranchCoverageTests(APITestCase):
         unknown_type = SimpleNamespace(name="upload.blob", content_type="application/octet-stream")
         validated_unknown = serializer.validate_foto(unknown_type)
         self.assertEqual(validated_unknown.name, "upload.png")
+
+    def test_serializer_validate_lending_paths(self):
+        serializer_ok = InventarSerializer(
+            data={
+                "bezeichnung": "Helm",
+                "ist_verliehen": True,
+                "verliehen_an": "  FF Test  ",
+                "verliehen_bis": "2026-10-20",
+            }
+        )
+        self.assertTrue(serializer_ok.is_valid(), serializer_ok.errors)
+        self.assertEqual(serializer_ok.validated_data["verliehen_an"], "FF Test")
+
+        serializer_missing = InventarSerializer(
+            data={
+                "bezeichnung": "Helm",
+                "ist_verliehen": True,
+                "verliehen_an": "   ",
+            }
+        )
+        self.assertFalse(serializer_missing.is_valid())
+        self.assertIn("verliehen_an", serializer_missing.errors)
+
+        serializer_clear = InventarSerializer(
+            data={
+                "bezeichnung": "Helm",
+                "ist_verliehen": False,
+                "verliehen_an": "FF Test",
+                "verliehen_bis": "2026-10-20",
+            }
+        )
+        self.assertTrue(serializer_clear.is_valid(), serializer_clear.errors)
+        self.assertIsNone(serializer_clear.validated_data["verliehen_an"])
+        self.assertIsNone(serializer_clear.validated_data["verliehen_bis"])
 
     def test_serializer_create_and_update_image_branches(self):
         serializer = InventarSerializer()
