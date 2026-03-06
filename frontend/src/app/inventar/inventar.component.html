@@ -79,24 +79,78 @@
               </div>
             </div>
             @if (isVerliehenAktiv()) {
-            <div class="app-col-12 app-col-lg-6 mb-3">
-              <mat-form-field class="full-width">
-                <mat-label>Verliehen an</mat-label>
-                <input matInput type="text" formControlName="verliehen_an" />
-                @if (
-                  isVerliehenAktiv() &&
-                  !formModul.controls['verliehen_an'].value?.trim() &&
-                  formModul.controls['verliehen_an'].touched
-                ) {
-                <mat-error>Bitte Empfänger angeben.</mat-error>
+            <div class="app-col-12 app-col-lg-12 mb-3">
+              <div class="ui-lending-panel">
+                <div class="ui-lending-panel-head">
+                  <strong>Verleihungen</strong>
+                  <button
+                    mat-flat-button
+                    color="primary"
+                    type="button"
+                    (click)="addVerleihungZeile()"
+                  >
+                    Verleihung hinzufügen
+                  </button>
+                </div>
+
+                @if (verleihungenForm.length === 0) {
+                <p class="ui-lending-empty">Noch keine Verleihung erfasst.</p>
                 }
-              </mat-form-field>
-            </div>
-            <div class="app-col-12 app-col-lg-6 mb-3">
-              <mat-form-field class="full-width">
-                <mat-label>Verliehen bis</mat-label>
-                <input matInput type="date" formControlName="verliehen_bis" />
-              </mat-form-field>
+
+                @for (eintrag of verleihungenForm; track $index) {
+                <div class="ui-lending-row app-grid">
+                  <div class="app-col-12 app-col-lg-4 mb-2">
+                    <mat-form-field class="full-width">
+                      <mat-label>Entlehner</mat-label>
+                      <input
+                        matInput
+                        type="text"
+                        [(ngModel)]="eintrag.an"
+                        [ngModelOptions]="{ standalone: true }"
+                      />
+                    </mat-form-field>
+                  </div>
+                  <div class="app-col-12 app-col-lg-3 mb-2">
+                    <mat-form-field class="full-width">
+                      <mat-label>Anzahl</mat-label>
+                      <input
+                        matInput
+                        type="number"
+                        min="1"
+                        [(ngModel)]="eintrag.anzahl"
+                        [ngModelOptions]="{ standalone: true }"
+                      />
+                    </mat-form-field>
+                  </div>
+                  <div class="app-col-12 app-col-lg-3 mb-2">
+                    <mat-form-field class="full-width">
+                      <mat-label>Verliehen bis</mat-label>
+                      <input
+                        matInput
+                        type="date"
+                        [(ngModel)]="eintrag.bis"
+                        [ngModelOptions]="{ standalone: true }"
+                      />
+                    </mat-form-field>
+                  </div>
+                  <div class="app-col-12 app-col-lg-2 mb-2 ui-lending-row-remove">
+                    <button
+                      mat-flat-button
+                      color="warn"
+                      type="button"
+                      (click)="removeVerleihungZeile($index)"
+                    >
+                      Entfernen
+                    </button>
+                  </div>
+                </div>
+                }
+
+                <p class="ui-lending-summary">
+                  Verliehen: {{ getVerliehenGesamtImFormular() }} / {{ formModul.controls['anzahl'].value ?? 0 }}
+                  | Verfügbar: {{ getVerfuegbarImFormular() }}
+                </p>
+              </div>
             </div>
             }
             <div class="app-col-12 app-col-lg-12 mb-3">
@@ -155,7 +209,7 @@
           </button>
       </form>
 
-      <div class="table-wrap" [hidden]="!formModul.disabled">
+      <div class="table-wrap ui-table-wrap" [hidden]="!formModul.disabled">
         <table
           mat-table
           [dataSource]="dataSource"
@@ -184,6 +238,29 @@
                 mat-flat-button
                 class="ui-action-btn"
                 color="primary"
+                type="button"
+                (click)="openAusborgenModal(element)"
+                [disabled]="getVerfuegbarFuerInventar(element) <= 0"
+                matTooltip="Direkt ausborgen"
+              >
+                <mat-icon class="m-0">assignment_returned</mat-icon>
+              </button>
+              <button
+                mat-flat-button
+                class="ui-action-btn"
+                color="warn"
+                type="button"
+                (click)="openRueckgabeModal(element)"
+                [disabled]="getAktiveVerleihungenAnzahl(element) <= 0"
+                matTooltip="Direkt Rueckgabe buchen"
+              >
+                <mat-icon class="m-0">assignment_turned_in</mat-icon>
+              </button>
+              <button
+                mat-flat-button
+                class="ui-action-btn"
+                color="primary"
+                type="button"
                 (click)="auswahlBearbeiten(element)"
               >
                 <mat-icon class="m-0">edit</mat-icon>
@@ -204,6 +281,109 @@
     </mat-card-content>
   </mat-card>
 </section>
+
+@if (ausborgenModalOffen && ausborgenArtikel) {
+<div class="ui-transaction-backdrop" (click)="closeAusborgenModal()">
+  <section class="ui-transaction-dialog" (click)="$event.stopPropagation()">
+    <header class="ui-transaction-head">
+      <h3>Inventar ausborgen</h3>
+      <button mat-icon-button type="button" (click)="closeAusborgenModal()" aria-label="Modal schließen">
+        <mat-icon>close</mat-icon>
+      </button>
+    </header>
+
+    <p class="ui-transaction-meta">
+      <strong>{{ ausborgenArtikel.bezeichnung }}</strong>
+    </p>
+    <p class="ui-transaction-meta">
+      Verfuegbar aktuell: {{ getAusborgenVerfuegbar() }} | Rest nach Eingabe: {{ getAusborgenRestNachEingabe() }}
+    </p>
+
+    <form [formGroup]="ausborgenForm" (ngSubmit)="ausborgenSpeichern()" class="ui-transaction-form">
+      <mat-form-field class="full-width">
+        <mat-label>Entlehner</mat-label>
+        <input matInput type="text" formControlName="an" />
+        @if (ausborgenForm.controls['an'].hasError('required') && ausborgenForm.controls['an'].touched) {
+        <mat-error>Bitte Empfaenger angeben.</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field class="full-width">
+        <mat-label>Anzahl</mat-label>
+        <input matInput type="number" min="1" formControlName="anzahl" />
+      </mat-form-field>
+
+      <mat-form-field class="full-width">
+        <mat-label>Verliehen bis</mat-label>
+        <input matInput type="date" formControlName="bis" />
+      </mat-form-field>
+
+      <div class="ui-transaction-actions">
+        <button mat-flat-button color="primary" type="button" (click)="closeAusborgenModal()">
+          Abbrechen
+        </button>
+        <button mat-flat-button color="accent" type="submit">
+          Ausborgen speichern
+        </button>
+      </div>
+    </form>
+  </section>
+</div>
+}
+
+@if (rueckgabeModalOffen && rueckgabeArtikel) {
+<div class="ui-transaction-backdrop" (click)="closeRueckgabeModal()">
+  <section class="ui-transaction-dialog" (click)="$event.stopPropagation()">
+    <header class="ui-transaction-head">
+      <h3>Inventar Rueckgabe</h3>
+      <button mat-icon-button type="button" (click)="closeRueckgabeModal()" aria-label="Modal schliessen">
+        <mat-icon>close</mat-icon>
+      </button>
+    </header>
+
+    <p class="ui-transaction-meta">
+      <strong>{{ rueckgabeArtikel.bezeichnung }}</strong>
+    </p>
+    <p class="ui-transaction-meta">
+      Aktive Verleihungen: {{ rueckgabeVerleihungen.length }}
+    </p>
+
+    <form [formGroup]="rueckgabeForm" (ngSubmit)="rueckgabeSpeichern()" class="ui-transaction-form">
+      <mat-form-field class="full-width">
+        <mat-label>Verleihung</mat-label>
+        <mat-select formControlName="eintragIndex" (selectionChange)="onRueckgabeAuswahlChange()">
+          @for (eintrag of rueckgabeVerleihungen; track $index) {
+          <mat-option [value]="$index">
+            {{ eintrag.an }} - {{ eintrag.anzahl }} Stk
+            @if (eintrag.bis) {
+              (bis {{ formatService.formatDatum(eintrag.bis) }})
+            }
+          </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field class="full-width">
+        <mat-label>Rueckgabe Anzahl</mat-label>
+        <input matInput type="number" min="1" [max]="getRueckgabeMaxMenge()" formControlName="anzahl" />
+      </mat-form-field>
+
+      <p class="ui-transaction-note">
+        Maximal: {{ getRueckgabeMaxMenge() }} | Rest fuer diese Verleihung nach Rueckgabe: {{ getRueckgabeRestNachEingabe() }}
+      </p>
+
+      <div class="ui-transaction-actions">
+        <button mat-flat-button color="primary" type="button" (click)="closeRueckgabeModal()">
+          Abbrechen
+        </button>
+        <button mat-flat-button color="warn" type="submit">
+          Rueckgabe speichern
+        </button>
+      </div>
+    </form>
+  </section>
+</div>
+}
 
 <!-- The Modal -->
 <div id="myModal" class="modal">

@@ -1,4 +1,4 @@
-import { IInventar } from './../_interface/inventar';
+import { IInventar, IInventarVerleihung } from './../_interface/inventar';
 import {
   AfterViewInit,
   Component,
@@ -31,6 +31,14 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatIcon } from '@angular/material/icon';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
+
+interface IVerleihungFormEintrag {
+  an: string;
+  anzahl: number;
+  bis: string;
+}
 
 @Component({
   selector: 'app-inventar',
@@ -50,6 +58,8 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
+    MatSelectModule,
+    MatTooltipModule,
     MatIcon
   ],
   templateUrl: './inventar.component.html',
@@ -78,6 +88,23 @@ export class InventarComponent implements OnInit, AfterViewInit {
   filePfad = '';
   fileFound = false;
   btnUploadStatus = false;
+  verleihungenForm: IVerleihungFormEintrag[] = [];
+  ausborgenModalOffen = false;
+  ausborgenArtikel: IInventar | null = null;
+  rueckgabeModalOffen = false;
+  rueckgabeArtikel: IInventar | null = null;
+  rueckgabeVerleihungen: IInventarVerleihung[] = [];
+
+  ausborgenForm = new FormGroup({
+    an: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
+    anzahl: new FormControl<number>(1, { nonNullable: true }),
+    bis: new FormControl<string>(''),
+  });
+
+  rueckgabeForm = new FormGroup({
+    eintragIndex: new FormControl<number>(0, { nonNullable: true }),
+    anzahl: new FormControl<number>(1, { nonNullable: true }),
+  });
 
   formModul = new FormGroup({
     id: new FormControl<string | ''>(''),
@@ -85,8 +112,6 @@ export class InventarComponent implements OnInit, AfterViewInit {
     anzahl: new FormControl<number>(0),
     lagerort: new FormControl<string>(''),
     ist_verliehen: new FormControl<boolean>(false, { nonNullable: true }),
-    verliehen_an: new FormControl<string>(''),
-    verliehen_bis: new FormControl<string>(''),
     notiz: new FormControl<string>(''),
     // nur für Anzeige/Modal – NICHT ans Backend senden
     foto_url: new FormControl<string>(''),
@@ -146,49 +171,428 @@ export class InventarComponent implements OnInit, AfterViewInit {
     return this.formModul.controls['ist_verliehen'].value === true;
   }
 
+  addVerleihungZeile(): void {
+    this.verleihungenForm.push(this.createLeihEintrag());
+  }
+
+  removeVerleihungZeile(index: number): void {
+    if (index < 0 || index >= this.verleihungenForm.length) {
+      return;
+    }
+    this.verleihungenForm.splice(index, 1);
+  }
+
+  getVerliehenGesamtImFormular(): number {
+    return this.verleihungenForm.reduce((sum, eintrag) => {
+      const value = Number(eintrag.anzahl ?? 0);
+      return sum + (Number.isFinite(value) && value > 0 ? Math.trunc(value) : 0);
+    }, 0);
+  }
+
+  getVerfuegbarImFormular(): number {
+    const gesamtAnzahl = Number(this.formModul.controls['anzahl'].value ?? 0);
+    const rest = gesamtAnzahl - this.getVerliehenGesamtImFormular();
+    return rest > 0 ? rest : 0;
+  }
+
+  getVerfuegbarFuerInventar(element: IInventar): number {
+    const gesamtAnzahl = Number(element.anzahl ?? 0);
+    const verliehen = this.getVerleihungenAusInventar(element).reduce((sum, eintrag) => sum + (eintrag.anzahl || 0), 0);
+    const verfuegbar = gesamtAnzahl - verliehen;
+    return verfuegbar > 0 ? verfuegbar : 0;
+  }
+
+  getAktiveVerleihungenAnzahl(element: IInventar): number {
+    return this.getVerleihungenAusInventar(element).length;
+  }
+
+  getAusborgenVerfuegbar(): number {
+    if (!this.ausborgenArtikel) {
+      return 0;
+    }
+    return this.getVerfuegbarFuerInventar(this.ausborgenArtikel);
+  }
+
+  getAusborgenRestNachEingabe(): number {
+    const verfuegbar = this.getAusborgenVerfuegbar();
+    const angefragt = Number(this.ausborgenForm.controls['anzahl'].value ?? 0);
+    if (!Number.isInteger(angefragt) || angefragt <= 0) {
+      return verfuegbar;
+    }
+    const rest = verfuegbar - angefragt;
+    return rest > 0 ? rest : 0;
+  }
+
+  openAusborgenModal(element: IInventar): void {
+    const verfuegbar = this.getVerfuegbarFuerInventar(element);
+    if (verfuegbar <= 0) {
+      this.globalDataService.erstelleMessage('info', 'Keine verfuegbare Menge zum Ausborgen vorhanden.');
+      return;
+    }
+
+    this.ausborgenArtikel = element;
+    this.ausborgenForm.reset({ an: '', anzahl: 1, bis: '' });
+    this.ausborgenModalOffen = true;
+  }
+
+  closeAusborgenModal(): void {
+    this.ausborgenModalOffen = false;
+    this.ausborgenArtikel = null;
+    this.ausborgenForm.reset({ an: '', anzahl: 1, bis: '' });
+  }
+
+  openRueckgabeModal(element: IInventar): void {
+    const verleihungen = this.getVerleihungenAusInventar(element);
+    if (verleihungen.length === 0) {
+      this.globalDataService.erstelleMessage('info', 'Keine aktive Verleihung fuer eine Rueckgabe vorhanden.');
+      return;
+    }
+
+    this.rueckgabeArtikel = element;
+    this.rueckgabeVerleihungen = verleihungen;
+    this.rueckgabeForm.reset({ eintragIndex: 0, anzahl: 1 });
+    this.rueckgabeModalOffen = true;
+  }
+
+  closeRueckgabeModal(): void {
+    this.rueckgabeModalOffen = false;
+    this.rueckgabeArtikel = null;
+    this.rueckgabeVerleihungen = [];
+    this.rueckgabeForm.reset({ eintragIndex: 0, anzahl: 1 });
+  }
+
+  onRueckgabeAuswahlChange(): void {
+    const max = this.getRueckgabeMaxMenge();
+    if (max <= 0) {
+      this.rueckgabeForm.controls['anzahl'].setValue(1);
+      return;
+    }
+
+    const current = Number(this.rueckgabeForm.controls['anzahl'].value ?? 0);
+    if (!Number.isInteger(current) || current <= 0 || current > max) {
+      this.rueckgabeForm.controls['anzahl'].setValue(1);
+    }
+  }
+
+  getRueckgabeAuswahl(): IInventarVerleihung | null {
+    const idx = Number(this.rueckgabeForm.controls['eintragIndex'].value ?? -1);
+    if (!Number.isInteger(idx) || idx < 0 || idx >= this.rueckgabeVerleihungen.length) {
+      return null;
+    }
+    return this.rueckgabeVerleihungen[idx];
+  }
+
+  getRueckgabeMaxMenge(): number {
+    return this.getRueckgabeAuswahl()?.anzahl ?? 0;
+  }
+
+  getRueckgabeRestNachEingabe(): number {
+    const max = this.getRueckgabeMaxMenge();
+    const rueckgabeAnzahl = Number(this.rueckgabeForm.controls['anzahl'].value ?? 0);
+    if (!Number.isInteger(rueckgabeAnzahl) || rueckgabeAnzahl <= 0) {
+      return max;
+    }
+    const rest = max - rueckgabeAnzahl;
+    return rest > 0 ? rest : 0;
+  }
+
+  rueckgabeSpeichern(): void {
+    const artikel = this.rueckgabeArtikel;
+    if (!artikel) {
+      return;
+    }
+
+    const selection = this.getRueckgabeAuswahl();
+    if (!selection) {
+      this.globalDataService.erstelleMessage('error', 'Bitte eine Verleihung fuer die Rueckgabe auswaehlen.');
+      return;
+    }
+
+    const rueckgabeAnzahl = Number(this.rueckgabeForm.controls['anzahl'].value ?? 0);
+    if (!Number.isInteger(rueckgabeAnzahl) || rueckgabeAnzahl <= 0) {
+      this.rueckgabeForm.controls['anzahl'].markAsTouched();
+      this.globalDataService.erstelleMessage('error', 'Rueckgabe Anzahl muss eine ganze Zahl groesser 0 sein.');
+      return;
+    }
+
+    if (rueckgabeAnzahl > selection.anzahl) {
+      this.rueckgabeForm.controls['anzahl'].markAsTouched();
+      this.globalDataService.erstelleMessage('error', 'Rueckgabe Anzahl ist groesser als die verliehene Menge.');
+      return;
+    }
+
+    const selectedIndex = Number(this.rueckgabeForm.controls['eintragIndex'].value ?? -1);
+    const neueVerleihungen = this.rueckgabeVerleihungen
+      .map((eintrag, index) => {
+        if (index !== selectedIndex) {
+          return eintrag;
+        }
+        return {
+          ...eintrag,
+          anzahl: eintrag.anzahl - rueckgabeAnzahl,
+        };
+      })
+      .filter((eintrag) => eintrag.anzahl > 0);
+
+    this.globalDataService.patch(this.modul, artikel.id, { verleihungen: neueVerleihungen }, false).subscribe({
+      next: (updateErg: any) => {
+        try {
+          const updated = updateErg as IInventar;
+          this.inventarArray = this.inventarArray
+            .map((m) => (m.id === updated.id ? updated : m))
+            .sort((a, b) => a.bezeichnung.localeCompare(b.bezeichnung, 'de'));
+          this.dataSource.data = this.inventarArray;
+          this.bindTableControls();
+          this.closeRueckgabeModal();
+          this.globalDataService.erstelleMessage('success', 'Rueckgabe erfolgreich gespeichert.');
+        } catch (e: any) {
+          this.globalDataService.erstelleMessage('error', e);
+        }
+      },
+      error: (error: any) => this.globalDataService.errorAnzeigen(error),
+    });
+  }
+
+  ausborgenSpeichern(): void {
+    const artikel = this.ausborgenArtikel;
+    if (!artikel) {
+      return;
+    }
+
+    const an = (this.ausborgenForm.controls['an'].value ?? '').trim();
+    const anzahl = Number(this.ausborgenForm.controls['anzahl'].value ?? 0);
+    const bis = (this.ausborgenForm.controls['bis'].value ?? '').trim();
+
+    if (!an) {
+      this.ausborgenForm.controls['an'].markAsTouched();
+      this.globalDataService.erstelleMessage('error', 'Bitte Empfaenger angeben.');
+      return;
+    }
+
+    if (!Number.isInteger(anzahl) || anzahl <= 0) {
+      this.ausborgenForm.controls['anzahl'].markAsTouched();
+      this.globalDataService.erstelleMessage('error', 'Anzahl muss eine ganze Zahl groesser 0 sein.');
+      return;
+    }
+
+    const verfuegbar = this.getVerfuegbarFuerInventar(artikel);
+    if (anzahl > verfuegbar) {
+      this.ausborgenForm.controls['anzahl'].markAsTouched();
+      this.globalDataService.erstelleMessage('error', 'Angefragte Menge ist groesser als verfuegbar.');
+      return;
+    }
+
+    this.globalDataService.get(`${this.modul}/${artikel.id}`).subscribe({
+      next: (erg: any) => {
+        try {
+          const details = erg as IInventar;
+          const aktuelleVerleihungen = this.getVerleihungenAusInventar(details);
+          const payload = {
+            verleihungen: [
+              ...aktuelleVerleihungen,
+              {
+                an,
+                anzahl,
+                bis: bis || null,
+              },
+            ],
+          };
+
+          this.globalDataService.patch(this.modul, artikel.id, payload, false).subscribe({
+            next: (updateErg: any) => {
+              try {
+                const updated = updateErg as IInventar;
+                this.inventarArray = this.inventarArray
+                  .map((m) => (m.id === updated.id ? updated : m))
+                  .sort((a, b) => a.bezeichnung.localeCompare(b.bezeichnung, 'de'));
+                this.dataSource.data = this.inventarArray;
+                this.bindTableControls();
+                this.closeAusborgenModal();
+                this.globalDataService.erstelleMessage('success', 'Inventar erfolgreich ausgeborgt.');
+              } catch (e: any) {
+                this.globalDataService.erstelleMessage('error', e);
+              }
+            },
+            error: (error: any) => this.globalDataService.errorAnzeigen(error),
+          });
+        } catch (e: any) {
+          this.globalDataService.erstelleMessage('error', e);
+        }
+      },
+      error: (error: any) => this.globalDataService.errorAnzeigen(error),
+    });
+  }
+
+  private createLeihEintrag(source?: Partial<IVerleihungFormEintrag>): IVerleihungFormEintrag {
+    return {
+      an: (source?.an ?? '').trim(),
+      anzahl: Number(source?.anzahl ?? 1) > 0 ? Number(source?.anzahl ?? 1) : 1,
+      bis: (source?.bis ?? '').trim(),
+    };
+  }
+
+  private getVerleihungenAusInventar(element: IInventar): IInventarVerleihung[] {
+    const apiEntries = Array.isArray(element.verleihungen) ? element.verleihungen : [];
+    const normalizedEntries = apiEntries
+      .map((eintrag: any) => {
+        const an = String(eintrag?.an ?? '').trim();
+        const anzahl = Number(eintrag?.anzahl ?? 0);
+        const bisRaw = eintrag?.bis;
+        const bis = bisRaw ? String(bisRaw).trim() : null;
+        return {
+          an,
+          anzahl: Number.isFinite(anzahl) && anzahl > 0 ? Math.trunc(anzahl) : 0,
+          bis: bis || null,
+        } as IInventarVerleihung;
+      })
+      .filter((eintrag) => eintrag.an !== '' && eintrag.anzahl > 0);
+
+    if (normalizedEntries.length > 0) {
+      return normalizedEntries;
+    }
+
+    const legacyAn = String(element.verliehen_an ?? '').trim();
+    const legacyAnzahl = Number(element.verliehen_anzahl ?? 0);
+    const legacyBis = element.verliehen_bis ? String(element.verliehen_bis).trim() : null;
+    const hasLegacy = element.ist_verliehen === true || legacyAnzahl > 0 || legacyAn !== '' || Boolean(legacyBis);
+
+    if (!hasLegacy || legacyAn === '') {
+      return [];
+    }
+
+    return [{
+      an: legacyAn,
+      anzahl: legacyAnzahl > 0 ? Math.trunc(legacyAnzahl) : 1,
+      bis: legacyBis || null,
+    }];
+  }
+
   getLeihstatusText(element: IInventar): string {
-    if (element.ist_verliehen !== true) {
+    const verleihungen = this.getVerleihungenAusInventar(element);
+    const verliehenAnzahl = verleihungen.reduce((sum, eintrag) => sum + (eintrag.anzahl || 0), 0);
+    const gesamtAnzahl = Number(element.anzahl ?? 0);
+
+    if (verliehenAnzahl <= 0) {
       return 'Verfügbar';
     }
 
-    const verliehenAn = (element.verliehen_an ?? '').trim();
-    const verliehenBis = element.verliehen_bis
-      ? this.formatService.formatDatum(element.verliehen_bis)
-      : '';
+    const mengenInfo = gesamtAnzahl > 0
+      ? `${verliehenAnzahl}/${gesamtAnzahl} verliehen`
+      : `${verliehenAnzahl} verliehen`;
 
-    if (verliehenAn && verliehenBis) {
-      return `Verliehen an ${verliehenAn} (bis ${verliehenBis})`;
+    if (verleihungen.length === 1) {
+      const verliehung = verleihungen[0];
+      const verliehenBis = verliehung.bis ? this.formatService.formatDatum(verliehung.bis) : '';
+      if (verliehenBis) {
+        return `${mengenInfo} an ${verliehung.an} (bis ${verliehenBis})`;
+      }
+      return `${mengenInfo} an ${verliehung.an}`;
     }
-    if (verliehenAn) {
-      return `Verliehen an ${verliehenAn}`;
+
+    const bisCandidates = verleihungen
+      .map((eintrag) => eintrag.bis)
+      .filter((value): value is string => typeof value === 'string' && value !== '')
+      .sort();
+    if (bisCandidates.length > 0) {
+      return `${mengenInfo} (${verleihungen.length} Entlehner, naechste Rueckgabe ${this.formatService.formatDatum(bisCandidates[0])})`;
     }
-    if (verliehenBis) {
-      return `Verliehen (bis ${verliehenBis})`;
-    }
-    return 'Verliehen';
+
+    return `${mengenInfo} (${verleihungen.length} Entlehner)`;
   }
 
-  private buildLeihdatenPayload(): {
-    ist_verliehen: boolean;
-    verliehen_an: string | null;
-    verliehen_bis: string | null;
+  private buildLeihdatenPayload(gesamtAnzahl: number): {
+    error: string | null;
+    payload: {
+      ist_verliehen: boolean;
+      verliehen_anzahl: number;
+      verliehen_an: string | null;
+      verliehen_bis: string | null;
+      verleihungen: IInventarVerleihung[];
+    };
   } {
     const istVerliehen = this.formModul.controls['ist_verliehen'].value === true;
-    const verliehenAn = (this.formModul.controls['verliehen_an'].value ?? '').trim();
-    const verliehenBis = (this.formModul.controls['verliehen_bis'].value ?? '').trim();
+    const clearPayload = {
+      ist_verliehen: false,
+      verliehen_anzahl: 0,
+      verliehen_an: null,
+      verliehen_bis: null,
+      verleihungen: [],
+    };
 
     if (!istVerliehen) {
+      return { error: null, payload: clearPayload };
+    }
+
+    const verleihungen: IInventarVerleihung[] = [];
+
+    for (let index = 0; index < this.verleihungenForm.length; index++) {
+      const eintrag = this.verleihungenForm[index];
+      const an = (eintrag.an ?? '').trim();
+      const anzahl = Number(eintrag.anzahl ?? 0);
+      const bis = (eintrag.bis ?? '').trim();
+
+      const hasInput = an !== '' || anzahl > 0 || bis !== '';
+      if (!hasInput) {
+        continue;
+      }
+
+      if (!an) {
+        return {
+          error: `Verleihung ${index + 1}: Bitte Empfaenger angeben.`,
+          payload: clearPayload,
+        };
+      }
+
+      if (!Number.isInteger(anzahl) || anzahl <= 0) {
+        return {
+          error: `Verleihung ${index + 1}: Anzahl muss eine ganze Zahl groesser 0 sein.`,
+          payload: clearPayload,
+        };
+      }
+
+      verleihungen.push({
+        an,
+        anzahl,
+        bis: bis || null,
+      });
+    }
+
+    if (verleihungen.length === 0) {
       return {
-        ist_verliehen: false,
-        verliehen_an: null,
-        verliehen_bis: null,
+        error: 'Bitte mindestens eine Verleihung erfassen oder den Haken bei "Aktuell verliehen" entfernen.',
+        payload: clearPayload,
       };
     }
 
+    if (gesamtAnzahl <= 0) {
+      return {
+        error: 'Fuer eine Verleihung muss die Gesamtanzahl groesser 0 sein.',
+        payload: clearPayload,
+      };
+    }
+
+    const verliehenGesamt = verleihungen.reduce((sum, eintrag) => sum + eintrag.anzahl, 0);
+    if (verliehenGesamt > gesamtAnzahl) {
+      return {
+        error: 'Verliehene Anzahl darf die Gesamtanzahl nicht ueberschreiten.',
+        payload: clearPayload,
+      };
+    }
+
+    const bisCandidates = verleihungen
+      .map((eintrag) => eintrag.bis)
+      .filter((value): value is string => typeof value === 'string' && value !== '')
+      .sort();
+
     return {
-      ist_verliehen: true,
-      verliehen_an: verliehenAn || null,
-      verliehen_bis: verliehenBis || null,
+      error: null,
+      payload: {
+        ist_verliehen: true,
+        verliehen_anzahl: verliehenGesamt,
+        verliehen_an: verleihungen.length === 1 ? verleihungen[0].an : 'Mehrere Entlehner',
+        verliehen_bis: bisCandidates.length > 0 ? bisCandidates[0] : null,
+        verleihungen,
+      },
     };
   }
 
@@ -241,11 +645,21 @@ export class InventarComponent implements OnInit, AfterViewInit {
             anzahl: details.anzahl ?? 0,
             lagerort: details.lagerort ?? '',
             ist_verliehen: details.ist_verliehen === true,
-            verliehen_an: details.verliehen_an ?? '',
-            verliehen_bis: details.verliehen_bis ?? '',
             notiz: details.notiz ?? '',
             foto_url: ''
           });
+
+          const verleihungen = this.getVerleihungenAusInventar(details);
+          this.verleihungenForm = verleihungen.map((eintrag) =>
+            this.createLeihEintrag({
+              an: eintrag.an,
+              anzahl: eintrag.anzahl,
+              bis: eintrag.bis ?? '',
+            })
+          );
+          if (this.isVerliehenAktiv() && this.verleihungenForm.length === 0) {
+            this.verleihungenForm = [this.createLeihEintrag()];
+          }
         } catch (e: any) {
           this.globalDataService.erstelleMessage('error', e);
         }
@@ -272,11 +686,10 @@ export class InventarComponent implements OnInit, AfterViewInit {
       anzahl: 0,
       lagerort: '',
       ist_verliehen: false,
-      verliehen_an: '',
-      verliehen_bis: '',
       notiz: '',
       foto_url: ''
     });
+    this.verleihungenForm = [];
 
     // Datei-Auswahl im Input zurücksetzen
     if (this.fotoRef?.nativeElement) {
@@ -290,12 +703,12 @@ export class InventarComponent implements OnInit, AfterViewInit {
     const anzahl = this.formModul.controls['anzahl'].value ?? 0;
     const lagerort = this.formModul.controls['lagerort'].value ?? '';
     const notiz = this.formModul.controls['notiz'].value ?? '';
-    const leihdaten = this.buildLeihdatenPayload();
+    const leihdatenResult = this.buildLeihdatenPayload(anzahl);
+    const leihdaten = leihdatenResult.payload;
     const file = this.getSelectedFile();
 
-    if (leihdaten.ist_verliehen && !leihdaten.verliehen_an) {
-      this.formModul.controls['verliehen_an'].markAsTouched();
-      this.globalDataService.erstelleMessage('error', 'Bitte angeben, an wen der Gegenstand verliehen wird.');
+    if (leihdatenResult.error) {
+      this.globalDataService.erstelleMessage('error', leihdatenResult.error);
       return;
     }
 
@@ -316,8 +729,10 @@ export class InventarComponent implements OnInit, AfterViewInit {
         fd.append('lagerort', payload.lagerort);
         fd.append('notiz', payload.notiz);
         fd.append('ist_verliehen', `${payload.ist_verliehen}`);
+        fd.append('verliehen_anzahl', `${payload.verliehen_anzahl}`);
         fd.append('verliehen_an', payload.verliehen_an ?? '');
         fd.append('verliehen_bis', payload.verliehen_bis ?? '');
+        fd.append('verleihungen', JSON.stringify(payload.verleihungen));
         fd.append('foto', file, file.name || 'upload.png');
 
         this.globalDataService.post(this.modul, fd, true).subscribe({
@@ -364,8 +779,10 @@ export class InventarComponent implements OnInit, AfterViewInit {
         fd.append('lagerort', payload.lagerort);
         fd.append('notiz', payload.notiz);
         fd.append('ist_verliehen', `${payload.ist_verliehen}`);
+        fd.append('verliehen_anzahl', `${payload.verliehen_anzahl}`);
         fd.append('verliehen_an', payload.verliehen_an ?? '');
         fd.append('verliehen_bis', payload.verliehen_bis ?? '');
+        fd.append('verleihungen', JSON.stringify(payload.verleihungen));
         fd.append('foto', file, file.name || 'upload.png');
 
         this.globalDataService.patch(this.modul, idValue, fd, true).subscribe({
@@ -449,11 +866,10 @@ export class InventarComponent implements OnInit, AfterViewInit {
       anzahl: 0,
       lagerort: '',
       ist_verliehen: false,
-      verliehen_an: '',
-      verliehen_bis: '',
       notiz: '',
       foto_url: ''
     });
+    this.verleihungenForm = [];
     this.formModul.disable();
     this.btnUploadStatus = false;
     this.btnText = 'Bild auswählen';
@@ -471,13 +887,9 @@ export class InventarComponent implements OnInit, AfterViewInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((istVerliehen) => {
         if (istVerliehen !== true) {
-          this.formModul.patchValue(
-            {
-              verliehen_an: '',
-              verliehen_bis: '',
-            },
-            { emitEvent: false }
-          );
+          this.verleihungenForm = [];
+        } else if (this.verleihungenForm.length === 0) {
+          this.verleihungenForm = [this.createLeihEintrag()];
         }
       });
   }

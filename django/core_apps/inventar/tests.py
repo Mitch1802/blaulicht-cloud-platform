@@ -68,7 +68,9 @@ class InventarEndpointTests(EndpointSmokeMixin, APITestCase):
             "inventar/",
             data={
                 "bezeichnung": "Leitkegel",
+                "anzahl": 3,
                 "ist_verliehen": True,
+                "verliehen_anzahl": 1,
                 "verliehen_an": "FF Musterdorf",
                 "verliehen_bis": "2026-12-31",
             },
@@ -76,6 +78,7 @@ class InventarEndpointTests(EndpointSmokeMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(response.data["ist_verliehen"])
+        self.assertEqual(response.data["verliehen_anzahl"], 1)
         self.assertEqual(response.data["verliehen_an"], "FF Musterdorf")
 
     def test_inventar_lending_requires_borrower_name(self):
@@ -87,6 +90,7 @@ class InventarEndpointTests(EndpointSmokeMixin, APITestCase):
             data={
                 "bezeichnung": "Absperrband",
                 "ist_verliehen": True,
+                "verliehen_anzahl": 1,
                 "verliehen_bis": "2026-12-31",
             },
         )
@@ -102,7 +106,9 @@ class InventarEndpointTests(EndpointSmokeMixin, APITestCase):
             "inventar/",
             data={
                 "bezeichnung": "Handlampe",
+                "anzahl": 3,
                 "ist_verliehen": True,
+                "verliehen_anzahl": 2,
                 "verliehen_an": "FF Nachbarort",
                 "verliehen_bis": "2026-12-31",
             },
@@ -118,8 +124,68 @@ class InventarEndpointTests(EndpointSmokeMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertFalse(response.data["ist_verliehen"])
+        self.assertEqual(response.data["verliehen_anzahl"], 0)
         self.assertIsNone(response.data["verliehen_an"])
         self.assertIsNone(response.data["verliehen_bis"])
+
+    def test_inventar_lending_quantity_cannot_exceed_total_quantity(self):
+        self.client.force_authenticate(user=self.inventar_role_user)
+
+        response = self.request_method(
+            "post",
+            "inventar/",
+            data={
+                "bezeichnung": "Warnleuchte",
+                "anzahl": 3,
+                "ist_verliehen": True,
+                "verliehen_anzahl": 4,
+                "verliehen_an": "FF Test",
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("verleihungen", response.data)
+
+    def test_inventar_can_store_multiple_lending_entries(self):
+        self.client.force_authenticate(user=self.inventar_role_user)
+
+        response = self.request_method(
+            "post",
+            "inventar/",
+            data={
+                "bezeichnung": "Scheinwerfer",
+                "anzahl": 3,
+                "verleihungen": [
+                    {"an": "FF Dorf A", "anzahl": 1, "bis": "2026-12-31"},
+                    {"an": "FF Dorf B", "anzahl": 2, "bis": "2027-01-10"},
+                ],
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(response.data["ist_verliehen"])
+        self.assertEqual(response.data["verliehen_anzahl"], 3)
+        self.assertEqual(response.data["verliehen_an"], "Mehrere Entlehner")
+        self.assertEqual(len(response.data["verleihungen"]), 2)
+
+    def test_inventar_multi_lending_sum_cannot_exceed_total(self):
+        self.client.force_authenticate(user=self.inventar_role_user)
+
+        response = self.request_method(
+            "post",
+            "inventar/",
+            data={
+                "bezeichnung": "Scheinwerfer",
+                "anzahl": 3,
+                "verleihungen": [
+                    {"an": "FF Dorf A", "anzahl": 2, "bis": "2026-12-31"},
+                    {"an": "FF Dorf B", "anzahl": 2, "bis": "2027-01-10"},
+                ],
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("verleihungen", response.data)
 
     def test_inventar_update_can_remove_photo(self):
         self.client.force_authenticate(user=self.inventar_role_user)
@@ -200,35 +266,81 @@ class InventarBranchCoverageTests(APITestCase):
         serializer_ok = InventarSerializer(
             data={
                 "bezeichnung": "Helm",
+                "anzahl": 3,
                 "ist_verliehen": True,
+                "verliehen_anzahl": 1,
                 "verliehen_an": "  FF Test  ",
                 "verliehen_bis": "2026-10-20",
             }
         )
         self.assertTrue(serializer_ok.is_valid(), serializer_ok.errors)
         self.assertEqual(serializer_ok.validated_data["verliehen_an"], "FF Test")
+        self.assertEqual(serializer_ok.validated_data["verliehen_anzahl"], 1)
 
         serializer_missing = InventarSerializer(
             data={
                 "bezeichnung": "Helm",
                 "ist_verliehen": True,
+                "verliehen_anzahl": 1,
                 "verliehen_an": "   ",
             }
         )
         self.assertFalse(serializer_missing.is_valid())
         self.assertIn("verliehen_an", serializer_missing.errors)
 
+        serializer_too_many = InventarSerializer(
+            data={
+                "bezeichnung": "Helm",
+                "anzahl": 3,
+                "ist_verliehen": True,
+                "verliehen_anzahl": 4,
+                "verliehen_an": "FF Test",
+            }
+        )
+        self.assertFalse(serializer_too_many.is_valid())
+        self.assertIn("verleihungen", serializer_too_many.errors)
+
         serializer_clear = InventarSerializer(
             data={
                 "bezeichnung": "Helm",
                 "ist_verliehen": False,
+                "verliehen_anzahl": 2,
                 "verliehen_an": "FF Test",
                 "verliehen_bis": "2026-10-20",
             }
         )
         self.assertTrue(serializer_clear.is_valid(), serializer_clear.errors)
+        self.assertEqual(serializer_clear.validated_data["verliehen_anzahl"], 0)
         self.assertIsNone(serializer_clear.validated_data["verliehen_an"])
         self.assertIsNone(serializer_clear.validated_data["verliehen_bis"])
+
+        serializer_multi = InventarSerializer(
+            data={
+                "bezeichnung": "Helm",
+                "anzahl": 3,
+                "verleihungen": [
+                    {"an": "FF Test A", "anzahl": 1, "bis": "2026-10-20"},
+                    {"an": "FF Test B", "anzahl": 2, "bis": "2026-10-25"},
+                ],
+            }
+        )
+        self.assertTrue(serializer_multi.is_valid(), serializer_multi.errors)
+        self.assertEqual(serializer_multi.validated_data["verliehen_anzahl"], 3)
+        self.assertEqual(serializer_multi.validated_data["verliehen_an"], "Mehrere Entlehner")
+        self.assertEqual(len(serializer_multi.validated_data["verleihungen"]), 2)
+
+        serializer_multi_too_many = InventarSerializer(
+            data={
+                "bezeichnung": "Helm",
+                "anzahl": 3,
+                "verleihungen": [
+                    {"an": "FF Test A", "anzahl": 2, "bis": "2026-10-20"},
+                    {"an": "FF Test B", "anzahl": 2, "bis": "2026-10-25"},
+                ],
+            }
+        )
+        self.assertFalse(serializer_multi_too_many.is_valid())
+        self.assertIn("verleihungen", serializer_multi_too_many.errors)
 
     def test_serializer_create_and_update_image_branches(self):
         serializer = InventarSerializer()
