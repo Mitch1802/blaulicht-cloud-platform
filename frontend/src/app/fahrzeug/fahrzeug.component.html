@@ -203,7 +203,6 @@
         <mat-card class="section-card inventar-card">
           <mat-card-header>
             <mat-card-title>Inventar bearbeiten</mat-card-title>
-            <mat-card-subtitle>Beladung pro Fahrzeugraum</mat-card-subtitle>
           </mat-card-header>
           <mat-card-content>
             <div class="inventar-toolbar mb-3">
@@ -227,6 +226,8 @@
                 {{ inventarAnsicht === 'kompakt' ? 'Detailansicht' : 'Kompaktansicht' }}
               </button>
             </div>
+
+            <p class="inventar-subheadline">Beladung pro Fahrzeugraum</p>
 
             @if (selected; as f) {
               <section class="inventar-overview mb-3">
