@@ -11,242 +11,347 @@
     </div>
 
     <mat-card-content>
-      <div class="top-actions mb-3">
-        <button mat-flat-button color="accent" type="button" [hidden]="editorOpen" (click)="newFahrzeug()">
-          <mat-icon>add</mat-icon>
-          Hinzufügen
-        </button>
-      </div>
-
-      <mat-card class="section-card" [hidden]="editorOpen">
-        <mat-card-header>
-          <mat-card-title>Fahrzeugliste</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="table-wrap">
-            <table mat-table [dataSource]="dataSource" matSort>
-              <ng-container matColumnDef="name">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
-                <td mat-cell *matCellDef="let row">{{ row.name }}</td>
-              </ng-container>
-
-              <ng-container matColumnDef="bezeichnung">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>Bezeichnung</th>
-                <td mat-cell *matCellDef="let row">{{ row.bezeichnung }}</td>
-              </ng-container>
-
-              <ng-container matColumnDef="public_id">
-                <th mat-header-cell *matHeaderCellDef>Public ID</th>
-                <td mat-cell *matCellDef="let row">{{ row.public_id }}</td>
-              </ng-container>
-
-              <ng-container matColumnDef="actions">
-                <th mat-header-cell *matHeaderCellDef>Aktionen</th>
-                <td mat-cell *matCellDef="let row" class="ui-action-cell">
-                  <button
-                    mat-flat-button
-                    class="ui-action-btn"
-                    color="primary"
-                    type="button"
-                    (click)="editFahrzeug(row)"
-                  >
-                    <mat-icon>edit</mat-icon>
-                  </button>
-                </td>
-              </ng-container>
-
-              <tr mat-header-row *matHeaderRowDef="sichtbareSpalten"></tr>
-              <tr mat-row *matRowDef="let row; columns: sichtbareSpalten"></tr>
-            </table>
-          </div>
-
-          <mat-paginator [pageSize]="10"></mat-paginator>
-        </mat-card-content>
-      </mat-card>
-
-      <mat-card class="section-card" [hidden]="!editorOpen">
-        <mat-card-header>
-          <mat-card-title>{{ selectedId ? 'Fahrzeug bearbeiten' : 'Neues Fahrzeug' }}</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <form [formGroup]="fahrzeugForm" class="form-grid mb-3">
-            <mat-form-field>
-              <mat-label>Name</mat-label>
-              <input matInput formControlName="name" />
-            </mat-form-field>
-
-            <mat-form-field>
-              <mat-label>Bezeichnung</mat-label>
-              <input matInput formControlName="bezeichnung" />
-            </mat-form-field>
-
-            <mat-form-field>
-              <mat-label>Service zuletzt erledigt</mat-label>
-              <input matInput type="date" formControlName="service_zuletzt_am" />
-            </mat-form-field>
-
-            <mat-form-field>
-              <mat-label>Nächstes Service</mat-label>
-              <input matInput type="date" formControlName="service_naechstes_am" />
-            </mat-form-field>
-
-            <mat-form-field class="full-width">
-              <mat-label>Beschreibung</mat-label>
-              <textarea matInput rows="3" formControlName="beschreibung"></textarea>
-            </mat-form-field>
-
-            <div class="photo-block full-width">
-              <p class="photo-label">Fahrzeugfoto</p>
-
-              @if (selected?.foto_url) {
-                <img [src]="selected?.foto_url" alt="Fahrzeugfoto" class="photo-preview" />
-              } @else {
-                <p class="empty-hint">Noch kein Foto hinterlegt.</p>
-              }
-
-              <div class="photo-upload-row">
-                <input
-                  #fahrzeugFotoUpload
-                  type="file"
-                  accept=".jpg,.jpeg,.png"
-                  (change)="onFahrzeugFotoSelected($event)"
-                />
-                @if (fahrzeugFotoName) {
-                  <span class="file-name">{{ fahrzeugFotoName }}</span>
-                }
-              </div>
-
-              @if (selectedId && selected?.foto_url) {
-                <button mat-flat-button color="warn" type="button" (click)="removeFahrzeugFoto()">
-                  <mat-icon>delete</mat-icon>
-                  Foto entfernen
-                </button>
-              }
-            </div>
-
-            <div class="actions-row full-width">
-              <button mat-flat-button color="accent" type="button" [hidden]="!fahrzeugForm.valid" (click)="saveFahrzeug()">
-                <mat-icon>save</mat-icon>
-                Daten speichern
-              </button>
-
-              <button mat-flat-button color="primary" type="button" (click)="closeEditor()">
-                Abbrechen
-              </button>
-
-              @if (selectedId) {
-                <a mat-flat-button color="primary" [routerLink]="['/fahrzeuge', selectedId, 'check']">
-                  <mat-icon>checklist</mat-icon>
-                  Check öffnen
-                </a>
-              }
-            </div>
-          </form>
-
-          <button mat-flat-button color="warn" [hidden]="!selectedId" type="button" (click)="deleteSelectedFahrzeug()">
-            <mat-icon>delete</mat-icon>
-            Daten löschen
+      @if (!editorOpen && !inventarEditorOpen) {
+        <div class="top-actions mb-3">
+          <button mat-flat-button color="accent" type="button" (click)="newFahrzeug()">
+            <mat-icon>add</mat-icon>
+            Hinzufügen
           </button>
+        </div>
+      }
 
-          <mat-divider class="mb-3"></mat-divider>
+      @if (!editorOpen && !inventarEditorOpen) {
+        <mat-card class="section-card">
+          <mat-card-header>
+            <mat-card-title>Fahrzeugliste</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="table-wrap">
+              <table mat-table [dataSource]="dataSource" matSort>
+                <ng-container matColumnDef="name">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+                  <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+                </ng-container>
 
-          @if (selected; as f) {
-            <h3 class="section-title">Räume & Ausstattung: {{ f.name }}</h3>
+                <ng-container matColumnDef="bezeichnung">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Bezeichnung</th>
+                  <td mat-cell *matCellDef="let row">{{ row.bezeichnung }}</td>
+                </ng-container>
 
-            <form [formGroup]="raumForm" class="raum-create-form mb-3">
+                <ng-container matColumnDef="public_id">
+                  <th mat-header-cell *matHeaderCellDef>Public ID</th>
+                  <td mat-cell *matCellDef="let row">{{ row.public_id }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef>Aktionen</th>
+                  <td mat-cell *matCellDef="let row" class="ui-action-cell">
+                    <div class="list-actions">
+                      <button
+                        mat-flat-button
+                        class="ui-action-btn"
+                        color="primary"
+                        type="button"
+                        (click)="editFahrzeug(row)"
+                      >
+                        <mat-icon>edit</mat-icon>
+                      </button>
+
+                      <button
+                        mat-flat-button
+                        class="ui-action-btn"
+                        color="accent"
+                        type="button"
+                        (click)="openInventarFromList(row)"
+                      >
+                        <mat-icon>inventory_2</mat-icon>
+                      </button>
+                    </div>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="sichtbareSpalten"></tr>
+                <tr mat-row *matRowDef="let row; columns: sichtbareSpalten"></tr>
+              </table>
+            </div>
+
+            <mat-paginator [pageSize]="10"></mat-paginator>
+          </mat-card-content>
+        </mat-card>
+      }
+
+      @if (editorOpen) {
+        <mat-card class="section-card">
+          <mat-card-header>
+            <mat-card-title>{{ selectedId ? 'Fahrzeug bearbeiten' : 'Neues Fahrzeug' }}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <form [formGroup]="fahrzeugForm" class="form-grid mb-3">
               <mat-form-field>
-                <mat-label>Raumname</mat-label>
+                <mat-label>Name</mat-label>
                 <input matInput formControlName="name" />
               </mat-form-field>
 
               <mat-form-field>
-                <mat-label>Reihenfolge</mat-label>
-                <input matInput type="number" formControlName="reihenfolge" />
+                <mat-label>Bezeichnung</mat-label>
+                <input matInput formControlName="bezeichnung" />
               </mat-form-field>
 
-              <div class="inline-file-upload">
-                <input
-                  #newRaumFotoUpload
-                  type="file"
-                  accept=".jpg,.jpeg,.png"
-                  (change)="onNewRaumFotoSelected($event)"
-                />
-                @if (neuerRaumFotoName) {
-                  <span class="file-name">{{ neuerRaumFotoName }}</span>
+              <mat-form-field>
+                <mat-label>Service zuletzt erledigt</mat-label>
+                <input matInput type="date" formControlName="service_zuletzt_am" />
+              </mat-form-field>
+
+              <mat-form-field>
+                <mat-label>Nächstes Service</mat-label>
+                <input matInput type="date" formControlName="service_naechstes_am" />
+              </mat-form-field>
+
+              <mat-form-field class="full-width">
+                <mat-label>Beschreibung</mat-label>
+                <textarea matInput rows="3" formControlName="beschreibung"></textarea>
+              </mat-form-field>
+
+              <div class="photo-block full-width">
+                <p class="photo-label">Fahrzeugfoto</p>
+
+                @if (selected?.foto_url) {
+                  <img [src]="selected?.foto_url" alt="Fahrzeugfoto" class="photo-preview" />
+                } @else {
+                  <p class="empty-hint">Noch kein Foto hinterlegt.</p>
+                }
+
+                <div class="photo-upload-row">
+                  <input
+                    #fahrzeugFotoUpload
+                    type="file"
+                    accept=".jpg,.jpeg,.png"
+                    (change)="onFahrzeugFotoSelected($event)"
+                  />
+                  @if (fahrzeugFotoName) {
+                    <span class="file-name">{{ fahrzeugFotoName }}</span>
+                  }
+                </div>
+
+                @if (selectedId && selected?.foto_url) {
+                  <button mat-flat-button color="warn" type="button" (click)="removeFahrzeugFoto()">
+                    <mat-icon>delete</mat-icon>
+                    Foto entfernen
+                  </button>
                 }
               </div>
 
-              <button mat-flat-button color="accent" type="button" (click)="addRaum()">
-                <mat-icon>add</mat-icon>
-                Raum anlegen
-              </button>
+              <div class="actions-row full-width">
+                <button
+                  mat-flat-button
+                  color="accent"
+                  type="button"
+                  [hidden]="!fahrzeugForm.valid"
+                  (click)="saveFahrzeug()"
+                >
+                  <mat-icon>save</mat-icon>
+                  Daten speichern
+                </button>
+
+                <button mat-flat-button color="primary" type="button" (click)="closeEditor()">
+                  Abbrechen
+                </button>
+
+                @if (selectedId) {
+                  <button mat-flat-button color="primary" type="button" (click)="openInventarFromEditor()">
+                    <mat-icon>inventory_2</mat-icon>
+                    Inventar bearbeiten
+                  </button>
+                }
+
+                @if (selectedId) {
+                  <a mat-flat-button color="primary" [routerLink]="['/fahrzeuge', selectedId, 'check']">
+                    <mat-icon>checklist</mat-icon>
+                    Check öffnen
+                  </a>
+                }
+              </div>
             </form>
 
-            <mat-accordion multi>
-              @for (raum of f.raeume; track raum.id) {
-                <mat-expansion-panel>
-                  <mat-expansion-panel-header>
-                    <mat-panel-title>
-                      {{ raum.name }} ({{ raum.items.length }} Items)
-                    </mat-panel-title>
-                  </mat-expansion-panel-header>
+            <button
+              mat-flat-button
+              color="warn"
+              [hidden]="!selectedId"
+              type="button"
+              (click)="deleteSelectedFahrzeug()"
+            >
+              <mat-icon>delete</mat-icon>
+              Daten löschen
+            </button>
+          </mat-card-content>
+        </mat-card>
+      }
 
-                  <form [formGroup]="raumEditFormFor(raum)" class="raum-edit-form mb-3">
-                    <mat-form-field>
-                      <mat-label>Raumname</mat-label>
-                      <input matInput formControlName="name" />
-                    </mat-form-field>
+      @if (inventarEditorOpen) {
+        <mat-card class="section-card">
+          <mat-card-header>
+            <mat-card-title>Inventar bearbeiten</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="actions-row mb-3">
+              <button mat-flat-button color="primary" type="button" (click)="backToFahrzeugEditor()">
+                <mat-icon>arrow_back</mat-icon>
+                Zum Fahrzeug
+              </button>
 
-                    <mat-form-field>
-                      <mat-label>Reihenfolge</mat-label>
-                      <input matInput type="number" formControlName="reihenfolge" />
-                    </mat-form-field>
+              <button mat-flat-button color="primary" type="button" (click)="closeEditor()">
+                Zur Liste
+              </button>
+            </div>
 
-                    <div class="room-photo-wrap">
-                      @if (raum.foto_url) {
-                        <img [src]="raum.foto_url" alt="Raumfoto" class="room-photo-preview" />
-                      }
+            @if (selected; as f) {
+              <h3 class="section-title">Räume & Ausstattung: {{ f.name }}</h3>
 
-                      <input
-                        type="file"
-                        accept=".jpg,.jpeg,.png"
-                        (change)="onRaumFotoSelected(raum.id, $event)"
-                      />
+              <form [formGroup]="raumForm" class="raum-create-form mb-3">
+                <mat-form-field>
+                  <mat-label>Raumname</mat-label>
+                  <input matInput formControlName="name" />
+                </mat-form-field>
 
-                      @if (raumFotoNameFor(raum.id)) {
-                        <span class="file-name">{{ raumFotoNameFor(raum.id) }}</span>
-                      }
-                    </div>
+                <mat-form-field>
+                  <mat-label>Reihenfolge</mat-label>
+                  <input matInput type="number" formControlName="reihenfolge" />
+                </mat-form-field>
 
-                    <div class="raum-actions">
-                      <button mat-flat-button color="accent" type="button" (click)="saveRaum(raum)">
-                        <mat-icon>save</mat-icon>
-                        Raum speichern
-                      </button>
+                <div class="inline-file-upload">
+                  <input
+                    #newRaumFotoUpload
+                    type="file"
+                    accept=".jpg,.jpeg,.png"
+                    (change)="onNewRaumFotoSelected($event)"
+                  />
+                  @if (neuerRaumFotoName) {
+                    <span class="file-name">{{ neuerRaumFotoName }}</span>
+                  }
+                </div>
 
-                      @if (raum.foto_url) {
-                        <button mat-flat-button color="primary" type="button" (click)="removeRaumFoto(raum)">
-                          <mat-icon>image_not_supported</mat-icon>
-                          Raumfoto entfernen
+                <button mat-flat-button color="accent" type="button" (click)="addRaum()">
+                  <mat-icon>add</mat-icon>
+                  Raum anlegen
+                </button>
+              </form>
+
+              <mat-accordion multi>
+                @for (raum of f.raeume; track raum.id) {
+                  <mat-expansion-panel>
+                    <mat-expansion-panel-header>
+                      <mat-panel-title>
+                        {{ raum.name }} ({{ raum.items.length }} Items)
+                      </mat-panel-title>
+                    </mat-expansion-panel-header>
+
+                    <form [formGroup]="raumEditFormFor(raum)" class="raum-edit-form mb-3">
+                      <mat-form-field>
+                        <mat-label>Raumname</mat-label>
+                        <input matInput formControlName="name" />
+                      </mat-form-field>
+
+                      <mat-form-field>
+                        <mat-label>Reihenfolge</mat-label>
+                        <input matInput type="number" formControlName="reihenfolge" />
+                      </mat-form-field>
+
+                      <div class="room-photo-wrap">
+                        @if (raum.foto_url) {
+                          <img [src]="raum.foto_url" alt="Raumfoto" class="room-photo-preview" />
+                        }
+
+                        <input
+                          type="file"
+                          accept=".jpg,.jpeg,.png"
+                          (change)="onRaumFotoSelected(raum.id, $event)"
+                        />
+
+                        @if (raumFotoNameFor(raum.id)) {
+                          <span class="file-name">{{ raumFotoNameFor(raum.id) }}</span>
+                        }
+                      </div>
+
+                      <div class="raum-actions">
+                        <button mat-flat-button color="accent" type="button" (click)="saveRaum(raum)">
+                          <mat-icon>save</mat-icon>
+                          Raum speichern
                         </button>
+
+                        @if (raum.foto_url) {
+                          <button mat-flat-button color="primary" type="button" (click)="removeRaumFoto(raum)">
+                            <mat-icon>image_not_supported</mat-icon>
+                            Raumfoto entfernen
+                          </button>
+                        }
+
+                        <button mat-flat-button color="warn" type="button" (click)="deleteRaum(raum)">
+                          <mat-icon>delete</mat-icon>
+                          Raum löschen
+                        </button>
+                      </div>
+                    </form>
+
+                    <div class="items-area">
+                      <h4 class="items-title">Ausstattung bearbeiten</h4>
+
+                      @if (raum.items.length === 0) {
+                        <p class="empty-hint">Noch keine Ausstattung in diesem Raum vorhanden.</p>
                       }
 
-                      <button mat-flat-button color="warn" type="button" (click)="deleteRaum(raum)">
-                        <mat-icon>delete</mat-icon>
-                        Raum löschen
-                      </button>
-                    </div>
-                  </form>
+                      @for (item of raum.items; track item.id) {
+                        <form [formGroup]="itemEditFormFor(item)" class="item-edit-form mb-2">
+                          <mat-form-field>
+                            <mat-label>Item Name</mat-label>
+                            <input matInput formControlName="name" />
+                          </mat-form-field>
 
-                  <div class="items-area">
-                    <h4 class="items-title">Ausstattung bearbeiten</h4>
+                          <mat-form-field>
+                            <mat-label>Menge</mat-label>
+                            <input matInput type="number" formControlName="menge" />
+                          </mat-form-field>
 
-                    @if (raum.items.length === 0) {
-                      <p class="empty-hint">Noch keine Ausstattung in diesem Raum vorhanden.</p>
-                    }
+                          <mat-form-field>
+                            <mat-label>Einheit</mat-label>
+                            <input matInput formControlName="einheit" />
+                          </mat-form-field>
 
-                    @for (item of raum.items; track item.id) {
-                      <form [formGroup]="itemEditFormFor(item)" class="item-edit-form mb-2">
+                          <mat-form-field>
+                            <mat-label>Notiz</mat-label>
+                            <input matInput formControlName="notiz" />
+                          </mat-form-field>
+
+                          <mat-form-field>
+                            <mat-label>Reihenfolge</mat-label>
+                            <input matInput type="number" formControlName="reihenfolge" />
+                          </mat-form-field>
+
+                          <mat-form-field>
+                            <mat-label>Wartung zuletzt erledigt</mat-label>
+                            <input matInput type="date" formControlName="wartung_zuletzt_am" />
+                          </mat-form-field>
+
+                          <mat-form-field>
+                            <mat-label>Nächste Wartung</mat-label>
+                            <input matInput type="date" formControlName="wartung_naechstes_am" />
+                          </mat-form-field>
+
+                          <div class="item-actions">
+                            <button mat-flat-button color="accent" type="button" (click)="saveItem(raum, item)">
+                              <mat-icon>save</mat-icon>
+                              Item speichern
+                            </button>
+
+                            <button mat-flat-button color="warn" type="button" (click)="deleteItem(raum, item)">
+                              <mat-icon>delete</mat-icon>
+                              Item löschen
+                            </button>
+                          </div>
+                        </form>
+                      }
+
+                      <h4 class="items-title mt-2">Neues Item</h4>
+                      <form [formGroup]="itemCreateFormFor(raum.id)" class="item-add-form">
                         <mat-form-field>
                           <mat-label>Item Name</mat-label>
                           <input matInput formControlName="name" />
@@ -282,73 +387,21 @@
                           <input matInput type="date" formControlName="wartung_naechstes_am" />
                         </mat-form-field>
 
-                        <div class="item-actions">
-                          <button mat-flat-button color="accent" type="button" (click)="saveItem(raum, item)">
-                            <mat-icon>save</mat-icon>
-                            Item speichern
-                          </button>
-
-                          <button mat-flat-button color="warn" type="button" (click)="deleteItem(raum, item)">
-                            <mat-icon>delete</mat-icon>
-                            Item löschen
-                          </button>
-                        </div>
+                        <button mat-flat-button color="accent" type="button" (click)="addItem(raum)">
+                          <mat-icon>add</mat-icon>
+                          Item anlegen
+                        </button>
                       </form>
-                    }
-
-                    <h4 class="items-title mt-2">Neues Item</h4>
-                    <form [formGroup]="itemCreateFormFor(raum.id)" class="item-add-form">
-                      <mat-form-field>
-                        <mat-label>Item Name</mat-label>
-                        <input matInput formControlName="name" />
-                      </mat-form-field>
-
-                      <mat-form-field>
-                        <mat-label>Menge</mat-label>
-                        <input matInput type="number" formControlName="menge" />
-                      </mat-form-field>
-
-                      <mat-form-field>
-                        <mat-label>Einheit</mat-label>
-                        <input matInput formControlName="einheit" />
-                      </mat-form-field>
-
-                      <mat-form-field>
-                        <mat-label>Notiz</mat-label>
-                        <input matInput formControlName="notiz" />
-                      </mat-form-field>
-
-                      <mat-form-field>
-                        <mat-label>Reihenfolge</mat-label>
-                        <input matInput type="number" formControlName="reihenfolge" />
-                      </mat-form-field>
-
-                      <mat-form-field>
-                        <mat-label>Wartung zuletzt erledigt</mat-label>
-                        <input matInput type="date" formControlName="wartung_zuletzt_am" />
-                      </mat-form-field>
-
-                      <mat-form-field>
-                        <mat-label>Nächste Wartung</mat-label>
-                        <input matInput type="date" formControlName="wartung_naechstes_am" />
-                      </mat-form-field>
-
-                      <button mat-flat-button color="accent" type="button" (click)="addItem(raum)">
-                        <mat-icon>add</mat-icon>
-                        Item anlegen
-                      </button>
-                    </form>
-                  </div>
-                </mat-expansion-panel>
-              }
-            </mat-accordion>
-          } @else {
-            <div class="empty-hint">
-              Speichere zuerst das Fahrzeug, um Räume und Ausstattung zu verwalten.
-            </div>
-          }
-        </mat-card-content>
-      </mat-card>
+                    </div>
+                  </mat-expansion-panel>
+                }
+              </mat-accordion>
+            } @else {
+              <div class="empty-hint">Fahrzeugdaten werden geladen.</div>
+            }
+          </mat-card-content>
+        </mat-card>
+      }
     </mat-card-content>
   </mat-card>
 </section>

@@ -73,6 +73,7 @@ export class FahrzeugComponent implements OnInit {
   dataSource = new MatTableDataSource<IFahrzeugList>([]);
   sichtbareSpalten: string[] = ["name", "bezeichnung", "public_id", "actions"];
   editorOpen = false;
+  inventarEditorOpen = false;
 
   selectedId: string | null = null;
   selected: IFahrzeugDetail | null = null;
@@ -191,12 +192,14 @@ export class FahrzeugComponent implements OnInit {
 
   editFahrzeug(row: IFahrzeugList): void {
     this.editorOpen = true;
+    this.inventarEditorOpen = false;
     this.selectedId = row.id;
     this.loadDetail(row.id);
   }
 
   closeEditor(): void {
     this.editorOpen = false;
+    this.inventarEditorOpen = false;
     this.resetEditorData();
   }
 
@@ -227,7 +230,42 @@ export class FahrzeugComponent implements OnInit {
 
   newFahrzeug(): void {
     this.editorOpen = true;
+    this.inventarEditorOpen = false;
     this.resetEditorData();
+  }
+
+  openInventarFromList(row: IFahrzeugList): void {
+    this.openInventarEditor(row.id);
+  }
+
+  openInventarFromEditor(): void {
+    if (!this.selectedId) {
+      this.gds.erstelleMessage("error", "Bitte Fahrzeug zuerst speichern.");
+      return;
+    }
+
+    this.openInventarEditor(this.selectedId);
+  }
+
+  backToFahrzeugEditor(): void {
+    if (!this.selectedId) {
+      this.gds.erstelleMessage("error", "Bitte Fahrzeug zuerst auswählen.");
+      return;
+    }
+
+    this.inventarEditorOpen = false;
+    this.editorOpen = true;
+
+    if (!this.selected || this.selected.id !== this.selectedId) {
+      this.loadDetail(this.selectedId);
+    }
+  }
+
+  private openInventarEditor(fahrzeugId: string): void {
+    this.selectedId = fahrzeugId;
+    this.editorOpen = false;
+    this.inventarEditorOpen = true;
+    this.loadDetail(fahrzeugId);
   }
 
   private normalizeDate(dateValue: string | null | undefined): string | null {
