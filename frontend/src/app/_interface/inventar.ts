@@ -9,6 +9,8 @@ export interface IInventar {
   bezeichnung: string;
   anzahl: number | null;
   lagerort: string | null;
+  wartung_zuletzt_am?: string | null;
+  wartung_naechstes_am?: string | null;
   ist_verliehen: boolean;
   verliehen_anzahl: number;
   verliehen_an: string | null;

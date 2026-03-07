@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, HostListener, OnInit, ViewChild, inject } from "@angular/core";
+import { Component, ElementRef, HostListener, OnInit, ViewChild, inject } from "@angular/core";
 import {
   FormBuilder,
   FormControl,
@@ -9,26 +9,25 @@ import {
 } from "@angular/forms";
 import { RouterModule } from "@angular/router";
 
-import { MatCardModule } from "@angular/material/card";
 import { MatButtonModule } from "@angular/material/button";
+import { MatCardModule } from "@angular/material/card";
+import { MatDividerModule } from "@angular/material/divider";
+import { MatExpansionModule } from "@angular/material/expansion";
+import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIconModule } from "@angular/material/icon";
-import { MatTableDataSource, MatTableModule } from "@angular/material/table";
+import { MatInputModule } from "@angular/material/input";
 import { MatPaginator, MatPaginatorModule } from "@angular/material/paginator";
 import { MatSort, MatSortModule } from "@angular/material/sort";
-import { MatFormFieldModule } from "@angular/material/form-field";
-import { MatInputModule } from "@angular/material/input";
-import { MatExpansionModule } from "@angular/material/expansion";
-import { MatDividerModule } from "@angular/material/divider";
+import { MatTableDataSource, MatTableModule } from "@angular/material/table";
 
-import { HeaderComponent } from "../_template/header/header.component";
+import { IFahrzeugDetail, IFahrzeugList, IFahrzeugRaum, IRaumItem } from "../_interface/fahrzeug";
 import { GlobalDataService } from "../_service/global-data.service";
+import { HeaderComponent } from "../_template/header/header.component";
 
-import {
-  IFahrzeugDetail,
-  IFahrzeugList,
-  IFahrzeugRaum,
-  IRaumItem,
-} from "../_interface/fahrzeug";
+type RaumEditFG = FormGroup<{
+  name: FormControl<string>;
+  reihenfolge: FormControl<number>;
+}>;
 
 type ItemDraftFG = FormGroup<{
   name: FormControl<string>;
@@ -36,6 +35,8 @@ type ItemDraftFG = FormGroup<{
   einheit: FormControl<string>;
   notiz: FormControl<string>;
   reihenfolge: FormControl<number>;
+  wartung_zuletzt_am: FormControl<string>;
+  wartung_naechstes_am: FormControl<string>;
 }>;
 
 @Component({
@@ -71,11 +72,11 @@ export class FahrzeugComponent implements OnInit {
   fahrzeuge: IFahrzeugList[] = [];
   dataSource = new MatTableDataSource<IFahrzeugList>([]);
   sichtbareSpalten: string[] = ["name", "bezeichnung", "public_id", "actions"];
+  editorOpen = false;
 
   selectedId: string | null = null;
   selected: IFahrzeugDetail | null = null;
 
-  // Fahrzeug (create/update)
   fahrzeugForm = this.fb.group({
     id: this.fb.control<string | null>(null),
     name: this.fb.control<string>("", {
@@ -84,9 +85,10 @@ export class FahrzeugComponent implements OnInit {
     }),
     bezeichnung: this.fb.control<string>("", { nonNullable: true }),
     beschreibung: this.fb.control<string>("", { nonNullable: true }),
+    service_zuletzt_am: this.fb.control<string>("", { nonNullable: true }),
+    service_naechstes_am: this.fb.control<string>("", { nonNullable: true }),
   });
 
-  // Raum (create)
   raumForm = this.fb.group({
     name: this.fb.control<string>("", {
       nonNullable: true,
@@ -95,11 +97,22 @@ export class FahrzeugComponent implements OnInit {
     reihenfolge: this.fb.control<number>(0, { nonNullable: true }),
   });
 
-  // Item-Form pro Raum (nur Add-Form, nicht Edit)
-  itemForms = new Map<string, ItemDraftFG>();
+  private itemCreateForms = new Map<string, ItemDraftFG>();
+  private raumEditForms = new Map<string, RaumEditFG>();
+  private itemEditForms = new Map<string, ItemDraftFG>();
+  private raumFotoFiles = new Map<string, File>();
+  private raumFotoNames = new Map<string, string>();
+
+  fahrzeugFotoDatei: File | null = null;
+  fahrzeugFotoName = "";
+
+  neuerRaumFotoDatei: File | null = null;
+  neuerRaumFotoName = "";
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild("fahrzeugFotoUpload") fahrzeugFotoRef?: ElementRef<HTMLInputElement>;
+  @ViewChild("newRaumFotoUpload") neuerRaumFotoRef?: ElementRef<HTMLInputElement>;
 
   ngOnInit(): void {
     sessionStorage.setItem("PageNumber", "2");
@@ -122,7 +135,7 @@ export class FahrzeugComponent implements OnInit {
       return;
     }
 
-    if (width < 768) {
+    if (width < 992) {
       this.sichtbareSpalten = ["name", "bezeichnung", "actions"];
       return;
     }
@@ -132,7 +145,7 @@ export class FahrzeugComponent implements OnInit {
 
   private loadList(): void {
     this.gds.get(this.modul).subscribe({
-      next: (res: any) => {
+      next: (res: unknown) => {
         this.fahrzeuge = (res as IFahrzeugList[]) ?? [];
         this.dataSource.data = this.fahrzeuge;
 
@@ -141,56 +154,196 @@ export class FahrzeugComponent implements OnInit {
           if (this.sort) this.dataSource.sort = this.sort;
         });
       },
-      error: (err: any) => this.gds.errorAnzeigen(err),
+      error: (err: unknown) => this.gds.errorAnzeigen(err),
     });
   }
 
-  selectRow(row: IFahrzeugList): void {
-    this.selectedId = row.id;
-    this.loadDetail(row.id);
-
-    this.fahrzeugForm.setValue({
-      id: row.id,
-      name: row.name ?? "",
-      bezeichnung: row.bezeichnung ?? "",
-      beschreibung: "", // kommt aus Detail
-    });
+  private resetNestedForms(): void {
+    this.itemCreateForms.clear();
+    this.raumEditForms.clear();
+    this.itemEditForms.clear();
+    this.raumFotoFiles.clear();
+    this.raumFotoNames.clear();
   }
 
-  private loadDetail(id: string): void {
-    this.gds.get(`${this.modul}/${id}`).subscribe({
-      next: (res: any) => {
-        this.selected = res as IFahrzeugDetail;
-
-        this.fahrzeugForm.patchValue({
-          beschreibung: this.selected?.beschreibung ?? "",
-        });
-
-        // Item-Add-Forms initialisieren pro Raum
-        this.itemForms.clear();
-        for (const r of this.selected?.raeume ?? []) {
-          this.itemForms.set(r.id, this.createItemDraftForm());
-        }
-      },
-      error: (err: any) => this.gds.errorAnzeigen(err),
-    });
-  }
-
-  newFahrzeug(): void {
+  private resetEditorData(): void {
     this.selectedId = null;
     this.selected = null;
-    this.itemForms.clear();
+    this.resetNestedForms();
 
     this.fahrzeugForm.reset({
       id: null,
       name: "",
       bezeichnung: "",
       beschreibung: "",
+      service_zuletzt_am: "",
+      service_naechstes_am: "",
     });
 
     this.raumForm.reset({
       name: "",
       reihenfolge: 0,
+    });
+
+    this.resetFahrzeugFotoAuswahl();
+    this.resetNeuerRaumFotoAuswahl();
+  }
+
+  editFahrzeug(row: IFahrzeugList): void {
+    this.editorOpen = true;
+    this.selectedId = row.id;
+    this.loadDetail(row.id);
+  }
+
+  closeEditor(): void {
+    this.editorOpen = false;
+    this.resetEditorData();
+  }
+
+  private loadDetail(id: string): void {
+    this.gds.get(`${this.modul}/${id}`).subscribe({
+      next: (res: unknown) => {
+        this.selected = res as IFahrzeugDetail;
+
+        this.fahrzeugForm.setValue({
+          id: this.selected.id,
+          name: this.selected.name ?? "",
+          bezeichnung: this.selected.bezeichnung ?? "",
+          beschreibung: this.selected.beschreibung ?? "",
+          service_zuletzt_am: this.toDateInput(this.selected.service_zuletzt_am),
+          service_naechstes_am: this.toDateInput(this.selected.service_naechstes_am),
+        });
+
+        this.resetNestedForms();
+        for (const raum of this.selected.raeume ?? []) {
+          this.itemCreateForms.set(raum.id, this.createItemDraftForm());
+        }
+
+        this.resetFahrzeugFotoAuswahl();
+      },
+      error: (err: unknown) => this.gds.errorAnzeigen(err),
+    });
+  }
+
+  newFahrzeug(): void {
+    this.editorOpen = true;
+    this.resetEditorData();
+  }
+
+  private normalizeDate(dateValue: string | null | undefined): string | null {
+    const clean = String(dateValue ?? "").trim();
+    return clean === "" ? null : clean;
+  }
+
+  private toDateInput(dateValue: string | null | undefined): string {
+    if (!dateValue) return "";
+    return String(dateValue).slice(0, 10);
+  }
+
+  private isDateWindowInvalid(zuletzt: string | null, naechstes: string | null): boolean {
+    return Boolean(zuletzt && naechstes && naechstes < zuletzt);
+  }
+
+  private buildFahrzeugPayload(): {
+    name: string;
+    bezeichnung: string;
+    beschreibung: string;
+    service_zuletzt_am: string | null;
+    service_naechstes_am: string | null;
+  } | null {
+    const serviceZuletzt = this.normalizeDate(this.fahrzeugForm.controls.service_zuletzt_am.value);
+    const serviceNaechstes = this.normalizeDate(this.fahrzeugForm.controls.service_naechstes_am.value);
+
+    if (this.isDateWindowInvalid(serviceZuletzt, serviceNaechstes)) {
+      this.gds.erstelleMessage(
+        "error",
+        "Service: Das nächste Datum darf nicht vor dem zuletzt erledigten Datum liegen."
+      );
+      return null;
+    }
+
+    return {
+      name: this.fahrzeugForm.controls.name.value.trim(),
+      bezeichnung: this.fahrzeugForm.controls.bezeichnung.value.trim(),
+      beschreibung: this.fahrzeugForm.controls.beschreibung.value.trim(),
+      service_zuletzt_am: serviceZuletzt,
+      service_naechstes_am: serviceNaechstes,
+    };
+  }
+
+  private toFahrzeugFormData(payload: {
+    name: string;
+    bezeichnung: string;
+    beschreibung: string;
+    service_zuletzt_am: string | null;
+    service_naechstes_am: string | null;
+  }, file: File): FormData {
+    const fd = new FormData();
+    fd.append("name", payload.name);
+    fd.append("bezeichnung", payload.bezeichnung);
+    fd.append("beschreibung", payload.beschreibung);
+    fd.append("service_zuletzt_am", payload.service_zuletzt_am ?? "");
+    fd.append("service_naechstes_am", payload.service_naechstes_am ?? "");
+    fd.append("foto", file, file.name || "upload.png");
+    return fd;
+  }
+
+  private isUploadTooLarge(file: File): boolean {
+    const sizeKB = Math.round(file.size / 1024);
+    return sizeKB >= this.gds.MaxUploadSize;
+  }
+
+  private showUploadTooLargeError(): void {
+    const maxMB = this.gds.MaxUploadSize / 1024;
+    this.gds.erstelleMessage("error", `Foto darf nicht größer als ${maxMB}MB sein!`);
+  }
+
+  private resetFahrzeugFotoAuswahl(): void {
+    this.fahrzeugFotoDatei = null;
+    this.fahrzeugFotoName = "";
+    if (this.fahrzeugFotoRef?.nativeElement) {
+      this.fahrzeugFotoRef.nativeElement.value = "";
+    }
+  }
+
+  private resetNeuerRaumFotoAuswahl(): void {
+    this.neuerRaumFotoDatei = null;
+    this.neuerRaumFotoName = "";
+    if (this.neuerRaumFotoRef?.nativeElement) {
+      this.neuerRaumFotoRef.nativeElement.value = "";
+    }
+  }
+
+  onFahrzeugFotoSelected(event: Event): void {
+    const input = event.target as HTMLInputElement | null;
+    const file = input?.files?.[0] ?? null;
+
+    if (!file) {
+      this.resetFahrzeugFotoAuswahl();
+      return;
+    }
+
+    if (this.isUploadTooLarge(file)) {
+      this.resetFahrzeugFotoAuswahl();
+      this.showUploadTooLargeError();
+      return;
+    }
+
+    this.fahrzeugFotoDatei = file;
+    this.fahrzeugFotoName = file.name;
+  }
+
+  removeFahrzeugFoto(): void {
+    if (!this.selectedId) return;
+
+    this.gds.patch(this.modul, this.selectedId, { remove_foto: true }, false).subscribe({
+      next: () => {
+        this.gds.erstelleMessage("success", "Fahrzeugfoto entfernt.");
+        this.resetFahrzeugFotoAuswahl();
+        this.loadList();
+        this.loadDetail(this.selectedId!);
+      },
+      error: (err: unknown) => this.gds.errorAnzeigen(err),
     });
   }
 
@@ -200,52 +353,95 @@ export class FahrzeugComponent implements OnInit {
       return;
     }
 
+    const payload = this.buildFahrzeugPayload();
+    if (!payload) return;
+
     const id = this.fahrzeugForm.controls.id.value;
-    const payload = {
-      name: this.fahrzeugForm.controls.name.value.trim(),
-      bezeichnung: this.fahrzeugForm.controls.bezeichnung.value.trim(),
-      beschreibung: this.fahrzeugForm.controls.beschreibung.value.trim(),
-    };
 
     if (!id) {
-      // create
-      this.gds.post(this.modul, payload).subscribe({
-        next: () => {
-          this.gds.erstelleMessage("success", "Fahrzeug erstellt.");
-          this.loadList();
-          this.newFahrzeug();
-        },
-        error: (err: any) => this.gds.errorAnzeigen(err),
-      });
-    } else {
-      // update
-      this.gds.patch(this.modul, id, payload).subscribe({
+      if (this.fahrzeugFotoDatei) {
+        const fd = this.toFahrzeugFormData(payload, this.fahrzeugFotoDatei);
+        this.gds.post(this.modul, fd, true).subscribe({
+          next: () => {
+            this.gds.erstelleMessage("success", "Fahrzeug erstellt.");
+            this.closeEditor();
+            this.loadList();
+          },
+          error: (err: unknown) => this.gds.errorAnzeigen(err),
+        });
+      } else {
+        this.gds.post(this.modul, payload, false).subscribe({
+          next: () => {
+            this.gds.erstelleMessage("success", "Fahrzeug erstellt.");
+            this.closeEditor();
+            this.loadList();
+          },
+          error: (err: unknown) => this.gds.errorAnzeigen(err),
+        });
+      }
+      return;
+    }
+
+    if (this.fahrzeugFotoDatei) {
+      const fd = this.toFahrzeugFormData(payload, this.fahrzeugFotoDatei);
+      this.gds.patch(this.modul, id, fd, true).subscribe({
         next: () => {
           this.gds.erstelleMessage("success", "Fahrzeug gespeichert.");
+          this.closeEditor();
           this.loadList();
-          this.loadDetail(id);
         },
-        error: (err: any) => this.gds.errorAnzeigen(err),
+        error: (err: unknown) => this.gds.errorAnzeigen(err),
+      });
+    } else {
+      this.gds.patch(this.modul, id, payload, false).subscribe({
+        next: () => {
+          this.gds.erstelleMessage("success", "Fahrzeug gespeichert.");
+          this.closeEditor();
+          this.loadList();
+        },
+        error: (err: unknown) => this.gds.errorAnzeigen(err),
       });
     }
   }
 
-  deleteFahrzeug(row: IFahrzeugList): void {
-    if (!confirm(`Fahrzeug "${row.name}" wirklich löschen?`)) return;
+  deleteSelectedFahrzeug(): void {
+    if (!this.selectedId) return;
 
-    this.gds.delete(this.modul, row.id).subscribe({
+    const name = this.selected?.name || this.fahrzeugForm.controls.name.value || "Unbenannt";
+    if (!confirm(`Fahrzeug "${name}" wirklich löschen?`)) return;
+
+    this.gds.delete(this.modul, this.selectedId).subscribe({
       next: () => {
         this.gds.erstelleMessage("success", "Fahrzeug gelöscht.");
-        if (this.selectedId === row.id) this.newFahrzeug();
+        this.closeEditor();
         this.loadList();
       },
-      error: (err: any) => this.gds.errorAnzeigen(err),
+      error: (err: unknown) => this.gds.errorAnzeigen(err),
     });
   }
 
   // =========================
   // Räume (nested)
   // =========================
+  onNewRaumFotoSelected(event: Event): void {
+    const input = event.target as HTMLInputElement | null;
+    const file = input?.files?.[0] ?? null;
+
+    if (!file) {
+      this.resetNeuerRaumFotoAuswahl();
+      return;
+    }
+
+    if (this.isUploadTooLarge(file)) {
+      this.resetNeuerRaumFotoAuswahl();
+      this.showUploadTooLargeError();
+      return;
+    }
+
+    this.neuerRaumFotoDatei = file;
+    this.neuerRaumFotoName = file.name;
+  }
+
   addRaum(): void {
     if (!this.selectedId) {
       this.gds.erstelleMessage("error", "Bitte zuerst ein Fahrzeug auswählen.");
@@ -261,22 +457,139 @@ export class FahrzeugComponent implements OnInit {
       reihenfolge: this.raumForm.controls.reihenfolge.value,
     };
 
-    this.gds.post(`fahrzeuge/${this.selectedId}/raeume`, payload).subscribe({
+    if (this.neuerRaumFotoDatei) {
+      const fd = new FormData();
+      fd.append("name", payload.name);
+      fd.append("reihenfolge", String(payload.reihenfolge));
+      fd.append("foto", this.neuerRaumFotoDatei, this.neuerRaumFotoDatei.name || "upload.png");
+
+      this.gds.post(`fahrzeuge/${this.selectedId}/raeume`, fd, true).subscribe({
+        next: () => {
+          this.gds.erstelleMessage("success", "Raum angelegt.");
+          this.raumForm.reset({ name: "", reihenfolge: 0 });
+          this.resetNeuerRaumFotoAuswahl();
+          this.loadDetail(this.selectedId!);
+        },
+        error: (err: unknown) => this.gds.errorAnzeigen(err),
+      });
+      return;
+    }
+
+    this.gds.post(`fahrzeuge/${this.selectedId}/raeume`, payload, false).subscribe({
       next: () => {
         this.gds.erstelleMessage("success", "Raum angelegt.");
         this.raumForm.reset({ name: "", reihenfolge: 0 });
+        this.resetNeuerRaumFotoAuswahl();
         this.loadDetail(this.selectedId!);
       },
-      error: (err: any) => this.gds.errorAnzeigen(err),
+      error: (err: unknown) => this.gds.errorAnzeigen(err),
     });
   }
 
-  onDeleteRaum(event: Event, raum: IFahrzeugRaum): void {
-    event.stopPropagation();
-    this.deleteRaum(raum);
+  private createRaumEditForm(raum: IFahrzeugRaum): RaumEditFG {
+    return this.fb.group({
+      name: this.fb.control<string>(raum.name ?? "", {
+        nonNullable: true,
+        validators: [Validators.required],
+      }),
+      reihenfolge: this.fb.control<number>(raum.reihenfolge ?? 0, { nonNullable: true }),
+    });
   }
 
-  private deleteRaum(raum: IFahrzeugRaum): void {
+  raumEditFormFor(raum: IFahrzeugRaum): RaumEditFG {
+    const existing = this.raumEditForms.get(raum.id);
+    if (existing) return existing;
+
+    const created = this.createRaumEditForm(raum);
+    this.raumEditForms.set(raum.id, created);
+    return created;
+  }
+
+  onRaumFotoSelected(raumId: string, event: Event): void {
+    const input = event.target as HTMLInputElement | null;
+    const file = input?.files?.[0] ?? null;
+
+    if (!file) {
+      this.raumFotoFiles.delete(raumId);
+      this.raumFotoNames.delete(raumId);
+      return;
+    }
+
+    if (this.isUploadTooLarge(file)) {
+      this.raumFotoFiles.delete(raumId);
+      this.raumFotoNames.delete(raumId);
+      this.showUploadTooLargeError();
+      if (input) input.value = "";
+      return;
+    }
+
+    this.raumFotoFiles.set(raumId, file);
+    this.raumFotoNames.set(raumId, file.name);
+  }
+
+  raumFotoNameFor(raumId: string): string {
+    return this.raumFotoNames.get(raumId) ?? "";
+  }
+
+  saveRaum(raum: IFahrzeugRaum): void {
+    if (!this.selectedId) return;
+
+    const form = this.raumEditFormFor(raum);
+    form.markAllAsTouched();
+    if (form.invalid) {
+      this.gds.erstelleMessage("error", "Bitte Raumname ausfüllen.");
+      return;
+    }
+
+    const payload = {
+      name: form.controls.name.value.trim(),
+      reihenfolge: form.controls.reihenfolge.value,
+    };
+
+    const file = this.raumFotoFiles.get(raum.id) ?? null;
+
+    if (file) {
+      const fd = new FormData();
+      fd.append("name", payload.name);
+      fd.append("reihenfolge", String(payload.reihenfolge));
+      fd.append("foto", file, file.name || "upload.png");
+
+      this.gds.patch(`fahrzeuge/${this.selectedId}/raeume`, raum.id, fd, true).subscribe({
+        next: () => {
+          this.gds.erstelleMessage("success", `Raum "${raum.name}" gespeichert.`);
+          this.raumFotoFiles.delete(raum.id);
+          this.raumFotoNames.delete(raum.id);
+          this.loadDetail(this.selectedId!);
+        },
+        error: (err: unknown) => this.gds.errorAnzeigen(err),
+      });
+      return;
+    }
+
+    this.gds.patch(`fahrzeuge/${this.selectedId}/raeume`, raum.id, payload, false).subscribe({
+      next: () => {
+        this.gds.erstelleMessage("success", `Raum "${raum.name}" gespeichert.`);
+        this.loadDetail(this.selectedId!);
+      },
+      error: (err: unknown) => this.gds.errorAnzeigen(err),
+    });
+  }
+
+  removeRaumFoto(raum: IFahrzeugRaum): void {
+    if (!this.selectedId) return;
+
+    this.gds.patch(`fahrzeuge/${this.selectedId}/raeume`, raum.id, { remove_foto: true }, false).subscribe({
+      next: () => {
+        this.gds.erstelleMessage("success", `Raumfoto von "${raum.name}" entfernt.`);
+        this.raumFotoFiles.delete(raum.id);
+        this.raumFotoNames.delete(raum.id);
+        this.loadDetail(this.selectedId!);
+      },
+      error: (err: unknown) => this.gds.errorAnzeigen(err),
+    });
+  }
+
+  deleteRaum(raum: IFahrzeugRaum): void {
     if (!this.selectedId) return;
     if (!confirm(`Raum "${raum.name}" wirklich löschen? (Items werden mitgelöscht)`)) return;
 
@@ -285,62 +598,135 @@ export class FahrzeugComponent implements OnInit {
         this.gds.erstelleMessage("success", "Raum gelöscht.");
         this.loadDetail(this.selectedId!);
       },
-      error: (err: any) => this.gds.errorAnzeigen(err),
+      error: (err: unknown) => this.gds.errorAnzeigen(err),
     });
   }
 
   // =========================
   // Items (nested)
   // =========================
-  private createItemDraftForm(): ItemDraftFG {
+  private createItemDraftForm(seed?: Partial<IRaumItem>): ItemDraftFG {
+    const mengeRaw = Number(seed?.menge ?? 1);
+    const menge = Number.isFinite(mengeRaw) && mengeRaw >= 0 ? mengeRaw : 1;
+
     return this.fb.group({
-      name: this.fb.control<string>("", {
+      name: this.fb.control<string>(seed?.name ?? "", {
         nonNullable: true,
         validators: [Validators.required],
       }),
-      menge: this.fb.control<number>(1, {
+      menge: this.fb.control<number>(menge, {
         nonNullable: true,
-        validators: [Validators.required],
+        validators: [Validators.required, Validators.min(0)],
       }),
-      einheit: this.fb.control<string>("", { nonNullable: true }),
-      notiz: this.fb.control<string>("", { nonNullable: true }),
-      reihenfolge: this.fb.control<number>(0, { nonNullable: true }),
+      einheit: this.fb.control<string>(seed?.einheit ?? "", { nonNullable: true }),
+      notiz: this.fb.control<string>(seed?.notiz ?? "", { nonNullable: true }),
+      reihenfolge: this.fb.control<number>(seed?.reihenfolge ?? 0, { nonNullable: true }),
+      wartung_zuletzt_am: this.fb.control<string>(this.toDateInput(seed?.wartung_zuletzt_am), {
+        nonNullable: true,
+      }),
+      wartung_naechstes_am: this.fb.control<string>(this.toDateInput(seed?.wartung_naechstes_am), {
+        nonNullable: true,
+      }),
     });
   }
 
-  itemFormFor(raumId: string): ItemDraftFG {
-    const f = this.itemForms.get(raumId);
+  itemCreateFormFor(raumId: string): ItemDraftFG {
+    const f = this.itemCreateForms.get(raumId);
     if (f) return f;
 
     const created = this.createItemDraftForm();
-    this.itemForms.set(raumId, created);
+    this.itemCreateForms.set(raumId, created);
     return created;
   }
 
-  addItem(raum: IFahrzeugRaum): void {
-    const f = this.itemFormFor(raum.id);
-    f.markAllAsTouched();
+  itemEditFormFor(item: IRaumItem): ItemDraftFG {
+    const f = this.itemEditForms.get(item.id);
+    if (f) return f;
 
-    if (f.invalid) {
-      this.gds.erstelleMessage("error", "Item-Name fehlt.");
+    const created = this.createItemDraftForm(item);
+    this.itemEditForms.set(item.id, created);
+    return created;
+  }
+
+  private buildItemPayload(form: ItemDraftFG): {
+    name: string;
+    menge: number;
+    einheit: string;
+    notiz: string;
+    reihenfolge: number;
+    wartung_zuletzt_am: string | null;
+    wartung_naechstes_am: string | null;
+  } | null {
+    const wartungZuletzt = this.normalizeDate(form.controls.wartung_zuletzt_am.value);
+    const wartungNaechstes = this.normalizeDate(form.controls.wartung_naechstes_am.value);
+
+    if (this.isDateWindowInvalid(wartungZuletzt, wartungNaechstes)) {
+      this.gds.erstelleMessage(
+        "error",
+        "Wartung: Das nächste Datum darf nicht vor dem zuletzt erledigten Datum liegen."
+      );
+      return null;
+    }
+
+    return {
+      name: form.controls.name.value.trim(),
+      menge: form.controls.menge.value,
+      einheit: form.controls.einheit.value.trim(),
+      notiz: form.controls.notiz.value.trim(),
+      reihenfolge: form.controls.reihenfolge.value,
+      wartung_zuletzt_am: wartungZuletzt,
+      wartung_naechstes_am: wartungNaechstes,
+    };
+  }
+
+  addItem(raum: IFahrzeugRaum): void {
+    const form = this.itemCreateFormFor(raum.id);
+    form.markAllAsTouched();
+
+    if (form.invalid) {
+      this.gds.erstelleMessage("error", "Item-Name fehlt oder Menge ist ungültig.");
       return;
     }
 
-    const payload = {
-      name: f.controls.name.value.trim(),
-      menge: f.controls.menge.value,
-      einheit: f.controls.einheit.value.trim(),
-      notiz: f.controls.notiz.value.trim(),
-      reihenfolge: f.controls.reihenfolge.value,
-    };
+    const payload = this.buildItemPayload(form);
+    if (!payload) return;
 
-    this.gds.post(`raeume/${raum.id}/items`, payload).subscribe({
+    this.gds.post(`raeume/${raum.id}/items`, payload, false).subscribe({
       next: () => {
         this.gds.erstelleMessage("success", "Item angelegt.");
-        f.reset({ name: "", menge: 1, einheit: "", notiz: "", reihenfolge: 0 });
+        form.reset({
+          name: "",
+          menge: 1,
+          einheit: "",
+          notiz: "",
+          reihenfolge: 0,
+          wartung_zuletzt_am: "",
+          wartung_naechstes_am: "",
+        });
         if (this.selectedId) this.loadDetail(this.selectedId);
       },
-      error: (err: any) => this.gds.errorAnzeigen(err),
+      error: (err: unknown) => this.gds.errorAnzeigen(err),
+    });
+  }
+
+  saveItem(raum: IFahrzeugRaum, item: IRaumItem): void {
+    const form = this.itemEditFormFor(item);
+    form.markAllAsTouched();
+
+    if (form.invalid) {
+      this.gds.erstelleMessage("error", "Item-Name fehlt oder Menge ist ungültig.");
+      return;
+    }
+
+    const payload = this.buildItemPayload(form);
+    if (!payload) return;
+
+    this.gds.patch(`raeume/${raum.id}/items`, item.id, payload, false).subscribe({
+      next: () => {
+        this.gds.erstelleMessage("success", `Item "${item.name}" gespeichert.`);
+        if (this.selectedId) this.loadDetail(this.selectedId);
+      },
+      error: (err: unknown) => this.gds.errorAnzeigen(err),
     });
   }
 
@@ -352,7 +738,7 @@ export class FahrzeugComponent implements OnInit {
         this.gds.erstelleMessage("success", "Item gelöscht.");
         if (this.selectedId) this.loadDetail(this.selectedId);
       },
-      error: (err: any) => this.gds.errorAnzeigen(err),
+      error: (err: unknown) => this.gds.errorAnzeigen(err),
     });
   }
 }

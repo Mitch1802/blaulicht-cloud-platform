@@ -1,7 +1,7 @@
 @use '../../theme' as theme
 
 .fahrzeug-page
-	max-width: 1280px
+	max-width: 1380px
 	margin: 0 auto
 	padding: 1rem 1rem 2rem
 
@@ -28,7 +28,8 @@
 		color: theme.$app-primary
 		font-size: 1.1rem
 
-.toolbar
+.toolbar,
+.top-actions
 	display: flex
 	justify-content: flex-end
 
@@ -70,41 +71,109 @@
 .section-title
 	margin: 0 0 12px 0
 
-.raum-form
+.photo-block
 	display: grid
-	grid-template-columns: 1fr 160px auto
+	gap: 8px
+	padding: .75rem
+	border: 1px solid rgba(theme.$app-border, .9)
+	border-radius: .6rem
+	background: rgba(theme.$app-primary-light, .13)
+
+.photo-label
+	margin: 0
+	font-weight: 600
+
+.photo-preview,
+.room-photo-preview
+	width: 100%
+	max-width: 340px
+	max-height: 200px
+	object-fit: cover
+	border-radius: .5rem
+	border: 1px solid rgba(theme.$app-border, .9)
+
+.photo-upload-row
+	display: flex
+	align-items: center
+	gap: .7rem
+	flex-wrap: wrap
+
+.file-name
+	font-size: .88rem
+	opacity: .85
+
+.raum-create-form
+	display: grid
+	grid-template-columns: minmax(220px, 1fr) 170px minmax(220px, 1fr) auto
 	gap: 12px
 	align-items: center
 
-.item-row
+.inline-file-upload
 	display: flex
-	justify-content: space-between
-	align-items: center
-	gap: 10px
-	padding: 8px 0
-	border-bottom: 1px solid rgba(theme.$app-border, .9)
+	flex-direction: column
+	gap: 6px
 
-.item-text
+.raum-edit-form
+	display: grid
+	grid-template-columns: minmax(220px, 1fr) 170px minmax(240px, 1fr)
+	gap: 12px
+	align-items: start
+	padding: .7rem
+	border-radius: .6rem
+	border: 1px solid rgba(theme.$app-border, .9)
+	background: rgba(theme.$app-primary-light, .12)
+
+.room-photo-wrap
+	display: grid
+	gap: 8px
+
+.raum-actions
+	grid-column: 1 / -1
+	display: flex
+	gap: 10px
+	flex-wrap: wrap
+
+.items-area
+	margin-top: 10px
+
+.items-title
+	margin: 0 0 10px 0
+	color: theme.$app-primary
+	font-size: 1rem
+
+.item-edit-form,
+.item-add-form
+	display: grid
+	grid-template-columns: repeat(3, minmax(0, 1fr))
+	gap: 12px
+	align-items: start
+	padding: .7rem
+	border-radius: .6rem
+	border: 1px solid rgba(theme.$app-border, .9)
+
+.item-actions
+	grid-column: 1 / -1
 	display: flex
 	flex-wrap: wrap
-	gap: 6px
-	align-items: center
-
-	span
-		opacity: 0.8
-
-.item-form
-	display: grid
-	grid-template-columns: 2fr 120px 140px 2fr 160px auto
-	gap: 12px
-	align-items: center
+	gap: 10px
 
 .empty-hint
 	opacity: 0.75
 
-@media (max-width: 1200px)
-	.item-form
-		grid-template-columns: 1fr 120px 140px
+@media (max-width: 1320px)
+	.item-edit-form,
+	.item-add-form
+		grid-template-columns: repeat(2, minmax(0, 1fr))
+
+@media (max-width: 1120px)
+	.raum-create-form
+		grid-template-columns: 1fr 170px
+
+	.raum-edit-form
+		grid-template-columns: 1fr 170px
+
+	.room-photo-wrap
+		grid-column: 1 / -1
 
 @media (max-width: 992px)
 	.fahrzeug-page
@@ -122,11 +191,21 @@
 		h2
 			font-size: 1rem
 
-	.form-grid
+	.form-grid,
+	.raum-create-form,
+	.raum-edit-form,
+	.item-edit-form,
+	.item-add-form
 		grid-template-columns: 1fr
 
-	.raum-form
-		grid-template-columns: 1fr
+	.photo-preview,
+	.room-photo-preview
+		max-width: 100%
 
-	.item-form
-		grid-template-columns: 1fr
+@media (max-width: 600px)
+	.actions-row,
+	.raum-actions,
+	.item-actions
+		button,
+		a[mat-flat-button]
+			width: 100%

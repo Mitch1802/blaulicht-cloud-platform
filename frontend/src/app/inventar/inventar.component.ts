@@ -111,6 +111,8 @@ export class InventarComponent implements OnInit, AfterViewInit {
     bezeichnung: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
     anzahl: new FormControl<number>(0),
     lagerort: new FormControl<string>(''),
+    wartung_zuletzt_am: new FormControl<string>(''),
+    wartung_naechstes_am: new FormControl<string>(''),
     ist_verliehen: new FormControl<boolean>(false, { nonNullable: true }),
     notiz: new FormControl<string>(''),
     // nur für Anzeige/Modal – NICHT ans Backend senden
@@ -169,6 +171,15 @@ export class InventarComponent implements OnInit, AfterViewInit {
 
   isVerliehenAktiv(): boolean {
     return this.formModul.controls['ist_verliehen'].value === true;
+  }
+
+  private normalizeDateInput(value: string | null | undefined): string | null {
+    const clean = String(value ?? '').trim();
+    return clean === '' ? null : clean;
+  }
+
+  private isWartungWindowInvalid(zuletzt: string | null, naechstes: string | null): boolean {
+    return Boolean(zuletzt && naechstes && naechstes < zuletzt);
   }
 
   addVerleihungZeile(): void {
@@ -644,6 +655,8 @@ export class InventarComponent implements OnInit, AfterViewInit {
             bezeichnung: details.bezeichnung,
             anzahl: details.anzahl ?? 0,
             lagerort: details.lagerort ?? '',
+            wartung_zuletzt_am: details.wartung_zuletzt_am ? String(details.wartung_zuletzt_am).slice(0, 10) : '',
+            wartung_naechstes_am: details.wartung_naechstes_am ? String(details.wartung_naechstes_am).slice(0, 10) : '',
             ist_verliehen: details.ist_verliehen === true,
             notiz: details.notiz ?? '',
             foto_url: ''
@@ -685,6 +698,8 @@ export class InventarComponent implements OnInit, AfterViewInit {
       bezeichnung: '',
       anzahl: 0,
       lagerort: '',
+      wartung_zuletzt_am: '',
+      wartung_naechstes_am: '',
       ist_verliehen: false,
       notiz: '',
       foto_url: ''
@@ -702,10 +717,20 @@ export class InventarComponent implements OnInit, AfterViewInit {
     const bezeichnung = this.formModul.controls['bezeichnung'].value!;
     const anzahl = this.formModul.controls['anzahl'].value ?? 0;
     const lagerort = this.formModul.controls['lagerort'].value ?? '';
+    const wartungZuletztAm = this.normalizeDateInput(this.formModul.controls['wartung_zuletzt_am'].value);
+    const wartungNaechstesAm = this.normalizeDateInput(this.formModul.controls['wartung_naechstes_am'].value);
     const notiz = this.formModul.controls['notiz'].value ?? '';
     const leihdatenResult = this.buildLeihdatenPayload(anzahl);
     const leihdaten = leihdatenResult.payload;
     const file = this.getSelectedFile();
+
+    if (this.isWartungWindowInvalid(wartungZuletztAm, wartungNaechstesAm)) {
+      this.globalDataService.erstelleMessage(
+        'error',
+        'Wartung: Das nächste Datum darf nicht vor dem zuletzt erledigten Datum liegen.'
+      );
+      return;
+    }
 
     if (leihdatenResult.error) {
       this.globalDataService.erstelleMessage('error', leihdatenResult.error);
@@ -716,6 +741,8 @@ export class InventarComponent implements OnInit, AfterViewInit {
       bezeichnung,
       anzahl,
       lagerort,
+      wartung_zuletzt_am: wartungZuletztAm,
+      wartung_naechstes_am: wartungNaechstesAm,
       notiz,
       ...leihdaten,
     };
@@ -727,6 +754,8 @@ export class InventarComponent implements OnInit, AfterViewInit {
         fd.append('bezeichnung', payload.bezeichnung);
         fd.append('anzahl', payload.anzahl.toString());
         fd.append('lagerort', payload.lagerort);
+        fd.append('wartung_zuletzt_am', payload.wartung_zuletzt_am ?? '');
+        fd.append('wartung_naechstes_am', payload.wartung_naechstes_am ?? '');
         fd.append('notiz', payload.notiz);
         fd.append('ist_verliehen', `${payload.ist_verliehen}`);
         fd.append('verliehen_anzahl', `${payload.verliehen_anzahl}`);
@@ -777,6 +806,8 @@ export class InventarComponent implements OnInit, AfterViewInit {
         fd.append('bezeichnung', payload.bezeichnung);
         fd.append('anzahl', payload.anzahl.toString());
         fd.append('lagerort', payload.lagerort);
+        fd.append('wartung_zuletzt_am', payload.wartung_zuletzt_am ?? '');
+        fd.append('wartung_naechstes_am', payload.wartung_naechstes_am ?? '');
         fd.append('notiz', payload.notiz);
         fd.append('ist_verliehen', `${payload.ist_verliehen}`);
         fd.append('verliehen_anzahl', `${payload.verliehen_anzahl}`);
@@ -865,6 +896,8 @@ export class InventarComponent implements OnInit, AfterViewInit {
       bezeichnung: '',
       anzahl: 0,
       lagerort: '',
+      wartung_zuletzt_am: '',
+      wartung_naechstes_am: '',
       ist_verliehen: false,
       notiz: '',
       foto_url: ''

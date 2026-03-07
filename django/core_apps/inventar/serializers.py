@@ -170,6 +170,13 @@ class InventarSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         anzahl = attrs.get("anzahl", getattr(self.instance, "anzahl", None))
+        wartung_zuletzt_am = attrs.get("wartung_zuletzt_am", getattr(self.instance, "wartung_zuletzt_am", None))
+        wartung_naechstes_am = attrs.get("wartung_naechstes_am", getattr(self.instance, "wartung_naechstes_am", None))
+
+        if wartung_zuletzt_am and wartung_naechstes_am and wartung_naechstes_am < wartung_zuletzt_am:
+            raise serializers.ValidationError({
+                "wartung_naechstes_am": "Das naechste Datum darf nicht vor dem zuletzt erledigten Datum liegen."
+            })
 
         if anzahl is not None:
             try:

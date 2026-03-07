@@ -3,6 +3,7 @@ from django.core import signing
 from django.shortcuts import get_object_or_404
 
 from rest_framework import viewsets, permissions, status
+from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.throttling import ScopedRateThrottle
@@ -21,6 +22,18 @@ from .serializers import (
     FahrzeugPublicDetailSerializer,
     FahrzeugCheckCreateSerializer,
 )
+
+
+def _is_default(name: str) -> bool:
+    return not name
+
+
+def _safe_delete(storage, name: str):
+    try:
+        storage.delete(name)
+    except Exception:
+        # Cleanup darf keinen Request abbrechen.
+        pass
 
 
 # ==========================================================
@@ -93,6 +106,7 @@ class FahrzeugViewSet(viewsets.ModelViewSet):
     ]
     queryset = Fahrzeug.objects.prefetch_related("raeume__items").order_by("name")
     lookup_field = "id"  # UUID aus TimeStampedModel
+    parser_classes = [JSONParser, MultiPartParser, FormParser]
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -100,6 +114,22 @@ class FahrzeugViewSet(viewsets.ModelViewSet):
         if self.action == "retrieve":
             return FahrzeugDetailSerializer
         return FahrzeugCrudSerializer
+
+    def perform_update(self, serializer):
+        instance = self.get_object()
+        old_name = instance.foto.name if getattr(instance, "foto", None) else None
+        saved = serializer.save()
+        new_name = saved.foto.name if getattr(saved, "foto", None) else None
+
+        if old_name and old_name != new_name and not _is_default(old_name):
+            _safe_delete(saved.foto.storage, old_name)
+
+    def perform_destroy(self, instance):
+        name = instance.foto.name if getattr(instance, "foto", None) else None
+        super().perform_destroy(instance)
+
+        if name and not _is_default(name):
+            _safe_delete(instance.foto.storage, name)
 
 
 # ==========================================================
@@ -111,6 +141,7 @@ class FahrzeugRaumViewSet(viewsets.ModelViewSet):
         HasAnyRolePermission.with_roles("ADMIN", "FAHRZEUG"),
     ]
     lookup_field = "id"
+    parser_classes = [JSONParser, MultiPartParser, FormParser]
 
     def get_queryset(self):
         return FahrzeugRaum.objects.filter(fahrzeug__id=self.kwargs["fahrzeug_id"]).order_by("reihenfolge", "pkid")
@@ -123,6 +154,22 @@ class FahrzeugRaumViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         fahrzeug = get_object_or_404(Fahrzeug, id=self.kwargs["fahrzeug_id"])
         serializer.save(fahrzeug=fahrzeug)
+
+    def perform_update(self, serializer):
+        instance = self.get_object()
+        old_name = instance.foto.name if getattr(instance, "foto", None) else None
+        saved = serializer.save()
+        new_name = saved.foto.name if getattr(saved, "foto", None) else None
+
+        if old_name and old_name != new_name and not _is_default(old_name):
+            _safe_delete(saved.foto.storage, old_name)
+
+    def perform_destroy(self, instance):
+        name = instance.foto.name if getattr(instance, "foto", None) else None
+        super().perform_destroy(instance)
+
+        if name and not _is_default(name):
+            _safe_delete(instance.foto.storage, name)
 
 
 # ==========================================================

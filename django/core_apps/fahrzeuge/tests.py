@@ -228,3 +228,31 @@ class FahrzeugeBranchCoverageTests(APITestCase):
         serializer = SimpleNamespace(save=Mock())
         view.perform_create(serializer)
         serializer.save.assert_called_once()
+
+    def test_fahrzeug_crud_serializer_validates_service_window(self):
+        serializer = FahrzeugCrudSerializer(
+            data={
+                "name": "HLF 20",
+                "service_zuletzt_am": "2026-03-10",
+                "service_naechstes_am": "2026-03-01",
+            }
+        )
+
+        self.assertFalse(serializer.is_valid())
+        self.assertIn("service_naechstes_am", serializer.errors)
+
+    def test_raum_item_crud_serializer_validates_wartung_window(self):
+        serializer = RaumItemCrudSerializer(
+            data={
+                "name": "Prueflampe",
+                "menge": "1",
+                "einheit": "Stk",
+                "notiz": "",
+                "reihenfolge": 0,
+                "wartung_zuletzt_am": "2026-03-10",
+                "wartung_naechstes_am": "2026-03-01",
+            }
+        )
+
+        self.assertFalse(serializer.is_valid())
+        self.assertIn("wartung_naechstes_am", serializer.errors)

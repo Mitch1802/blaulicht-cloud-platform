@@ -73,6 +73,18 @@
                 <input matInput type="text" formControlName="lagerort" />
               </mat-form-field>
             </div>
+            <div class="app-col-12 app-col-lg-6 mb-3">
+              <mat-form-field class="full-width">
+                <mat-label>Wartung zuletzt erledigt</mat-label>
+                <input matInput type="date" formControlName="wartung_zuletzt_am" />
+              </mat-form-field>
+            </div>
+            <div class="app-col-12 app-col-lg-6 mb-3">
+              <mat-form-field class="full-width">
+                <mat-label>Nächste Wartung</mat-label>
+                <input matInput type="date" formControlName="wartung_naechstes_am" />
+              </mat-form-field>
+            </div>
             <div class="app-col-12 app-col-lg-12 mb-3">
               <div class="leihstatus-checkbox">
                 <mat-checkbox formControlName="ist_verliehen">Aktuell verliehen</mat-checkbox>

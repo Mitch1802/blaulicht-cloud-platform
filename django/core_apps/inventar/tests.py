@@ -342,6 +342,18 @@ class InventarBranchCoverageTests(APITestCase):
         self.assertFalse(serializer_multi_too_many.is_valid())
         self.assertIn("verleihungen", serializer_multi_too_many.errors)
 
+    def test_serializer_validate_rejects_invalid_wartung_window(self):
+        serializer = InventarSerializer(
+            data={
+                "bezeichnung": "Helm",
+                "wartung_zuletzt_am": "2026-03-10",
+                "wartung_naechstes_am": "2026-03-01",
+            }
+        )
+
+        self.assertFalse(serializer.is_valid())
+        self.assertIn("wartung_naechstes_am", serializer.errors)
+
     def test_serializer_create_and_update_image_branches(self):
         serializer = InventarSerializer()
 

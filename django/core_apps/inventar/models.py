@@ -52,6 +52,8 @@ class Inventar(TimeStampedModel):
     bezeichnung = models.CharField(verbose_name=_("Bezeichnung"), max_length=255)
     anzahl = models.IntegerField(verbose_name=_("Anzahl"), blank=True, null=True)
     lagerort = models.CharField(verbose_name=_("Lagerort"), max_length=255, blank=True, null=True)
+    wartung_zuletzt_am = models.DateField(verbose_name=_("Wartung zuletzt am"), blank=True, null=True)
+    wartung_naechstes_am = models.DateField(verbose_name=_("Wartung naechstes am"), blank=True, null=True)
     ist_verliehen = models.BooleanField(verbose_name=_("Verliehen"), default=False)
     verliehen_anzahl = models.PositiveIntegerField(verbose_name=_("Verliehene Anzahl"), default=0)
     verliehen_an = models.CharField(verbose_name=_("Verliehen an"), max_length=255, blank=True, null=True)
