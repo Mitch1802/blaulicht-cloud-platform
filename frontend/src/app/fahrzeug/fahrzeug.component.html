@@ -13,6 +13,10 @@
     <mat-card-content>
       @if (!editorOpen && !inventarEditorOpen) {
         <div class="top-actions mb-3">
+          <a mat-flat-button color="primary" [routerLink]="['/public/fahrzeuge']" target="_blank" rel="noopener">
+            Externe Checkliste öffnen
+          </a>
+
           <button mat-flat-button color="accent" type="button" (click)="newFahrzeug()">
             <mat-icon>add</mat-icon>
             Hinzufügen
@@ -66,6 +70,15 @@
                       >
                         <mat-icon>inventory_2</mat-icon>
                       </button>
+
+                      <a
+                        mat-flat-button
+                        class="ui-action-btn"
+                        color="primary"
+                        [routerLink]="['/fahrzeuge', row.id, 'check']"
+                      >
+                        <mat-icon>checklist</mat-icon>
+                      </a>
                     </div>
                   </td>
                 </ng-container>

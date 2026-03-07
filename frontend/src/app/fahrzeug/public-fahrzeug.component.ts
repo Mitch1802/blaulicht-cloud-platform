@@ -1,6 +1,6 @@
 import { CommonModule } from "@angular/common";
 import { Component, OnInit, inject } from "@angular/core";
-import { ActivatedRoute, Router } from "@angular/router";
+import { ActivatedRoute } from "@angular/router";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 
 import { MatCardModule } from "@angular/material/card";
@@ -11,10 +11,11 @@ import { MatExpansionModule } from "@angular/material/expansion";
 import { MatDividerModule } from "@angular/material/divider";
 import { MatIconModule } from "@angular/material/icon";
 import { MatSelectModule } from "@angular/material/select";
+import { MatProgressBarModule } from "@angular/material/progress-bar";
 
 import { HeaderComponent } from "../_template/header/header.component";
 import { GlobalDataService } from "../_service/global-data.service";
-import { IFahrzeugPublic } from "../_interface/fahrzeug";
+import { IFahrzeugPublic, IFahrzeugPublicList } from "../_interface/fahrzeug";
 import { CheckStatus, CHECK_STATUS_OPTIONS } from "./fahrzeug.constants";
 
 @Component({
@@ -32,12 +33,13 @@ import { CheckStatus, CHECK_STATUS_OPTIONS } from "./fahrzeug.constants";
     MatDividerModule,
     MatIconModule,
     MatSelectModule,
+    MatProgressBarModule,
   ],
   templateUrl: "./public-fahrzeug.component.html",
+  styleUrl: "./public-fahrzeug.component.sass",
 })
 export class PublicFahrzeugComponent implements OnInit {
   private route = inject(ActivatedRoute);
-  private router = inject(Router);
   private gds = inject(GlobalDataService);
   private fb = inject(FormBuilder);
 
@@ -45,10 +47,12 @@ export class PublicFahrzeugComponent implements OnInit {
 
   publicId = "";
   token: string | null = null;
+  selectedPublicId = "";
 
   loading = false;
   verified = false;
 
+  fahrzeugOptionen: IFahrzeugPublicList[] = [];
   fahrzeug: IFahrzeugPublic | null = null;
 
   statusOptions = CHECK_STATUS_OPTIONS;
@@ -66,19 +70,26 @@ export class PublicFahrzeugComponent implements OnInit {
     }),
   });
 
+  auswahlForm = this.fb.group({
+    public_id: this.fb.control<string>("", {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
+  });
+
   ngOnInit(): void {
     // Breadcrumb, wenn du willst:
     // sessionStorage.setItem("PageNumber", "2");
     // sessionStorage.setItem("Page2", "FZ");
     this.breadcrumb = this.gds.ladeBreadcrumb();
 
-    this.publicId = String(this.route.snapshot.paramMap.get("publicId") ?? "");
-    if (!this.publicId) return;
+    this.publicId = String(this.route.snapshot.paramMap.get("publicId") ?? "").trim();
+    this.selectedPublicId = this.publicId;
 
     this.token = sessionStorage.getItem(this.tokenKey());
     if (this.token) {
       this.verified = true;
-      this.loadPublicDetail();
+      this.loadAfterVerify();
     }
   }
 
@@ -107,7 +118,7 @@ export class PublicFahrzeugComponent implements OnInit {
         this.verified = true;
         this.pinForm.reset({ pin: "" });
 
-        this.loadPublicDetail();
+        this.loadAfterVerify();
       },
       error: (err: any) => this.gds.errorAnzeigen(err),
     }).add(() => {
@@ -119,17 +130,64 @@ export class PublicFahrzeugComponent implements OnInit {
     sessionStorage.removeItem(this.tokenKey());
     this.token = null;
     this.verified = false;
+    this.fahrzeugOptionen = [];
+    this.selectedPublicId = this.publicId;
+    this.auswahlForm.reset({ public_id: "" });
     this.fahrzeug = null;
     this.draft = {};
   }
 
-  private loadPublicDetail(): void {
+  openSelectedFahrzeug(): void {
+    this.auswahlForm.markAllAsTouched();
+    if (this.auswahlForm.invalid) return;
+
+    const selectedId = this.auswahlForm.controls.public_id.value.trim();
+    if (!selectedId) return;
+
+    this.selectedPublicId = selectedId;
+    this.loadPublicDetail(selectedId);
+  }
+
+  backToSelection(): void {
+    this.fahrzeug = null;
+    this.draft = {};
+    this.selectedPublicId = "";
+    this.auswahlForm.patchValue({ public_id: "" });
+  }
+
+  private loadAfterVerify(): void {
+    if (!this.token) return;
+
+    if (this.selectedPublicId) {
+      this.loadPublicDetail(this.selectedPublicId);
+      return;
+    }
+
+    this.loadPublicFahrzeuge();
+  }
+
+  private loadPublicFahrzeuge(): void {
+    if (!this.token) return;
+
+    this.loading = true;
+    this.gds.getWithBearer("public/fahrzeuge", this.token).subscribe({
+      next: (res: any) => {
+        const optionen = (res as IFahrzeugPublicList[]) ?? [];
+        this.fahrzeugOptionen = optionen;
+      },
+      error: (err: any) => this.gds.errorAnzeigen(err),
+    }).add(() => {
+      this.loading = false;
+    });
+  }
+
+  private loadPublicDetail(publicId: string): void {
     if (!this.token) return;
 
     this.loading = true;
 
     // Header Bearer via GlobalDataService.getWithBearer()
-    this.gds.getWithBearer(`public/fahrzeuge/${this.publicId}`, this.token).subscribe({
+    this.gds.getWithBearer(`public/fahrzeuge/${publicId}`, this.token).subscribe({
       next: (res: any) => {
         this.fahrzeug = res as IFahrzeugPublic;
         this.initDraft();

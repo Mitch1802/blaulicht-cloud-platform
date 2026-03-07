@@ -12,6 +12,7 @@ from core_apps.fahrzeuge.views import PublicFahrzeugDetailView
 from core_apps.fahrzeuge.views import (
     read_public_token,
     PublicPinVerifyView,
+    PublicFahrzeugListView,
     FahrzeugViewSet,
     FahrzeugRaumViewSet,
     RaumItemViewSet,
@@ -43,6 +44,7 @@ class FahrzeugeEndpointTests(EndpointSmokeMixin, APITestCase):
         item_id = uuid4()
         endpoints = [
             "public/pin/verify/",
+            "public/fahrzeuge/",
             "public/fahrzeuge/public-test-id/",
             "fahrzeuge/",
             f"fahrzeuge/{fahrzeug_id}/",
@@ -80,12 +82,26 @@ class FahrzeugeEndpointTests(EndpointSmokeMixin, APITestCase):
             401,
         )
 
+    def test_fahrzeuge_public_list_requires_token_but_not_user_auth(self):
+        self.assertEqual(
+            self.request_method("get", "public/fahrzeuge/").status_code,
+            401,
+        )
+
     def test_fahrzeuge_public_detail_accepts_valid_token(self):
         request = SimpleNamespace(headers={"Authorization": "Bearer token"})
         with patch("core_apps.fahrzeuge.views.read_public_token", return_value={"scope": "public_readonly"}):
             response = PublicFahrzeugDetailView().get(request, public_id=self.fahrzeug.public_id)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["public_id"], self.fahrzeug.public_id)
+
+    def test_fahrzeuge_public_list_accepts_valid_token(self):
+        request = SimpleNamespace(headers={"Authorization": "Bearer token"})
+        with patch("core_apps.fahrzeuge.views.read_public_token", return_value={"scope": "public_readonly"}):
+            response = PublicFahrzeugListView().get(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertGreaterEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]["public_id"], self.fahrzeug.public_id)
 
     def test_fahrzeuge_auth_endpoints_require_auth_and_role(self):
         self.assert_endpoint_contract("fahrzeuge/")
@@ -148,6 +164,7 @@ class FahrzeugeEndpointTests(EndpointSmokeMixin, APITestCase):
         item_id = uuid4()
         for endpoint in [
             "public/pin/verify/",
+            "public/fahrzeuge/",
             "public/fahrzeuge/public-test-id/",
             "fahrzeuge/",
             f"fahrzeuge/{fahrzeug_id}/",

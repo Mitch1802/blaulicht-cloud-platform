@@ -24,6 +24,13 @@ export interface IFahrzeugPublic {
   }>;
 }
 
+export interface IFahrzeugPublicList {
+  name: string;
+  bezeichnung: string;
+  public_id: string;
+  foto_url?: string | null;
+}
+
 export interface IFahrzeugAuth extends IFahrzeugPublic {
   id: string;
   raeume: Array<{

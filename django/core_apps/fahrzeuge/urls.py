@@ -7,6 +7,7 @@ from .views import (
     RaumItemViewSet,
     FahrzeugCheckCreateView,
     PublicPinVerifyView,
+    PublicFahrzeugListView,
     PublicFahrzeugDetailView,
 )
 
@@ -18,6 +19,7 @@ urlpatterns = [
     # PUBLIC (globaler PIN)
     # -------------------------
     path("public/pin/verify/", PublicPinVerifyView.as_view()),
+    path("public/fahrzeuge/", PublicFahrzeugListView.as_view()),
     path("public/fahrzeuge/<str:public_id>/", PublicFahrzeugDetailView.as_view()),
 
     # -------------------------

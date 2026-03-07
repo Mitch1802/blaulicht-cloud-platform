@@ -91,6 +91,10 @@ export const routes: Routes = [
     loadComponent: () => import("./fahrzeug/fahrzeug-check.component").then(m => m.FahrzeugCheckComponent),
   },
   {
+    path: "public/fahrzeuge",
+    loadComponent: () => import("./fahrzeug/public-fahrzeug.component").then(m => m.PublicFahrzeugComponent),
+  },
+  {
     path: "public/fahrzeuge/:publicId",
     loadComponent: () => import("./fahrzeug/public-fahrzeug.component").then(m => m.PublicFahrzeugComponent),
   },

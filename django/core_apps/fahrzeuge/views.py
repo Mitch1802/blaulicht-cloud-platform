@@ -19,6 +19,7 @@ from .serializers import (
     FahrzeugRaumCrudSerializer,
     RaumItemSerializer,
     RaumItemCrudSerializer,
+    FahrzeugPublicListSerializer,
     FahrzeugPublicDetailSerializer,
     FahrzeugCheckCreateSerializer,
 )
@@ -94,6 +95,23 @@ class PublicFahrzeugDetailView(APIView):
             public_id=public_id,
         )
         return Response(FahrzeugPublicDetailSerializer(fahrzeug).data)
+
+
+class PublicFahrzeugListView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        auth = request.headers.get("Authorization", "")
+        if not auth.startswith("Bearer "):
+            return Response({"detail": "Token fehlt."}, status=status.HTTP_401_UNAUTHORIZED)
+
+        token = auth.removeprefix("Bearer ").strip()
+        payload = read_public_token(token)
+        if not payload or payload.get("scope") != "public_readonly":
+            return Response({"detail": "Token ungültig/abgelaufen."}, status=status.HTTP_401_UNAUTHORIZED)
+
+        fahrzeuge = Fahrzeug.objects.all().order_by("name", "bezeichnung")
+        return Response(FahrzeugPublicListSerializer(fahrzeuge, many=True).data)
 
 
 # ==========================================================

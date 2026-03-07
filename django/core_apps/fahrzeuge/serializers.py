@@ -115,6 +115,22 @@ class FahrzeugPublicDetailSerializer(serializers.ModelSerializer):
         ]
 
 
+class FahrzeugPublicListSerializer(serializers.ModelSerializer):
+    foto_url = serializers.SerializerMethodField(read_only=True)
+
+    def get_foto_url(self, obj):
+        return _foto_url(obj)
+
+    class Meta:
+        model = Fahrzeug
+        fields = [
+            "name",
+            "bezeichnung",
+            "public_id",
+            "foto_url",
+        ]
+
+
 # =========================
 # AUTH DETAIL (MIT IDs, damit Checks möglich sind)
 # =========================
