@@ -87,6 +87,7 @@
 .photo-label
 	margin: 0
 	font-weight: 600
+	color: theme.$app-primary
 
 .photo-preview,
 .room-photo-preview
@@ -97,11 +98,29 @@
 	border-radius: .5rem
 	border: 1px solid rgba(theme.$app-border, .9)
 
-.photo-upload-row
+
+.upload-row
 	display: flex
 	align-items: center
 	gap: .7rem
 	flex-wrap: wrap
+
+.upload-label
+	font-weight: 600
+	color: theme.$app-primary
+
+.file-input-hidden
+	position: absolute
+	width: 1px
+	height: 1px
+	padding: 0
+	margin: -1px
+	overflow: hidden
+	clip: rect(0, 0, 0, 0)
+	border: 0
+
+.upload-button
+	border: 1px solid rgba(theme.$app-border, .95)
 
 .file-name
 	font-size: .88rem
@@ -112,11 +131,6 @@
 	grid-template-columns: minmax(220px, 1fr) 170px minmax(220px, 1fr) auto
 	gap: 12px
 	align-items: center
-
-.inline-file-upload
-	display: flex
-	flex-direction: column
-	gap: 6px
 
 .raum-edit-form
 	display: grid
@@ -208,6 +222,9 @@
 		max-width: 100%
 
 @media (max-width: 600px)
+	.upload-button
+		width: 100%
+
 	.actions-row,
 	.raum-actions,
 	.item-actions

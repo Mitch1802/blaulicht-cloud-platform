@@ -121,13 +121,25 @@
                   <p class="empty-hint">Noch kein Foto hinterlegt.</p>
                 }
 
-                <div class="photo-upload-row">
+                <div class="upload-row">
+                  <label class="upload-label" for="fahrzeugFotoDatei">Fahrzeugfoto</label>
                   <input
                     #fahrzeugFotoUpload
+                    id="fahrzeugFotoDatei"
+                    class="file-input-hidden"
                     type="file"
                     accept=".jpg,.jpeg,.png"
                     (change)="onFahrzeugFotoSelected($event)"
                   />
+                  <button
+                    mat-flat-button
+                    type="button"
+                    color="primary"
+                    class="upload-button"
+                    (click)="fahrzeugFotoUpload.click()"
+                  >
+                    Datei auswählen
+                  </button>
                   @if (fahrzeugFotoName) {
                     <span class="file-name">{{ fahrzeugFotoName }}</span>
                   }
@@ -218,13 +230,25 @@
                   <input matInput type="number" formControlName="reihenfolge" />
                 </mat-form-field>
 
-                <div class="inline-file-upload">
+                <div class="upload-row">
+                  <label class="upload-label" for="newRaumFotoDatei">Raumfoto</label>
                   <input
                     #newRaumFotoUpload
+                    id="newRaumFotoDatei"
+                    class="file-input-hidden"
                     type="file"
                     accept=".jpg,.jpeg,.png"
                     (change)="onNewRaumFotoSelected($event)"
                   />
+                  <button
+                    mat-flat-button
+                    type="button"
+                    color="primary"
+                    class="upload-button"
+                    (click)="newRaumFotoUpload.click()"
+                  >
+                    Datei auswählen
+                  </button>
                   @if (neuerRaumFotoName) {
                     <span class="file-name">{{ neuerRaumFotoName }}</span>
                   }
@@ -261,15 +285,30 @@
                           <img [src]="raum.foto_url" alt="Raumfoto" class="room-photo-preview" />
                         }
 
-                        <input
-                          type="file"
-                          accept=".jpg,.jpeg,.png"
-                          (change)="onRaumFotoSelected(raum.id, $event)"
-                        />
+                        <div class="upload-row">
+                          <label class="upload-label" [attr.for]="'raumFotoDatei-' + raum.id">Raumfoto</label>
+                          <input
+                            #raumFotoUpload
+                            [id]="'raumFotoDatei-' + raum.id"
+                            class="file-input-hidden"
+                            type="file"
+                            accept=".jpg,.jpeg,.png"
+                            (change)="onRaumFotoSelected(raum.id, $event)"
+                          />
+                          <button
+                            mat-flat-button
+                            type="button"
+                            color="primary"
+                            class="upload-button"
+                            (click)="raumFotoUpload.click()"
+                          >
+                            Datei auswählen
+                          </button>
 
-                        @if (raumFotoNameFor(raum.id)) {
-                          <span class="file-name">{{ raumFotoNameFor(raum.id) }}</span>
-                        }
+                          @if (raumFotoNameFor(raum.id)) {
+                            <span class="file-name">{{ raumFotoNameFor(raum.id) }}</span>
+                          }
+                        </div>
                       </div>
 
                       <div class="raum-actions">
