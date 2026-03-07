@@ -74,6 +74,7 @@ export class FahrzeugComponent implements OnInit {
   sichtbareSpalten: string[] = ["name", "bezeichnung", "public_id", "actions"];
   editorOpen = false;
   inventarEditorOpen = false;
+  inventarAnsicht: "detail" | "kompakt" = "detail";
 
   selectedId: string | null = null;
   selected: IFahrzeugDetail | null = null;
@@ -261,11 +262,19 @@ export class FahrzeugComponent implements OnInit {
     }
   }
 
+  toggleInventarAnsicht(): void {
+    this.inventarAnsicht = this.inventarAnsicht === "detail" ? "kompakt" : "detail";
+  }
+
   private openInventarEditor(fahrzeugId: string): void {
     this.selectedId = fahrzeugId;
     this.editorOpen = false;
     this.inventarEditorOpen = true;
     this.loadDetail(fahrzeugId);
+  }
+
+  countItems(raeume: IFahrzeugRaum[] | null | undefined): number {
+    return (raeume ?? []).reduce((sum, raum) => sum + (raum.items?.length ?? 0), 0);
   }
 
   private normalizeDate(dateValue: string | null | undefined): string | null {

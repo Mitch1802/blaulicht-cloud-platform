@@ -36,6 +36,11 @@
 .section-card
 	height: 100%
 
+.inventar-card
+	.mat-mdc-card-subtitle
+		color: theme.$app-primary
+		opacity: .88
+
 .table-wrap
 	overflow-x: auto
 
@@ -75,6 +80,182 @@
 
 .section-title
 	margin: 0 0 12px 0
+
+.inventar-toolbar
+	display: flex
+	gap: 10px
+	flex-wrap: wrap
+	justify-content: flex-start
+
+.inventar-toggle-btn
+	border-color: rgba(theme.$app-border, .95)
+
+	&.is-compact
+		border-color: rgba(theme.$app-primary, .45)
+		background: rgba(theme.$app-primary-light, .3)
+
+.inventar-overview
+	display: flex
+	justify-content: space-between
+	align-items: end
+	gap: 14px
+	padding: .9rem
+	border-radius: .7rem
+	border: 1px solid rgba(theme.$app-border, .9)
+	background: linear-gradient(135deg, rgba(theme.$app-primary-light, .22), rgba(theme.$app-surface, .92))
+
+.inventar-overview-main
+	display: grid
+	gap: 4px
+
+.inventar-kicker
+	margin: 0
+	font-size: .78rem
+	font-weight: 700
+	letter-spacing: .04em
+	text-transform: uppercase
+	color: theme.$app-primary
+
+.inventar-title
+	margin: 0
+	font-size: clamp(1.05rem, 2.1vw, 1.35rem)
+	line-height: 1.2
+	color: theme.$app-primary
+
+.inventar-subtitle
+	margin: 0
+	opacity: .8
+
+.inventar-stats
+	display: grid
+	grid-template-columns: repeat(2, minmax(95px, 1fr))
+	gap: 10px
+
+.stat-card
+	display: grid
+	gap: 2px
+	padding: .55rem .7rem
+	border-radius: .55rem
+	border: 1px solid rgba(theme.$app-border, .88)
+	background: rgba(theme.$app-surface, .95)
+	text-align: right
+
+	strong
+		font-size: 1.1rem
+		color: theme.$app-primary
+
+.stat-label
+	font-size: .74rem
+	font-weight: 700
+	letter-spacing: .03em
+	text-transform: uppercase
+	opacity: .7
+
+.raum-create-card
+	padding: .85rem
+	border-radius: .7rem
+	border: 1px solid rgba(theme.$app-border, .9)
+	background: rgba(theme.$app-primary-light, .1)
+
+.raum-create-head
+	margin-bottom: .65rem
+
+	h4
+		margin: 0 0 .2rem 0
+		color: theme.$app-primary
+
+	p
+		margin: 0
+		opacity: .78
+
+.inventar-empty
+	padding: .9rem
+	border-radius: .65rem
+	border: 1px dashed rgba(theme.$app-border, .9)
+	background: rgba(theme.$app-surface, .8)
+	opacity: .86
+
+.inventar-accordion
+	display: grid
+	gap: 10px
+
+.room-panel
+	border-radius: .65rem
+	overflow: hidden
+
+.items-head
+	display: flex
+	justify-content: space-between
+	align-items: center
+	gap: 10px
+	margin-bottom: 10px
+
+.item-count
+	font-size: .82rem
+	padding: .2rem .55rem
+	border-radius: 999px
+	border: 1px solid rgba(theme.$app-border, .9)
+	background: rgba(theme.$app-surface, .95)
+	opacity: .85
+
+.item-new-card
+	padding: .75rem
+	border-radius: .6rem
+	border: 1px solid rgba(theme.$app-border, .9)
+	background: rgba(theme.$app-primary-light, .08)
+
+.item-compact-list
+	display: grid
+	gap: .5rem
+	margin-bottom: .65rem
+
+.item-compact-row
+	display: flex
+	align-items: center
+	justify-content: space-between
+	gap: .8rem
+	padding: .55rem .7rem
+	border-radius: .55rem
+	border: 1px solid rgba(theme.$app-border, .86)
+	background: rgba(theme.$app-surface, .94)
+
+.item-compact-main
+	display: grid
+	gap: 2px
+
+.item-compact-name
+	margin: 0
+	font-weight: 600
+	color: theme.$app-primary
+
+.item-compact-meta
+	margin: 0
+	font-size: .84rem
+	opacity: .8
+
+.item-compact-right
+	display: flex
+	align-items: center
+
+.item-compact-chip
+	font-size: .78rem
+	padding: .18rem .52rem
+	border-radius: 999px
+	border: 1px solid rgba(theme.$app-border, .9)
+	background: rgba(theme.$app-primary-light, .24)
+
+.item-compact-chip-muted
+	background: rgba(theme.$app-surface, .95)
+	opacity: .82
+
+.compact-hint
+	display: inline-flex
+	align-items: center
+	gap: .45rem
+	padding: .45rem .55rem
+	border-radius: .5rem
+	background: rgba(theme.$app-primary-light, .18)
+	opacity: .88
 
 .photo-block
 	display: grid
@@ -163,12 +344,33 @@
 .item-edit-form,
 .item-add-form
 	display: grid
-	grid-template-columns: repeat(3, minmax(0, 1fr))
+	grid-template-columns: repeat(12, minmax(0, 1fr))
 	gap: 12px
 	align-items: start
 	padding: .7rem
 	border-radius: .6rem
 	border: 1px solid rgba(theme.$app-border, .9)
+
+.item-field-name
+	grid-column: span 8
+
+.item-field-menge
+	grid-column: span 2
+
+.item-field-einheit
+	grid-column: span 2
+
+.item-field-wartung-zuletzt
+	grid-column: span 6
+
+.item-field-wartung-naechstes
+	grid-column: span 6
+
+.item-field-reihenfolge
+	grid-column: span 2
+
+.item-field-notiz
+	grid-column: span 10
 
 .item-actions
 	grid-column: 1 / -1
@@ -182,9 +384,27 @@
 @media (max-width: 1320px)
 	.item-edit-form,
 	.item-add-form
-		grid-template-columns: repeat(2, minmax(0, 1fr))
+		grid-template-columns: repeat(6, minmax(0, 1fr))
+
+	.item-field-name,
+	.item-field-wartung-zuletzt,
+	.item-field-wartung-naechstes,
+	.item-field-notiz
+		grid-column: span 6
+
+	.item-field-menge,
+	.item-field-einheit,
+	.item-field-reihenfolge
+		grid-column: span 2
 
 @media (max-width: 1120px)
+	.inventar-overview
+		flex-direction: column
+		align-items: stretch
+
+	.inventar-stats
+		grid-template-columns: repeat(2, minmax(120px, 1fr))
+
 	.raum-create-form
 		grid-template-columns: 1fr 170px
 
@@ -217,11 +437,36 @@
 	.item-add-form
 		grid-template-columns: 1fr
 
+	.item-field-name,
+	.item-field-menge,
+	.item-field-einheit,
+	.item-field-wartung-zuletzt,
+	.item-field-wartung-naechstes,
+	.item-field-reihenfolge,
+	.item-field-notiz
+		grid-column: 1 / -1
+
 	.photo-preview,
 	.room-photo-preview
 		max-width: 100%
 
 @media (max-width: 600px)
+	.inventar-toolbar
+		button,
+		a[mat-flat-button]
+			width: 100%
+
+	.item-compact-row
+		flex-direction: column
+		align-items: flex-start
+
+	.item-compact-right
+		width: 100%
+
+	.items-head
+		flex-direction: column
+		align-items: flex-start
+
 	.upload-button
 		width: 100%
 
