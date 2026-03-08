@@ -28,12 +28,25 @@ export class GlobalDataService {
   MaxUploadSize = 20480; // 20 MB => 1024 KB = 1 MB
   MessageShowInSeconds = 5; // Sekunden
   private loadingCount = 0;
+  private loadingEmitScheduled = false;
   loading$ = new BehaviorSubject<boolean>(false);
+
+  private scheduleLoadingEmit(): void {
+    if (this.loadingEmitScheduled) {
+      return;
+    }
+
+    this.loadingEmitScheduled = true;
+    Promise.resolve().then(() => {
+      this.loadingEmitScheduled = false;
+      this.loading$.next(this.loadingCount > 0);
+    });
+  }
 
   private setLoading(on: boolean) {
     this.loadingCount += on ? 1 : -1;
     if (this.loadingCount < 0) this.loadingCount = 0;
-    this.loading$.next(this.loadingCount > 0);
+    this.scheduleLoadingEmit();
   }
 
   private withLoading<T>(obs: Observable<T>): Observable<T> {

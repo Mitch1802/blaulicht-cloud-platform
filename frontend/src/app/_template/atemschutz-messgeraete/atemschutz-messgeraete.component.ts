@@ -68,7 +68,7 @@ export class AtemschutzMessgeraeteComponent implements OnInit {
   dataSourcePruefungen = new MatTableDataSource<IMessgeraetProtokoll>(
     this.pruefungen
   );
-  sichtbareSpalten: string[] = ['inv_nr', 'bezeichnung', 'actions'];
+  sichtbareSpalten: string[] = ['inv_nr', 'bezeichnung', 'letzte_pruefung', 'naechste_pruefung', 'actions'];
   sichtbareSpaltenPruefungen: string[] = [
     'datum',
     'name_pruefer',
@@ -106,6 +106,10 @@ export class AtemschutzMessgeraeteComponent implements OnInit {
     this.formPruefung.disable();
     this.loadCurrentUserRoles();
 
+    this.reloadMessgeraeteKontext();
+  }
+
+  private reloadMessgeraeteKontext(): void {
     this.globalDataService.get(this.modul).subscribe({
       next: (erg: any) => {
         try {
@@ -189,7 +193,7 @@ export class AtemschutzMessgeraeteComponent implements OnInit {
     this.title = this.title_pruefung;
 
     const abfrageUrl = `${this.modul}/protokoll`;
-    const param = { maske_id: element.pkid };
+    const param = { geraet_id: element.pkid };
 
     this.globalDataService.get(abfrageUrl, param, true).subscribe({
       next: (erg: any) => {
@@ -347,6 +351,7 @@ export class AtemschutzMessgeraeteComponent implements OnInit {
                 'datum'
               );
               this.dataSourcePruefungen.data = this.pruefungen;
+              this.reloadMessgeraeteKontext();
 
               this.formPruefung.reset({
                 id: '',
@@ -386,6 +391,7 @@ export class AtemschutzMessgeraeteComponent implements OnInit {
                 .sort((a, b) => a.datum - b.datum);
 
               this.dataSourcePruefungen.data = this.pruefungen;
+              this.reloadMessgeraeteKontext();
 
               this.formPruefung.reset({
                 id: '',
@@ -502,6 +508,7 @@ export class AtemschutzMessgeraeteComponent implements OnInit {
         try {
           this.pruefungen = this.pruefungen.filter((m: any) => m.id !== id);
           this.dataSourcePruefungen.data = this.pruefungen;
+          this.reloadMessgeraeteKontext();
 
           this.formPruefung.reset({
             id: '',
@@ -542,6 +549,67 @@ export class AtemschutzMessgeraeteComponent implements OnInit {
         ? null
         : { dateInvalid: true };
     };
+  }
+
+  jahrAusDatum(value?: string | null): string {
+    const input = String(value ?? '').trim();
+    if (!input) {
+      return '-';
+    }
+
+    const isoMatch = /^(\d{4})-\d{2}-\d{2}$/.exec(input);
+    if (isoMatch) {
+      return isoMatch[1];
+    }
+
+    if (/^\d{4}$/.test(input)) {
+      return input;
+    }
+
+    const parts = input.split('.');
+    const yearPart = parts[parts.length - 1]?.trim();
+    return /^\d{4}$/.test(yearPart) ? yearPart : input;
+  }
+
+  kwJahrAusDatum(value?: string | null): string {
+    const input = String(value ?? '').trim();
+    if (!input) {
+      return '-';
+    }
+
+    const kwPattern = /^(?:KW\s*)?(\d{1,2})\s*[/.-]\s*(\d{4})$/i.exec(input);
+    if (kwPattern) {
+      return `${kwPattern[1].padStart(2, '0')}/${kwPattern[2]}`;
+    }
+
+    const isoMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(input);
+    if (isoMatch) {
+      const year = Number(isoMatch[1]);
+      const month = Number(isoMatch[2]);
+      const day = Number(isoMatch[3]);
+      const date = new Date(year, month - 1, day);
+      return this.isoWeekFromDate(date);
+    }
+
+    const deMatch = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(input);
+    if (deMatch) {
+      const day = Number(deMatch[1]);
+      const month = Number(deMatch[2]);
+      const year = Number(deMatch[3]);
+      const date = new Date(year, month - 1, day);
+      return this.isoWeekFromDate(date);
+    }
+
+    return input;
+  }
+
+  private isoWeekFromDate(date: Date): string {
+    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    const dayNum = d.getUTCDay() || 7;
+    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    const weekNo = Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+    return `${String(weekNo).padStart(2, '0')}/${d.getUTCFullYear()}`;
   }
 
   sichtbarkeitModul(): string {

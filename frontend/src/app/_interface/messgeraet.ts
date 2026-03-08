@@ -7,6 +7,14 @@ export interface IMessgeraet {
   barcode: string;
   standort: string;
   baujahr: string;
+  letzte_pruefung?: string;
+  naechste_pruefung?: string;
+  letzte_kalibrierung?: string;
+  naechste_kalibrierung?: string;
+  letzte_kontrolle_woechentlich?: string;
+  naechste_kontrolle_woechentlich?: string;
+  letzte_wartung_jaehrlich?: string;
+  naechste_wartung_jaehrlich?: string;
   created_at: string;
   updated_at: string;
 }

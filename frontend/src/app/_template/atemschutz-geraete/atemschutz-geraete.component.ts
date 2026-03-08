@@ -616,6 +616,53 @@ export class AtemschutzGeraeteComponent implements OnInit {
     };
   }
 
+  jahrAusDatum(value?: string | null): string {
+    const input = String(value ?? '').trim();
+    if (!input) {
+      return '-';
+    }
+
+    const isoMatch = /^(\d{4})-\d{2}-\d{2}$/.exec(input);
+    if (isoMatch) {
+      return isoMatch[1];
+    }
+
+    if (/^\d{4}$/.test(input)) {
+      return input;
+    }
+
+    const parts = input.split('.');
+    const yearPart = parts[parts.length - 1]?.trim();
+
+    return /^\d{4}$/.test(yearPart) ? yearPart : input;
+  }
+
+  monatJahrAusDatum(value?: string | null): string {
+    const input = String(value ?? '').trim();
+    if (!input) {
+      return '-';
+    }
+
+    if (/^\d{2}\.\d{4}$/.test(input)) {
+      return input;
+    }
+
+    const isoMatch = /^(\d{4})-(\d{2})-\d{2}$/.exec(input);
+    if (isoMatch) {
+      return `${isoMatch[2]}.${isoMatch[1]}`;
+    }
+
+    const parts = input.split('.');
+    if (parts.length >= 3 && /^\d{4}$/.test(parts[2])) {
+      const month = parts[1]?.padStart(2, '0');
+      if (/^\d{2}$/.test(month)) {
+        return `${month}.${parts[2]}`;
+      }
+    }
+
+    return input;
+  }
+
   sichtbarkeitModul(): string {
     let modulSichtbar = "";
 

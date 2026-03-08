@@ -68,3 +68,60 @@ class MessgeraeteEndpointTests(EndpointSmokeMixin, APITestCase):
         self.client.force_authenticate(user=self.protokoll_user)
         allowed_create = self.request_method("post", "atemschutz/messgeraete/protokoll/", data=payload)
         self.assertEqual(allowed_create.status_code, status.HTTP_201_CREATED)
+
+    def test_messgeraete_list_contains_last_and_next_pruefung_per_type(self):
+        MessgeraetProtokoll.objects.create(
+            geraet_id=self.geraet,
+            datum=date(2024, 3, 15),
+            name_pruefer="Planer",
+            wartung_jaehrlich=True,
+        )
+        MessgeraetProtokoll.objects.create(
+            geraet_id=self.geraet,
+            datum=date(2024, 4, 20),
+            name_pruefer="Planer",
+            kontrolle_woechentlich=True,
+        )
+        MessgeraetProtokoll.objects.create(
+            geraet_id=self.geraet,
+            datum=date(2024, 5, 10),
+            name_pruefer="Planer",
+            kalibrierung=True,
+        )
+
+        self.client.force_authenticate(user=self.atemschutz_user)
+        response = self.request_method("get", "atemschutz/messgeraete/")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        item = next((entry for entry in response.data if entry.get("pkid") == self.geraet.pkid), None)
+        self.assertIsNotNone(item)
+        self.assertEqual(item.get("letzte_pruefung"), "10.05.2024")
+        self.assertEqual(item.get("naechste_pruefung"), "10.05.2025")
+        self.assertEqual(item.get("letzte_kalibrierung"), "10.05.2024")
+        self.assertEqual(item.get("naechste_kalibrierung"), "10.05.2025")
+        self.assertEqual(item.get("letzte_kontrolle_woechentlich"), "20.04.2024")
+        self.assertEqual(item.get("naechste_kontrolle_woechentlich"), "27.04.2024")
+        self.assertEqual(item.get("letzte_wartung_jaehrlich"), "15.03.2024")
+        self.assertEqual(item.get("naechste_wartung_jaehrlich"), "15.03.2025")
+
+    def test_messgeraete_summary_ignores_entries_without_type_flags(self):
+        MessgeraetProtokoll.objects.create(
+            geraet_id=self.geraet,
+            datum=date(2024, 1, 10),
+            name_pruefer="Planer",
+            wartung_jaehrlich=True,
+        )
+        MessgeraetProtokoll.objects.create(
+            geraet_id=self.geraet,
+            datum=date(2024, 2, 10),
+            name_pruefer="Planer",
+        )
+
+        self.client.force_authenticate(user=self.atemschutz_user)
+        response = self.request_method("get", "atemschutz/messgeraete/")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        item = next((entry for entry in response.data if entry.get("pkid") == self.geraet.pkid), None)
+        self.assertIsNotNone(item)
+        self.assertEqual(item.get("letzte_pruefung"), "10.01.2024")
+        self.assertEqual(item.get("naechste_pruefung"), "10.01.2025")

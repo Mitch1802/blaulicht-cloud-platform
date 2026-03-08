@@ -343,10 +343,9 @@
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Letzte Prüfung</th>
             <td mat-cell *matCellDef="let element">
               <div class="pruefung-overview">
-                <span class="pruefung-overview__gesamt"><strong>Ges:</strong> {{ element.letzte_pruefung || '-' }}</span>
-                <span><strong>M:</strong> {{ element.letzte_pruefung_monatlich || '-' }}</span>
-                <span><strong>J:</strong> {{ element.letzte_pruefung_jaehrlich || '-' }}</span>
-                <span><strong>10J:</strong> {{ element.letzte_pruefung_10jahre || '-' }}</span>
+                <span><strong>M:</strong> {{ monatJahrAusDatum(element.letzte_pruefung_monatlich) }}</span>
+                <span><strong>J:</strong> {{ jahrAusDatum(element.letzte_pruefung_jaehrlich) }}</span>
+                <span><strong>10J:</strong> {{ jahrAusDatum(element.letzte_pruefung_10jahre) }}</span>
               </div>
             </td>
           </ng-container>
@@ -354,10 +353,9 @@
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Nächste Prüfung</th>
             <td mat-cell *matCellDef="let element">
               <div class="pruefung-overview">
-                <span class="pruefung-overview__gesamt"><strong>Ges:</strong> {{ element.naechste_pruefung || '-' }}</span>
-                <span><strong>M:</strong> {{ element.naechste_pruefung_monatlich || '-' }}</span>
-                <span><strong>J:</strong> {{ element.naechste_pruefung_jaehrlich || '-' }}</span>
-                <span><strong>10J:</strong> {{ element.naechste_pruefung_10jahre || '-' }}</span>
+                <span><strong>M:</strong> {{ monatJahrAusDatum(element.naechste_pruefung_monatlich) }}</span>
+                <span><strong>J:</strong> {{ jahrAusDatum(element.naechste_pruefung_jaehrlich) }}</span>
+                <span><strong>10J:</strong> {{ jahrAusDatum(element.naechste_pruefung_10jahre) }}</span>
               </div>
             </td>
           </ng-container>
