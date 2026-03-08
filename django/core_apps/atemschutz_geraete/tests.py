@@ -98,6 +98,64 @@ class AtemschutzGeraeteEndpointTests(EndpointSmokeMixin, APITestCase):
         self.assertIn(9001, stbnr_dienstbuch)
         self.assertNotIn(9002, stbnr_dienstbuch)
 
+    def test_atemschutz_list_contains_last_and_next_pruefung(self):
+        AtemschutzGeraetProtokoll.objects.create(
+            geraet_id=self.geraet,
+            datum=date(2024, 3, 15),
+            name_pruefer="Planer",
+            pruefung_jaehrlich=True,
+        )
+        AtemschutzGeraetProtokoll.objects.create(
+            geraet_id=self.geraet,
+            datum=date(2024, 4, 20),
+            name_pruefer="Planer",
+            preufung_monatlich=True,
+        )
+        AtemschutzGeraetProtokoll.objects.create(
+            geraet_id=self.geraet,
+            datum=date(2024, 5, 10),
+            name_pruefer="Planer",
+            pruefung_10jahre=True,
+        )
+
+        self.client.force_authenticate(user=self.user)
+        response = self.request_method("get", "atemschutz/geraete/")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        item = next((entry for entry in response.data.get("main", []) if entry.get("pkid") == self.geraet.pkid), None)
+        self.assertIsNotNone(item)
+        self.assertEqual(item.get("letzte_pruefung"), "10.05.2024")
+        self.assertEqual(item.get("naechste_pruefung"), "10.05.2034")
+        self.assertEqual(item.get("letzte_pruefung_monatlich"), "20.04.2024")
+        self.assertEqual(item.get("naechste_pruefung_monatlich"), "20.05.2024")
+        self.assertEqual(item.get("letzte_pruefung_jaehrlich"), "15.03.2024")
+        self.assertEqual(item.get("naechste_pruefung_jaehrlich"), "15.03.2025")
+        self.assertEqual(item.get("letzte_pruefung_10jahre"), "10.05.2024")
+        self.assertEqual(item.get("naechste_pruefung_10jahre"), "10.05.2034")
+
+    def test_atemschutz_list_summary_ignores_non_pruefung_entries(self):
+        AtemschutzGeraetProtokoll.objects.create(
+            geraet_id=self.geraet,
+            datum=date(2024, 1, 10),
+            name_pruefer="Planer",
+            pruefung_jaehrlich=True,
+        )
+        AtemschutzGeraetProtokoll.objects.create(
+            geraet_id=self.geraet,
+            datum=date(2024, 2, 10),
+            name_pruefer="Planer",
+            taetigkeit="Wartung",
+        )
+
+        self.client.force_authenticate(user=self.user)
+        response = self.request_method("get", "atemschutz/geraete/")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        item = next((entry for entry in response.data.get("main", []) if entry.get("pkid") == self.geraet.pkid), None)
+        self.assertIsNotNone(item)
+        self.assertEqual(item.get("letzte_pruefung"), "10.01.2024")
+        self.assertEqual(item.get("naechste_pruefung"), "10.01.2025")
+
     def test_protokoll_create_requires_admin_or_protokoll_role(self):
         payload = {
             "geraet_id": self.geraet.pkid,
@@ -112,6 +170,33 @@ class AtemschutzGeraeteEndpointTests(EndpointSmokeMixin, APITestCase):
         self.client.force_authenticate(user=self.protokoll_user)
         allowed = self.request_method("post", "atemschutz/geraete/protokoll/", data=payload)
         self.assertEqual(allowed.status_code, status.HTTP_201_CREATED)
+
+    def test_protokoll_create_sets_naechste_gue_for_10_jahre_pruefung(self):
+        payload = {
+            "geraet_id": self.geraet.pkid,
+            "datum": "2024-02-01",
+            "name_pruefer": "Tester",
+            "pruefung_10jahre": True,
+        }
+
+        self.client.force_authenticate(user=self.protokoll_user)
+        response = self.request_method("post", "atemschutz/geraete/protokoll/", data=payload)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.geraet.refresh_from_db()
+        self.assertEqual(self.geraet.naechste_gue, "2034")
+
+    def test_protokoll_patch_sets_naechste_gue_for_10_jahre_pruefung(self):
+        self.client.force_authenticate(user=self.protokoll_user)
+        response = self.request_method(
+            "patch",
+            f"atemschutz/geraete/protokoll/{self.protokoll.id}/",
+            data={"pruefung_10jahre": True, "datum": "2026-03-08"},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.geraet.refresh_from_db()
+        self.assertEqual(self.geraet.naechste_gue, "2036")
 
     def test_protokoll_notiz_patch_allowed_for_non_editor_roles(self):
         self.client.force_authenticate(user=self.user)

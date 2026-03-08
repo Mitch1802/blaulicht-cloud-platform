@@ -60,7 +60,7 @@ export class AtemschutzGeraeteComponent implements OnInit {
   breadcrumb: any = [];
   dataSource = new MatTableDataSource<IAtemschutzGeraet>(this.geraete);
   dataSourcePruefungen = new MatTableDataSource<IAtemschutzGeraetProtokoll>(this.pruefungen);
-  sichtbareSpalten: string[] = ['inv_nr', 'typ', 'art', 'standort', 'actions'];
+  sichtbareSpalten: string[] = ['inv_nr', 'typ', 'art', 'standort', 'letzte_pruefung', 'naechste_pruefung', 'actions'];
   sichtbareSpaltenPruefungen: string[] = ['datum', 'taetigkeit', 'name_pruefer', 'actions'];
 
   formModul = new FormGroup({
@@ -110,6 +110,10 @@ export class AtemschutzGeraeteComponent implements OnInit {
     this.formPruefung.disable();
     this.loadCurrentUserRoles();
 
+    this.reloadGeraeteKontext();
+  }
+
+  private reloadGeraeteKontext(): void {
     this.globalDataService.get(this.modul).subscribe({
       next: (erg: any) => {
         try {
@@ -384,6 +388,7 @@ export class AtemschutzGeraeteComponent implements OnInit {
             this.pruefungen.push(newPrufung);
             this.pruefungen = this.globalDataService.arraySortByKey(this.pruefungen, 'datum');
             this.dataSourcePruefungen.data = this.pruefungen;
+            this.reloadGeraeteKontext();
 
             this.formPruefung.reset({
               id: '',
@@ -430,6 +435,7 @@ export class AtemschutzGeraeteComponent implements OnInit {
               .sort((a, b) => a.datum - b.datum);
 
             this.dataSourcePruefungen.data = this.pruefungen;
+            this.reloadGeraeteKontext();
 
             this.formPruefung.reset({
               id: '',
@@ -563,6 +569,7 @@ export class AtemschutzGeraeteComponent implements OnInit {
         try {
           this.pruefungen = this.pruefungen.filter((m: any) => m.id !== id);
           this.dataSourcePruefungen.data = this.pruefungen;
+          this.reloadGeraeteKontext();
 
           this.formPruefung.reset({
             id: '',
