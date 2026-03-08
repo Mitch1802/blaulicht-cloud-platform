@@ -71,6 +71,11 @@ export const routes: Routes = [
     loadComponent: () => import("./inventar/inventar.component").then(m => m.InventarComponent),
   },
   {
+    path: 'wartung-service',
+    canActivate: [authGuard],
+    loadComponent: () => import("./wartung-service/wartung-service.component").then(m => m.WartungServiceComponent),
+  },
+  {
     path: 'einsatzbericht',
     canActivate: [authGuard],
     loadComponent: () => import("./einsatzbericht/einsatzbericht.component").then(m => m.EinsatzberichtComponent),

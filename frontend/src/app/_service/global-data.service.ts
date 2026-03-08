@@ -431,6 +431,9 @@ export class GlobalDataService {
     } else if (page == 'INV') {
       link = '/inventar';
       kuerzel = 'Inventar';
+    } else if (page == 'WS') {
+      link = '/wartung-service';
+      kuerzel = 'Wartung/Service';
     } else if (page == 'BER') {
       link = '/einsatzbericht';
       kuerzel = 'Einsatzbericht';

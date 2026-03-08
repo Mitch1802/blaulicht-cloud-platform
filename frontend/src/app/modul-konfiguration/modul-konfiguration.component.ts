@@ -19,6 +19,7 @@ import { MatInput } from '@angular/material/input';
 import { Router } from '@angular/router';
 import { IPdfTemplate } from '../_interface/pdf_template';
 import jugendRegelConfig from '../jugend/config.json';
+import startRegelConfig from '../start/konfig.json';
 
 @Component({
   selector: 'app-modul-konfiguration',
@@ -57,6 +58,7 @@ export class ModulKonfigurationComponent implements OnInit {
   private modulByKey = new Map<string, any>();
 
   private readonly jugendDefaultKonfiguration = jugendRegelConfig;
+  private readonly startDefaultKonfiguration = startRegelConfig;
 
   readonly jugendTrackInfos: ReadonlyArray<{ key: string; label: string }> = [
     { key: 'erprobung', label: 'Erprobung' },
@@ -316,6 +318,9 @@ export class ModulKonfigurationComponent implements OnInit {
   }
 
   private getDefaultKonfigurationForModul(modul: string): Record<string, unknown> {
+    if (modul === 'start') {
+      return JSON.parse(JSON.stringify(this.startDefaultKonfiguration));
+    }
     if (modul === 'jugend') {
       return JSON.parse(JSON.stringify(this.jugendDefaultKonfiguration));
     }

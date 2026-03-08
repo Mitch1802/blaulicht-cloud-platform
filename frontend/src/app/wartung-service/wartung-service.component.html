@@ -1,0 +1,94 @@
+<app-header [breadcrumb]="breadcrumb"></app-header>
+
+<section class="wartung-service-page">
+  <header class="page-head">
+    <h1>{{ title }}</h1>
+  </header>
+
+  <mat-card class="settings-card">
+    <div class="section-head">
+      <h2>Anstehende Termine {{ jahr }}</h2>
+      <button mat-flat-button color="primary" type="button" (click)="reload()">Aktualisieren</button>
+    </div>
+
+    <mat-card-content>
+      <div class="summary-grid">
+        <article class="summary-card">
+          <h3>Gesamt</h3>
+          <p>{{ summary.gesamt }}</p>
+        </article>
+        <article class="summary-card summary-card--warn">
+          <h3>Überfällig</h3>
+          <p>{{ summary.ueberfaellig }}</p>
+        </article>
+        <article class="summary-card summary-card--today">
+          <h3>Heute</h3>
+          <p>{{ summary.heute }}</p>
+        </article>
+        <article class="summary-card summary-card--ok">
+          <h3>Anstehend</h3>
+          <p>{{ summary.anstehend }}</p>
+        </article>
+      </div>
+
+      @if (dataSource.data.length === 0) {
+        <p class="empty">Für {{ jahr }} sind aktuell keine Service- oder Wartungstermine hinterlegt.</p>
+      } @else {
+        <div class="table-wrap">
+          <table mat-table [dataSource]="dataSource">
+            <ng-container matColumnDef="modul">
+              <th mat-header-cell *matHeaderCellDef>Modul</th>
+              <td mat-cell *matCellDef="let element">{{ element.modul }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="bereich">
+              <th mat-header-cell *matHeaderCellDef>Bereich</th>
+              <td mat-cell *matCellDef="let element">{{ element.bereich }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="eintrag">
+              <th mat-header-cell *matHeaderCellDef>Eintrag</th>
+              <td mat-cell *matCellDef="let element">{{ element.eintrag }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="intervall">
+              <th mat-header-cell *matHeaderCellDef>Intervall</th>
+              <td mat-cell *matCellDef="let element">{{ element.intervall }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="faelligkeit">
+              <th mat-header-cell *matHeaderCellDef>Fällig</th>
+              <td mat-cell *matCellDef="let element">{{ element.faelligkeit }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Status</th>
+              <td mat-cell *matCellDef="let element">
+                <span [class]="statusClass(element.status)">{{ statusText(element.status) }}</span>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Aktionen</th>
+              <td mat-cell *matCellDef="let element" class="ui-action-cell">
+                <button
+                  mat-flat-button
+                  class="ui-action-btn"
+                  color="primary"
+                  type="button"
+                  [routerLink]="element.link"
+                  aria-label="Eintrag öffnen"
+                >
+                  <mat-icon class="m-0">remove_red_eye</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="sichtbareSpalten"></tr>
+            <tr mat-row *matRowDef="let row; columns: sichtbareSpalten"></tr>
+          </table>
+        </div>
+      }
+    </mat-card-content>
+  </mat-card>
+</section>

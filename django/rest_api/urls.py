@@ -22,4 +22,5 @@ urlpatterns = [
     path(settings.API_URL + "einsatzberichte/", include("core_apps.einsatzberichte.urls")),
     path(settings.API_URL + "anwesenheitsliste/", include("core_apps.anwesenheitsliste.urls")),
     path(settings.API_URL + "jugend/", include("core_apps.jugend.urls")),
+    path(settings.API_URL + "wartung_service/", include("core_apps.wartung_service.urls")),
 ]

@@ -49,6 +49,13 @@
     "kategorie": "Verwaltung"
   },
   {
+    "icon": "build",
+    "modul": "Wartung/Service",
+    "rolle": "ADMIN, KOMMANDO",
+    "routerlink": "/wartung-service",
+    "kategorie": "Verwaltung"
+  },
+  {
     "icon": "euro",
     "modul": "Verwaltung",
     "rolle": "ADMIN, VERWALTUNG",
@@ -109,7 +116,7 @@
     "modul": "Jugend",
     "rolle": "ADMIN",
     "routerlink": "/jugend",
-    "kategorie": "Verwaltung"
+    "kategorie": "Fachchargen"
   },
   {
     "icon": "school",

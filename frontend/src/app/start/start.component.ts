@@ -5,6 +5,7 @@ import { MatCardModule } from '@angular/material/card';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import startKonfig from './konfig.json';
 
 @Component({
   selector: 'app-start',
@@ -32,31 +33,16 @@ export class StartComponent implements OnInit {
 
   categorizedItems: { name: string; items: any[] }[] = [];
 
-  defaultKonfig: any[] = [
+  defaultKonfig: any[] = startKonfig as any[];
+
+  readonly requiredStartItems: any[] = [
     {
-      icon: "tune",
-      modul: "Modul Konfiguration",
-      rolle: "ADMIN",
-      routerlink: "/modul_konfiguration"
+      icon: 'build',
+      modul: 'Wartung/Service',
+      rolle: 'ADMIN, INVENTAR, FAHRZEUG, ATEMSCHUTZ, PROTOKOLL',
+      routerlink: '/wartung-service',
+      kategorie: 'Verwaltung',
     },
-    {
-      icon: "child_care",
-      modul: "Jugend",
-      rolle: "ADMIN",
-      routerlink: "/jugend"
-    },
-    {
-      icon: "engineering",
-      modul: "Benutzerverwaltung",
-      rolle: "ADMIN",
-      routerlink: "/benutzer"
-    },
-    {
-      icon: "settings",
-      modul: "Konfiguration",
-      rolle: "ADMIN",
-      routerlink: "/konfiguration"
-    }
   ];
 
   ngOnInit(): void {
@@ -82,6 +68,8 @@ export class StartComponent implements OnInit {
             (konfigs?.konfiguration?.length
               ? konfigs.konfiguration
               : this.defaultKonfig) ?? [];
+
+          this.start_konfig = this.ensureRequiredStartItems(this.start_konfig);
 
           // 1️⃣ Zugriff strikt prüfen
           const allowed = this.start_konfig.filter(item =>
@@ -174,5 +162,26 @@ export class StartComponent implements OnInit {
   private normalizeCategory(item: any): string {
     const raw = String(item?.kategorie ?? item?.category ?? '').trim();
     return raw || 'Allgemein';
+  }
+
+  private ensureRequiredStartItems(items: any[]): any[] {
+    const result = Array.isArray(items) ? [...items] : [];
+
+    for (const required of this.requiredStartItems) {
+      const requiredLink = String(required?.routerlink ?? '').trim().toLowerCase();
+      if (!requiredLink) {
+        continue;
+      }
+
+      const exists = result.some((item) =>
+        String(item?.routerlink ?? '').trim().toLowerCase() === requiredLink,
+      );
+
+      if (!exists) {
+        result.push({ ...required });
+      }
+    }
+
+    return result;
   }
 }
