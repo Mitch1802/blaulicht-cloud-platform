@@ -12,6 +12,35 @@ class JugendAusbildungSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class JugendMitgliedSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Mitglied
+        fields = [
+            "id",
+            "pkid",
+            "stbnr",
+            "vorname",
+            "nachname",
+            "dienstgrad",
+            "geburtsdatum",
+            "dienststatus",
+        ]
+        read_only_fields = [
+            "id",
+            "pkid",
+            "stbnr",
+            "vorname",
+            "nachname",
+            "dienstgrad",
+            "geburtsdatum",
+        ]
+
+    def validate_dienststatus(self, value):
+        if value not in (Mitglied.Dienststatus.JUGEND, Mitglied.Dienststatus.AKTIV):
+            raise serializers.ValidationError("Dienststatus darf nur JUGEND oder AKTIV sein.")
+        return value
+
+
 class JugendEventTeilnehmerLevelInputSerializer(serializers.Serializer):
     pkid = serializers.IntegerField(min_value=1)
     level = serializers.IntegerField(min_value=1, max_value=5, required=False, allow_null=True)

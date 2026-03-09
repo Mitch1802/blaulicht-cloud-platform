@@ -32,7 +32,10 @@ class PublicLoginView(LoginView):
 
 class CustomUserDetailsView(generics.RetrieveUpdateAPIView):
     serializer_class = UserSelfSerializer
-    permission_classes = [permissions.IsAuthenticated, HasAnyRolePermission.with_roles("ADMIN", "MITGLIED")]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        HasAnyRolePermission.with_roles("ADMIN", "MITGLIED", "JUGEND"),
+    ]
 
     def get_object(self):
         return self.request.user

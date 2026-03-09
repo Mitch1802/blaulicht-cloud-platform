@@ -3,126 +3,126 @@
     "icon": "book",
     "modul": "Einsatzbericht",
     "rolle": "ADMIN, BERICHT",
-    "routerlink": "/einsatzbericht",
-    "kategorie": "Dokumentation"
+    "kategorie": "Dokumentation",
+    "routerlink": "/einsatzbericht"
   },
   {
     "icon": "book",
     "modul": "Anwesenheitsliste",
     "rolle": "ADMIN, ANWESENHEIT",
-    "routerlink": "/anwesenheitsliste",
-    "kategorie": "Dokumentation"
+    "kategorie": "Dokumentation",
+    "routerlink": "/anwesenheitsliste"
   },
   {
     "icon": "event",
     "modul": "News",
     "rolle": "ADMIN, NEWS",
-    "routerlink": "/news",
-    "kategorie": "Fachchargen"
+    "kategorie": "Fachchargen",
+    "routerlink": "/news"
   },
   {
     "icon": "healing",
     "modul": "FMD",
     "rolle": "ADMIN, FMD",
-    "routerlink": "/fmd",
-    "kategorie": "Fachchargen"
+    "kategorie": "Fachchargen",
+    "routerlink": "/fmd"
   },
   {
     "icon": "battery_alert",
     "modul": "Atemschutz",
     "rolle": "ADMIN, ATEMSCHUTZ",
-    "routerlink": "/atemschutz",
-    "kategorie": "Fachchargen"
+    "kategorie": "Fachchargen",
+    "routerlink": "/atemschutz"
   },
   {
     "icon": "fire_truck",
     "modul": "Fahrzeuge",
     "rolle": "ADMIN, FAHRZEUG",
-    "routerlink": "/fahrzeuge",
-    "kategorie": "Fachchargen"
+    "kategorie": "Fachchargen",
+    "routerlink": "/fahrzeuge"
   },
   {
     "icon": "construction",
     "modul": "Inventar",
     "rolle": "ADMIN, INVENTAR",
-    "routerlink": "/inventar",
-    "kategorie": "Verwaltung"
+    "kategorie": "Verwaltung",
+    "routerlink": "/inventar"
   },
   {
     "icon": "build",
     "modul": "Wartung/Service",
     "rolle": "ADMIN, KOMMANDO",
-    "routerlink": "/wartung-service",
-    "kategorie": "Verwaltung"
+    "kategorie": "Verwaltung",
+    "routerlink": "/wartung-service"
   },
   {
     "icon": "euro",
     "modul": "Verwaltung",
     "rolle": "ADMIN, VERWALTUNG",
-    "routerlink": "/verwaltung",
-    "kategorie": "Verwaltung"
+    "kategorie": "Verwaltung",
+    "routerlink": "/verwaltung"
   },
   {
     "icon": "groups",
     "modul": "Mitglieder",
     "rolle": "ADMIN",
-    "routerlink": "/mitglied",
-    "kategorie": "Verwaltung"
+    "kategorie": "Verwaltung",
+    "routerlink": "/mitglied"
   },
   {
     "icon": "tune",
     "modul": "Modul Konfiguration",
     "rolle": "ADMIN",
-    "routerlink": "/modul_konfiguration",
-    "kategorie": "Administration"
+    "kategorie": "Administration",
+    "routerlink": "/modul_konfiguration"
   },
   {
     "icon": "engineering",
     "modul": "Benutzerverwaltung",
     "rolle": "ADMIN",
-    "routerlink": "/benutzer",
-    "kategorie": "Administration"
+    "kategorie": "Administration",
+    "routerlink": "/benutzer"
   },
   {
     "icon": "picture_as_pdf",
     "modul": "PDF Templates",
     "rolle": "ADMIN",
-    "routerlink": "/pdf_template",
-    "kategorie": "Administration"
+    "kategorie": "Administration",
+    "routerlink": "/pdf_template"
   },
   {
     "icon": "settings",
     "modul": "Konfiguration",
     "rolle": "ADMIN",
-    "routerlink": "/konfiguration",
-    "kategorie": "Administration"
+    "kategorie": "Administration",
+    "routerlink": "/konfiguration"
   },
   {
     "icon": "manage_accounts",
     "modul": "Eigene Daten",
     "rolle": "ADMIN, MITGLIED",
-    "routerlink": "/eigene_daten",
-    "kategorie": "Administration"
+    "kategorie": "Administration",
+    "routerlink": "/eigene_daten"
   },
   {
     "icon": "pending_actions",
     "modul": "Aufgaben/Tickets",
     "rolle": "ADMIN, MITGLIED",
-    "routerlink": "/aufgaben",
-    "kategorie": "Geplant"
+    "kategorie": "Geplant",
+    "routerlink": "/aufgaben"
   },
   {
     "icon": "child_care",
     "modul": "Jugend",
-    "rolle": "ADMIN",
-    "routerlink": "/jugend",
-    "kategorie": "Fachchargen"
+    "rolle": "ADMIN, JUGEND",
+    "kategorie": "Fachchargen",
+    "routerlink": "/jugend"
   },
   {
     "icon": "school",
     "modul": "Ausbildung",
     "rolle": "ADMIN, AUSBILDUNG",
-    "routerlink": "/ausbildung",
-    "kategorie": "Geplant"
+    "kategorie": "Geplant",
+    "routerlink": "/ausbildung"
   }
 ]

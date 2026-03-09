@@ -1,9 +1,10 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from .views import JugendAusbildungViewSet, JugendEventViewSet
+from .views import JugendAusbildungViewSet, JugendEventViewSet, JugendMitgliedViewSet
 
 router = DefaultRouter()
+router.register(r"mitglieder", JugendMitgliedViewSet, basename="jugend-mitglieder")
 router.register(r"ausbildung", JugendAusbildungViewSet, basename="jugend-ausbildung")
 router.register(r"events", JugendEventViewSet, basename="jugend-events")
 

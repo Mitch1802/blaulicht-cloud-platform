@@ -12,6 +12,7 @@ from core_apps.mitglieder.models import Mitglied
 class JugendApiTests(EndpointSmokeMixin, APITestCase):
     def setUp(self):
         self.user = self.create_user_with_roles("MITGLIED")
+        self.user_jugend = self.create_user_with_roles("JUGEND")
         self.jugend_mitglied = Mitglied.objects.create(
             stbnr=3001,
             vorname="J",
@@ -32,14 +33,53 @@ class JugendApiTests(EndpointSmokeMixin, APITestCase):
 
     def test_jugend_endpoints_resolve(self):
         endpoints = [
+            "jugend/mitglieder/",
             "jugend/ausbildung/",
             "jugend/events/",
+            f"jugend/mitglieder/{uuid4()}/",
             f"jugend/ausbildung/{uuid4()}/",
             f"jugend/events/{uuid4()}/",
         ]
         for endpoint in endpoints:
             with self.subTest(endpoint=endpoint):
                 self.assert_options_works(endpoint)
+
+    def test_jugend_role_can_use_jugend_endpoints(self):
+        self.client.force_authenticate(user=self.user_jugend)
+
+        mitglieder_response = self.request_method("get", "jugend/mitglieder/")
+        self.assertEqual(mitglieder_response.status_code, status.HTTP_200_OK)
+        mitglied_ids = [item.get("pkid") for item in mitglieder_response.data]
+        self.assertIn(self.jugend_mitglied.pkid, mitglied_ids)
+        self.assertNotIn(self.aktiv_mitglied.pkid, mitglied_ids)
+
+        ausbildung_response = self.request_method("get", "jugend/ausbildung/")
+        self.assertEqual(ausbildung_response.status_code, status.HTTP_200_OK)
+
+        events_response = self.request_method("get", "jugend/events/")
+        self.assertEqual(events_response.status_code, status.HTTP_200_OK)
+
+    def test_jugend_member_patch_allows_only_dienststatus(self):
+        self.client.force_authenticate(user=self.user_jugend)
+        endpoint = f"jugend/mitglieder/{self.jugend_mitglied.id}/"
+
+        bad_response = self.request_method(
+            "patch",
+            endpoint,
+            data={"dienststatus": Mitglied.Dienststatus.JUGEND, "vorname": "X"},
+        )
+        self.assertEqual(bad_response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("detail", bad_response.data)
+
+        ok_response = self.request_method(
+            "patch",
+            endpoint,
+            data={"dienststatus": Mitglied.Dienststatus.AKTIV},
+        )
+        self.assertEqual(ok_response.status_code, status.HTTP_200_OK)
+
+        self.jugend_mitglied.refresh_from_db()
+        self.assertEqual(self.jugend_mitglied.dienststatus, Mitglied.Dienststatus.AKTIV)
 
     def test_ausbildung_list_includes_only_jugend_members(self):
         JugendAusbildung.objects.create(mitglied=self.jugend_mitglied, erprobung_lv1=True)

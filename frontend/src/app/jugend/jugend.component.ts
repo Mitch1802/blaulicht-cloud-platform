@@ -284,7 +284,7 @@ export class JugendComponent implements OnInit {
   }
 
   loadMitglieder(): void {
-    this.globalDataService.get<IMitglied[]>('mitglieder').subscribe({
+    this.globalDataService.get<IMitglied[]>('jugend/mitglieder').subscribe({
       next: (erg) => {
         this.mitglieder = this.globalDataService.arraySortByKey(erg, 'stbnr');
         this.jugendMitglieder = this.mitglieder.filter((m) => this.normalizeStatus(m.dienststatus) === 'JUGEND');
@@ -403,7 +403,7 @@ export class JugendComponent implements OnInit {
       dienststatus: this.formMitglied.controls.dienststatus.value,
     };
 
-    this.globalDataService.patch('mitglieder', id, payload, false).subscribe({
+    this.globalDataService.patch('jugend/mitglieder', id, payload, false).subscribe({
       next: () => {
         this.speichereJugendAusbildung(selectedMitglied).subscribe({
           next: () => {

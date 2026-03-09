@@ -12,6 +12,7 @@ class ModulKonfigurationEndpointTests(EndpointSmokeMixin, APITestCase):
     def setUp(self):
         self.admin = self.create_user_with_roles("ADMIN")
         self.member = self.create_user_with_roles("MITGLIED")
+        self.jugend = self.create_user_with_roles("JUGEND")
         ModulKonfiguration.objects.create(modul="fmd", konfiguration={"enabled": True})
         Role.objects.get_or_create(key="EXTRA", defaults={"verbose_name": "Extra"})
 
@@ -45,3 +46,8 @@ class ModulKonfigurationEndpointTests(EndpointSmokeMixin, APITestCase):
 
         item = ModulKonfiguration.objects.first()
         self.assertEqual(str(item), item.modul)
+
+    def test_modul_konfiguration_list_allows_jugend_readonly(self):
+        self.client.force_authenticate(user=self.jugend)
+        response = self.request_method("get", "modul_konfiguration/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
