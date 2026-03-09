@@ -16,12 +16,22 @@
             @for (item of category.items; track item) {
               @if (isPlannedItem(item)) {
                 <mat-card class="module-card planned">
+                  @if (showFreigeschaltetBadge(item)) {
+                    <span class="user-count-badge" [matTooltip]="'Benutzer: ' + getFreigeschaltetCount(item)" matTooltipPosition="above">
+                      {{ getFreigeschaltetCount(item) }}
+                    </span>
+                  }
                   <span class="planned-badge">GEPLANT</span>
                   <mat-icon class="module-icon material-icons-outlined">{{ item.icon }}</mat-icon>
                   <div class="module-title" [matTooltip]="item.modul" matTooltipPosition="above">{{ item.modul }}</div>
                 </mat-card>
               } @else {
                 <mat-card class="module-card" [class.admin-only]="isAdminOnly(item)" [routerLink]="item.routerlink">
+                  @if (showFreigeschaltetBadge(item)) {
+                    <span class="user-count-badge" [matTooltip]="'Benutzer: ' + getFreigeschaltetCount(item)" matTooltipPosition="above">
+                      {{ getFreigeschaltetCount(item) }}
+                    </span>
+                  }
                   @if (isAdminOnly(item)) {
                     <span class="admin-badge">ADMIN</span>
                   }

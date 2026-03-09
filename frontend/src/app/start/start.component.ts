@@ -22,6 +22,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 export class StartComponent implements OnInit {
 
   private globalDataService = inject(GlobalDataService);
+  private readonly adminRoleKey = 'ADMIN';
 
   breadcrumb: any[] = [];
   start_konfig: any[] = [];
@@ -29,6 +30,9 @@ export class StartComponent implements OnInit {
   first_name = '';
   last_name = '';
   meine_rollen: string[] = [];
+  isAdminViewer = false;
+  countsLoaded = false;
+  private freigeschaltetCountByItemKey = new Map<string, number>();
 
   categorizedItems: { name: string; items: any[] }[] = [];
 
@@ -80,12 +84,18 @@ export class StartComponent implements OnInit {
               ? konfigs.konfiguration
               : this.defaultKonfig) ?? [];
 
+          this.isAdminViewer = this.meine_rollen.includes(this.adminRoleKey);
+
           // 1️⃣ Zugriff strikt prüfen
           const allowed = this.start_konfig.filter(item =>
             this.userHasAccess(item) && !this.isHiddenItem(item)
           );
 
           this.categorizedItems = this.buildCategories(allowed);
+
+          if (this.isAdminViewer) {
+            this.loadFreigeschaltetCounts(allowed);
+          }
 
         } catch (e: any) {
           this.globalDataService.erstelleMessage("error", e);
@@ -118,8 +128,74 @@ export class StartComponent implements OnInit {
     const itemRoles = this.normalizeRoles(item?.rolle);
     const userRoles = this.meine_rollen;
 
+    return this.hasAccessByRoles(itemRoles, userRoles);
+  }
+
+  private hasAccessByRoles(itemRoles: string[], userRoles: string[]): boolean {
     if (itemRoles.length === 0) return true;
     return itemRoles.some(role => userRoles.includes(role));
+  }
+
+  private normalizeUserRoles(user: any): string[] {
+    const roles = this.normalizeRoles(user?.roles);
+    if ((user?.is_superuser === true || user?.admin === true) && !roles.includes(this.adminRoleKey)) {
+      roles.push(this.adminRoleKey);
+    }
+    return roles;
+  }
+
+  private itemKey(item: any): string {
+    const modul = String(item?.modul ?? '').trim().toLowerCase();
+    const routerLink = String(item?.routerlink ?? '').trim().toLowerCase();
+    return `${routerLink}|${modul}`;
+  }
+
+  private loadFreigeschaltetCounts(items: any[]): void {
+    this.countsLoaded = false;
+
+    this.globalDataService.get('users').subscribe({
+      next: (response: any) => {
+        const rawUsers = Array.isArray(response)
+          ? response
+          : Array.isArray(response?.data)
+            ? response.data
+            : Array.isArray(response?.data?.results)
+              ? response.data.results
+              : Array.isArray(response?.main)
+                ? response.main
+                : Array.isArray(response?.results)
+                  ? response.results
+            : [];
+
+        const activeUsers = rawUsers.filter((user: any) => user?.is_active !== false);
+        const counts = new Map<string, number>();
+
+        for (const item of items) {
+          const itemRoles = this.normalizeRoles(item?.rolle);
+          const count = activeUsers.reduce((sum: number, user: any) => {
+            const userRoles = this.normalizeUserRoles(user);
+            return this.hasAccessByRoles(itemRoles, userRoles) ? sum + 1 : sum;
+          }, 0);
+
+          counts.set(this.itemKey(item), count);
+        }
+
+        this.freigeschaltetCountByItemKey = counts;
+        this.countsLoaded = true;
+      },
+      error: () => {
+        this.freigeschaltetCountByItemKey.clear();
+        this.countsLoaded = true;
+      },
+    });
+  }
+
+  showFreigeschaltetBadge(item: any): boolean {
+    return this.isAdminViewer && this.countsLoaded && this.freigeschaltetCountByItemKey.has(this.itemKey(item));
+  }
+
+  getFreigeschaltetCount(item: any): number {
+    return this.freigeschaltetCountByItemKey.get(this.itemKey(item)) ?? 0;
   }
 
   private isHiddenItem(item: any): boolean {
