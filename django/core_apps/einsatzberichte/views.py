@@ -26,7 +26,7 @@ class EinsatzberichtViewSet(ModelViewSet):
     serializer_class = EinsatzberichtSerializer
     permission_classes = [
         permissions.IsAuthenticated,
-        HasAnyRolePermission.with_roles("ADMIN", "VERWALTUNG", "BERICHT", "MITGLIED"),
+        HasAnyRolePermission.with_roles("ADMIN", "BERICHT", "VERWALTUNG"),
     ]
     parser_classes = [JSONParser, MultiPartParser, FormParser]
     lookup_field = "id"
@@ -39,7 +39,7 @@ class EinsatzberichtViewSet(ModelViewSet):
         if getattr(self, "action", None) == "destroy":
             permission_classes = [
                 permissions.IsAuthenticated,
-                HasAnyRolePermission.with_roles("ADMIN", "VERWALTUNG"),
+                HasAnyRolePermission.with_roles("ADMIN", "BERICHT"),
             ]
             return [permission() for permission in permission_classes]
         return super().get_permissions()
@@ -51,41 +51,55 @@ class EinsatzberichtViewSet(ModelViewSet):
             and user.has_any_role("ADMIN", "VERWALTUNG")
         )
 
-    def _validate_status_change(self, request, instance=None):
-        incoming_status = request.data.get("status", None)
-        if incoming_status is None:
-            return
+    def _can_edit_report_content(self, user) -> bool:
+        return bool(
+            getattr(user, "is_authenticated", False)
+            and hasattr(user, "has_any_role")
+            and user.has_any_role("ADMIN", "BERICHT")
+        )
 
-        incoming_status = str(incoming_status).strip()
-        if self._can_manage_status(request.user):
-            return
+    def _status_will_change(self, incoming_status, instance=None) -> bool:
+        if incoming_status is None:
+            return False
+
+        normalized_status = str(incoming_status).strip()
+        if not normalized_status:
+            return False
 
         if instance is None:
-            if incoming_status and incoming_status != Einsatzbericht.Status.ENTWURF:
-                self.permission_denied(
-                    request,
-                    message="Nur Verwaltung oder Admin dürfen den Status ändern.",
-                )
-            return
+            return normalized_status != Einsatzbericht.Status.ENTWURF
 
-        if incoming_status != instance.status:
+        return normalized_status != instance.status
+
+    def _validate_edit_permissions(self, request, instance=None):
+        payload_keys = {str(key) for key in request.data.keys()}
+        has_content_changes = bool(payload_keys - {"status"})
+        status_will_change = self._status_will_change(request.data.get("status"), instance=instance)
+
+        if has_content_changes and not self._can_edit_report_content(request.user):
             self.permission_denied(
                 request,
-                message="Nur Verwaltung oder Admin dürfen den Status ändern.",
+                message="Nur Bericht oder Admin duerfen Einsatzbericht-Inhalte bearbeiten.",
+            )
+
+        if status_will_change and not self._can_manage_status(request.user):
+            self.permission_denied(
+                request,
+                message="Nur Verwaltung oder Admin duerfen den Status aendern.",
             )
 
     def create(self, request, *args, **kwargs):
-        self._validate_status_change(request, instance=None)
+        self._validate_edit_permissions(request, instance=None)
         return super().create(request, *args, **kwargs)
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-        self._validate_status_change(request, instance=instance)
+        self._validate_edit_permissions(request, instance=instance)
         return super().update(request, *args, **kwargs)
 
     def partial_update(self, request, *args, **kwargs):
         instance = self.get_object()
-        self._validate_status_change(request, instance=instance)
+        self._validate_edit_permissions(request, instance=instance)
         return super().partial_update(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):

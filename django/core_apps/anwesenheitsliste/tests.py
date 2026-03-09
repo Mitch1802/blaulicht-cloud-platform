@@ -13,7 +13,7 @@ from core_apps.mitglieder.models import Mitglied
 
 class AnwesenheitslisteEndpointTests(EndpointSmokeMixin, APITestCase):
     def setUp(self):
-        self.user = self.create_user_with_roles("MITGLIED")
+        self.user = self.create_user_with_roles("ANWESENHEIT")
         self.mitglied = Mitglied.objects.create(
             stbnr=77,
             vorname="Anna",
@@ -42,6 +42,12 @@ class AnwesenheitslisteEndpointTests(EndpointSmokeMixin, APITestCase):
     def test_requires_auth_and_role(self):
         self.assert_requires_authentication("anwesenheitsliste/")
         self.assert_forbidden_without_role("anwesenheitsliste/")
+
+    def test_mitglied_role_is_forbidden(self):
+        mitglied_user = self.create_user_with_roles("MITGLIED")
+        self.client.force_authenticate(user=mitglied_user)
+        response = self.request_method("get", "anwesenheitsliste/")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_method_matrix_no_server_error(self):
         self.assert_method_matrix_no_server_error("anwesenheitsliste/")

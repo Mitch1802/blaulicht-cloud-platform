@@ -11,7 +11,8 @@ from core_apps.mitglieder.models import Mitglied
 
 class JugendApiTests(EndpointSmokeMixin, APITestCase):
     def setUp(self):
-        self.user = self.create_user_with_roles("MITGLIED")
+        self.admin_user = self.create_user_with_roles("ADMIN")
+        self.user_mitglied = self.create_user_with_roles("MITGLIED")
         self.user_jugend = self.create_user_with_roles("JUGEND")
         self.jugend_mitglied = Mitglied.objects.create(
             stbnr=3001,
@@ -85,7 +86,7 @@ class JugendApiTests(EndpointSmokeMixin, APITestCase):
         JugendAusbildung.objects.create(mitglied=self.jugend_mitglied, erprobung_lv1=True)
         JugendAusbildung.objects.create(mitglied=self.aktiv_mitglied, erprobung_lv1=True)
 
-        self.client.force_authenticate(user=self.user)
+        self.client.force_authenticate(user=self.user_jugend)
         response = self.request_method("get", "jugend/ausbildung/")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -94,7 +95,7 @@ class JugendApiTests(EndpointSmokeMixin, APITestCase):
         self.assertNotIn(self.aktiv_mitglied.pkid, mitglied_ids)
 
     def test_event_create_and_list(self):
-        self.client.force_authenticate(user=self.user)
+        self.client.force_authenticate(user=self.user_jugend)
         payload = {
             "titel": "Wissentest März",
             "datum": "01.03.2026",
@@ -129,7 +130,7 @@ class JugendApiTests(EndpointSmokeMixin, APITestCase):
         self.assertEqual(len(list_response.data), 1)
 
     def test_event_fertigkeitsabzeichen_updates_fields(self):
-        self.client.force_authenticate(user=self.user)
+        self.client.force_authenticate(user=self.user_jugend)
         payload = {
             "titel": "Melder-Abzeichen",
             "datum": "02.03.2026",
@@ -152,7 +153,7 @@ class JugendApiTests(EndpointSmokeMixin, APITestCase):
         self.assertIsNotNone(ausbildung.melder_datum)
 
     def test_event_fertigkeitsabzeichen_rejects_level_above_2(self):
-        self.client.force_authenticate(user=self.user)
+        self.client.force_authenticate(user=self.user_jugend)
         payload = {
             "titel": "FW-Technik",
             "datum": "02.03.2026",
@@ -177,3 +178,10 @@ class JugendApiTests(EndpointSmokeMixin, APITestCase):
 
         self.assertIn("Probe", str(event))
         self.assertIn(str(self.jugend_mitglied.stbnr), str(ausbildung))
+
+    def test_mitglied_role_is_forbidden_for_jugend_endpoints(self):
+        self.client.force_authenticate(user=self.user_mitglied)
+
+        response = self.request_method("get", "jugend/mitglieder/")
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

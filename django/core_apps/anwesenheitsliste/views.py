@@ -19,7 +19,7 @@ class AnwesenheitslisteViewSet(ModelViewSet):
     serializer_class = AnwesenheitslisteSerializer
     permission_classes = [
         permissions.IsAuthenticated,
-        HasAnyRolePermission.with_roles("ADMIN", "VERWALTUNG", "MITGLIED"),
+        HasAnyRolePermission.with_roles("ADMIN", "ANWESENHEIT"),
     ]
     parser_classes = [JSONParser, MultiPartParser, FormParser]
     lookup_field = "id"
@@ -68,7 +68,7 @@ class AnwesenheitslisteViewSet(ModelViewSet):
 class AnwesenheitslisteContextView(APIView):
     permission_classes = [
         permissions.IsAuthenticated,
-        HasAnyRolePermission.with_roles("ADMIN", "VERWALTUNG", "MITGLIED"),
+        HasAnyRolePermission.with_roles("ADMIN", "ANWESENHEIT"),
     ]
 
     def get(self, request):

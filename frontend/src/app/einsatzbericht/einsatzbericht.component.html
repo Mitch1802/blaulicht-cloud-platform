@@ -14,7 +14,16 @@
       @if (viewMode === 'list') {
         <section class="drafts-section list-only">
           <div class="actions-row top-actions">
-            <button mat-flat-button type="button" color="accent" (click)="neuerEntwurf()">Neuen Einsatz anlegen</button>
+            @if (canEditBerichte) {
+              <button mat-flat-button type="button" color="accent" (click)="neuerEntwurf()">Neuen Einsatz anlegen</button>
+            } @else {
+              <span class="permission-inline-note">Anlegen und Bearbeiten von Inhalten ist nur mit Rolle BERICHT oder ADMIN moeglich.</span>
+            }
+          </div>
+
+          <div class="permission-hints">
+            <span><strong>Inhalte/Bilder:</strong> ADMIN oder BERICHT</span>
+            <span><strong>Status:</strong> ADMIN oder VERWALTUNG</span>
           </div>
 
           @if (berichte.length === 0) {
@@ -52,9 +61,11 @@
                 <ng-container matColumnDef="actions">
                   <th mat-header-cell *matHeaderCellDef>Aktionen</th>
                   <td mat-cell *matCellDef="let element" class="ui-action-cell">
-                    <button mat-flat-button class="ui-action-btn" color="primary" type="button" (click)="berichtBearbeiten(element)">
-                      <mat-icon class="m-0">edit</mat-icon>
-                    </button>
+                    @if (canEditBerichte) {
+                      <button mat-flat-button class="ui-action-btn" color="primary" type="button" (click)="berichtBearbeiten(element)">
+                        <mat-icon class="m-0">edit</mat-icon>
+                      </button>
+                    }
                     @if (canManageStatus) {
                       <button mat-flat-button class="ui-action-btn" color="primary" type="button" (click)="statusUmschalten(element)">
                         <mat-icon class="m-0">check</mat-icon>
@@ -87,6 +98,11 @@
           <button mat-flat-button type="button" color="primary" (click)="zurueckZurListe()">Zur Liste</button>
         </div>
 
+        <div class="permission-hints form-hints">
+          <span><strong>Inhalte/Bilder:</strong> ADMIN oder BERICHT</span>
+          <span><strong>Status:</strong> ADMIN oder VERWALTUNG</span>
+        </div>
+
         <mat-accordion class="bericht-accordion" [multi]="false">
           <mat-expansion-panel class="form-section">
             <mat-expansion-panel-header>
@@ -109,8 +125,12 @@
               </mat-select>
             </mat-form-field>
 
+            @if (!canManageStatus) {
+              <p class="selection-description">Status kann nur von Verwaltung oder Admin geaendert werden.</p>
+            }
+
             <div class="prefill-row">
-              <button mat-flat-button type="button" color="accent" (click)="uebernehmeLetztenEinsatz()">
+              <button mat-flat-button type="button" color="accent" [disabled]="!canEditBerichte" (click)="uebernehmeLetztenEinsatz()">
                 Daten BlaulichtSMS übernehmen
               </button>
             </div>
@@ -531,7 +551,7 @@
         </mat-accordion>
 
         <div class="form-actions">
-          <button mat-flat-button color="accent" type="submit">Einsatzbericht speichern</button>
+          <button mat-flat-button color="accent" type="submit" [disabled]="!canEditBerichte">Einsatzbericht speichern</button>
         </div>
       </form>
       }

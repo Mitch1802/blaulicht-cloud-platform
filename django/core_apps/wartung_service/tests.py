@@ -13,7 +13,7 @@ from core_apps.messgeraete.models import Messgeraet, MessgeraetProtokoll
 class WartungServiceEndpointTests(EndpointSmokeMixin, APITestCase):
     def setUp(self):
         self.admin_user = self.create_user_with_roles("ADMIN")
-        self.inventar_user = self.create_user_with_roles("INVENTAR")
+        self.kommando_user = self.create_user_with_roles("KOMMANDO")
         self.current_year = date.today().year
 
     def test_wartung_service_endpoint_resolves(self):
@@ -87,7 +87,7 @@ class WartungServiceEndpointTests(EndpointSmokeMixin, APITestCase):
         self.assertTrue(any(e.get("intervall") == "Generalüberholung" for e in entries))
         self.assertTrue(any(e.get("modul") == "Messgeräte" and e.get("intervall") == "Kalibrierung" for e in entries))
 
-    def test_wartung_service_role_scope_filters_modules(self):
+    def test_wartung_service_kommando_can_access_overview(self):
         Inventar.objects.create(
             bezeichnung="Hydraulikheber",
             wartung_naechstes_am=date(self.current_year, 7, 1),
@@ -97,10 +97,19 @@ class WartungServiceEndpointTests(EndpointSmokeMixin, APITestCase):
             service_naechstes_am=date(self.current_year, 9, 1),
         )
 
-        self.client.force_authenticate(user=self.inventar_user)
+        self.client.force_authenticate(user=self.kommando_user)
         response = self.request_method("get", "wartung_service/")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         entries = response.data.get("main", [])
         self.assertTrue(entries)
-        self.assertTrue(all(e.get("modul") == "Inventar" for e in entries))
+        self.assertTrue(any(e.get("modul") == "Inventar" for e in entries))
+        self.assertTrue(any(e.get("modul") == "Fahrzeuge" for e in entries))
+
+    def test_wartung_service_inventar_role_is_forbidden(self):
+        inventar_user = self.create_user_with_roles("INVENTAR")
+        self.client.force_authenticate(user=inventar_user)
+
+        response = self.request_method("get", "wartung_service/")
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

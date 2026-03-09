@@ -34,7 +34,7 @@ class CustomUserDetailsView(generics.RetrieveUpdateAPIView):
     serializer_class = UserSelfSerializer
     permission_classes = [
         permissions.IsAuthenticated,
-        HasAnyRolePermission.with_roles("ADMIN", "MITGLIED", "JUGEND"),
+        HasAnyRolePermission.with_roles("ADMIN", "MITGLIED", "JUGEND", "BERICHT"),
     ]
 
     def get_object(self):

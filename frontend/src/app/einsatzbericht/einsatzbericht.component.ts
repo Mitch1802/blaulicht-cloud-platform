@@ -149,6 +149,7 @@ export class EinsatzberichtComponent implements OnInit {
   dataSource = new MatTableDataSource<EinsatzberichtDto>([]);
   viewMode: 'list' | 'form' = 'list';
   sichtbareSpalten: string[] = ['einsatz_datum', 'alarmstichwort', 'einsatzadresse', 'status', 'actions'];
+  canEditBerichte = false;
   canDeleteBerichte = false;
   canManageStatus = false;
 
@@ -496,7 +497,8 @@ export class EinsatzberichtComponent implements OnInit {
       next: (user: any) => {
         const roles: string[] = Array.isArray(user?.roles) ? user.roles : [];
         const isSuperuser = !!user?.is_superuser;
-        this.canDeleteBerichte = isSuperuser || roles.includes('ADMIN') || roles.includes('VERWALTUNG');
+        this.canEditBerichte = isSuperuser || roles.includes('ADMIN') || roles.includes('BERICHT');
+        this.canDeleteBerichte = this.canEditBerichte;
         this.canManageStatus = isSuperuser || roles.includes('ADMIN') || roles.includes('VERWALTUNG');
         if (this.canManageStatus) {
           this.formBericht.controls.status.enable({ emitEvent: false });
@@ -505,6 +507,7 @@ export class EinsatzberichtComponent implements OnInit {
         }
       },
       error: () => {
+        this.canEditBerichte = false;
         this.canDeleteBerichte = false;
         this.canManageStatus = false;
         this.formBericht.controls.status.disable({ emitEvent: false });
@@ -621,7 +624,7 @@ export class EinsatzberichtComponent implements OnInit {
 
   statusUmschalten(bericht: EinsatzberichtDto): void {
     if (!this.canManageStatus) {
-      this.globalDataService.erstelleMessage('error', 'Nur Verwaltung oder Admin dürfen den Status ändern.');
+      this.globalDataService.erstelleMessage('error', 'Nur Verwaltung oder Admin duerfen den Status aendern.');
       return;
     }
 
@@ -754,6 +757,11 @@ export class EinsatzberichtComponent implements OnInit {
   }
 
   speichereBericht(): void {
+    if (!this.canEditBerichte) {
+      this.globalDataService.erstelleMessage('error', 'Nur Bericht oder Admin duerfen Inhalte speichern.');
+      return;
+    }
+
     if (this.formBericht.invalid) {
       this.formBericht.markAllAsTouched();
       this.globalDataService.erstelleMessage('error', 'Bitte alle Pflichtfelder korrekt ausfüllen.');

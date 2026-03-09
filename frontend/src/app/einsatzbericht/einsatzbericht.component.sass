@@ -249,6 +249,33 @@
     margin: .25rem 0 .8rem
     justify-content: flex-start
 
+.permission-inline-note
+    display: inline-flex
+    align-items: center
+    min-height: 40px
+    padding: .35rem .65rem
+    border-radius: .45rem
+    background: rgba(theme.$app-surface-variant, .75)
+    color: theme.$app-primary-deep
+    font-size: .84rem
+
+.permission-hints
+    display: flex
+    flex-wrap: wrap
+    gap: .35rem .75rem
+    margin: .1rem 0 .85rem
+    padding: .5rem .65rem
+    border-radius: .55rem
+    border: 1px solid rgba(theme.$app-border, .85)
+    background: rgba(theme.$app-surface-variant, .55)
+
+    span
+        font-size: .82rem
+        color: theme.$app-primary-deep
+
+.form-hints
+    margin-top: .1rem
+
 .form-actions
     display: flex
     flex-wrap: wrap
@@ -380,6 +407,9 @@
     .actions-row
         button
             width: 100%
+
+    .permission-hints
+        flex-direction: column
 
     .form-actions,
     .top-actions

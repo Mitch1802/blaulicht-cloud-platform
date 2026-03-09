@@ -335,6 +335,13 @@ class UsersEndpointSmokeTests(EndpointSmokeMixin, APITestCase):
         self.client.force_authenticate(user=None)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def test_users_self_allows_bericht_role(self):
+        user = self.create_user_with_roles("BERICHT")
+        self.client.force_authenticate(user=user)
+        response = self.request_method("get", "users/self/")
+        self.client.force_authenticate(user=None)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
     def test_users_method_matrix_no_server_error(self):
         for endpoint in [
             "users/",

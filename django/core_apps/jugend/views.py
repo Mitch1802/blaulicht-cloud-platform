@@ -19,7 +19,7 @@ class JugendMitgliedViewSet(ModelViewSet):
     serializer_class = JugendMitgliedSerializer
     permission_classes = [
         permissions.IsAuthenticated,
-        HasAnyRolePermission.with_roles("ADMIN", "MITGLIED", "JUGEND"),
+        HasAnyRolePermission.with_roles("ADMIN", "JUGEND"),
     ]
     parser_classes = [JSONParser]
     lookup_field = "id"
@@ -44,7 +44,7 @@ class JugendAusbildungViewSet(ModelViewSet):
     serializer_class = JugendAusbildungSerializer
     permission_classes = [
         permissions.IsAuthenticated,
-        HasAnyRolePermission.with_roles("ADMIN", "MITGLIED", "JUGEND"),
+        HasAnyRolePermission.with_roles("ADMIN", "JUGEND"),
     ]
     parser_classes = [JSONParser]
     lookup_field = "id"
@@ -69,7 +69,7 @@ class JugendEventViewSet(ModelViewSet):
     serializer_class = JugendEventSerializer
     permission_classes = [
         permissions.IsAuthenticated,
-        HasAnyRolePermission.with_roles("ADMIN", "MITGLIED", "JUGEND"),
+        HasAnyRolePermission.with_roles("ADMIN", "JUGEND"),
     ]
     parser_classes = [JSONParser]
     lookup_field = "id"

@@ -15,7 +15,7 @@ from core_apps.messgeraete.models import Messgeraet, MessgeraetProtokoll
 class WartungServiceOverviewView(APIView):
     permission_classes = [
         permissions.IsAuthenticated,
-        HasAnyRolePermission.with_roles("ADMIN", "INVENTAR", "FAHRZEUG", "ATEMSCHUTZ", "PROTOKOLL"),
+        HasAnyRolePermission.with_roles("ADMIN", "KOMMANDO"),
     ]
 
     def get(self, request):
@@ -23,15 +23,10 @@ class WartungServiceOverviewView(APIView):
         year = today.year
         entries = []
 
-        if self._can_access(request.user, "ADMIN", "INVENTAR"):
-            self._collect_inventar(entries, year, today)
-
-        if self._can_access(request.user, "ADMIN", "FAHRZEUG"):
-            self._collect_fahrzeuge(entries, year, today)
-
-        if self._can_access(request.user, "ADMIN", "ATEMSCHUTZ", "PROTOKOLL"):
-            self._collect_atemschutz_geraete(entries, year, today)
-            self._collect_messgeraete(entries, year, today)
+        self._collect_inventar(entries, year, today)
+        self._collect_fahrzeuge(entries, year, today)
+        self._collect_atemschutz_geraete(entries, year, today)
+        self._collect_messgeraete(entries, year, today)
 
         entries.sort(
             key=lambda item: (
@@ -59,9 +54,6 @@ class WartungServiceOverviewView(APIView):
             "summary": summary,
             "main": entries,
         })
-
-    def _can_access(self, user, *roles):
-        return hasattr(user, "has_any_role") and user.has_any_role(*roles)
 
     def _status_priority(self, status: str) -> int:
         order = {
