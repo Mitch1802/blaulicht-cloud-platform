@@ -498,7 +498,7 @@ export class EinsatzberichtComponent implements OnInit {
         const roles: string[] = Array.isArray(user?.roles) ? user.roles : [];
         const isSuperuser = !!user?.is_superuser;
         this.canEditBerichte = isSuperuser || roles.includes('ADMIN') || roles.includes('BERICHT');
-        this.canDeleteBerichte = this.canEditBerichte;
+        this.canDeleteBerichte = isSuperuser || roles.includes('ADMIN') || roles.includes('VERWALTUNG');
         this.canManageStatus = isSuperuser || roles.includes('ADMIN') || roles.includes('VERWALTUNG');
         if (this.canManageStatus) {
           this.formBericht.controls.status.enable({ emitEvent: false });

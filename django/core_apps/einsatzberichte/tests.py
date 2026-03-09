@@ -140,3 +140,17 @@ class EinsatzberichteEndpointTests(EndpointSmokeMixin, APITestCase):
         response = self.request_method("post", "einsatzberichte/", data=payload)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_bericht_cannot_delete_report(self):
+        self.client.force_authenticate(user=self.user_bericht)
+        response = self.request_method("delete", f"einsatzberichte/{self.bericht.id}/")
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertTrue(Einsatzbericht.objects.filter(id=self.bericht.id).exists())
+
+    def test_verwaltung_can_delete_report(self):
+        self.client.force_authenticate(user=self.user_verwaltung)
+        response = self.request_method("delete", f"einsatzberichte/{self.bericht.id}/")
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(Einsatzbericht.objects.filter(id=self.bericht.id).exists())

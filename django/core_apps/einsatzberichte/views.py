@@ -39,7 +39,7 @@ class EinsatzberichtViewSet(ModelViewSet):
         if getattr(self, "action", None) == "destroy":
             permission_classes = [
                 permissions.IsAuthenticated,
-                HasAnyRolePermission.with_roles("ADMIN", "BERICHT"),
+                HasAnyRolePermission.with_roles("ADMIN", "VERWALTUNG"),
             ]
             return [permission() for permission in permission_classes]
         return super().get_permissions()

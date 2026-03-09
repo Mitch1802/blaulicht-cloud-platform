@@ -17,13 +17,13 @@
             @if (canEditBerichte) {
               <button mat-flat-button type="button" color="accent" (click)="neuerEntwurf()">Neuen Einsatz anlegen</button>
             } @else {
-              <span class="permission-inline-note">Anlegen und Bearbeiten von Inhalten ist nur mit Rolle BERICHT oder ADMIN moeglich.</span>
+              <span class="permission-inline-note">Anlegen und Bearbeiten von Inhalten ist nur mit Rolle BERICHT moeglich.</span>
             }
           </div>
 
           <div class="permission-hints">
-            <span><strong>Inhalte/Bilder:</strong> ADMIN oder BERICHT</span>
-            <span><strong>Status:</strong> ADMIN oder VERWALTUNG</span>
+            <span><strong>Inhalte/Bilder:</strong> BERICHT</span>
+            <span><strong>Status/Loeschen:</strong> VERWALTUNG</span>
           </div>
 
           @if (berichte.length === 0) {
@@ -99,8 +99,8 @@
         </div>
 
         <div class="permission-hints form-hints">
-          <span><strong>Inhalte/Bilder:</strong> ADMIN oder BERICHT</span>
-          <span><strong>Status:</strong> ADMIN oder VERWALTUNG</span>
+          <span><strong>Inhalte/Bilder:</strong> BERICHT</span>
+          <span><strong>Status/Loeschen:</strong> VERWALTUNG</span>
         </div>
 
         <mat-accordion class="bericht-accordion" [multi]="false">
@@ -126,7 +126,7 @@
             </mat-form-field>
 
             @if (!canManageStatus) {
-              <p class="selection-description">Status kann nur von Verwaltung oder Admin geaendert werden.</p>
+              <p class="selection-description">Status kann nur von Verwaltung geaendert werden.</p>
             }
 
             <div class="prefill-row">
