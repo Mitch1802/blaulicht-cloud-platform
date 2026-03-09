@@ -33,6 +33,7 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { DateInputMaskDirective } from '../_directive/date-input-mask.directive';
 
 interface IVerleihungFormEintrag {
   an: string;
@@ -60,7 +61,8 @@ interface IVerleihungFormEintrag {
     MatPaginatorModule,
     MatSelectModule,
     MatTooltipModule,
-    MatIcon
+    MatIcon,
+    DateInputMaskDirective,
   ],
   templateUrl: './inventar.component.html',
   styleUrl: './inventar.component.sass',
@@ -145,6 +147,11 @@ export class InventarComponent implements OnInit, AfterViewInit {
         this.globalDataService.errorAnzeigen(error);
       }
     });
+  }
+
+  applyFilter(value: string): void {
+    this.dataSource.filter = (value || '').trim().toLowerCase();
+    this.paginator?.firstPage();
   }
 
   /** Datei aus dem ViewChild-input holen */

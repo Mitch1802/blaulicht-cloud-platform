@@ -10,6 +10,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { Observable, of } from 'rxjs';
 import { HeaderComponent } from '../_template/header/header.component';
 import { GlobalDataService } from '../_service/global-data.service';
+import { DateInputMaskDirective } from '../_directive/date-input-mask.directive';
 import { IMitglied } from '../_interface/mitglied';
 import { IJugendEvent } from '../_interface/jugend_event';
 import { IJugendAusbildung } from '../_interface/jugend_ausbildung';
@@ -101,6 +102,7 @@ type IJugendFertigkeitsDatumKey =
     MatFormFieldModule,
     MatIconModule,
     MatSelectModule,
+    DateInputMaskDirective,
   ],
   templateUrl: './jugend.component.html',
   styleUrl: './jugend.component.sass'

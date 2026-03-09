@@ -134,13 +134,13 @@
             <div class="app-col-12 app-col-lg-4 mb-3">
               <mat-form-field>
                 <mat-label>Datum Indienststellung</mat-label>
-                <input matInput type="text" formControlName="datum_im_dienst" />
+                <input matInput type="text" formControlName="datum_im_dienst" appDateInputMask="dmy" />
               </mat-form-field>
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3">
               <mat-form-field>
                 <mat-label>Nächste GÜ</mat-label>
-                <input matInput type="text" formControlName="naechste_gue" />
+                <input matInput type="text" formControlName="naechste_gue" appDateInputMask="dmy" />
               </mat-form-field>
             </div>
           </section>
@@ -202,6 +202,7 @@
                   matInput
                   type="text"
                   formControlName="datum"
+                  appDateInputMask="dmy"
                   placeholder="TT.MM.YYYY"
                 />
                 @if (formPruefung.controls['datum'].hasError('pattern')) {

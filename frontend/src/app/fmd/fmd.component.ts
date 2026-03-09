@@ -22,6 +22,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { IStammdaten } from '../_interface/stammdaten';
 import { forkJoin } from 'rxjs';
+import { DateInputMaskDirective } from '../_directive/date-input-mask.directive';
 
 Chart.register(ChartDataLabels);
 
@@ -44,7 +45,8 @@ Chart.register(ChartDataLabels);
     BaseChartDirective,
     MatIconModule,
     MatSortModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    DateInputMaskDirective,
   ],
   templateUrl: './fmd.component.html',
   styleUrl: './fmd.component.sass'

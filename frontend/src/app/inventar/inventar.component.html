@@ -76,13 +76,13 @@
             <div class="app-col-12 app-col-lg-6 mb-3">
               <mat-form-field class="full-width">
                 <mat-label>Wartung zuletzt erledigt</mat-label>
-                <input matInput type="date" formControlName="wartung_zuletzt_am" />
+                <input matInput type="date" formControlName="wartung_zuletzt_am" appDateInputMask="iso" />
               </mat-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
               <mat-form-field class="full-width">
                 <mat-label>Nächste Wartung</mat-label>
-                <input matInput type="date" formControlName="wartung_naechstes_am" />
+                <input matInput type="date" formControlName="wartung_naechstes_am" appDateInputMask="iso" />
               </mat-form-field>
             </div>
             <div class="app-col-12 app-col-lg-12 mb-3">
@@ -140,6 +140,7 @@
                       <input
                         matInput
                         type="date"
+                        appDateInputMask="iso"
                         [(ngModel)]="eintrag.bis"
                         [ngModelOptions]="{ standalone: true }"
                       />
@@ -222,6 +223,11 @@
       </form>
 
       <div class="table-wrap ui-table-wrap" [hidden]="!formModul.disabled">
+        <mat-form-field>
+          <mat-label>Suchen</mat-label>
+          <input matInput #input (keyup)="applyFilter(input.value)" />
+        </mat-form-field>
+
         <table
           mat-table
           [dataSource]="dataSource"
@@ -327,7 +333,7 @@
 
       <mat-form-field class="full-width">
         <mat-label>Verliehen bis</mat-label>
-        <input matInput type="date" formControlName="bis" />
+        <input matInput type="date" formControlName="bis" appDateInputMask="iso" />
       </mat-form-field>
 
       <div class="ui-transaction-actions">

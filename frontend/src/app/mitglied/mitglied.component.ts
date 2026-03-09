@@ -16,6 +16,7 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
 import * as Papa from 'papaparse';
 import { MatSort } from '@angular/material/sort';
+import { DateInputMaskDirective } from '../_directive/date-input-mask.directive';
 
 type RenameMap = {
   [originalKey: string]: string;
@@ -56,7 +57,8 @@ type ImportSummary = {
     MatTableModule,
     MatPaginatorModule,
     MatSort,
-    MatIconModule
+    MatIconModule,
+    DateInputMaskDirective,
 ],
     templateUrl: './mitglied.component.html',
     styleUrl: './mitglied.component.sass'

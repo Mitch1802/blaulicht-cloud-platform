@@ -16,6 +16,7 @@ import { MatOption, MatSelect } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { IAtemschutzGeraetProtokoll } from 'src/app/_interface/atemschutz_geraet_protokoll';
 import { IMitglied } from 'src/app/_interface/mitglied';
+import { DateInputMaskDirective } from '../../_directive/date-input-mask.directive';
 
 @Component({
   selector: 'app--atemschutzgeraete',
@@ -36,7 +37,8 @@ import { IMitglied } from 'src/app/_interface/mitglied';
     MatSortModule,
     MatPaginatorModule,
     MatIcon,
-    MatCheckboxModule
+    MatCheckboxModule,
+    DateInputMaskDirective,
   ],
   templateUrl: './atemschutz-geraete.component.html',
   styleUrl: './atemschutz-geraete.component.sass'

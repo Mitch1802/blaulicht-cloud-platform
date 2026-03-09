@@ -55,7 +55,7 @@
           <div class="app-col-6 mb-3">
             <mat-form-field class="ui-full-width">
               <mat-label>Datum (TT.MM.JJJJ)</mat-label>
-              <input matInput type="text" formControlName="datum" />
+              <input matInput type="text" formControlName="datum" appDateInputMask="dmy" />
               @if (formModul.controls['datum'].hasError('pattern')) {
                 <mat-error>Ungültiges Datumsformat!</mat-error>
               }

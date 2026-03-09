@@ -14,6 +14,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
+import { DateInputMaskDirective } from '../_directive/date-input-mask.directive';
 
 type FahrzeugOption = {
   id: number;
@@ -78,6 +79,7 @@ type EinsatzberichtDto = {
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
+    DateInputMaskDirective,
   ],
   templateUrl: './einsatzbericht.component.html',
   styleUrl: './einsatzbericht.component.sass'

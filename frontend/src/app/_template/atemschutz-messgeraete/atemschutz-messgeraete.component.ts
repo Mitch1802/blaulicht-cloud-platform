@@ -23,6 +23,7 @@ import { MatOption, MatSelect } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { IMessgeraet } from 'src/app/_interface/messgeraet';
 import { IMessgeraetProtokoll } from 'src/app/_interface/messgeraet_protokoll';
+import { DateInputMaskDirective } from '../../_directive/date-input-mask.directive';
 
 @Component({
   selector: 'app-atemschutz-messgeraete',
@@ -44,6 +45,7 @@ import { IMessgeraetProtokoll } from 'src/app/_interface/messgeraet_protokoll';
     MatPaginatorModule,
     MatIcon,
     MatCheckboxModule,
+    DateInputMaskDirective,
   ],
   templateUrl: './atemschutz-messgeraete.component.html',
   styleUrl: './atemschutz-messgeraete.component.sass'

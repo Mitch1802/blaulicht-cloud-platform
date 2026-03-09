@@ -18,6 +18,7 @@ import { GlobalDataService } from '../_service/global-data.service';
 import { IAnwesenheitsliste } from '../_interface/anwesenheitsliste';
 import { IMitglied } from '../_interface/mitglied';
 import { UiPageLayoutComponent, UiSectionCardComponent } from '../ui-library';
+import { DateInputMaskDirective } from '../_directive/date-input-mask.directive';
 
 @Component({
   selector: 'app-anwesenheitsliste',
@@ -38,7 +39,8 @@ import { UiPageLayoutComponent, UiSectionCardComponent } from '../ui-library';
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
-    MatIcon
+    MatIcon,
+    DateInputMaskDirective,
   ],
   templateUrl: './anwesenheitsliste.component.html',
   styleUrl: './anwesenheitsliste.component.sass',

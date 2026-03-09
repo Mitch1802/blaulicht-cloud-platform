@@ -94,7 +94,7 @@
                     <div class="app-col-12 app-col-lg-6 mb-3">
                       <mat-form-field class="full-width level-edit-field">
                         <mat-label>Datum</mat-label>
-                        <input matInput type="date" formControlName="erprobung_datum" />
+                        <input matInput type="date" formControlName="erprobung_datum" appDateInputMask="iso" />
                       </mat-form-field>
                     </div>
                   </section>
@@ -131,7 +131,7 @@
                     <div class="app-col-12 app-col-lg-6 mb-3">
                       <mat-form-field class="full-width level-edit-field">
                         <mat-label>Datum</mat-label>
-                        <input matInput type="date" formControlName="wissentest_datum" />
+                        <input matInput type="date" formControlName="wissentest_datum" appDateInputMask="iso" />
                       </mat-form-field>
                     </div>
                   </section>
@@ -174,7 +174,7 @@
                     <div class="app-col-12 app-col-lg-6 mb-3">
                       <mat-form-field class="full-width level-edit-field">
                         <mat-label>Datum</mat-label>
-                        <input matInput type="date" formControlName="fertigkeit_melder_datum" />
+                        <input matInput type="date" formControlName="fertigkeit_melder_datum" appDateInputMask="iso" />
                       </mat-form-field>
                     </div>
                   </section>
@@ -211,7 +211,7 @@
                     <div class="app-col-12 app-col-lg-6 mb-3">
                       <mat-form-field class="full-width level-edit-field">
                         <mat-label>Datum</mat-label>
-                        <input matInput type="date" formControlName="fertigkeit_fwtechnik_datum" />
+                        <input matInput type="date" formControlName="fertigkeit_fwtechnik_datum" appDateInputMask="iso" />
                       </mat-form-field>
                     </div>
                   </section>
@@ -248,7 +248,7 @@
                     <div class="app-col-12 app-col-lg-6 mb-3">
                       <mat-form-field class="full-width level-edit-field">
                         <mat-label>Datum</mat-label>
-                        <input matInput type="date" formControlName="fertigkeit_sicher_zu_wasser_datum" />
+                        <input matInput type="date" formControlName="fertigkeit_sicher_zu_wasser_datum" appDateInputMask="iso" />
                       </mat-form-field>
                     </div>
                   </section>
@@ -334,7 +334,7 @@
             <div class="app-col-12 app-col-lg-6 mb-3">
               <mat-form-field class="full-width" hintLabel="* Pflichtfeld">
                 <mat-label>Datum</mat-label>
-                <input matInput formControlName="datum" placeholder="TT.MM.YYYY" />
+                <input matInput formControlName="datum" appDateInputMask="dmy" placeholder="TT.MM.YYYY" />
               </mat-form-field>
             </div>
 

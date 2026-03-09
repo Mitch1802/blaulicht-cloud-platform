@@ -23,6 +23,7 @@ import { MatTableDataSource, MatTableModule } from "@angular/material/table";
 import { IFahrzeugDetail, IFahrzeugList, IFahrzeugRaum, IRaumItem } from "../_interface/fahrzeug";
 import { GlobalDataService } from "../_service/global-data.service";
 import { HeaderComponent } from "../_template/header/header.component";
+import { DateInputMaskDirective } from '../_directive/date-input-mask.directive';
 
 type RaumEditFG = FormGroup<{
   name: FormControl<string>;
@@ -58,6 +59,7 @@ type ItemDraftFG = FormGroup<{
     MatInputModule,
     MatExpansionModule,
     MatDividerModule,
+    DateInputMaskDirective,
   ],
   templateUrl: "./fahrzeug.component.html",
   styleUrl: "./fahrzeug.component.sass",

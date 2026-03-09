@@ -23,6 +23,7 @@ import { MatIcon } from '@angular/material/icon';
 import { IAtemschutzMaskeProtokoll } from 'src/app/_interface/atemschutz_maske_protokoll';
 import { MatOption, MatSelect } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { DateInputMaskDirective } from '../../_directive/date-input-mask.directive';
 
 @Component({
   selector: 'app-atemschutz-masken',
@@ -44,6 +45,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     MatPaginatorModule,
     MatIcon,
     MatCheckboxModule,
+    DateInputMaskDirective,
   ],
   templateUrl: './atemschutz-masken.component.html',
   styleUrl: './atemschutz-masken.component.sass',
