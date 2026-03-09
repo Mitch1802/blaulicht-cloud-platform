@@ -2,7 +2,11 @@ import { Component, OnInit, inject, ViewChild, ElementRef } from '@angular/core'
 
 import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule, ValidatorFn, AbstractControl } from '@angular/forms';
 import { IMitglied } from 'src/app/_interface/mitglied';
-import { GlobalDataService } from 'src/app/_service/global-data.service';
+import { ApiHttpService } from 'src/app/_service/api-http.service';
+import { AuthSessionService } from 'src/app/_service/auth-session.service';
+import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
+import { NavigationService } from 'src/app/_service/navigation.service';
+import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { HeaderComponent } from '../_template/header/header.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
@@ -65,7 +69,11 @@ type ImportSummary = {
 })
 
 export class MitgliedComponent implements OnInit {
-  globalDataService = inject(GlobalDataService);
+  private apiHttpService = inject(ApiHttpService);
+  private authSessionService = inject(AuthSessionService);
+  private collectionUtilsService = inject(CollectionUtilsService);
+  private navigationService = inject(NavigationService);
+  private uiMessageService = inject(UiMessageService);
   router = inject(Router);
 
   dataSource = new MatTableDataSource<IMitglied>([]);
@@ -118,20 +126,20 @@ export class MitgliedComponent implements OnInit {
   ngOnInit(): void {
     sessionStorage.setItem("PageNumber", "2");
     sessionStorage.setItem("Page2", "V_M");
-    this.breadcrumb = this.globalDataService.ladeBreadcrumb();
+    this.breadcrumb = this.navigationService.ladeBreadcrumb();
     this.formModul.disable();
 
-    this.globalDataService.get(this.modul).subscribe({
+    this.apiHttpService.get(this.modul).subscribe({
       next: (erg: any) => {
         try {
-          this.mitglieder = this.globalDataService.arraySortByKey(erg, 'stbnr');
+          this.mitglieder = this.collectionUtilsService.arraySortByKey(erg, 'stbnr');
           this.dataSource.data = this.mitglieder;
         } catch (e: any) {
-          this.globalDataService.erstelleMessage("error", e);
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
       error: (error: any) => {
-        this.globalDataService.errorAnzeigen(error);
+        this.authSessionService.errorAnzeigen(error);
       }
     });
   }
@@ -153,12 +161,12 @@ export class MitgliedComponent implements OnInit {
         if (parsed.length > 0) {
           this.previewImport(parsed);
         } else {
-          this.globalDataService.erstelleMessage('info', 'Keine CSV-Daten gefunden.');
+          this.uiMessageService.erstelleMessage('info', 'Keine CSV-Daten gefunden.');
         }
 
         input.value = '';
       },
-      error: () => this.globalDataService.erstelleMessage('error', 'CSV Parsing Fehler.')
+      error: () => this.uiMessageService.erstelleMessage('error', 'CSV Parsing Fehler.')
     });
   }
 
@@ -185,38 +193,38 @@ export class MitgliedComponent implements OnInit {
   previewImport(entries: any[]): void {
     this.importRows = entries;
     const url = `${this.modul}/import`;
-    this.globalDataService.post(url, { mode: 'preview', rows: entries }, false).subscribe({
+    this.apiHttpService.post(url, { mode: 'preview', rows: entries }, false).subscribe({
       next: (erg: any) => {
         this.importChanges = erg?.changes ?? [];
         this.importSummary = erg?.summary ?? null;
-        this.globalDataService.erstelleMessage('info', `${this.importChanges.length} Änderungen in der Vorschau gefunden.`);
+        this.uiMessageService.erstelleMessage('info', `${this.importChanges.length} Änderungen in der Vorschau gefunden.`);
       },
-      error: (error: any) => this.globalDataService.errorAnzeigen(error)
+      error: (error: any) => this.authSessionService.errorAnzeigen(error)
     });
   }
 
   importBestaetigen(): void {
     if (this.importRows.length === 0) {
-      this.globalDataService.erstelleMessage('info', 'Keine Importdaten vorhanden.');
+      this.uiMessageService.erstelleMessage('info', 'Keine Importdaten vorhanden.');
       return;
     }
 
     const url = `${this.modul}/import`;
-    this.globalDataService.post(url, { mode: 'apply', rows: this.importRows }, false).subscribe({
+    this.apiHttpService.post(url, { mode: 'apply', rows: this.importRows }, false).subscribe({
       next: (erg: any) => {
         const summary = erg?.summary ?? { created: 0, updated: 0 };
-        this.globalDataService.erstelleMessage('success', `${summary.created} neu, ${summary.updated} aktualisiert.`);
+        this.uiMessageService.erstelleMessage('success', `${summary.created} neu, ${summary.updated} aktualisiert.`);
         this.importAbbrechen();
 
-        this.globalDataService.get(this.modul).subscribe({
+        this.apiHttpService.get(this.modul).subscribe({
           next: (list: any) => {
-            this.mitglieder = this.globalDataService.arraySortByKey(list, 'stbnr');
+            this.mitglieder = this.collectionUtilsService.arraySortByKey(list, 'stbnr');
             this.dataSource.data = this.mitglieder;
           },
-          error: (error: any) => this.globalDataService.errorAnzeigen(error)
+          error: (error: any) => this.authSessionService.errorAnzeigen(error)
         });
       },
-      error: (error: any) => this.globalDataService.errorAnzeigen(error)
+      error: (error: any) => this.authSessionService.errorAnzeigen(error)
     });
   }
 
@@ -246,7 +254,7 @@ export class MitgliedComponent implements OnInit {
     }
     const abfrageUrl = `${this.modul}/${element.id}`;
 
-    this.globalDataService.get(abfrageUrl).subscribe({
+    this.apiHttpService.get(abfrageUrl).subscribe({
       next: (erg: any) => {
         try {
           const details: IMitglied = erg;
@@ -264,11 +272,11 @@ export class MitgliedComponent implements OnInit {
             dienststatus: details.dienststatus ?? 'AKTIV'
           });
         } catch (e: any) {
-          this.globalDataService.erstelleMessage('error', e);
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
       error: (error: any) => {
-        this.globalDataService.errorAnzeigen(error);
+        this.authSessionService.errorAnzeigen(error);
       }
     });
   }
@@ -280,11 +288,11 @@ export class MitgliedComponent implements OnInit {
   datenLoeschen(): void {
     const id = this.formModul.controls['id'].value!;
     if (!id) {
-      this.globalDataService.erstelleMessage('error', 'Kein Mitglied ausgewählt zum Löschen!');
+      this.uiMessageService.erstelleMessage('error', 'Kein Mitglied ausgewählt zum Löschen!');
       return;
     }
 
-    this.globalDataService.delete(this.modul, id).subscribe({
+    this.apiHttpService.delete(this.modul, id).subscribe({
       next: (erg: any) => {
         try {
           this.mitglieder = this.mitglieder.filter(m => m.id !== id);
@@ -303,19 +311,19 @@ export class MitgliedComponent implements OnInit {
           });
           this.formModul.disable();
 
-          this.globalDataService.erstelleMessage('success', 'Mitglied erfolgreich gelöscht!');
+          this.uiMessageService.erstelleMessage('success', 'Mitglied erfolgreich gelöscht!');
         } catch (e: any) {
-          this.globalDataService.erstelleMessage('error', e);
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
       error: (error: any) => {
-        this.globalDataService.errorAnzeigen(error);
+        this.authSessionService.errorAnzeigen(error);
       }
     });
   }
 
   abbrechen(): void {
-    this.globalDataService.erstelleMessage("info", "Mitglied nicht gespeichert!");
+    this.uiMessageService.erstelleMessage('info', 'Mitglied nicht gespeichert!');
     this.formModul.reset({
       id: '',
       stbnr: 0,
@@ -332,7 +340,7 @@ export class MitgliedComponent implements OnInit {
 
   datenSpeichern(): void {
     if (this.formModul.invalid) {
-      this.globalDataService.erstelleMessage('error', 'Bitte alle Pflichtfelder korrekt ausfüllen!');
+      this.uiMessageService.erstelleMessage('error', 'Bitte alle Pflichtfelder korrekt ausfüllen!');
       return;
     }
 
@@ -340,11 +348,11 @@ export class MitgliedComponent implements OnInit {
     const idValue = this.formModul.controls['id'].value;
 
     if (!idValue) {
-      this.globalDataService.post(this.modul, objekt, false).subscribe({
+      this.apiHttpService.post(this.modul, objekt, false).subscribe({
         next: (erg: any) => {
           try {
             this.mitglieder.push(erg);
-            this.mitglieder = this.globalDataService.arraySortByKey(this.mitglieder, 'stbnr');
+            this.mitglieder = this.collectionUtilsService.arraySortByKey(this.mitglieder, 'stbnr');
             this.dataSource.data = this.mitglieder;
 
             this.formModul.reset({
@@ -360,15 +368,15 @@ export class MitgliedComponent implements OnInit {
             });
             this.formModul.disable();
 
-            this.globalDataService.erstelleMessage('success', 'Mitglied erfolgreich gespeichert!');
+            this.uiMessageService.erstelleMessage('success', 'Mitglied erfolgreich gespeichert!');
           } catch (e: any) {
-            this.globalDataService.erstelleMessage('error', e);
+            this.uiMessageService.erstelleMessage('error', String(e));
           }
         },
-        error: (error: any) => this.globalDataService.errorAnzeigen(error)
+        error: (error: any) => this.authSessionService.errorAnzeigen(error)
       });
     } else {
-      this.globalDataService.patch(this.modul, idValue, objekt, false).subscribe({
+      this.apiHttpService.patch(this.modul, idValue, objekt, false).subscribe({
         next: (erg: any) => {
           try {
             this.mitglieder = this.mitglieder.map(m =>
@@ -389,12 +397,12 @@ export class MitgliedComponent implements OnInit {
             });
             this.formModul.disable();
 
-            this.globalDataService.erstelleMessage('success', 'Mitglied erfolgreich geändert!');
+            this.uiMessageService.erstelleMessage('success', 'Mitglied erfolgreich geändert!');
           } catch (e: any) {
-            this.globalDataService.erstelleMessage('error', e);
+            this.uiMessageService.erstelleMessage('error', String(e));
           }
         },
-        error: (error: any) => this.globalDataService.errorAnzeigen(error)
+        error: (error: any) => this.authSessionService.errorAnzeigen(error)
       });
     }
   }

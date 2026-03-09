@@ -2,7 +2,7 @@
   <img class="app-header-logo" src="../assets/images/icon.svg" alt="Logo" routerLink="/start"/>
   <span class="title app-header-title" routerLink="/start">{{title}}</span>
   <span class="spacer"></span>
-  <button class="app-header-logout" mat-icon-button (click)="this.globalDataService.abmelden()">
+  <button class="app-header-logout" mat-icon-button (click)="this.authSessionService.abmelden()">
     <mat-icon class="material-icons">logout</mat-icon>
   </button>
 </mat-toolbar>

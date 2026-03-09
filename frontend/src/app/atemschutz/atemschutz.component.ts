@@ -1,5 +1,9 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { GlobalDataService } from 'src/app/_service/global-data.service';
+import { ApiHttpService } from 'src/app/_service/api-http.service';
+import { AuthSessionService } from 'src/app/_service/auth-session.service';
+import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
+import { NavigationService } from 'src/app/_service/navigation.service';
+import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { HeaderComponent } from '../_template/header/header.component';
 import { MatCardModule } from '@angular/material/card';
 import { Router, RouterLink } from '@angular/router';
@@ -12,8 +16,11 @@ import { MatIconModule } from '@angular/material/icon';
     styleUrl: './atemschutz.component.sass'
 })
 export class AtemschutzComponent implements OnInit {
-  globalDataService = inject(GlobalDataService);
-
+  private apiHttpService = inject(ApiHttpService);
+  private authSessionService = inject(AuthSessionService);
+  private collectionUtilsService = inject(CollectionUtilsService);
+  private navigationService = inject(NavigationService);
+  private uiMessageService = inject(UiMessageService);
   title = "Atemschutz";
   modul = "atemschutz";
 
@@ -22,18 +29,18 @@ export class AtemschutzComponent implements OnInit {
   ngOnInit(): void {
     sessionStorage.setItem("PageNumber", "2");
     sessionStorage.setItem("Page2", "ATM");
-    this.breadcrumb = this.globalDataService.ladeBreadcrumb();
+    this.breadcrumb = this.navigationService.ladeBreadcrumb();
 
-    // this.globalDataService.get(this.modul).subscribe({
+    // this.apiHttpService.get(this.modul).subscribe({
     //   next: (erg: any) => {
     //     try {
           
     //     } catch (e: any) {
-    //       this.globalDataService.erstelleMessage("error", e);
+    //       this.uiMessageService.erstelleMessage("error", e);
     //     }
     //   },
     //   error: (error: any) => {
-    //     this.globalDataService.errorAnzeigen(error);
+    //     this.authSessionService.errorAnzeigen(error);
     //   }
     // });
   }

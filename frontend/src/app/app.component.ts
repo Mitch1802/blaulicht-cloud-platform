@@ -2,7 +2,7 @@ import { AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { RouterOutlet } from '@angular/router';
-import { GlobalDataService } from './_service/global-data.service';
+import { ApiHttpService } from './_service/api-http.service';
 
 
 @Component({
@@ -18,7 +18,7 @@ import { GlobalDataService } from './_service/global-data.service';
     ]
 })
 export class AppComponent {
-  private globalDataService = inject(GlobalDataService);
+    private apiHttpService = inject(ApiHttpService);
 
-  loading$ = this.globalDataService.loading$;
+    loading$ = this.apiHttpService.loading$;
 }

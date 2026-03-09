@@ -1,5 +1,8 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { GlobalDataService } from '../_service/global-data.service';
+import { ApiHttpService } from '../_service/api-http.service';
+import { AuthSessionService } from '../_service/auth-session.service';
+import { NavigationService } from '../_service/navigation.service';
+import { UiMessageService } from '../_service/ui-message.service';
 import { HeaderComponent } from '../_template/header/header.component';
 import { MatCardModule } from '@angular/material/card';
 import { RouterLink } from '@angular/router';
@@ -21,7 +24,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 })
 export class StartComponent implements OnInit {
 
-  private globalDataService = inject(GlobalDataService);
+  private apiHttpService = inject(ApiHttpService);
+  private authSessionService = inject(AuthSessionService);
+  private navigationService = inject(NavigationService);
+  private uiMessageService = inject(UiMessageService);
   private readonly adminRoleKey = 'ADMIN';
 
   breadcrumb: any[] = [];
@@ -65,9 +71,9 @@ export class StartComponent implements OnInit {
     sessionStorage.setItem('Page1', 'Start');
     sessionStorage.setItem('Page2', '');
 
-    this.breadcrumb = this.globalDataService.ladeBreadcrumb();
+    this.breadcrumb = this.navigationService.ladeBreadcrumb();
 
-    this.globalDataService.get("modul_konfiguration").subscribe({
+    this.apiHttpService.get("modul_konfiguration").subscribe({
       next: (erg: any) => {
         try {
           const user = erg.user;
@@ -98,11 +104,11 @@ export class StartComponent implements OnInit {
           }
 
         } catch (e: any) {
-          this.globalDataService.erstelleMessage("error", e);
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
       error: (error: any) => {
-        this.globalDataService.errorAnzeigen(error);
+        this.authSessionService.errorAnzeigen(error);
       }
     });
   }
@@ -153,7 +159,7 @@ export class StartComponent implements OnInit {
   private loadFreigeschaltetCounts(items: any[]): void {
     this.countsLoaded = false;
 
-    this.globalDataService.get('users').subscribe({
+    this.apiHttpService.get('users').subscribe({
       next: (response: any) => {
         const rawUsers = Array.isArray(response)
           ? response

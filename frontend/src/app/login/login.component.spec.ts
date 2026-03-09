@@ -1,46 +1,44 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient } from '@angular/common/http';
 import { of, throwError } from 'rxjs';
 
-import { GlobalDataService } from '../_service/global-data.service';
+import { ApiHttpService } from '../_service/api-http.service';
+import { AuthSessionService } from '../_service/auth-session.service';
+import { UiMessageService } from '../_service/ui-message.service';
 
 import { LoginComponent } from './login.component';
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
-  let httpMock: HttpTestingController;
   let routerSpy: jasmine.SpyObj<Router>;
-  let globalDataServiceSpy: jasmine.SpyObj<GlobalDataService>;
-
-  const flushVersionRequest = (channel: string = 'test'): void => {
-    const req = httpMock.expectOne('/assets/version.json');
-    req.flush({ version: 'test', commit: 'abc123', channel });
-    fixture.detectChanges();
-  };
+  let apiHttpServiceSpy: jasmine.SpyObj<ApiHttpService>;
+  let authSessionServiceSpy: jasmine.SpyObj<AuthSessionService>;
+  let uiMessageServiceSpy: jasmine.SpyObj<UiMessageService>;
 
   beforeEach(async () => {
     routerSpy = jasmine.createSpyObj<Router>('Router', ['navigate']);
     routerSpy.navigate.and.resolveTo(true);
 
-    globalDataServiceSpy = jasmine.createSpyObj<GlobalDataService>('GlobalDataService', [
+    apiHttpServiceSpy = jasmine.createSpyObj<ApiHttpService>('ApiHttpService', [
+      'getURL',
       'get',
       'post',
-      'errorAnzeigen',
-      'erstelleMessage'
     ]);
-    globalDataServiceSpy.get.and.returnValue(of({ csrfToken: 'token' }));
-    globalDataServiceSpy.post.and.returnValue(of({}));
+    authSessionServiceSpy = jasmine.createSpyObj<AuthSessionService>('AuthSessionService', ['errorAnzeigen']);
+    uiMessageServiceSpy = jasmine.createSpyObj<UiMessageService>('UiMessageService', ['erstelleMessage']);
+
+    apiHttpServiceSpy.getURL.and.returnValue(of({ version: 'test', commit: 'abc123', channel: 'test' }));
+    apiHttpServiceSpy.get.and.returnValue(of({ csrfToken: 'token' }));
+    apiHttpServiceSpy.post.and.returnValue(of({}));
 
     await TestBed.configureTestingModule({
       imports: [LoginComponent],
       providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
         { provide: Router, useValue: routerSpy },
-        { provide: GlobalDataService, useValue: globalDataServiceSpy }
+        { provide: ApiHttpService, useValue: apiHttpServiceSpy },
+        { provide: AuthSessionService, useValue: authSessionServiceSpy },
+        { provide: UiMessageService, useValue: uiMessageServiceSpy }
       ]
     }).compileComponents();
   });
@@ -48,13 +46,7 @@ describe('LoginComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(LoginComponent);
     component = fixture.componentInstance;
-    httpMock = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
-    flushVersionRequest();
-  });
-
-  afterEach(() => {
-    httpMock.verify();
   });
 
   it('should create', () => {
@@ -76,7 +68,7 @@ describe('LoginComponent', () => {
     const text = (fixture.nativeElement.textContent || '').replace(/\s+/g, ' ');
     expect(text).toContain('Benutzername ist erforderlich.');
     expect(text).toContain('Passwort ist erforderlich.');
-    expect(globalDataServiceSpy.post).not.toHaveBeenCalled();
+    expect(apiHttpServiceSpy.post).not.toHaveBeenCalled();
   });
 
   it('should toggle password visibility', () => {
@@ -94,14 +86,14 @@ describe('LoginComponent', () => {
 
   it('should submit login data and navigate on success', () => {
     component.form.setValue({ user: 'demo', pwd: 'secret' });
-    globalDataServiceSpy.get.and.returnValue(of({ csrfToken: 'token' }));
-    globalDataServiceSpy.post.and.returnValue(of({}));
+    apiHttpServiceSpy.get.and.returnValue(of({ csrfToken: 'token' }));
+    apiHttpServiceSpy.post.and.returnValue(of({}));
 
     component.anmelden();
 
-    expect(globalDataServiceSpy.get).toHaveBeenCalledWith('auth/csrf');
+    expect(apiHttpServiceSpy.get).toHaveBeenCalledWith('auth/csrf');
 
-    expect(globalDataServiceSpy.post).toHaveBeenCalledWith('auth/login', {
+    expect(apiHttpServiceSpy.post).toHaveBeenCalledWith('auth/login', {
       username: 'demo',
       password: 'secret'
     }, false);
@@ -111,12 +103,12 @@ describe('LoginComponent', () => {
 
   it('should forward login errors to global error handler', () => {
     component.form.setValue({ user: 'demo', pwd: 'wrong' });
-    globalDataServiceSpy.get.and.returnValue(of({ csrfToken: 'token' }));
-    globalDataServiceSpy.post.and.returnValue(throwError(() => ({ status: 401, error: { detail: 'unauthorized' } })));
+    apiHttpServiceSpy.get.and.returnValue(of({ csrfToken: 'token' }));
+    apiHttpServiceSpy.post.and.returnValue(throwError(() => ({ status: 401, error: { detail: 'unauthorized' } })));
 
     component.anmelden();
 
-    expect(globalDataServiceSpy.errorAnzeigen).toHaveBeenCalled();
+    expect(authSessionServiceSpy.errorAnzeigen).toHaveBeenCalled();
     expect(component.isSubmitting).toBeFalse();
   });
 
@@ -124,12 +116,10 @@ describe('LoginComponent', () => {
     const text = fixture.nativeElement.textContent || '';
     expect(text).toContain('Auflösung:');
 
+    apiHttpServiceSpy.getURL.and.returnValue(of({ version: '1.0.0', commit: 'abc123', channel: 'release' }));
+
     const freshFixture = TestBed.createComponent(LoginComponent);
     const freshComponent = freshFixture.componentInstance;
-    freshFixture.detectChanges();
-
-    const req = httpMock.expectOne('/assets/version.json');
-    req.flush({ version: '1.0.0', commit: 'abc123', channel: 'release' });
     freshFixture.detectChanges();
 
     expect(freshComponent.isTestVersion).toBeFalse();

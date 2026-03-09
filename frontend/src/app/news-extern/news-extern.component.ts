@@ -2,7 +2,11 @@ import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { Router } from '@angular/router';
 import { interval, Subscription, timer } from 'rxjs';
-import { GlobalDataService } from 'src/app/_service/global-data.service';
+import { ApiHttpService } from 'src/app/_service/api-http.service';
+import { AuthSessionService } from 'src/app/_service/auth-session.service';
+import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
+import { NavigationService } from 'src/app/_service/navigation.service';
+import { UiMessageService } from 'src/app/_service/ui-message.service';
 
 type NewsItem = {
   foto_url?: string;
@@ -18,7 +22,11 @@ type NewsItem = {
   styleUrls: ['./news-extern.component.sass']
 })
 export class NewsExternComponent implements OnInit, OnDestroy {
-  globalDataService = inject(GlobalDataService);
+  private apiHttpService = inject(ApiHttpService);
+  private authSessionService = inject(AuthSessionService);
+  private collectionUtilsService = inject(CollectionUtilsService);
+  private navigationService = inject(NavigationService);
+  private uiMessageService = inject(UiMessageService);
   router = inject(Router);
 
   title = 'Neuigkeiten FF Schwadorf';
@@ -47,7 +55,7 @@ export class NewsExternComponent implements OnInit, OnDestroy {
     // 3) Refresh-Timer: sofort feuern (0) und dann alle X Minuten erneut laden
     this.refreshSub = timer(this.refresh_in_min * 60_000, this.refresh_in_min * 60_000).subscribe({
       next: () => this.loadData(),
-      error: (e) => this.globalDataService.errorAnzeigen(e)
+      error: (e) => this.authSessionService.errorAnzeigen(e)
     });
   }
 
@@ -73,7 +81,7 @@ export class NewsExternComponent implements OnInit, OnDestroy {
   }
 
   private loadData(): void {
-    this.globalDataService.get(this.modul).subscribe({
+    this.apiHttpService.get(this.modul).subscribe({
       next: (erg: any) => {
         try {
           const oldLen = this.daten.length;
@@ -100,17 +108,17 @@ export class NewsExternComponent implements OnInit, OnDestroy {
           }
 
           // externen Kalender laden (unverändert)
-          this.globalDataService.getURL('https://ff-schwadorf.at/v2025/server/kalender/index.php').subscribe({
+          this.apiHttpService.getURL('https://ff-schwadorf.at/v2025/server/kalender/index.php').subscribe({
             next: (k: any) => { this.termine = k; },
-            error: (err: any) => this.globalDataService.errorAnzeigen(err)
+            error: (err: any) => this.authSessionService.errorAnzeigen(err)
           });
 
         } catch (e: any) {
-          this.globalDataService.erstelleMessage('error', e);
+          this.uiMessageService.erstelleMessage('error', e);
         }
       },
       error: (error: any) => {
-        this.globalDataService.errorAnzeigen(error);
+        this.authSessionService.errorAnzeigen(error);
       }
     });
   }

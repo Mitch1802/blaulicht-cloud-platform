@@ -17,7 +17,11 @@ import { MatInputModule } from "@angular/material/input";
 import { MatDividerModule } from "@angular/material/divider";
 import { MatFormFieldModule } from "@angular/material/form-field";
 
-import { GlobalDataService } from "../_service/global-data.service";
+import { ApiHttpService } from 'src/app/_service/api-http.service';
+import { AuthSessionService } from 'src/app/_service/auth-session.service';
+import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
+import { NavigationService } from 'src/app/_service/navigation.service';
+import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { IFahrzeugDetail } from "../_interface/fahrzeug";
 import { HeaderComponent } from "../_template/header/header.component";
 
@@ -61,7 +65,11 @@ type CheckRoomView = {
   templateUrl: "./fahrzeug-check.component.html",
 })
 export class FahrzeugCheckComponent implements OnInit {
-  private gds = inject(GlobalDataService);
+  private apiHttpService = inject(ApiHttpService);
+  private authSessionService = inject(AuthSessionService);
+  private collectionUtilsService = inject(CollectionUtilsService);
+  private navigationService = inject(NavigationService);
+  private uiMessageService = inject(UiMessageService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private fb = inject(FormBuilder);
@@ -79,7 +87,7 @@ export class FahrzeugCheckComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.breadcrumb = this.gds.ladeBreadcrumb();
+    this.breadcrumb = this.navigationService.ladeBreadcrumb();
     this.fahrzeugId = String(this.route.snapshot.paramMap.get("id") ?? "");
     if (!this.fahrzeugId) return;
 
@@ -87,12 +95,12 @@ export class FahrzeugCheckComponent implements OnInit {
   }
 
   private load(): void {
-    this.gds.get(`fahrzeuge/${this.fahrzeugId}`).subscribe({
+    this.apiHttpService.get(`fahrzeuge/${this.fahrzeugId}`).subscribe({
       next: (fz: any) => {
         this.fahrzeug = fz as IFahrzeugDetail;
         this.buildForm();
       },
-      error: (e) => this.gds.errorAnzeigen(e),
+      error: (e) => this.authSessionService.errorAnzeigen(e),
     });
   }
 
@@ -138,7 +146,7 @@ export class FahrzeugCheckComponent implements OnInit {
     this.form.markAllAsTouched();
 
     if (this.form.invalid) {
-      this.gds.erstelleMessage("error", "Check unvollständig");
+      this.uiMessageService.erstelleMessage("error", "Check unvollständig");
       return;
     }
 
@@ -154,12 +162,12 @@ export class FahrzeugCheckComponent implements OnInit {
       })),
     };
 
-    this.gds.post(`fahrzeuge/${this.fahrzeugId}/checks`, payload).subscribe({
+    this.apiHttpService.post(`fahrzeuge/${this.fahrzeugId}/checks`, payload).subscribe({
       next: () => {
-        this.gds.erstelleMessage("success", "Check gespeichert");
+        this.uiMessageService.erstelleMessage("success", "Check gespeichert");
         this.router.navigate(["/fahrzeuge"]);
       },
-      error: (e) => this.gds.errorAnzeigen(e),
+      error: (e) => this.authSessionService.errorAnzeigen(e),
     });
   }
 }

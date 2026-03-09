@@ -1,7 +1,11 @@
 import { Component, OnInit, Output, EventEmitter, inject } from '@angular/core';
 
 import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { GlobalDataService } from 'src/app/_service/global-data.service';
+import { ApiHttpService } from 'src/app/_service/api-http.service';
+import { AuthSessionService } from 'src/app/_service/auth-session.service';
+import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
+import { NavigationService } from 'src/app/_service/navigation.service';
+import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { IKonfiguration } from 'src/app/_interface/konfiguration';
 import { MatCardModule } from '@angular/material/card';
 import { MatButton } from '@angular/material/button';
@@ -22,7 +26,11 @@ import { MatTableModule } from '@angular/material/table';
     imports: [HeaderComponent, MatCardModule, FormsModule, ReactiveFormsModule, MatButton, MatFormField, MatLabel, MatInput, MatError, MatIconModule, MatChipsModule, MatSelect, MatOption, MatTableModule]
 })
 export class KonfigurationComponent implements OnInit {
-  globalDataService = inject(GlobalDataService);
+  private apiHttpService = inject(ApiHttpService);
+  private authSessionService = inject(AuthSessionService);
+  private collectionUtilsService = inject(CollectionUtilsService);
+  private navigationService = inject(NavigationService);
+  private uiMessageService = inject(UiMessageService);
   router = inject(Router);
   breadcrumb: any = [];
 
@@ -75,11 +83,11 @@ export class KonfigurationComponent implements OnInit {
   ngOnInit(): void {
     sessionStorage.setItem("PageNumber", "2");
     sessionStorage.setItem("Page2", "V_KO");
-    this.breadcrumb = this.globalDataService.ladeBreadcrumb();
+    this.breadcrumb = this.navigationService.ladeBreadcrumb();
     this.formRolle.disable();
     this.formKonfig.disable();
 
-    this.globalDataService.get(this.modul2).subscribe({
+    this.apiHttpService.get(this.modul2).subscribe({
       next: (erg: any) => {
         try {
           this.formRolle.enable();
@@ -106,11 +114,11 @@ export class KonfigurationComponent implements OnInit {
           this.rollen = erg.rollen;
           this.backups = this.convertBackups(erg.backups);
         } catch (e: any) {
-          this.globalDataService.erstelleMessage("error", e);
+          this.uiMessageService.erstelleMessage("error", e);
         }
       },
       error: (error: any) => {
-        this.globalDataService.errorAnzeigen(error);
+        this.authSessionService.errorAnzeigen(error);
       }
     });
   }
@@ -125,37 +133,37 @@ export class KonfigurationComponent implements OnInit {
     }
 
 
-    this.globalDataService.post(this.modul, post, false).subscribe({
+    this.apiHttpService.post(this.modul, post, false).subscribe({
       next: (erg: any) => {
         try {
           this.formRolle.reset();
           if (!this.rollen.find((r: any) => r.key === erg.key)) {
             this.rollen.push(erg);
           }
-          this.globalDataService.erstelleMessage("success","Rolle erfolgreich gespeichert!");
+          this.uiMessageService.erstelleMessage("success","Rolle erfolgreich gespeichert!");
         } catch (e: any) {
-          this.globalDataService.erstelleMessage("error", e);
+          this.uiMessageService.erstelleMessage("error", e);
         }
       },
       error: (error: any) => {
-        this.globalDataService.errorAnzeigen(error);
+        this.authSessionService.errorAnzeigen(error);
       }
     });
   }
 
   rolleLoeschen(rolle: any): void {
     const id = rolle.id;
-    this.globalDataService.delete(this.modul, id).subscribe({
+    this.apiHttpService.delete(this.modul, id).subscribe({
       next: (erg: any) => {
         try {
           this.rollen = this.rollen.filter((r: any) => r.id !== id);
-          this.globalDataService.erstelleMessage("success", "Rolle erfolgreich gelöscht!");
+          this.uiMessageService.erstelleMessage("success", "Rolle erfolgreich gelöscht!");
         } catch (e: any) {
-          this.globalDataService.erstelleMessage("error", e);
+          this.uiMessageService.erstelleMessage("error", e);
         }
       },
       error: (error: any) => {
-        this.globalDataService.errorAnzeigen(error);
+        this.authSessionService.errorAnzeigen(error);
       }
     });
   }
@@ -165,7 +173,7 @@ export class KonfigurationComponent implements OnInit {
 
     const idValue = this.formKonfig.controls["id"].value;
     if (idValue === '' || idValue === null) {
-      this.globalDataService.post(this.modul2, object, false).subscribe({
+      this.apiHttpService.post(this.modul2, object, false).subscribe({
         next: (erg: any) => {
           try {
             const details: IKonfiguration = erg;
@@ -184,17 +192,17 @@ export class KonfigurationComponent implements OnInit {
               fw_iban: details.fw_iban,
               fw_bic: details.fw_bic
             })
-            this.globalDataService.erstelleMessage("success","Konfiguration erfolgreich gespeichert!");
+            this.uiMessageService.erstelleMessage("success","Konfiguration erfolgreich gespeichert!");
           } catch (e: any) {
-            this.globalDataService.erstelleMessage("error", e);
+            this.uiMessageService.erstelleMessage("error", e);
           }
         },
         error: (error: any) => {
-          this.globalDataService.errorAnzeigen(error);
+          this.authSessionService.errorAnzeigen(error);
         }
       });
     } else {
-      this.globalDataService.patch(this.modul2, idValue, object, false).subscribe({
+      this.apiHttpService.patch(this.modul2, idValue, object, false).subscribe({
         next: (erg: any) => {
           try {
             const details: IKonfiguration = erg;
@@ -213,13 +221,13 @@ export class KonfigurationComponent implements OnInit {
               fw_iban: details.fw_iban,
               fw_bic: details.fw_bic
             })
-            this.globalDataService.erstelleMessage("success","Konfiguration erfolgreich geändert!");
+            this.uiMessageService.erstelleMessage("success","Konfiguration erfolgreich geändert!");
           } catch (e: any) {
-            this.globalDataService.erstelleMessage("error", e);
+            this.uiMessageService.erstelleMessage("error", e);
           }
         },
         error: (error: any) => {
-          this.globalDataService.errorAnzeigen(error);
+          this.authSessionService.errorAnzeigen(error);
         }
       });
     }
@@ -230,11 +238,11 @@ export class KonfigurationComponent implements OnInit {
       "backup": backup_name.name
     }
 
-    this.globalDataService.post("backup/restore", object, false).subscribe({
+    this.apiHttpService.post("backup/restore", object, false).subscribe({
       next: (erg: any) => {
         try {
           this.backup_msg = erg.msg;
-          this.globalDataService.erstelleMessage("success",this.backup_msg);
+          this.uiMessageService.erstelleMessage("success",this.backup_msg);
           sessionStorage.clear();
           document.cookie.split('; ').forEach(cookie => {
             const [name] = cookie.split('=');
@@ -242,28 +250,28 @@ export class KonfigurationComponent implements OnInit {
           });
           this.router.navigate(['/login']);
         } catch (e: any) {
-          this.globalDataService.erstelleMessage("error", e);
+          this.uiMessageService.erstelleMessage("error", e);
         }
       },
       error: (error: any) => {
-        this.globalDataService.errorAnzeigen(error);
+        this.authSessionService.errorAnzeigen(error);
       }
     });
   }
 
   backupErstellen(): void {
-    this.globalDataService.post("backup", {}, false).subscribe({
+    this.apiHttpService.post("backup", {}, false).subscribe({
       next: (erg: any) => {
         try {
           this.backup_msg = erg.msg;
           this.backups = this.convertBackups(erg.backups);
-          this.globalDataService.erstelleMessage("success",this.backup_msg);
+          this.uiMessageService.erstelleMessage("success",this.backup_msg);
         } catch (e: any) {
-          this.globalDataService.erstelleMessage("error", e);
+          this.uiMessageService.erstelleMessage("error", e);
         }
       },
       error: (error: any) => {
-        this.globalDataService.errorAnzeigen(error);
+        this.authSessionService.errorAnzeigen(error);
       }
     });
   }
@@ -273,7 +281,7 @@ export class KonfigurationComponent implements OnInit {
       "backup": backup_name.name
     }
 
-    this.globalDataService.postBlob("backup/file", object).subscribe({
+    this.apiHttpService.postBlob("backup/file", object).subscribe({
       next: (blob: Blob) => {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -285,7 +293,7 @@ export class KonfigurationComponent implements OnInit {
         URL.revokeObjectURL(url);
       },
       error: (error: any) => {
-        this.globalDataService.errorAnzeigen(error);
+        this.authSessionService.errorAnzeigen(error);
       }
     });
   }
@@ -295,18 +303,18 @@ export class KonfigurationComponent implements OnInit {
       "backup": backup_name.name
     }
 
-    this.globalDataService.post("backup/delete", object, false).subscribe({
+    this.apiHttpService.post("backup/delete", object, false).subscribe({
       next: (erg: any) => {
         try {
           this.backup_msg = erg.msg;
           this.backups = this.convertBackups(erg.backups);
-          this.globalDataService.erstelleMessage("success",this.backup_msg);
+          this.uiMessageService.erstelleMessage("success",this.backup_msg);
         } catch (e: any) {
-          this.globalDataService.erstelleMessage("error", e);
+          this.uiMessageService.erstelleMessage("error", e);
         }
       },
       error: (error: any) => {
-        this.globalDataService.errorAnzeigen(error);
+        this.authSessionService.errorAnzeigen(error);
       }
     });
   }
@@ -322,7 +330,7 @@ export class KonfigurationComponent implements OnInit {
       delete: deleteFiles,
     };
 
-    this.globalDataService.cleanupOrphanMedia(payload).subscribe({
+    this.apiHttpService.cleanupOrphanMedia(payload).subscribe({
       next: (erg: any) => {
         const summary = erg?.summary ?? {};
         const orphanCount = summary.orphan ?? 0;
@@ -342,11 +350,11 @@ export class KonfigurationComponent implements OnInit {
         }
 
         const message = `Medien bereinigt: ${deletedCount} gelöscht, ${orphanCount} verwaist gefunden.`;
-        this.globalDataService.erstelleMessage('success', message);
+        this.uiMessageService.erstelleMessage('success', message);
         this.cleanupRunning = false;
       },
       error: (error: any) => {
-        this.globalDataService.errorAnzeigen(error);
+        this.authSessionService.errorAnzeigen(error);
         this.cleanupRunning = false;
       }
     });
@@ -371,7 +379,7 @@ export class KonfigurationComponent implements OnInit {
         data.push(dict);
       }
     }
-    data = this.globalDataService.arraySortByKeyDesc(data, "name");
+    data = this.collectionUtilsService.arraySortByKeyDesc(data, "name");
     return data;
   }
 }

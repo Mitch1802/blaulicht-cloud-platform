@@ -7,7 +7,11 @@ import { MatIcon } from '@angular/material/icon';
 
 import { HeaderComponent } from '../_template/header/header.component';
 import { IWartungServiceEintrag, IWartungServiceResponse, IWartungServiceSummary } from '../_interface/wartung_service';
-import { GlobalDataService } from '../_service/global-data.service';
+import { ApiHttpService } from 'src/app/_service/api-http.service';
+import { AuthSessionService } from 'src/app/_service/auth-session.service';
+import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
+import { NavigationService } from 'src/app/_service/navigation.service';
+import { UiMessageService } from 'src/app/_service/ui-message.service';
 
 @Component({
   selector: 'app-wartung-service',
@@ -23,8 +27,11 @@ import { GlobalDataService } from '../_service/global-data.service';
   styleUrl: './wartung-service.component.sass',
 })
 export class WartungServiceComponent implements OnInit {
-  private globalDataService = inject(GlobalDataService);
-
+  private apiHttpService = inject(ApiHttpService);
+  private authSessionService = inject(AuthSessionService);
+  private collectionUtilsService = inject(CollectionUtilsService);
+  private navigationService = inject(NavigationService);
+  private uiMessageService = inject(UiMessageService);
   readonly modul = 'wartung_service';
   readonly title = 'Wartung/Service';
 
@@ -45,12 +52,12 @@ export class WartungServiceComponent implements OnInit {
     sessionStorage.setItem('PageNumber', '2');
     sessionStorage.setItem('Page2', 'WS');
 
-    this.breadcrumb = this.globalDataService.ladeBreadcrumb();
+    this.breadcrumb = this.navigationService.ladeBreadcrumb();
     this.reload();
   }
 
   reload(): void {
-    this.globalDataService.get<IWartungServiceResponse>(this.modul).subscribe({
+    this.apiHttpService.get<IWartungServiceResponse>(this.modul).subscribe({
       next: (erg) => {
         this.jahr = Number(erg?.jahr ?? new Date().getFullYear());
         this.heute = String(erg?.heute ?? '');
@@ -63,7 +70,7 @@ export class WartungServiceComponent implements OnInit {
         this.dataSource.data = Array.isArray(erg?.main) ? erg.main : [];
       },
       error: (error: any) => {
-        this.globalDataService.errorAnzeigen(error);
+        this.authSessionService.errorAnzeigen(error);
       },
     });
   }

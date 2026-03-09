@@ -10,7 +10,11 @@ import {
   FormsModule,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { GlobalDataService } from 'src/app/_service/global-data.service';
+import { ApiHttpService } from 'src/app/_service/api-http.service';
+import { AuthSessionService } from 'src/app/_service/auth-session.service';
+import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
+import { NavigationService } from 'src/app/_service/navigation.service';
+import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
 import { MatButton } from '@angular/material/button';
@@ -51,7 +55,11 @@ import { MatOption, MatSelect } from '@angular/material/select';
 })
 
 export class PdfTemplatesComponent implements OnInit {
-  globalDataService = inject(GlobalDataService);
+  private apiHttpService = inject(ApiHttpService);
+  private authSessionService = inject(AuthSessionService);
+  private collectionUtilsService = inject(CollectionUtilsService);
+  private navigationService = inject(NavigationService);
+  private uiMessageService = inject(UiMessageService);
   formatService = inject(FormatService);
   router = inject(Router);
 
@@ -113,7 +121,7 @@ export class PdfTemplatesComponent implements OnInit {
   ngOnInit(): void {
     sessionStorage.setItem('PageNumber', '2');
     sessionStorage.setItem('Page2', 'PDF');
-    this.breadcrumb = this.globalDataService.ladeBreadcrumb();
+    this.breadcrumb = this.navigationService.ladeBreadcrumb();
 
     this.formModul.disable();
 
@@ -123,17 +131,17 @@ export class PdfTemplatesComponent implements OnInit {
       return (data.status || '').toUpperCase() === f.status.toUpperCase();
     };
 
-    this.globalDataService.get(this.modul).subscribe({
+    this.apiHttpService.get(this.modul).subscribe({
       next: (erg: any) => {
         try {
           this.pdfTemplateArray = this.convertNewsDate(erg) as IPdfTemplate[];
           this.dataSource.data = this.pdfTemplateArray;
           this.applyStatusFilter();
         } catch (e: any) {
-          this.globalDataService.erstelleMessage('error', e);
+          this.uiMessageService.erstelleMessage('error', e);
         }
       },
-      error: (error: any) => this.globalDataService.errorAnzeigen(error)
+      error: (error: any) => this.authSessionService.errorAnzeigen(error)
     });
   }
 
@@ -159,18 +167,18 @@ export class PdfTemplatesComponent implements OnInit {
 
   datenLoeschen(): void {
     const id = this.formModul.controls['id'].value!;
-    this.globalDataService.delete(this.modul, id).subscribe({
+    this.apiHttpService.delete(this.modul, id).subscribe({
       next: (erg: any) => {
         try {
           this.pdfTemplateArray = this.pdfTemplateArray.filter(n => n.id !== id);
           this.dataSource.data = this.pdfTemplateArray;
           this.resetFormNachAktion();
-          this.globalDataService.erstelleMessage('success', 'Inventar erfolgreich gelöscht!');
+          this.uiMessageService.erstelleMessage('success', 'Inventar erfolgreich gelöscht!');
         } catch (e: any) {
-          this.globalDataService.erstelleMessage('error', e);
+          this.uiMessageService.erstelleMessage('error', e);
         }
       },
-      error: (error: any) => this.globalDataService.errorAnzeigen(error)
+      error: (error: any) => this.authSessionService.errorAnzeigen(error)
     });
   }
 
@@ -179,7 +187,7 @@ export class PdfTemplatesComponent implements OnInit {
       return;
     }
     const abfrageUrl = `${this.modul}/${element.id}`;
-    this.globalDataService.get(abfrageUrl).subscribe({
+    this.apiHttpService.get(abfrageUrl).subscribe({
       next: (erg: any) => {
         try {
           let details: IPdfTemplate = erg;
@@ -194,10 +202,10 @@ export class PdfTemplatesComponent implements OnInit {
           });
           this.setReadonlyMode(details.status === 'PUBLISHED' || details.status === 'ARCHIVED');
         } catch (e: any) {
-          this.globalDataService.erstelleMessage('error', e);
+          this.uiMessageService.erstelleMessage('error', e);
         }
       },
-      error: (error: any) => this.globalDataService.errorAnzeigen(error)
+      error: (error: any) => this.authSessionService.errorAnzeigen(error)
     });
   }
 
@@ -206,7 +214,7 @@ export class PdfTemplatesComponent implements OnInit {
     const abfrageUrl = `${this.modul}/${element.id}/publish`;
     const payload = {};
 
-    this.globalDataService.post(abfrageUrl, payload).subscribe({
+    this.apiHttpService.post(abfrageUrl, payload).subscribe({
       next: (erg: any) => {
         try {
           const updated: any = erg;
@@ -217,10 +225,10 @@ export class PdfTemplatesComponent implements OnInit {
           this.dataSource.data = this.pdfTemplateArray;
           this.applyStatusFilter();
         } catch (e: any) {
-          this.globalDataService.erstelleMessage('error', e);
+          this.uiMessageService.erstelleMessage('error', e);
         }
       },
-      error: (error: any) => this.globalDataService.errorAnzeigen(error)
+      error: (error: any) => this.authSessionService.errorAnzeigen(error)
     });
   }
 
@@ -229,7 +237,7 @@ export class PdfTemplatesComponent implements OnInit {
     const abfrageUrl = `${this.modul}/${element.id}/new-version`;
     const payload = {};
 
-    this.globalDataService.post(abfrageUrl, payload).subscribe({
+    this.apiHttpService.post(abfrageUrl, payload).subscribe({
       next: (erg: any) => {
         try {
           const newMask: IPdfTemplate = erg;
@@ -244,10 +252,10 @@ export class PdfTemplatesComponent implements OnInit {
           this.dataSource.data = this.pdfTemplateArray;
           this.applyStatusFilter();
         } catch (e: any) {
-          this.globalDataService.erstelleMessage('error', e);
+          this.uiMessageService.erstelleMessage('error', e);
         }
       },
-      error: (error: any) => this.globalDataService.errorAnzeigen(error)
+      error: (error: any) => this.authSessionService.errorAnzeigen(error)
     });
   }
 
@@ -256,22 +264,22 @@ export class PdfTemplatesComponent implements OnInit {
     const abfrageUrl = `${this.modul}/${element.id}/test`;
     const payload = { print_fold_lines: true };
 
-    this.globalDataService.postBlob(abfrageUrl, payload).subscribe({
+    this.apiHttpService.postBlob(abfrageUrl, payload).subscribe({
       next: (blob: Blob) => {
         if (blob.size === 0) {
-          this.globalDataService.erstelleMessage('error', 'PDF ist leer (0 Bytes).');
+          this.uiMessageService.erstelleMessage('error', 'PDF ist leer (0 Bytes).');
           return;
         }
 
         const url = URL.createObjectURL(blob);
         window.open(url, '_blank');
       },
-      error: (error: any) => this.globalDataService.errorAnzeigen(error)
+      error: (error: any) => this.authSessionService.errorAnzeigen(error)
     });
   }
 
   abbrechen(): void {
-    this.globalDataService.erstelleMessage('info', 'Pdf Template nicht gespeichert!');
+    this.uiMessageService.erstelleMessage('info', 'Pdf Template nicht gespeichert!');
     this.router.navigate(['/pdf_template']);
   }
 
@@ -290,25 +298,25 @@ export class PdfTemplatesComponent implements OnInit {
     const source = this.formModul.controls['source'].value!;
 
     if (!idValue) {
-      this.globalDataService.post(this.modul, { typ, version, bezeichnung, status, source }, false).subscribe({
+      this.apiHttpService.post(this.modul, { typ, version, bezeichnung, status, source }, false).subscribe({
         next: (erg: any) => {
           try {
             const newMask: IPdfTemplate = erg;
             this.pdfTemplateArray.push(newMask);
-            this.pdfTemplateArray = this.globalDataService.arraySortByKey(this.pdfTemplateArray, 'typ');
+            this.pdfTemplateArray = this.collectionUtilsService.arraySortByKey(this.pdfTemplateArray, 'typ');
             this.dataSource.data = this.pdfTemplateArray;
             this.resetFormNachAktion();
-            this.globalDataService.erstelleMessage('success', 'Pdf Template erfolgreich gespeichert!');
+            this.uiMessageService.erstelleMessage('success', 'Pdf Template erfolgreich gespeichert!');
             this.applyStatusFilter();
           } catch (e: any) {
-            this.globalDataService.erstelleMessage('error', e);
+            this.uiMessageService.erstelleMessage('error', e);
           }
         },
-        error: (error: any) => this.globalDataService.errorAnzeigen(error)
+        error: (error: any) => this.authSessionService.errorAnzeigen(error)
       });
 
     } else {
-      this.globalDataService.patch(this.modul, idValue, { typ, version, bezeichnung, status, source }, false).subscribe({
+      this.apiHttpService.patch(this.modul, idValue, { typ, version, bezeichnung, status, source }, false).subscribe({
         next: (erg: any) => {
           try {
             const updated: any = erg;
@@ -318,13 +326,13 @@ export class PdfTemplatesComponent implements OnInit {
 
             this.dataSource.data = this.pdfTemplateArray;
             this.resetFormNachAktion();
-            this.globalDataService.erstelleMessage('success', 'Pdf Template erfolgreich geändert!');
+            this.uiMessageService.erstelleMessage('success', 'Pdf Template erfolgreich geändert!');
             this.applyStatusFilter();
           } catch (e: any) {
-            this.globalDataService.erstelleMessage('error', e);
+            this.uiMessageService.erstelleMessage('error', e);
           }
         },
-        error: (error: any) => this.globalDataService.errorAnzeigen(error)
+        error: (error: any) => this.authSessionService.errorAnzeigen(error)
       });
     }
   }

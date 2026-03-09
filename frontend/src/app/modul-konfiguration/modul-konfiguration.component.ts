@@ -8,7 +8,11 @@ import {
   ReactiveFormsModule,
   FormsModule
 } from '@angular/forms';
-import { GlobalDataService } from 'src/app/_service/global-data.service';
+import { ApiHttpService } from 'src/app/_service/api-http.service';
+import { AuthSessionService } from 'src/app/_service/auth-session.service';
+import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
+import { NavigationService } from 'src/app/_service/navigation.service';
+import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { HeaderComponent } from '../_template/header/header.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
@@ -40,7 +44,11 @@ import startRegelConfig from '../start/konfig.json';
   styleUrls: ['./modul-konfiguration.component.sass']
 })
 export class ModulKonfigurationComponent implements OnInit {
-  globalDataService = inject(GlobalDataService);
+  private apiHttpService = inject(ApiHttpService);
+  private authSessionService = inject(AuthSessionService);
+  private collectionUtilsService = inject(CollectionUtilsService);
+  private navigationService = inject(NavigationService);
+  private uiMessageService = inject(UiMessageService);
   router = inject(Router);
 
   title = 'Modul Konfiguration';
@@ -134,21 +142,21 @@ export class ModulKonfigurationComponent implements OnInit {
   ngOnInit(): void {
     sessionStorage.setItem('PageNumber', '2');
     sessionStorage.setItem('Page2', 'V_MK');
-    this.breadcrumb = this.globalDataService.ladeBreadcrumb();
+    this.breadcrumb = this.navigationService.ladeBreadcrumb();
     this.formModul.enable();
     this.formModul.controls['id'].disable();
 
     // Modul-Konfig laden
-    this.globalDataService.get(this.modul).subscribe({
+    this.apiHttpService.get(this.modul).subscribe({
       next: (erg: any) => {
         try {
           this.modulListe = erg.main ?? [];
           this.modulByKey = new Map(this.modulListe.map((x: any) => [x.modul, x]));
         } catch (e: any) {
-          this.globalDataService.erstelleMessage('error', e);
+          this.uiMessageService.erstelleMessage('error', e);
         }
       },
-      error: (error: any) => this.globalDataService.errorAnzeigen(error)
+      error: (error: any) => this.authSessionService.errorAnzeigen(error)
     });
 
     // Wenn user im PDF-Form was ändert => JSON-String im formModul.konfiguration mitschreiben
@@ -198,7 +206,7 @@ export class ModulKonfigurationComponent implements OnInit {
 
   datenSpeichern(): void {
     if (this.formModul.invalid) {
-      this.globalDataService.erstelleMessage('error', 'Bitte alle Pflichtfelder korrekt ausfüllen!');
+      this.uiMessageService.erstelleMessage('error', 'Bitte alle Pflichtfelder korrekt ausfüllen!');
       return;
     }
 
@@ -207,7 +215,7 @@ export class ModulKonfigurationComponent implements OnInit {
 
     if (objekt.modul === 'pdf') {
       if (this.pdfMappingForm.invalid) {
-        this.globalDataService.erstelleMessage('error', 'Bitte PDF-Templates für alle Funktionen auswählen!');
+        this.uiMessageService.erstelleMessage('error', 'Bitte PDF-Templates für alle Funktionen auswählen!');
         return;
       }
 
@@ -227,32 +235,32 @@ export class ModulKonfigurationComponent implements OnInit {
     }
 
     if (!idValue) {
-      this.globalDataService.post(this.modul, objekt, false).subscribe({
+      this.apiHttpService.post(this.modul, objekt, false).subscribe({
         next: (saved: any) => {
           try {
             this.modulByKey.set(saved.modul, saved);
             this.formModul.reset();
             this.setzeSelectZurueck();
-            this.globalDataService.erstelleMessage('success', 'Konfiguration gespeichert!');
+            this.uiMessageService.erstelleMessage('success', 'Konfiguration gespeichert!');
           } catch (e: any) {
-            this.globalDataService.erstelleMessage('error', e);
+            this.uiMessageService.erstelleMessage('error', e);
           }
         },
-        error: (error: any) => this.globalDataService.errorAnzeigen(error)
+        error: (error: any) => this.authSessionService.errorAnzeigen(error)
       });
     } else {
-      this.globalDataService.patch(this.modul, idValue, objekt, false).subscribe({
+      this.apiHttpService.patch(this.modul, idValue, objekt, false).subscribe({
         next: (saved: any) => {
           try {
             this.modulByKey.set(saved.modul, saved);
             this.formModul.reset();
             this.setzeSelectZurueck();
-            this.globalDataService.erstelleMessage('success', 'Konfiguration geändert!');
+            this.uiMessageService.erstelleMessage('success', 'Konfiguration geändert!');
           } catch (e: any) {
-            this.globalDataService.erstelleMessage('error', e);
+            this.uiMessageService.erstelleMessage('error', e);
           }
         },
-        error: (error: any) => this.globalDataService.errorAnzeigen(error)
+        error: (error: any) => this.authSessionService.errorAnzeigen(error)
       });
     }
   }
@@ -260,11 +268,11 @@ export class ModulKonfigurationComponent implements OnInit {
   datenLoeschen(): void {
     const id = this.formModul.controls['id'].value!;
     if (!id) {
-      this.globalDataService.erstelleMessage('error', 'Keine Modul Konfiguration ausgewählt zum Löschen!');
+      this.uiMessageService.erstelleMessage('error', 'Keine Modul Konfiguration ausgewählt zum Löschen!');
       return;
     }
 
-    this.globalDataService.delete(this.modul, id).subscribe({
+    this.apiHttpService.delete(this.modul, id).subscribe({
       next: () => {
         try {
           this.modulListe = this.modulListe.filter((m: any) => m.id !== id);
@@ -272,12 +280,12 @@ export class ModulKonfigurationComponent implements OnInit {
           this.formModul.reset();
           this.setzeSelectZurueck();
 
-          this.globalDataService.erstelleMessage('success', 'Modul Konfiguration erfolgreich gelöscht!');
+          this.uiMessageService.erstelleMessage('success', 'Modul Konfiguration erfolgreich gelöscht!');
         } catch (e: any) {
-          this.globalDataService.erstelleMessage('error', e);
+          this.uiMessageService.erstelleMessage('error', e);
         }
       },
-      error: (error: any) => this.globalDataService.errorAnzeigen(error)
+      error: (error: any) => this.authSessionService.errorAnzeigen(error)
     });
   }
 
@@ -292,12 +300,12 @@ export class ModulKonfigurationComponent implements OnInit {
     if (this.pdfTemplatesLoaded) return;
 
     // gleicher Endpoint wie in PdfTemplatesComponent: modul = 'pdf/templates'
-    this.globalDataService.get('pdf/templates').subscribe({
+    this.apiHttpService.get('pdf/templates').subscribe({
       next: (erg: any) => {
         this.pdfTemplates = (erg?.main ?? erg ?? []) as IPdfTemplate[];
         this.pdfTemplatesLoaded = true;
       },
-      error: (error: any) => this.globalDataService.errorAnzeigen(error),
+      error: (error: any) => this.authSessionService.errorAnzeigen(error),
     });
   }
 

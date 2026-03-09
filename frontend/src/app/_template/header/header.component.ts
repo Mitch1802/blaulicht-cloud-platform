@@ -1,6 +1,6 @@
 import { Component, Input, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { GlobalDataService } from 'src/app/_service/global-data.service';
+import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { MatToolbar } from '@angular/material/toolbar';
 import { MatIconButton } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -19,7 +19,7 @@ import { environment } from 'src/environments/environment';
     ]
 })
 export class HeaderComponent {
-  globalDataService = inject(GlobalDataService);
+  authSessionService = inject(AuthSessionService);
 
   title: string = environment.title;
 

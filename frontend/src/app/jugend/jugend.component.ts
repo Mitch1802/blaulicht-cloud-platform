@@ -9,7 +9,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { Observable, of } from 'rxjs';
 import { HeaderComponent } from '../_template/header/header.component';
-import { GlobalDataService } from '../_service/global-data.service';
+import { ApiHttpService } from 'src/app/_service/api-http.service';
+import { AuthSessionService } from 'src/app/_service/auth-session.service';
+import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
+import { NavigationService } from 'src/app/_service/navigation.service';
+import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { DateInputMaskDirective } from '../_directive/date-input-mask.directive';
 import { IMitglied } from '../_interface/mitglied';
 import { IJugendEvent } from '../_interface/jugend_event';
@@ -108,8 +112,11 @@ type IJugendFertigkeitsDatumKey =
   styleUrl: './jugend.component.sass'
 })
 export class JugendComponent implements OnInit {
-  private globalDataService = inject(GlobalDataService);
-
+  private apiHttpService = inject(ApiHttpService);
+  private authSessionService = inject(AuthSessionService);
+  private collectionUtilsService = inject(CollectionUtilsService);
+  private navigationService = inject(NavigationService);
+  private uiMessageService = inject(UiMessageService);
   title = 'Jugend';
   breadcrumb: any[] = [];
 
@@ -271,7 +278,7 @@ export class JugendComponent implements OnInit {
   ngOnInit(): void {
     sessionStorage.setItem('PageNumber', '2');
     sessionStorage.setItem('Page2', 'JUGEND');
-    this.breadcrumb = this.globalDataService.ladeBreadcrumb();
+    this.breadcrumb = this.navigationService.ladeBreadcrumb();
     this.aktualisiereSichtbareSpalten();
 
     this.loadMitglieder();
@@ -286,35 +293,35 @@ export class JugendComponent implements OnInit {
   }
 
   loadMitglieder(): void {
-    this.globalDataService.get<IMitglied[]>('jugend/mitglieder').subscribe({
+    this.apiHttpService.get<IMitglied[]>('jugend/mitglieder').subscribe({
       next: (erg) => {
-        this.mitglieder = this.globalDataService.arraySortByKey(erg, 'stbnr');
+        this.mitglieder = this.collectionUtilsService.arraySortByKey(erg, 'stbnr');
         this.jugendMitglieder = this.mitglieder.filter((m) => this.normalizeStatus(m.dienststatus) === 'JUGEND');
         this.dataSourceJugend.data = this.jugendMitglieder;
       },
-      error: (error) => this.globalDataService.errorAnzeigen(error),
+      error: (error) => this.authSessionService.errorAnzeigen(error),
     });
   }
 
   loadEvents(): void {
-    this.globalDataService.get<IJugendEvent[]>('jugend/events').subscribe({
+    this.apiHttpService.get<IJugendEvent[]>('jugend/events').subscribe({
       next: (erg) => {
         this.events = erg;
         this.dataSourceEvents.data = erg;
       },
-      error: (error) => this.globalDataService.errorAnzeigen(error),
+      error: (error) => this.authSessionService.errorAnzeigen(error),
     });
   }
 
   loadAusbildung(): void {
-    this.globalDataService.get<IJugendAusbildung[]>('jugend/ausbildung').subscribe({
+    this.apiHttpService.get<IJugendAusbildung[]>('jugend/ausbildung').subscribe({
       next: (erg) => {
         this.jugendAusbildungen = erg;
         this.ausbildungByMitgliedPkid = new Map<number, IJugendAusbildung>(
           erg.map((item) => [item.mitglied, item]),
         );
       },
-      error: (error) => this.globalDataService.errorAnzeigen(error),
+      error: (error) => this.authSessionService.errorAnzeigen(error),
     });
   }
 
@@ -397,7 +404,7 @@ export class JugendComponent implements OnInit {
 
     const voraussetzungsFehler = this.pruefeMitgliedVoraussetzungen(selectedMitglied);
     if (voraussetzungsFehler.length > 0) {
-      this.globalDataService.erstelleMessage('error', voraussetzungsFehler.join('\n'));
+      this.uiMessageService.erstelleMessage('error', voraussetzungsFehler.join('\n'));
       return;
     }
 
@@ -405,26 +412,26 @@ export class JugendComponent implements OnInit {
       dienststatus: this.formMitglied.controls.dienststatus.value,
     };
 
-    this.globalDataService.patch('jugend/mitglieder', id, payload, false).subscribe({
+    this.apiHttpService.patch('jugend/mitglieder', id, payload, false).subscribe({
       next: () => {
         this.speichereJugendAusbildung(selectedMitglied).subscribe({
           next: () => {
-            this.globalDataService.erstelleMessage('success', 'Jugend-Mitglied aktualisiert.');
+            this.uiMessageService.erstelleMessage('success', 'Jugend-Mitglied aktualisiert.');
             this.showMitgliedForm = false;
             this.selectedMitglied = null;
             this.loadMitglieder();
             this.loadAusbildung();
           },
-          error: (error) => this.globalDataService.errorAnzeigen(error),
+          error: (error) => this.authSessionService.errorAnzeigen(error),
         });
       },
-      error: (error) => this.globalDataService.errorAnzeigen(error),
+      error: (error) => this.authSessionService.errorAnzeigen(error),
     });
   }
 
   speichernEvent(): void {
     if (this.formEvent.invalid) {
-      this.globalDataService.erstelleMessage('error', 'Bitte Datum und Art ausfüllen.');
+      this.uiMessageService.erstelleMessage('error', 'Bitte Datum und Art ausfüllen.');
       return;
     }
 
@@ -439,7 +446,7 @@ export class JugendComponent implements OnInit {
     if (this.isLevelPflichtKategorie(kategorie)) {
       const teilnehmerOhneErlaubteStufe = teilnehmerIds.find((pkid) => !this.hatErlaubteEventLevel(pkid));
       if (teilnehmerOhneErlaubteStufe != null) {
-        this.globalDataService.erstelleMessage(
+        this.uiMessageService.erstelleMessage(
           'error',
           'Mindestens ein ausgewähltes Mitglied hat für diese Art keine erlaubte Stufe laut Voraussetzungen.',
         );
@@ -448,7 +455,7 @@ export class JugendComponent implements OnInit {
 
       const missingLevel = teilnehmerLevels.some((item) => item.level === null);
       if (missingLevel) {
-        this.globalDataService.erstelleMessage(
+        this.uiMessageService.erstelleMessage(
           'error',
           'Für jedes ausgewählte Thema muss pro Teilnehmer ein Level erfasst werden.',
         );
@@ -460,7 +467,7 @@ export class JugendComponent implements OnInit {
       (item) => item.level !== null && !this.istEventLevelErlaubt(item.pkid, item.level),
     );
     if (ungueltigeLevel) {
-      this.globalDataService.erstelleMessage(
+      this.uiMessageService.erstelleMessage(
         'error',
         'Mindestens ein ausgewähltes Level ist laut Voraussetzungen nicht erlaubt.',
       );
@@ -478,26 +485,26 @@ export class JugendComponent implements OnInit {
 
     const id = this.formEvent.controls.id.value;
     if (!id) {
-      this.globalDataService.post('jugend/events', payload, false).subscribe({
+      this.apiHttpService.post('jugend/events', payload, false).subscribe({
         next: () => {
-          this.globalDataService.erstelleMessage('success', 'Event gespeichert.');
+          this.uiMessageService.erstelleMessage('success', 'Event gespeichert.');
           this.showEventForm = false;
           this.teilnehmerLevelByPkid.clear();
           this.loadEvents();
         },
-        error: (error) => this.globalDataService.errorAnzeigen(error),
+        error: (error) => this.authSessionService.errorAnzeigen(error),
       });
       return;
     }
 
-    this.globalDataService.patch('jugend/events', id, payload, false).subscribe({
+    this.apiHttpService.patch('jugend/events', id, payload, false).subscribe({
       next: () => {
-        this.globalDataService.erstelleMessage('success', 'Event aktualisiert.');
+        this.uiMessageService.erstelleMessage('success', 'Event aktualisiert.');
         this.showEventForm = false;
         this.teilnehmerLevelByPkid.clear();
         this.loadEvents();
       },
-      error: (error) => this.globalDataService.errorAnzeigen(error),
+      error: (error) => this.authSessionService.errorAnzeigen(error),
     });
   }
 
@@ -506,14 +513,14 @@ export class JugendComponent implements OnInit {
     if (!id) {
       return;
     }
-    this.globalDataService.delete('jugend/events', id).subscribe({
+    this.apiHttpService.delete('jugend/events', id).subscribe({
       next: () => {
-        this.globalDataService.erstelleMessage('success', 'Event gelöscht.');
+        this.uiMessageService.erstelleMessage('success', 'Event gelöscht.');
         this.showEventForm = false;
         this.teilnehmerLevelByPkid.clear();
         this.loadEvents();
       },
-      error: (error) => this.globalDataService.errorAnzeigen(error),
+      error: (error) => this.authSessionService.errorAnzeigen(error),
     });
   }
 
@@ -1022,7 +1029,7 @@ export class JugendComponent implements OnInit {
   }
 
   private loadJugendRegelKonfiguration(): void {
-    this.globalDataService.get<unknown>('modul_konfiguration').subscribe({
+    this.apiHttpService.get<unknown>('modul_konfiguration').subscribe({
       next: (erg) => {
         const eintraege = this.extractModulKonfigurationListe(erg);
         const jugendEintrag = eintraege.find(
@@ -1214,10 +1221,10 @@ export class JugendComponent implements OnInit {
     };
 
     if (existingAusbildung?.id) {
-      return this.globalDataService.patch('jugend/ausbildung', existingAusbildung.id, payload, false);
+      return this.apiHttpService.patch('jugend/ausbildung', existingAusbildung.id, payload, false);
     }
 
-    return this.globalDataService.post('jugend/ausbildung', payload, false);
+    return this.apiHttpService.post('jugend/ausbildung', payload, false);
   }
 
   private baueErprobungOderWissentestPayload(

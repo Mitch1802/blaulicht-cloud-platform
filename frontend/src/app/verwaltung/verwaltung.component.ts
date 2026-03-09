@@ -1,6 +1,10 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { GlobalDataService } from '../_service/global-data.service';
+import { ApiHttpService } from 'src/app/_service/api-http.service';
+import { AuthSessionService } from 'src/app/_service/auth-session.service';
+import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
+import { NavigationService } from 'src/app/_service/navigation.service';
+import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { MatCardModule } from '@angular/material/card';
 import { HeaderComponent } from '../_template/header/header.component';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -41,8 +45,11 @@ type RechnungPosition = {
   styleUrl: './verwaltung.component.sass'
 })
 export class VerwaltungComponent implements OnInit {
-  globalDataService = inject(GlobalDataService);
-
+  private apiHttpService = inject(ApiHttpService);
+  private authSessionService = inject(AuthSessionService);
+  private collectionUtilsService = inject(CollectionUtilsService);
+  private navigationService = inject(NavigationService);
+  private uiMessageService = inject(UiMessageService);
   title = 'Verwaltung';
   modul = 'verwaltung';
 
@@ -95,14 +102,14 @@ export class VerwaltungComponent implements OnInit {
     sessionStorage.setItem('PageNumber', '2');
     sessionStorage.setItem('Page2', 'VER');
 
-    this.breadcrumb = this.globalDataService.ladeBreadcrumb();
+    this.breadcrumb = this.navigationService.ladeBreadcrumb();
 
     let param = {
       'includeSevdesk': '1',
       'sevdeskModul': 'Contact'
     };
 
-    this.globalDataService.get(this.modul, param).subscribe({
+    this.apiHttpService.get(this.modul, param).subscribe({
       next: (erg: any) => {
         try {
           this.kontakte = erg.sevdesk.objects ?? [];
@@ -110,10 +117,10 @@ export class VerwaltungComponent implements OnInit {
           this.pdf_konfig = templates?.konfiguration ?? {};
           this.stammdaten = erg.konfig?.[0] ?? null;
         } catch (e: any) {
-          this.globalDataService.erstelleMessage('error', e);
+          this.uiMessageService.erstelleMessage('error', e);
         }
       },
-      error: (error: any) => this.globalDataService.errorAnzeigen(error)
+      error: (error: any) => this.authSessionService.errorAnzeigen(error)
     });
   }
 
@@ -219,15 +226,15 @@ export class VerwaltungComponent implements OnInit {
       invoice_total_betrag: betrag_total.toFixed(2)
     };
 
-    this.globalDataService.postBlob(abfrageUrl, payload).subscribe({
+    this.apiHttpService.postBlob(abfrageUrl, payload).subscribe({
       next: (blob: Blob) => {
         if (!blob || blob.size === 0) {
-          this.globalDataService.erstelleMessage('error', 'PDF ist leer (0 Bytes).');
+          this.uiMessageService.erstelleMessage('error', 'PDF ist leer (0 Bytes).');
           return;
         }
         window.open(URL.createObjectURL(blob), '_blank');
       },
-      error: (error: any) => this.globalDataService.errorAnzeigen(error)
+      error: (error: any) => this.authSessionService.errorAnzeigen(error)
     });
   }
 
@@ -235,7 +242,7 @@ export class VerwaltungComponent implements OnInit {
     const kontaktId = this.formAuswahl.controls.name.value;
     if (!kontaktId) return;
 
-    this.globalDataService.get('verwaltung/kontakte').subscribe({
+    this.apiHttpService.get('verwaltung/kontakte').subscribe({
       next: (erg: any) => {
         try {
           const kontakte = erg['Contact'];
@@ -248,10 +255,10 @@ export class VerwaltungComponent implements OnInit {
           this.formRechnung.controls.adresse_plz.setValue(kontaktAddresse.zip);
           this.formRechnung.controls.adresse_ort.setValue(kontaktAddresse.city);
         } catch (e: any) {
-          this.globalDataService.erstelleMessage('error', e);
+          this.uiMessageService.erstelleMessage('error', e);
         }
       },
-      error: (error: any) => this.globalDataService.errorAnzeigen(error)
+      error: (error: any) => this.authSessionService.errorAnzeigen(error)
     });
     
   }

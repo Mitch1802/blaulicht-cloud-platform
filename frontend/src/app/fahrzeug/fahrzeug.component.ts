@@ -21,7 +21,11 @@ import { MatSort, MatSortModule } from "@angular/material/sort";
 import { MatTableDataSource, MatTableModule } from "@angular/material/table";
 
 import { IFahrzeugDetail, IFahrzeugList, IFahrzeugRaum, IRaumItem } from "../_interface/fahrzeug";
-import { GlobalDataService } from "../_service/global-data.service";
+import { ApiHttpService } from 'src/app/_service/api-http.service';
+import { AuthSessionService } from 'src/app/_service/auth-session.service';
+import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
+import { NavigationService } from 'src/app/_service/navigation.service';
+import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { HeaderComponent } from "../_template/header/header.component";
 import { DateInputMaskDirective } from '../_directive/date-input-mask.directive';
 
@@ -65,7 +69,11 @@ type ItemDraftFG = FormGroup<{
   styleUrl: "./fahrzeug.component.sass",
 })
 export class FahrzeugComponent implements OnInit {
-  private gds = inject(GlobalDataService);
+  private apiHttpService = inject(ApiHttpService);
+  private authSessionService = inject(AuthSessionService);
+  private collectionUtilsService = inject(CollectionUtilsService);
+  private navigationService = inject(NavigationService);
+  private uiMessageService = inject(UiMessageService);
   private fb = inject(FormBuilder);
 
   breadcrumb: { label: string; url?: string }[] = [];
@@ -121,7 +129,7 @@ export class FahrzeugComponent implements OnInit {
   ngOnInit(): void {
     sessionStorage.setItem("PageNumber", "2");
     sessionStorage.setItem("Page2", "FZ");
-    this.breadcrumb = this.gds.ladeBreadcrumb();
+    this.breadcrumb = this.navigationService.ladeBreadcrumb();
     this.updateVisibleColumns();
     this.loadList();
   }
@@ -148,7 +156,7 @@ export class FahrzeugComponent implements OnInit {
   }
 
   private loadList(): void {
-    this.gds.get(this.modul).subscribe({
+    this.apiHttpService.get(this.modul).subscribe({
       next: (res: unknown) => {
         this.fahrzeuge = (res as IFahrzeugList[]) ?? [];
         this.dataSource.data = this.fahrzeuge;
@@ -158,7 +166,7 @@ export class FahrzeugComponent implements OnInit {
           if (this.sort) this.dataSource.sort = this.sort;
         });
       },
-      error: (err: unknown) => this.gds.errorAnzeigen(err),
+      error: (err: unknown) => this.authSessionService.errorAnzeigen(err),
     });
   }
 
@@ -207,7 +215,7 @@ export class FahrzeugComponent implements OnInit {
   }
 
   private loadDetail(id: string): void {
-    this.gds.get(`${this.modul}/${id}`).subscribe({
+    this.apiHttpService.get(`${this.modul}/${id}`).subscribe({
       next: (res: unknown) => {
         this.selected = res as IFahrzeugDetail;
 
@@ -227,7 +235,7 @@ export class FahrzeugComponent implements OnInit {
 
         this.resetFahrzeugFotoAuswahl();
       },
-      error: (err: unknown) => this.gds.errorAnzeigen(err),
+      error: (err: unknown) => this.authSessionService.errorAnzeigen(err),
     });
   }
 
@@ -243,7 +251,7 @@ export class FahrzeugComponent implements OnInit {
 
   openInventarFromEditor(): void {
     if (!this.selectedId) {
-      this.gds.erstelleMessage("error", "Bitte Fahrzeug zuerst speichern.");
+      this.uiMessageService.erstelleMessage("error", "Bitte Fahrzeug zuerst speichern.");
       return;
     }
 
@@ -252,7 +260,7 @@ export class FahrzeugComponent implements OnInit {
 
   backToFahrzeugEditor(): void {
     if (!this.selectedId) {
-      this.gds.erstelleMessage("error", "Bitte Fahrzeug zuerst auswählen.");
+      this.uiMessageService.erstelleMessage("error", "Bitte Fahrzeug zuerst auswählen.");
       return;
     }
 
@@ -304,7 +312,7 @@ export class FahrzeugComponent implements OnInit {
     const serviceNaechstes = this.normalizeDate(this.fahrzeugForm.controls.service_naechstes_am.value);
 
     if (this.isDateWindowInvalid(serviceZuletzt, serviceNaechstes)) {
-      this.gds.erstelleMessage(
+      this.uiMessageService.erstelleMessage(
         "error",
         "Service: Das nächste Datum darf nicht vor dem zuletzt erledigten Datum liegen."
       );
@@ -339,12 +347,12 @@ export class FahrzeugComponent implements OnInit {
 
   private isUploadTooLarge(file: File): boolean {
     const sizeKB = Math.round(file.size / 1024);
-    return sizeKB >= this.gds.MaxUploadSize;
+    return sizeKB >= this.apiHttpService.MaxUploadSize;
   }
 
   private showUploadTooLargeError(): void {
-    const maxMB = this.gds.MaxUploadSize / 1024;
-    this.gds.erstelleMessage("error", `Foto darf nicht größer als ${maxMB}MB sein!`);
+    const maxMB = this.apiHttpService.MaxUploadSize / 1024;
+    this.uiMessageService.erstelleMessage("error", `Foto darf nicht größer als ${maxMB}MB sein!`);
   }
 
   private resetFahrzeugFotoAuswahl(): void {
@@ -385,20 +393,20 @@ export class FahrzeugComponent implements OnInit {
   removeFahrzeugFoto(): void {
     if (!this.selectedId) return;
 
-    this.gds.patch(this.modul, this.selectedId, { remove_foto: true }, false).subscribe({
+    this.apiHttpService.patch(this.modul, this.selectedId, { remove_foto: true }, false).subscribe({
       next: () => {
-        this.gds.erstelleMessage("success", "Fahrzeugfoto entfernt.");
+        this.uiMessageService.erstelleMessage("success", "Fahrzeugfoto entfernt.");
         this.resetFahrzeugFotoAuswahl();
         this.loadList();
         this.loadDetail(this.selectedId!);
       },
-      error: (err: unknown) => this.gds.errorAnzeigen(err),
+      error: (err: unknown) => this.authSessionService.errorAnzeigen(err),
     });
   }
 
   saveFahrzeug(): void {
     if (this.fahrzeugForm.invalid) {
-      this.gds.erstelleMessage("error", "Bitte Name ausfüllen.");
+      this.uiMessageService.erstelleMessage("error", "Bitte Name ausfüllen.");
       return;
     }
 
@@ -410,22 +418,22 @@ export class FahrzeugComponent implements OnInit {
     if (!id) {
       if (this.fahrzeugFotoDatei) {
         const fd = this.toFahrzeugFormData(payload, this.fahrzeugFotoDatei);
-        this.gds.post(this.modul, fd, true).subscribe({
+        this.apiHttpService.post(this.modul, fd, true).subscribe({
           next: () => {
-            this.gds.erstelleMessage("success", "Fahrzeug erstellt.");
+            this.uiMessageService.erstelleMessage("success", "Fahrzeug erstellt.");
             this.closeEditor();
             this.loadList();
           },
-          error: (err: unknown) => this.gds.errorAnzeigen(err),
+          error: (err: unknown) => this.authSessionService.errorAnzeigen(err),
         });
       } else {
-        this.gds.post(this.modul, payload, false).subscribe({
+        this.apiHttpService.post(this.modul, payload, false).subscribe({
           next: () => {
-            this.gds.erstelleMessage("success", "Fahrzeug erstellt.");
+            this.uiMessageService.erstelleMessage("success", "Fahrzeug erstellt.");
             this.closeEditor();
             this.loadList();
           },
-          error: (err: unknown) => this.gds.errorAnzeigen(err),
+          error: (err: unknown) => this.authSessionService.errorAnzeigen(err),
         });
       }
       return;
@@ -433,22 +441,22 @@ export class FahrzeugComponent implements OnInit {
 
     if (this.fahrzeugFotoDatei) {
       const fd = this.toFahrzeugFormData(payload, this.fahrzeugFotoDatei);
-      this.gds.patch(this.modul, id, fd, true).subscribe({
+      this.apiHttpService.patch(this.modul, id, fd, true).subscribe({
         next: () => {
-          this.gds.erstelleMessage("success", "Fahrzeug gespeichert.");
+          this.uiMessageService.erstelleMessage("success", "Fahrzeug gespeichert.");
           this.closeEditor();
           this.loadList();
         },
-        error: (err: unknown) => this.gds.errorAnzeigen(err),
+        error: (err: unknown) => this.authSessionService.errorAnzeigen(err),
       });
     } else {
-      this.gds.patch(this.modul, id, payload, false).subscribe({
+      this.apiHttpService.patch(this.modul, id, payload, false).subscribe({
         next: () => {
-          this.gds.erstelleMessage("success", "Fahrzeug gespeichert.");
+          this.uiMessageService.erstelleMessage("success", "Fahrzeug gespeichert.");
           this.closeEditor();
           this.loadList();
         },
-        error: (err: unknown) => this.gds.errorAnzeigen(err),
+        error: (err: unknown) => this.authSessionService.errorAnzeigen(err),
       });
     }
   }
@@ -459,13 +467,13 @@ export class FahrzeugComponent implements OnInit {
     const name = this.selected?.name || this.fahrzeugForm.controls.name.value || "Unbenannt";
     if (!confirm(`Fahrzeug "${name}" wirklich löschen?`)) return;
 
-    this.gds.delete(this.modul, this.selectedId).subscribe({
+    this.apiHttpService.delete(this.modul, this.selectedId).subscribe({
       next: () => {
-        this.gds.erstelleMessage("success", "Fahrzeug gelöscht.");
+        this.uiMessageService.erstelleMessage("success", "Fahrzeug gelöscht.");
         this.closeEditor();
         this.loadList();
       },
-      error: (err: unknown) => this.gds.errorAnzeigen(err),
+      error: (err: unknown) => this.authSessionService.errorAnzeigen(err),
     });
   }
 
@@ -493,11 +501,11 @@ export class FahrzeugComponent implements OnInit {
 
   addRaum(): void {
     if (!this.selectedId) {
-      this.gds.erstelleMessage("error", "Bitte zuerst ein Fahrzeug auswählen.");
+      this.uiMessageService.erstelleMessage("error", "Bitte zuerst ein Fahrzeug auswählen.");
       return;
     }
     if (this.raumForm.invalid) {
-      this.gds.erstelleMessage("error", "Raumname fehlt.");
+      this.uiMessageService.erstelleMessage("error", "Raumname fehlt.");
       return;
     }
 
@@ -512,26 +520,26 @@ export class FahrzeugComponent implements OnInit {
       fd.append("reihenfolge", String(payload.reihenfolge));
       fd.append("foto", this.neuerRaumFotoDatei, this.neuerRaumFotoDatei.name || "upload.png");
 
-      this.gds.post(`fahrzeuge/${this.selectedId}/raeume`, fd, true).subscribe({
+      this.apiHttpService.post(`fahrzeuge/${this.selectedId}/raeume`, fd, true).subscribe({
         next: () => {
-          this.gds.erstelleMessage("success", "Raum angelegt.");
+          this.uiMessageService.erstelleMessage("success", "Raum angelegt.");
           this.raumForm.reset({ name: "", reihenfolge: 0 });
           this.resetNeuerRaumFotoAuswahl();
           this.loadDetail(this.selectedId!);
         },
-        error: (err: unknown) => this.gds.errorAnzeigen(err),
+        error: (err: unknown) => this.authSessionService.errorAnzeigen(err),
       });
       return;
     }
 
-    this.gds.post(`fahrzeuge/${this.selectedId}/raeume`, payload, false).subscribe({
+    this.apiHttpService.post(`fahrzeuge/${this.selectedId}/raeume`, payload, false).subscribe({
       next: () => {
-        this.gds.erstelleMessage("success", "Raum angelegt.");
+        this.uiMessageService.erstelleMessage("success", "Raum angelegt.");
         this.raumForm.reset({ name: "", reihenfolge: 0 });
         this.resetNeuerRaumFotoAuswahl();
         this.loadDetail(this.selectedId!);
       },
-      error: (err: unknown) => this.gds.errorAnzeigen(err),
+      error: (err: unknown) => this.authSessionService.errorAnzeigen(err),
     });
   }
 
@@ -586,7 +594,7 @@ export class FahrzeugComponent implements OnInit {
     const form = this.raumEditFormFor(raum);
     form.markAllAsTouched();
     if (form.invalid) {
-      this.gds.erstelleMessage("error", "Bitte Raumname ausfüllen.");
+      this.uiMessageService.erstelleMessage("error", "Bitte Raumname ausfüllen.");
       return;
     }
 
@@ -603,38 +611,38 @@ export class FahrzeugComponent implements OnInit {
       fd.append("reihenfolge", String(payload.reihenfolge));
       fd.append("foto", file, file.name || "upload.png");
 
-      this.gds.patch(`fahrzeuge/${this.selectedId}/raeume`, raum.id, fd, true).subscribe({
+      this.apiHttpService.patch(`fahrzeuge/${this.selectedId}/raeume`, raum.id, fd, true).subscribe({
         next: () => {
-          this.gds.erstelleMessage("success", `Raum "${raum.name}" gespeichert.`);
+          this.uiMessageService.erstelleMessage("success", `Raum "${raum.name}" gespeichert.`);
           this.raumFotoFiles.delete(raum.id);
           this.raumFotoNames.delete(raum.id);
           this.loadDetail(this.selectedId!);
         },
-        error: (err: unknown) => this.gds.errorAnzeigen(err),
+        error: (err: unknown) => this.authSessionService.errorAnzeigen(err),
       });
       return;
     }
 
-    this.gds.patch(`fahrzeuge/${this.selectedId}/raeume`, raum.id, payload, false).subscribe({
+    this.apiHttpService.patch(`fahrzeuge/${this.selectedId}/raeume`, raum.id, payload, false).subscribe({
       next: () => {
-        this.gds.erstelleMessage("success", `Raum "${raum.name}" gespeichert.`);
+        this.uiMessageService.erstelleMessage("success", `Raum "${raum.name}" gespeichert.`);
         this.loadDetail(this.selectedId!);
       },
-      error: (err: unknown) => this.gds.errorAnzeigen(err),
+      error: (err: unknown) => this.authSessionService.errorAnzeigen(err),
     });
   }
 
   removeRaumFoto(raum: IFahrzeugRaum): void {
     if (!this.selectedId) return;
 
-    this.gds.patch(`fahrzeuge/${this.selectedId}/raeume`, raum.id, { remove_foto: true }, false).subscribe({
+    this.apiHttpService.patch(`fahrzeuge/${this.selectedId}/raeume`, raum.id, { remove_foto: true }, false).subscribe({
       next: () => {
-        this.gds.erstelleMessage("success", `Raumfoto von "${raum.name}" entfernt.`);
+        this.uiMessageService.erstelleMessage("success", `Raumfoto von "${raum.name}" entfernt.`);
         this.raumFotoFiles.delete(raum.id);
         this.raumFotoNames.delete(raum.id);
         this.loadDetail(this.selectedId!);
       },
-      error: (err: unknown) => this.gds.errorAnzeigen(err),
+      error: (err: unknown) => this.authSessionService.errorAnzeigen(err),
     });
   }
 
@@ -642,12 +650,12 @@ export class FahrzeugComponent implements OnInit {
     if (!this.selectedId) return;
     if (!confirm(`Raum "${raum.name}" wirklich löschen? (Items werden mitgelöscht)`)) return;
 
-    this.gds.delete(`fahrzeuge/${this.selectedId}/raeume`, raum.id).subscribe({
+    this.apiHttpService.delete(`fahrzeuge/${this.selectedId}/raeume`, raum.id).subscribe({
       next: () => {
-        this.gds.erstelleMessage("success", "Raum gelöscht.");
+        this.uiMessageService.erstelleMessage("success", "Raum gelöscht.");
         this.loadDetail(this.selectedId!);
       },
-      error: (err: unknown) => this.gds.errorAnzeigen(err),
+      error: (err: unknown) => this.authSessionService.errorAnzeigen(err),
     });
   }
 
@@ -710,7 +718,7 @@ export class FahrzeugComponent implements OnInit {
     const wartungNaechstes = this.normalizeDate(form.controls.wartung_naechstes_am.value);
 
     if (this.isDateWindowInvalid(wartungZuletzt, wartungNaechstes)) {
-      this.gds.erstelleMessage(
+      this.uiMessageService.erstelleMessage(
         "error",
         "Wartung: Das nächste Datum darf nicht vor dem zuletzt erledigten Datum liegen."
       );
@@ -733,16 +741,16 @@ export class FahrzeugComponent implements OnInit {
     form.markAllAsTouched();
 
     if (form.invalid) {
-      this.gds.erstelleMessage("error", "Item-Name fehlt oder Menge ist ungültig.");
+      this.uiMessageService.erstelleMessage("error", "Item-Name fehlt oder Menge ist ungültig.");
       return;
     }
 
     const payload = this.buildItemPayload(form);
     if (!payload) return;
 
-    this.gds.post(`raeume/${raum.id}/items`, payload, false).subscribe({
+    this.apiHttpService.post(`raeume/${raum.id}/items`, payload, false).subscribe({
       next: () => {
-        this.gds.erstelleMessage("success", "Item angelegt.");
+        this.uiMessageService.erstelleMessage("success", "Item angelegt.");
         form.reset({
           name: "",
           menge: 1,
@@ -754,7 +762,7 @@ export class FahrzeugComponent implements OnInit {
         });
         if (this.selectedId) this.loadDetail(this.selectedId);
       },
-      error: (err: unknown) => this.gds.errorAnzeigen(err),
+      error: (err: unknown) => this.authSessionService.errorAnzeigen(err),
     });
   }
 
@@ -763,31 +771,31 @@ export class FahrzeugComponent implements OnInit {
     form.markAllAsTouched();
 
     if (form.invalid) {
-      this.gds.erstelleMessage("error", "Item-Name fehlt oder Menge ist ungültig.");
+      this.uiMessageService.erstelleMessage("error", "Item-Name fehlt oder Menge ist ungültig.");
       return;
     }
 
     const payload = this.buildItemPayload(form);
     if (!payload) return;
 
-    this.gds.patch(`raeume/${raum.id}/items`, item.id, payload, false).subscribe({
+    this.apiHttpService.patch(`raeume/${raum.id}/items`, item.id, payload, false).subscribe({
       next: () => {
-        this.gds.erstelleMessage("success", `Item "${item.name}" gespeichert.`);
+        this.uiMessageService.erstelleMessage("success", `Item "${item.name}" gespeichert.`);
         if (this.selectedId) this.loadDetail(this.selectedId);
       },
-      error: (err: unknown) => this.gds.errorAnzeigen(err),
+      error: (err: unknown) => this.authSessionService.errorAnzeigen(err),
     });
   }
 
   deleteItem(raum: IFahrzeugRaum, item: IRaumItem): void {
     if (!confirm(`Item "${item.name}" wirklich löschen?`)) return;
 
-    this.gds.delete(`raeume/${raum.id}/items`, item.id).subscribe({
+    this.apiHttpService.delete(`raeume/${raum.id}/items`, item.id).subscribe({
       next: () => {
-        this.gds.erstelleMessage("success", "Item gelöscht.");
+        this.uiMessageService.erstelleMessage("success", "Item gelöscht.");
         if (this.selectedId) this.loadDetail(this.selectedId);
       },
-      error: (err: unknown) => this.gds.errorAnzeigen(err),
+      error: (err: unknown) => this.authSessionService.errorAnzeigen(err),
     });
   }
 }

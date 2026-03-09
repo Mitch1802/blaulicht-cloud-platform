@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { catchError, map, of } from 'rxjs';
-import { GlobalDataService } from '../_service/global-data.service';
+import { ApiHttpService } from '../_service/api-http.service';
 
 const AUTH_GUARD_CACHE_KEY = 'auth_guard_ok_until';
 const AUTH_GUARD_CACHE_MS = 30_000;
@@ -32,14 +32,14 @@ const clearGuardCache = (): void => {
 };
 
 export const authGuard: CanActivateFn = () => {
-  const globalDataService = inject(GlobalDataService);
+  const apiHttpService = inject(ApiHttpService);
   const router = inject(Router);
 
   if (hasValidGuardCache()) {
     return of(true);
   }
 
-  return globalDataService.get('users/self').pipe(
+  return apiHttpService.get('users/self').pipe(
     map(() => {
       setGuardCache();
       return true;

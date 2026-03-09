@@ -2,10 +2,9 @@ import type { Meta, StoryObj } from '@storybook/angular';
 import { applicationConfig } from '@storybook/angular';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
-import { BehaviorSubject } from 'rxjs';
 
 import { HeaderComponent } from './header.component';
-import { GlobalDataService } from 'src/app/_service/global-data.service';
+import { AuthSessionService } from 'src/app/_service/auth-session.service';
 
 type HeaderStoryArgs = HeaderComponent & {
   breadcrumbPreset?: 'kurz' | 'mittel' | 'lang';
@@ -13,8 +12,7 @@ type HeaderStoryArgs = HeaderComponent & {
   mobileWidth?: boolean;
 };
 
-const createGlobalDataMock = (loading: boolean) => ({
-  loading$: new BehaviorSubject<boolean>(loading),
+const createAuthSessionMock = (_loading: boolean) => ({
   abmelden: () => {},
 });
 
@@ -73,8 +71,8 @@ const meta: Meta<HeaderStoryArgs> = {
         provideNoopAnimations(),
         provideRouter([]),
         {
-          provide: GlobalDataService,
-          useValue: createGlobalDataMock(false),
+          provide: AuthSessionService,
+          useValue: createAuthSessionMock(false),
         },
       ],
     }),
@@ -100,8 +98,8 @@ export const Loading: Story = {
     applicationConfig({
       providers: [
         {
-          provide: GlobalDataService,
-          useValue: createGlobalDataMock(true),
+          provide: AuthSessionService,
+          useValue: createAuthSessionMock(true),
         },
       ],
     }),
@@ -130,8 +128,8 @@ export const LongBreadcrumbMobileLoading: Story = {
     applicationConfig({
       providers: [
         {
-          provide: GlobalDataService,
-          useValue: createGlobalDataMock(true),
+          provide: AuthSessionService,
+          useValue: createAuthSessionMock(true),
         },
       ],
     }),
@@ -182,8 +180,8 @@ export const InteractiveBreadcrumbLength: Story = {
     applicationConfig: {
       providers: [
         {
-          provide: GlobalDataService,
-          useValue: createGlobalDataMock(args.loading ?? false),
+          provide: AuthSessionService,
+          useValue: createAuthSessionMock(args.loading ?? false),
         },
       ],
     },

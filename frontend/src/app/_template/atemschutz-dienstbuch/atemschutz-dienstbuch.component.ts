@@ -1,5 +1,9 @@
 import { Component, OnInit, QueryList, ViewChild, ViewChildren, inject } from '@angular/core';
-import { GlobalDataService } from 'src/app/_service/global-data.service';
+import { ApiHttpService } from 'src/app/_service/api-http.service';
+import { AuthSessionService } from 'src/app/_service/auth-session.service';
+import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
+import { NavigationService } from 'src/app/_service/navigation.service';
+import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { HeaderComponent } from '../header/header.component';
 import { MatCardModule } from '@angular/material/card';
 import { IAtemschutzGeraetProtokoll } from 'src/app/_interface/atemschutz_geraet_protokoll';
@@ -27,8 +31,11 @@ import { MatInputModule } from '@angular/material/input';
   styleUrl: './atemschutz-dienstbuch.component.sass'
 })
 export class AtemschutzDienstbuchComponent implements OnInit {
-  globalDataService = inject(GlobalDataService);
-
+  private apiHttpService = inject(ApiHttpService);
+  private authSessionService = inject(AuthSessionService);
+  private collectionUtilsService = inject(CollectionUtilsService);
+  private navigationService = inject(NavigationService);
+  private uiMessageService = inject(UiMessageService);
   title = "Dienstbuch verwalten";
   modul = "atemschutz/geraete/dienstbuch";
 
@@ -52,9 +59,9 @@ export class AtemschutzDienstbuchComponent implements OnInit {
   ngOnInit(): void {
     sessionStorage.setItem("PageNumber", "3");
     sessionStorage.setItem("Page3", "ATM_DB");
-    this.breadcrumb = this.globalDataService.ladeBreadcrumb();
+    this.breadcrumb = this.navigationService.ladeBreadcrumb();
 
-    this.globalDataService.get(this.modul).subscribe({
+    this.apiHttpService.get(this.modul).subscribe({
       next: (erg: any) => {
         try {
           this.protokoll = Array.isArray(erg.protokoll) ? erg.protokoll : [];
@@ -90,11 +97,11 @@ export class AtemschutzDienstbuchComponent implements OnInit {
 
           this.summenBerechnen(this.protokoll);
         } catch (e: any) {
-          this.globalDataService.erstelleMessage("error", e);
+          this.uiMessageService.erstelleMessage("error", e);
         }
       },
       error: (error: any) => {
-        this.globalDataService.errorAnzeigen(error);
+        this.authSessionService.errorAnzeigen(error);
       }
     });
   }

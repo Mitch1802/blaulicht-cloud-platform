@@ -2,7 +2,11 @@ import { Component, OnInit, inject, ViewChild, ElementRef } from '@angular/core'
 import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { INews } from 'src/app/_interface/news';
 import { INewsTemplate } from 'src/app/_interface/news-template';
-import { GlobalDataService } from 'src/app/_service/global-data.service';
+import { ApiHttpService } from 'src/app/_service/api-http.service';
+import { AuthSessionService } from 'src/app/_service/auth-session.service';
+import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
+import { NavigationService } from 'src/app/_service/navigation.service';
+import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
 import { MatSelect } from '@angular/material/select';
@@ -57,8 +61,11 @@ export class NewsComponent implements OnInit {
       this.newsDataSource.sort = s;
     }
   }
-
-  globalDataService = inject(GlobalDataService);
+  private apiHttpService = inject(ApiHttpService);
+  private authSessionService = inject(AuthSessionService);
+  private collectionUtilsService = inject(CollectionUtilsService);
+  private navigationService = inject(NavigationService);
+  private uiMessageService = inject(UiMessageService);
   router = inject(Router);
 
   title = 'News Verwaltung';
@@ -95,13 +102,13 @@ export class NewsComponent implements OnInit {
   ngOnInit(): void {
     sessionStorage.setItem('PageNumber', '2');
     sessionStorage.setItem('Page2', 'NEWS');
-    this.breadcrumb = this.globalDataService.ladeBreadcrumb();
+    this.breadcrumb = this.navigationService.ladeBreadcrumb();
 
     this.formModul.disable();
 
     forkJoin({
-      newsResponse: this.globalDataService.get(this.modul),
-      templateResponse: this.globalDataService.get(this.modulTemplates),
+      newsResponse: this.apiHttpService.get(this.modul),
+      templateResponse: this.apiHttpService.get(this.modulTemplates),
     }).subscribe({
       next: ({ newsResponse, templateResponse }: any) => {
         try {
@@ -109,11 +116,11 @@ export class NewsComponent implements OnInit {
           this.newsDataSource.data = this.newsArray;
           this.templateArray = this.sortTemplates(templateResponse as INewsTemplate[]);
         } catch (e: any) {
-          this.globalDataService.erstelleMessage('error', e);
+          this.uiMessageService.erstelleMessage('error', e);
         }
       },
       error: (error: any) => {
-        this.globalDataService.errorAnzeigen(error);
+        this.authSessionService.errorAnzeigen(error);
       }
     });
   }
@@ -127,13 +134,13 @@ export class NewsComponent implements OnInit {
   vorlageAnwenden(): void {
     const templateId = this.formModul.controls['template_id'].value;
     if (!templateId) {
-      this.globalDataService.erstelleMessage('info', 'Bitte zuerst eine Vorlage auswählen.');
+      this.uiMessageService.erstelleMessage('info', 'Bitte zuerst eine Vorlage auswählen.');
       return;
     }
 
     const selected = this.templateArray.find((tpl) => String(tpl.id) === String(templateId));
     if (!selected) {
-      this.globalDataService.erstelleMessage('error', 'Vorlage konnte nicht geladen werden.');
+      this.uiMessageService.erstelleMessage('error', 'Vorlage konnte nicht geladen werden.');
       return;
     }
 
@@ -143,13 +150,13 @@ export class NewsComponent implements OnInit {
       text: selected.text || '',
       typ: selected.typ || 'intern',
     });
-    this.globalDataService.erstelleMessage('success', 'Vorlage zum Bearbeiten geladen.');
+    this.uiMessageService.erstelleMessage('success', 'Vorlage zum Bearbeiten geladen.');
   }
 
   vorlageLoeschen(): void {
     const templateId = this.formModul.controls['template_id'].value;
     if (!templateId) {
-      this.globalDataService.erstelleMessage('info', 'Bitte zuerst eine Vorlage auswählen.');
+      this.uiMessageService.erstelleMessage('info', 'Bitte zuerst eine Vorlage auswählen.');
       return;
     }
 
@@ -160,13 +167,13 @@ export class NewsComponent implements OnInit {
       return;
     }
 
-    this.globalDataService.delete(this.modulTemplates, templateId).subscribe({
+    this.apiHttpService.delete(this.modulTemplates, templateId).subscribe({
       next: () => {
         this.templateArray = this.templateArray.filter((tpl) => String(tpl.id) !== String(templateId));
         this.formModul.patchValue({ template_id: '', template_name: '' });
-        this.globalDataService.erstelleMessage('success', 'Vorlage gelöscht.');
+        this.uiMessageService.erstelleMessage('success', 'Vorlage gelöscht.');
       },
-      error: (error: any) => this.globalDataService.errorAnzeigen(error),
+      error: (error: any) => this.authSessionService.errorAnzeigen(error),
     });
   }
 
@@ -178,7 +185,7 @@ export class NewsComponent implements OnInit {
     const typ = this.formModul.controls['typ'].value || 'intern';
 
     if (!name || !title || !text) {
-      this.globalDataService.erstelleMessage('error', 'Vorlagenname, Titel und Text sind erforderlich.');
+      this.uiMessageService.erstelleMessage('error', 'Vorlagenname, Titel und Text sind erforderlich.');
       return;
     }
 
@@ -191,25 +198,25 @@ export class NewsComponent implements OnInit {
     };
 
     const request$ = templateId
-      ? this.globalDataService.patch(this.modulTemplates, templateId, payload, false)
-      : this.globalDataService.post(this.modulTemplates, payload, false);
+      ? this.apiHttpService.patch(this.modulTemplates, templateId, payload, false)
+      : this.apiHttpService.post(this.modulTemplates, payload, false);
 
     request$.subscribe({
       next: (erg: any) => {
         const savedId = String(erg?.id || templateId || '');
-        this.globalDataService.get(this.modulTemplates).subscribe({
+        this.apiHttpService.get(this.modulTemplates).subscribe({
           next: (templates: any) => {
             this.templateArray = this.sortTemplates(templates as INewsTemplate[]);
             this.formModul.patchValue({
               template_id: savedId,
               template_name: String(erg?.name || name),
             });
-            this.globalDataService.erstelleMessage('success', templateId ? 'Vorlage aktualisiert.' : 'Vorlage gespeichert.');
+            this.uiMessageService.erstelleMessage('success', templateId ? 'Vorlage aktualisiert.' : 'Vorlage gespeichert.');
           },
-          error: (error: any) => this.globalDataService.errorAnzeigen(error),
+          error: (error: any) => this.authSessionService.errorAnzeigen(error),
         });
       },
-      error: (error: any) => this.globalDataService.errorAnzeigen(error),
+      error: (error: any) => this.authSessionService.errorAnzeigen(error),
     });
   }
 
@@ -253,18 +260,18 @@ export class NewsComponent implements OnInit {
     if (id === 0) {
       return;
     }
-    this.globalDataService.delete(this.modul, id).subscribe({
+    this.apiHttpService.delete(this.modul, id).subscribe({
       next: (erg: any) => {
         try {
           this.newsArray = this.newsArray.filter(n => n.id !== id);
           this.newsDataSource.data = this.newsArray;
           this.resetFormNachAktion();
-          this.globalDataService.erstelleMessage('success', 'News erfolgreich gelöscht!');
+          this.uiMessageService.erstelleMessage('success', 'News erfolgreich gelöscht!');
         } catch (e: any) {
-          this.globalDataService.erstelleMessage('error', e);
+          this.uiMessageService.erstelleMessage('error', e);
         }
       },
-      error: (error: any) => this.globalDataService.errorAnzeigen(error)
+      error: (error: any) => this.authSessionService.errorAnzeigen(error)
     });
   }
 
@@ -273,7 +280,7 @@ export class NewsComponent implements OnInit {
       return;
     }
     const abfrageUrl = `${this.modul}/${element.id}`;
-    this.globalDataService.get(abfrageUrl).subscribe({
+    this.apiHttpService.get(abfrageUrl).subscribe({
       next: (erg: any) => {
         try {
           let details: INews = erg;
@@ -305,15 +312,15 @@ export class NewsComponent implements OnInit {
           });
           this.setzeSelectZurueck();
         } catch (e: any) {
-          this.globalDataService.erstelleMessage('error', e);
+          this.uiMessageService.erstelleMessage('error', e);
         }
       },
-      error: (error: any) => this.globalDataService.errorAnzeigen(error)
+      error: (error: any) => this.authSessionService.errorAnzeigen(error)
     });
   }
 
   abbrechen(): void {
-    this.globalDataService.erstelleMessage('info', 'News nicht gespeichert!');
+    this.uiMessageService.erstelleMessage('info', 'News nicht gespeichert!');
     this.router.navigate(['/news']);
   }
 
@@ -349,35 +356,35 @@ export class NewsComponent implements OnInit {
         fd.append('typ', typ);
         fd.append('foto', file, file.name || 'upload.png');
 
-        this.globalDataService.post(this.modul, fd, true).subscribe({
+        this.apiHttpService.post(this.modul, fd, true).subscribe({
           next: (erg: any) => {
             try {
               const normalized = this.normalizeNewsItem(erg);
               this.newsArray.push(normalized);
               this.newsDataSource.data = this.newsArray;
               this.resetFormNachAktion();
-              this.globalDataService.erstelleMessage('success', 'News erfolgreich gespeichert!');
+              this.uiMessageService.erstelleMessage('success', 'News erfolgreich gespeichert!');
             } catch (e: any) {
-              this.globalDataService.erstelleMessage('error', e);
+              this.uiMessageService.erstelleMessage('error', e);
             }
           },
-          error: (error: any) => this.globalDataService.errorAnzeigen(error)
+          error: (error: any) => this.authSessionService.errorAnzeigen(error)
         });
       } else {
         // JSON ohne Bild
-        this.globalDataService.post(this.modul, { title, text, typ }, false).subscribe({
+        this.apiHttpService.post(this.modul, { title, text, typ }, false).subscribe({
           next: (erg: any) => {
             try {
               const normalized = this.normalizeNewsItem(erg);
               this.newsArray.push(normalized);
               this.newsDataSource.data = this.newsArray;
               this.resetFormNachAktion();
-              this.globalDataService.erstelleMessage('success', 'News erfolgreich gespeichert!');
+              this.uiMessageService.erstelleMessage('success', 'News erfolgreich gespeichert!');
             } catch (e: any) {
-              this.globalDataService.erstelleMessage('error', e);
+              this.uiMessageService.erstelleMessage('error', e);
             }
           },
-          error: (error: any) => this.globalDataService.errorAnzeigen(error)
+          error: (error: any) => this.authSessionService.errorAnzeigen(error)
         });
       }
     } else {
@@ -389,35 +396,35 @@ export class NewsComponent implements OnInit {
         fd.append('typ', typ);
         fd.append('foto', file, file.name || 'upload.png');
 
-        this.globalDataService.patch(this.modul, idValue, fd, true).subscribe({
+        this.apiHttpService.patch(this.modul, idValue, fd, true).subscribe({
           next: (erg: any) => {
             try {
               const normalized = this.normalizeNewsItem(erg);
               this.newsArray = this.newsArray.map(n => (n.id === normalized.id ? normalized : n));
               this.newsDataSource.data = this.newsArray;
               this.resetFormNachAktion();
-              this.globalDataService.erstelleMessage('success', 'News erfolgreich geändert!');
+              this.uiMessageService.erstelleMessage('success', 'News erfolgreich geändert!');
             } catch (e: any) {
-              this.globalDataService.erstelleMessage('error', e);
+              this.uiMessageService.erstelleMessage('error', e);
             }
           },
-          error: (error: any) => this.globalDataService.errorAnzeigen(error)
+          error: (error: any) => this.authSessionService.errorAnzeigen(error)
         });
       } else {
         // Nur Text/Titel ändern (JSON)
-        this.globalDataService.patch(this.modul, idValue, { title, text, typ }, false).subscribe({
+        this.apiHttpService.patch(this.modul, idValue, { title, text, typ }, false).subscribe({
           next: (erg: any) => {
             try {
               const normalized = this.normalizeNewsItem(erg);
               this.newsArray = this.newsArray.map(n => (n.id === normalized.id ? normalized : n));
               this.newsDataSource.data = this.newsArray;
               this.resetFormNachAktion();
-              this.globalDataService.erstelleMessage('success', 'News erfolgreich geändert!');
+              this.uiMessageService.erstelleMessage('success', 'News erfolgreich geändert!');
             } catch (e: any) {
-              this.globalDataService.erstelleMessage('error', e);
+              this.uiMessageService.erstelleMessage('error', e);
             }
           },
-          error: (error: any) => this.globalDataService.errorAnzeigen(error)
+          error: (error: any) => this.authSessionService.errorAnzeigen(error)
         });
       }
     }
@@ -437,11 +444,11 @@ export class NewsComponent implements OnInit {
       return;
     }
     const sizeKB = Math.round(file.size / 1024);
-    if (sizeKB >= this.globalDataService.MaxUploadSize) {
+    if (sizeKB >= this.apiHttpService.MaxUploadSize) {
       this.fileFound = false;
       this.fileName = '';
-      const maxMB = this.globalDataService.MaxUploadSize / 1024;
-      this.globalDataService.erstelleMessage('error', `Foto darf nicht größer als ${maxMB}MB sein!`);
+      const maxMB = this.apiHttpService.MaxUploadSize / 1024;
+      this.uiMessageService.erstelleMessage('error', `Foto darf nicht größer als ${maxMB}MB sein!`);
       // Input leeren
       if (this.fotoRef?.nativeElement) this.fotoRef.nativeElement.value = '';
     } else {

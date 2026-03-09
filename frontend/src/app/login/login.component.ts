@@ -1,7 +1,6 @@
 import { Component, HostListener, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { GlobalDataService } from '../_service/global-data.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormField, MatLabel, MatSuffix, MatError } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
@@ -10,6 +9,9 @@ import { MatButton, MatIconButton } from '@angular/material/button';
 import { environment } from 'src/environments/environment';
 import { CommonModule } from '@angular/common';
 import { finalize, switchMap } from 'rxjs';
+import { ApiHttpService } from '../_service/api-http.service';
+import { UiMessageService } from '../_service/ui-message.service';
+import { AuthSessionService } from '../_service/auth-session.service';
 
 type VersionInfo = {
   version: string;
@@ -41,7 +43,9 @@ type VersionInfo = {
 export class LoginComponent implements OnInit {
   private formBuilder = inject(FormBuilder);
   private router = inject(Router);
-  private globalDataService = inject(GlobalDataService);
+  private apiHttpService = inject(ApiHttpService);
+  private uiMessageService = inject(UiMessageService);
+  private authSessionService = inject(AuthSessionService);
 
   title: string = environment.title;
   modul: string = "auth/login";
@@ -57,7 +61,7 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.globalDataService.getURL<VersionInfo>('/assets/version.json').subscribe({
+    this.apiHttpService.getURL<VersionInfo>('/assets/version.json').subscribe({
       next: (v) => (this.versionInfo = v),
       error: () => (this.versionInfo = undefined),
     });
@@ -122,20 +126,20 @@ export class LoginComponent implements OnInit {
       "password": this.f.pwd.value
     };
 
-    this.globalDataService
+    this.apiHttpService
       .get('auth/csrf')
-      .pipe(switchMap(() => this.globalDataService.post(this.modul, data, false)))
+      .pipe(switchMap(() => this.apiHttpService.post(this.modul, data, false)))
       .pipe(finalize(() => (this.isSubmitting = false)))
       .subscribe({
         next: (erg: any) => {
           try {
             this.router.navigate(['/start']);
           } catch (e: any) {
-            this.globalDataService.erstelleMessage("error", e);
+            this.uiMessageService.erstelleMessage('error', String(e));
           }
         },
         error: (error: any) => {
-          this.globalDataService.errorAnzeigen(error);
+          this.authSessionService.errorAnzeigen(error);
         }
       });
   }

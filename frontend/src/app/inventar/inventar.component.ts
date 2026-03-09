@@ -16,7 +16,11 @@ import {
   FormsModule,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { GlobalDataService } from 'src/app/_service/global-data.service';
+import { ApiHttpService } from 'src/app/_service/api-http.service';
+import { AuthSessionService } from 'src/app/_service/auth-session.service';
+import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
+import { NavigationService } from 'src/app/_service/navigation.service';
+import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
 import { NgStyle } from '@angular/common';
@@ -71,8 +75,11 @@ export class InventarComponent implements OnInit, AfterViewInit {
   @ViewChild('fotoUpload', { static: false }) fotoRef!: ElementRef<HTMLInputElement>;
   @ViewChild(MatPaginator) paginator?: MatPaginator;
   @ViewChild(MatSort) sort?: MatSort;
-
-  globalDataService = inject(GlobalDataService);
+  private apiHttpService = inject(ApiHttpService);
+  private authSessionService = inject(AuthSessionService);
+  private collectionUtilsService = inject(CollectionUtilsService);
+  private navigationService = inject(NavigationService);
+  private uiMessageService = inject(UiMessageService);
   formatService = inject(FormatService);
   router = inject(Router);
   destroyRef = inject(DestroyRef);
@@ -128,23 +135,23 @@ export class InventarComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     sessionStorage.setItem('PageNumber', '2');
     sessionStorage.setItem('Page2', 'INV');
-    this.breadcrumb = this.globalDataService.ladeBreadcrumb();
+    this.breadcrumb = this.navigationService.ladeBreadcrumb();
 
     this.formModul.disable();
     this.observeLeihstatus();
 
-    this.globalDataService.get(this.modul).subscribe({
+    this.apiHttpService.get(this.modul).subscribe({
       next: (erg: any) => {
         try {
           this.inventarArray = this.convertNewsDate(erg) as IInventar[];
           this.dataSource.data = this.inventarArray;
           this.bindTableControls();
         } catch (e: any) {
-          this.globalDataService.erstelleMessage('error', e);
+          this.uiMessageService.erstelleMessage('error', e);
         }
       },
       error: (error: any) => {
-        this.globalDataService.errorAnzeigen(error);
+        this.authSessionService.errorAnzeigen(error);
       }
     });
   }
@@ -244,7 +251,7 @@ export class InventarComponent implements OnInit, AfterViewInit {
   openAusborgenModal(element: IInventar): void {
     const verfuegbar = this.getVerfuegbarFuerInventar(element);
     if (verfuegbar <= 0) {
-      this.globalDataService.erstelleMessage('info', 'Keine verfuegbare Menge zum Ausborgen vorhanden.');
+      this.uiMessageService.erstelleMessage('info', 'Keine verfuegbare Menge zum Ausborgen vorhanden.');
       return;
     }
 
@@ -262,7 +269,7 @@ export class InventarComponent implements OnInit, AfterViewInit {
   openRueckgabeModal(element: IInventar): void {
     const verleihungen = this.getVerleihungenAusInventar(element);
     if (verleihungen.length === 0) {
-      this.globalDataService.erstelleMessage('info', 'Keine aktive Verleihung fuer eine Rueckgabe vorhanden.');
+      this.uiMessageService.erstelleMessage('info', 'Keine aktive Verleihung fuer eine Rueckgabe vorhanden.');
       return;
     }
 
@@ -322,20 +329,20 @@ export class InventarComponent implements OnInit, AfterViewInit {
 
     const selection = this.getRueckgabeAuswahl();
     if (!selection) {
-      this.globalDataService.erstelleMessage('error', 'Bitte eine Verleihung fuer die Rueckgabe auswaehlen.');
+      this.uiMessageService.erstelleMessage('error', 'Bitte eine Verleihung fuer die Rueckgabe auswaehlen.');
       return;
     }
 
     const rueckgabeAnzahl = Number(this.rueckgabeForm.controls['anzahl'].value ?? 0);
     if (!Number.isInteger(rueckgabeAnzahl) || rueckgabeAnzahl <= 0) {
       this.rueckgabeForm.controls['anzahl'].markAsTouched();
-      this.globalDataService.erstelleMessage('error', 'Rueckgabe Anzahl muss eine ganze Zahl groesser 0 sein.');
+      this.uiMessageService.erstelleMessage('error', 'Rueckgabe Anzahl muss eine ganze Zahl groesser 0 sein.');
       return;
     }
 
     if (rueckgabeAnzahl > selection.anzahl) {
       this.rueckgabeForm.controls['anzahl'].markAsTouched();
-      this.globalDataService.erstelleMessage('error', 'Rueckgabe Anzahl ist groesser als die verliehene Menge.');
+      this.uiMessageService.erstelleMessage('error', 'Rueckgabe Anzahl ist groesser als die verliehene Menge.');
       return;
     }
 
@@ -352,7 +359,7 @@ export class InventarComponent implements OnInit, AfterViewInit {
       })
       .filter((eintrag) => eintrag.anzahl > 0);
 
-    this.globalDataService.patch(this.modul, artikel.id, { verleihungen: neueVerleihungen }, false).subscribe({
+    this.apiHttpService.patch(this.modul, artikel.id, { verleihungen: neueVerleihungen }, false).subscribe({
       next: (updateErg: any) => {
         try {
           const updated = updateErg as IInventar;
@@ -362,12 +369,12 @@ export class InventarComponent implements OnInit, AfterViewInit {
           this.dataSource.data = this.inventarArray;
           this.bindTableControls();
           this.closeRueckgabeModal();
-          this.globalDataService.erstelleMessage('success', 'Rueckgabe erfolgreich gespeichert.');
+          this.uiMessageService.erstelleMessage('success', 'Rueckgabe erfolgreich gespeichert.');
         } catch (e: any) {
-          this.globalDataService.erstelleMessage('error', e);
+          this.uiMessageService.erstelleMessage('error', e);
         }
       },
-      error: (error: any) => this.globalDataService.errorAnzeigen(error),
+      error: (error: any) => this.authSessionService.errorAnzeigen(error),
     });
   }
 
@@ -383,24 +390,24 @@ export class InventarComponent implements OnInit, AfterViewInit {
 
     if (!an) {
       this.ausborgenForm.controls['an'].markAsTouched();
-      this.globalDataService.erstelleMessage('error', 'Bitte Empfaenger angeben.');
+      this.uiMessageService.erstelleMessage('error', 'Bitte Empfaenger angeben.');
       return;
     }
 
     if (!Number.isInteger(anzahl) || anzahl <= 0) {
       this.ausborgenForm.controls['anzahl'].markAsTouched();
-      this.globalDataService.erstelleMessage('error', 'Anzahl muss eine ganze Zahl groesser 0 sein.');
+      this.uiMessageService.erstelleMessage('error', 'Anzahl muss eine ganze Zahl groesser 0 sein.');
       return;
     }
 
     const verfuegbar = this.getVerfuegbarFuerInventar(artikel);
     if (anzahl > verfuegbar) {
       this.ausborgenForm.controls['anzahl'].markAsTouched();
-      this.globalDataService.erstelleMessage('error', 'Angefragte Menge ist groesser als verfuegbar.');
+      this.uiMessageService.erstelleMessage('error', 'Angefragte Menge ist groesser als verfuegbar.');
       return;
     }
 
-    this.globalDataService.get(`${this.modul}/${artikel.id}`).subscribe({
+    this.apiHttpService.get(`${this.modul}/${artikel.id}`).subscribe({
       next: (erg: any) => {
         try {
           const details = erg as IInventar;
@@ -416,7 +423,7 @@ export class InventarComponent implements OnInit, AfterViewInit {
             ],
           };
 
-          this.globalDataService.patch(this.modul, artikel.id, payload, false).subscribe({
+          this.apiHttpService.patch(this.modul, artikel.id, payload, false).subscribe({
             next: (updateErg: any) => {
               try {
                 const updated = updateErg as IInventar;
@@ -426,18 +433,18 @@ export class InventarComponent implements OnInit, AfterViewInit {
                 this.dataSource.data = this.inventarArray;
                 this.bindTableControls();
                 this.closeAusborgenModal();
-                this.globalDataService.erstelleMessage('success', 'Inventar erfolgreich ausgeborgt.');
+                this.uiMessageService.erstelleMessage('success', 'Inventar erfolgreich ausgeborgt.');
               } catch (e: any) {
-                this.globalDataService.erstelleMessage('error', e);
+                this.uiMessageService.erstelleMessage('error', e);
               }
             },
-            error: (error: any) => this.globalDataService.errorAnzeigen(error),
+            error: (error: any) => this.authSessionService.errorAnzeigen(error),
           });
         } catch (e: any) {
-          this.globalDataService.erstelleMessage('error', e);
+          this.uiMessageService.erstelleMessage('error', e);
         }
       },
-      error: (error: any) => this.globalDataService.errorAnzeigen(error),
+      error: (error: any) => this.authSessionService.errorAnzeigen(error),
     });
   }
 
@@ -616,18 +623,18 @@ export class InventarComponent implements OnInit, AfterViewInit {
 
   datenLoeschen(): void {
     const id = this.formModul.controls['id'].value!;
-    this.globalDataService.delete(this.modul, id).subscribe({
+    this.apiHttpService.delete(this.modul, id).subscribe({
       next: (erg: any) => {
         try {
           this.inventarArray = this.inventarArray.filter(n => n.id !== id);
           this.dataSource.data = this.inventarArray;
           this.resetFormNachAktion();
-          this.globalDataService.erstelleMessage('success', 'Inventar erfolgreich gelöscht!');
+          this.uiMessageService.erstelleMessage('success', 'Inventar erfolgreich gelöscht!');
         } catch (e: any) {
-          this.globalDataService.erstelleMessage('error', e);
+          this.uiMessageService.erstelleMessage('error', e);
         }
       },
-      error: (error: any) => this.globalDataService.errorAnzeigen(error)
+      error: (error: any) => this.authSessionService.errorAnzeigen(error)
     });
   }
 
@@ -636,7 +643,7 @@ export class InventarComponent implements OnInit, AfterViewInit {
       return;
     }
     const abfrageUrl = `${this.modul}/${element.id}`;
-    this.globalDataService.get(abfrageUrl).subscribe({
+    this.apiHttpService.get(abfrageUrl).subscribe({
       next: (erg: any) => {
         try {
           let details: IInventar = erg;
@@ -681,15 +688,15 @@ export class InventarComponent implements OnInit, AfterViewInit {
             this.verleihungenForm = [this.createLeihEintrag()];
           }
         } catch (e: any) {
-          this.globalDataService.erstelleMessage('error', e);
+          this.uiMessageService.erstelleMessage('error', e);
         }
       },
-      error: (error: any) => this.globalDataService.errorAnzeigen(error)
+      error: (error: any) => this.authSessionService.errorAnzeigen(error)
     });
   }
 
   abbrechen(): void {
-    this.globalDataService.erstelleMessage('info', 'Inventar nicht gespeichert!');
+    this.uiMessageService.erstelleMessage('info', 'Inventar nicht gespeichert!');
     this.router.navigate(['/inventar']);
   }
 
@@ -732,7 +739,7 @@ export class InventarComponent implements OnInit, AfterViewInit {
     const file = this.getSelectedFile();
 
     if (this.isWartungWindowInvalid(wartungZuletztAm, wartungNaechstesAm)) {
-      this.globalDataService.erstelleMessage(
+      this.uiMessageService.erstelleMessage(
         'error',
         'Wartung: Das nächste Datum darf nicht vor dem zuletzt erledigten Datum liegen.'
       );
@@ -740,7 +747,7 @@ export class InventarComponent implements OnInit, AfterViewInit {
     }
 
     if (leihdatenResult.error) {
-      this.globalDataService.erstelleMessage('error', leihdatenResult.error);
+      this.uiMessageService.erstelleMessage('error', leihdatenResult.error);
       return;
     }
 
@@ -771,39 +778,39 @@ export class InventarComponent implements OnInit, AfterViewInit {
         fd.append('verleihungen', JSON.stringify(payload.verleihungen));
         fd.append('foto', file, file.name || 'upload.png');
 
-        this.globalDataService.post(this.modul, fd, true).subscribe({
+        this.apiHttpService.post(this.modul, fd, true).subscribe({
           next: (erg: any) => {
             try {
               const newMask: IInventar = erg;
               this.inventarArray.push(newMask);
-              this.inventarArray = this.globalDataService.arraySortByKey(this.inventarArray, 'bezeichnung');
+              this.inventarArray = this.collectionUtilsService.arraySortByKey(this.inventarArray, 'bezeichnung');
               this.dataSource.data = this.inventarArray;
               this.bindTableControls();
               this.resetFormNachAktion();
-              this.globalDataService.erstelleMessage('success', 'Inventar erfolgreich gespeichert!');
+              this.uiMessageService.erstelleMessage('success', 'Inventar erfolgreich gespeichert!');
             } catch (e: any) {
-              this.globalDataService.erstelleMessage('error', e);
+              this.uiMessageService.erstelleMessage('error', e);
             }
           },
-          error: (error: any) => this.globalDataService.errorAnzeigen(error)
+          error: (error: any) => this.authSessionService.errorAnzeigen(error)
         });
       } else {
         // JSON ohne Bild
-        this.globalDataService.post(this.modul, payload, false).subscribe({
+        this.apiHttpService.post(this.modul, payload, false).subscribe({
           next: (erg: any) => {
             try {
               const newMask: IInventar = erg;
               this.inventarArray.push(newMask);
-              this.inventarArray = this.globalDataService.arraySortByKey(this.inventarArray, 'bezeichnung');
+              this.inventarArray = this.collectionUtilsService.arraySortByKey(this.inventarArray, 'bezeichnung');
               this.dataSource.data = this.inventarArray;
               this.bindTableControls();
               this.resetFormNachAktion();
-              this.globalDataService.erstelleMessage('success', 'Inventar erfolgreich gespeichert!');
+              this.uiMessageService.erstelleMessage('success', 'Inventar erfolgreich gespeichert!');
             } catch (e: any) {
-              this.globalDataService.erstelleMessage('error', e);
+              this.uiMessageService.erstelleMessage('error', e);
             }
           },
-          error: (error: any) => this.globalDataService.errorAnzeigen(error)
+          error: (error: any) => this.authSessionService.errorAnzeigen(error)
         });
       }
     } else {
@@ -823,7 +830,7 @@ export class InventarComponent implements OnInit, AfterViewInit {
         fd.append('verleihungen', JSON.stringify(payload.verleihungen));
         fd.append('foto', file, file.name || 'upload.png');
 
-        this.globalDataService.patch(this.modul, idValue, fd, true).subscribe({
+        this.apiHttpService.patch(this.modul, idValue, fd, true).subscribe({
           next: (erg: any) => {
             try {
               const updated: any = erg;
@@ -834,16 +841,16 @@ export class InventarComponent implements OnInit, AfterViewInit {
               this.dataSource.data = this.inventarArray;
               this.bindTableControls();
               this.resetFormNachAktion();
-              this.globalDataService.erstelleMessage('success', 'Inventar erfolgreich geändert!');
+              this.uiMessageService.erstelleMessage('success', 'Inventar erfolgreich geändert!');
             } catch (e: any) {
-              this.globalDataService.erstelleMessage('error', e);
+              this.uiMessageService.erstelleMessage('error', e);
             }
           },
-          error: (error: any) => this.globalDataService.errorAnzeigen(error)
+          error: (error: any) => this.authSessionService.errorAnzeigen(error)
         });
       } else {
         // Nur Text/Titel ändern (JSON)
-        this.globalDataService.patch(this.modul, idValue, payload, false).subscribe({
+        this.apiHttpService.patch(this.modul, idValue, payload, false).subscribe({
           next: (erg: any) => {
             try {
               const updated: any = erg;
@@ -854,12 +861,12 @@ export class InventarComponent implements OnInit, AfterViewInit {
               this.dataSource.data = this.inventarArray;
               this.bindTableControls();
               this.resetFormNachAktion();
-              this.globalDataService.erstelleMessage('success', 'Inventar erfolgreich geändert!');
+              this.uiMessageService.erstelleMessage('success', 'Inventar erfolgreich geändert!');
             } catch (e: any) {
-              this.globalDataService.erstelleMessage('error', e);
+              this.uiMessageService.erstelleMessage('error', e);
             }
           },
-          error: (error: any) => this.globalDataService.errorAnzeigen(error)
+          error: (error: any) => this.authSessionService.errorAnzeigen(error)
         });
       }
     }
@@ -873,11 +880,11 @@ export class InventarComponent implements OnInit, AfterViewInit {
       return;
     }
     const sizeKB = Math.round(file.size / 1024);
-    if (sizeKB >= this.globalDataService.MaxUploadSize) {
+    if (sizeKB >= this.apiHttpService.MaxUploadSize) {
       this.fileFound = false;
       this.fileName = '';
-      const maxMB = this.globalDataService.MaxUploadSize / 1024;
-      this.globalDataService.erstelleMessage('error', `Foto darf nicht größer als ${maxMB}MB sein!`);
+      const maxMB = this.apiHttpService.MaxUploadSize / 1024;
+      this.uiMessageService.erstelleMessage('error', `Foto darf nicht größer als ${maxMB}MB sein!`);
       // Input leeren
       if (this.fotoRef?.nativeElement) this.fotoRef.nativeElement.value = '';
     } else {

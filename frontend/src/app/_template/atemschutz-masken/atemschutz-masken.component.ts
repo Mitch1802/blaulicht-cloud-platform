@@ -1,5 +1,9 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { GlobalDataService } from 'src/app/_service/global-data.service';
+import { ApiHttpService } from 'src/app/_service/api-http.service';
+import { AuthSessionService } from 'src/app/_service/auth-session.service';
+import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
+import { NavigationService } from 'src/app/_service/navigation.service';
+import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { HeaderComponent } from '../header/header.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -51,8 +55,11 @@ import { DateInputMaskDirective } from '../../_directive/date-input-mask.directi
   styleUrl: './atemschutz-masken.component.sass',
 })
 export class AtemschutzMaskenComponent implements OnInit {
-  globalDataService = inject(GlobalDataService);
-
+  private apiHttpService = inject(ApiHttpService);
+  private authSessionService = inject(AuthSessionService);
+  private collectionUtilsService = inject(CollectionUtilsService);
+  private navigationService = inject(NavigationService);
+  private uiMessageService = inject(UiMessageService);
   title = 'Masken verwalten';
   title_modul = this.title;
   title_pruefung = 'Masken prüfen';
@@ -116,22 +123,22 @@ export class AtemschutzMaskenComponent implements OnInit {
   ngOnInit(): void {
     sessionStorage.setItem('PageNumber', '3');
     sessionStorage.setItem('Page3', 'ATM_M');
-    this.breadcrumb = this.globalDataService.ladeBreadcrumb();
+    this.breadcrumb = this.navigationService.ladeBreadcrumb();
     this.formModul.disable();
     this.formPruefung.disable();
     this.loadCurrentUserRoles();
 
-    this.globalDataService.get(this.modul).subscribe({
+    this.apiHttpService.get(this.modul).subscribe({
       next: (erg: any) => {
         try {
           this.masken = erg;
           this.dataSource.data = erg;
         } catch (e: any) {
-          this.globalDataService.erstelleMessage('error', e);
+          this.uiMessageService.erstelleMessage('error', e);
         }
       },
       error: (error: any) => {
-        this.globalDataService.errorAnzeigen(error);
+        this.authSessionService.errorAnzeigen(error);
       },
     });
   }
@@ -142,7 +149,7 @@ export class AtemschutzMaskenComponent implements OnInit {
 
   neuePruefung(): void {
     if (this.rolesResolved && !this.canEditProtocol) {
-      this.globalDataService.erstelleMessage('info', 'Nur ADMIN/PROTOKOLL dürfen Protokolle anlegen.');
+      this.uiMessageService.erstelleMessage('info', 'Nur ADMIN/PROTOKOLL dürfen Protokolle anlegen.');
       return;
     }
     this.showPruefungForm = true;
@@ -152,7 +159,7 @@ export class AtemschutzMaskenComponent implements OnInit {
 
   neuePruefungVonMaske(element: any): void {
     if (this.rolesResolved && !this.canEditProtocol) {
-      this.globalDataService.erstelleMessage('info', 'Nur ADMIN/PROTOKOLL dürfen Protokolle anlegen.');
+      this.uiMessageService.erstelleMessage('info', 'Nur ADMIN/PROTOKOLL dürfen Protokolle anlegen.');
       return;
     }
     this.showPruefungForm = true;
@@ -168,7 +175,7 @@ export class AtemschutzMaskenComponent implements OnInit {
     }
     const abfrageUrl = `${this.modul}/${element.id}`;
 
-    this.globalDataService.get(abfrageUrl).subscribe({
+    this.apiHttpService.get(abfrageUrl).subscribe({
       next: (erg: any) => {
         try {
           const details: IAtemschutzMaske = erg;
@@ -184,11 +191,11 @@ export class AtemschutzMaskenComponent implements OnInit {
             baujahr: details.baujahr,
           });
         } catch (e: any) {
-          this.globalDataService.erstelleMessage('error', e);
+          this.uiMessageService.erstelleMessage('error', e);
         }
       },
       error: (error: any) => {
-        this.globalDataService.errorAnzeigen(error);
+        this.authSessionService.errorAnzeigen(error);
       },
     });
   }
@@ -207,18 +214,18 @@ export class AtemschutzMaskenComponent implements OnInit {
     const abfrageUrl = `${this.modul}/protokoll`;
     const param = { maske_id: element.pkid };
 
-    this.globalDataService.get(abfrageUrl, param, true).subscribe({
+    this.apiHttpService.get(abfrageUrl, param, true).subscribe({
       next: (erg: any) => {
         try {
           this.showPruefungTable = true;
           this.pruefungen = erg;
           this.dataSourcePruefungen.data = this.pruefungen;
         } catch (e: any) {
-          this.globalDataService.erstelleMessage('error', e);
+          this.uiMessageService.erstelleMessage('error', e);
         }
       },
       error: (error: any) => {
-        this.globalDataService.errorAnzeigen(error);
+        this.authSessionService.errorAnzeigen(error);
       },
     });
   }
@@ -229,7 +236,7 @@ export class AtemschutzMaskenComponent implements OnInit {
     }
     const abfrageUrl = `${this.modul}/protokoll/${element.id}`;
 
-    this.globalDataService.get(abfrageUrl).subscribe({
+    this.apiHttpService.get(abfrageUrl).subscribe({
       next: (erg: any) => {
         try {
           this.showPruefungTable = false;
@@ -261,18 +268,18 @@ export class AtemschutzMaskenComponent implements OnInit {
             this.applyNoteOnlyMode();
           }
         } catch (e: any) {
-          this.globalDataService.erstelleMessage('error', e);
+          this.uiMessageService.erstelleMessage('error', e);
         }
       },
       error: (error: any) => {
-        this.globalDataService.errorAnzeigen(error);
+        this.authSessionService.errorAnzeigen(error);
       },
     });
   }
 
   datenSpeichern(): void {
     if (this.formModul.invalid) {
-      this.globalDataService.erstelleMessage(
+      this.uiMessageService.erstelleMessage(
         'error',
         'Bitte alle Pflichtfelder korrekt ausfüllen!'
       );
@@ -283,12 +290,12 @@ export class AtemschutzMaskenComponent implements OnInit {
     const idValue = this.formModul.controls['id'].value;
 
     if (!idValue) {
-      this.globalDataService.post(this.modul, objekt, false).subscribe({
+      this.apiHttpService.post(this.modul, objekt, false).subscribe({
         next: (erg: any) => {
           try {
             const newMask: IAtemschutzMaske = erg;
             this.masken.push(newMask);
-            this.masken = this.globalDataService.arraySortByKey(
+            this.masken = this.collectionUtilsService.arraySortByKey(
               this.masken,
               'inv_nr'
             );
@@ -304,18 +311,18 @@ export class AtemschutzMaskenComponent implements OnInit {
               baujahr: '',
             });
             this.formModul.disable();
-            this.globalDataService.erstelleMessage(
+            this.uiMessageService.erstelleMessage(
               'success',
               'Maske gespeichert!'
             );
           } catch (e: any) {
-            this.globalDataService.erstelleMessage('error', e);
+            this.uiMessageService.erstelleMessage('error', e);
           }
         },
-        error: (error: any) => this.globalDataService.errorAnzeigen(error),
+        error: (error: any) => this.authSessionService.errorAnzeigen(error),
       });
     } else {
-      this.globalDataService
+      this.apiHttpService
         .patch(this.modul, idValue, objekt, false)
         .subscribe({
           next: (erg: any) => {
@@ -338,22 +345,22 @@ export class AtemschutzMaskenComponent implements OnInit {
               });
               this.formModul.disable();
 
-              this.globalDataService.erstelleMessage(
+              this.uiMessageService.erstelleMessage(
                 'success',
                 'Maske geändert!'
               );
             } catch (e: any) {
-              this.globalDataService.erstelleMessage('error', e);
+              this.uiMessageService.erstelleMessage('error', e);
             }
           },
-          error: (error: any) => this.globalDataService.errorAnzeigen(error),
+          error: (error: any) => this.authSessionService.errorAnzeigen(error),
         });
     }
   }
 
   datenSpeichernProtokoll(): void {
     if (this.formPruefung.invalid) {
-      this.globalDataService.erstelleMessage(
+      this.uiMessageService.erstelleMessage(
         'error',
         'Bitte alle Pflichtfelder korrekt ausfüllen!'
       );
@@ -363,19 +370,19 @@ export class AtemschutzMaskenComponent implements OnInit {
 
     if (!idValue) {
       if (this.rolesResolved && !this.canEditProtocol) {
-        this.globalDataService.erstelleMessage('error', 'Nur ADMIN/PROTOKOLL dürfen Protokolle anlegen.');
+        this.uiMessageService.erstelleMessage('error', 'Nur ADMIN/PROTOKOLL dürfen Protokolle anlegen.');
         return;
       }
 
       const objekt: any = this.formPruefung.getRawValue();
-      this.globalDataService
+      this.apiHttpService
         .post(`${this.modul}/protokoll`, objekt, false)
         .subscribe({
           next: (erg: any) => {
             try {
               const newPrufung: IAtemschutzMaskeProtokoll = erg;
               this.pruefungen.push(newPrufung);
-              this.pruefungen = this.globalDataService.arraySortByKey(
+              this.pruefungen = this.collectionUtilsService.arraySortByKey(
                 this.pruefungen,
                 'datum'
               );
@@ -403,22 +410,22 @@ export class AtemschutzMaskenComponent implements OnInit {
               this.formPruefung.disable();
               this.showPruefungForm = false;
               this.showPruefungTable = false;
-              this.globalDataService.erstelleMessage(
+              this.uiMessageService.erstelleMessage(
                 'success',
                 'Protokoll gespeichert!'
               );
             } catch (e: any) {
-              this.globalDataService.erstelleMessage('error', e);
+              this.uiMessageService.erstelleMessage('error', e);
             }
           },
-          error: (error: any) => this.globalDataService.errorAnzeigen(error),
+          error: (error: any) => this.authSessionService.errorAnzeigen(error),
         });
     } else {
       const objekt: any = this.canEditProtocol
         ? this.formPruefung.getRawValue()
         : { notiz: this.formPruefung.controls['notiz'].value ?? '' };
 
-      this.globalDataService
+      this.apiHttpService
         .patch(`${this.modul}/protokoll`, idValue, objekt, false)
         .subscribe({
           next: (erg: any) => {
@@ -451,21 +458,21 @@ export class AtemschutzMaskenComponent implements OnInit {
               });
               this.formPruefung.disable();
               this.showPruefungTable = true;
-              this.globalDataService.erstelleMessage(
+              this.uiMessageService.erstelleMessage(
                 'success',
                 'Protokoll geändert!'
               );
             } catch (e: any) {
-              this.globalDataService.erstelleMessage('error', e);
+              this.uiMessageService.erstelleMessage('error', e);
             }
           },
-          error: (error: any) => this.globalDataService.errorAnzeigen(error),
+          error: (error: any) => this.authSessionService.errorAnzeigen(error),
         });
     }
   }
 
   abbrechen(): void {
-    this.globalDataService.erstelleMessage('info', 'Maske nicht gespeichert!');
+    this.uiMessageService.erstelleMessage('info', 'Maske nicht gespeichert!');
     this.formModul.reset({
       id: '',
       inv_nr: '',
@@ -479,7 +486,7 @@ export class AtemschutzMaskenComponent implements OnInit {
   }
 
   pruefungAbbrechen(): void {
-    this.globalDataService.erstelleMessage(
+    this.uiMessageService.erstelleMessage(
       'info',
       'Prüfung nicht gespeichert!'
     );
@@ -511,14 +518,14 @@ export class AtemschutzMaskenComponent implements OnInit {
   datenLoeschen(): void {
     const id = this.formModul.controls['id'].value!;
     if (!id) {
-      this.globalDataService.erstelleMessage(
+      this.uiMessageService.erstelleMessage(
         'error',
         'Keine Maske ausgewählt zum Löschen!'
       );
       return;
     }
 
-    this.globalDataService.delete(this.modul, id).subscribe({
+    this.apiHttpService.delete(this.modul, id).subscribe({
       next: (erg: any) => {
         try {
           this.masken = this.masken.filter((m: any) => m.id !== id);
@@ -535,36 +542,36 @@ export class AtemschutzMaskenComponent implements OnInit {
           });
           this.formModul.disable();
 
-          this.globalDataService.erstelleMessage(
+          this.uiMessageService.erstelleMessage(
             'success',
             'Maske erfolgreich gelöscht!'
           );
         } catch (e: any) {
-          this.globalDataService.erstelleMessage('error', e);
+          this.uiMessageService.erstelleMessage('error', e);
         }
       },
       error: (error: any) => {
-        this.globalDataService.errorAnzeigen(error);
+        this.authSessionService.errorAnzeigen(error);
       },
     });
   }
 
   datenProtokollLoeschen(): void {
     if (this.rolesResolved && !this.canEditProtocol) {
-      this.globalDataService.erstelleMessage('error', 'Nur ADMIN/PROTOKOLL dürfen Protokolle löschen.');
+      this.uiMessageService.erstelleMessage('error', 'Nur ADMIN/PROTOKOLL dürfen Protokolle löschen.');
       return;
     }
 
     const id = this.formPruefung.controls['id'].value!;
     if (!id) {
-      this.globalDataService.erstelleMessage(
+      this.uiMessageService.erstelleMessage(
         'error',
         'Kein Protokoll ausgewählt zum Löschen!'
       );
       return;
     }
 
-    this.globalDataService.delete(`${this.modul}/protokoll`, id).subscribe({
+    this.apiHttpService.delete(`${this.modul}/protokoll`, id).subscribe({
       next: (erg: any) => {
         try {
           this.pruefungen = this.pruefungen.filter((m: any) => m.id !== id);
@@ -592,16 +599,16 @@ export class AtemschutzMaskenComponent implements OnInit {
           this.formPruefung.disable();
           this.showPruefungForm = false;
           this.showPruefungTable = true;
-          this.globalDataService.erstelleMessage(
+          this.uiMessageService.erstelleMessage(
             'success',
             'Protokoll erfolgreich gelöscht!'
           );
         } catch (e: any) {
-          this.globalDataService.erstelleMessage('error', e);
+          this.uiMessageService.erstelleMessage('error', e);
         }
       },
       error: (error: any) => {
-        this.globalDataService.errorAnzeigen(error);
+        this.authSessionService.errorAnzeigen(error);
       },
     });
   }
@@ -639,7 +646,7 @@ export class AtemschutzMaskenComponent implements OnInit {
   }
 
   private loadCurrentUserRoles(): void {
-    this.globalDataService.get('users/self').subscribe({
+    this.apiHttpService.get('users/self').subscribe({
       next: (erg: any) => {
         const roles = this.extractRolesFromResponse(erg);
         if (roles.length > 0) {
@@ -653,7 +660,7 @@ export class AtemschutzMaskenComponent implements OnInit {
   }
 
   private loadRolesFromModulKonfiguration(): void {
-    this.globalDataService.get('modul_konfiguration').subscribe({
+    this.apiHttpService.get('modul_konfiguration').subscribe({
       next: (erg: any) => this.applyRoleState(this.extractRolesFromResponse(erg)),
       error: () => this.applyRoleState([])
     });

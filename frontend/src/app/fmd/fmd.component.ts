@@ -1,6 +1,10 @@
 import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild, inject, QueryList, ViewChildren } from '@angular/core';
 import { IMitglied } from 'src/app/_interface/mitglied';
-import { GlobalDataService } from 'src/app/_service/global-data.service';
+import { ApiHttpService } from 'src/app/_service/api-http.service';
+import { AuthSessionService } from 'src/app/_service/auth-session.service';
+import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
+import { NavigationService } from 'src/app/_service/navigation.service';
+import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { HeaderComponent } from '../_template/header/header.component';
 import { MatCardModule } from '@angular/material/card';
 import { Router } from '@angular/router';
@@ -53,7 +57,11 @@ Chart.register(ChartDataLabels);
 })
 
 export class FmdComponent implements OnInit, AfterViewInit {
-  globalDataService = inject(GlobalDataService);
+  private apiHttpService = inject(ApiHttpService);
+  private authSessionService = inject(AuthSessionService);
+  private collectionUtilsService = inject(CollectionUtilsService);
+  private navigationService = inject(NavigationService);
+  private uiMessageService = inject(UiMessageService);
   router = inject(Router);
   cd = inject(ChangeDetectorRef)
 
@@ -91,7 +99,7 @@ export class FmdComponent implements OnInit, AfterViewInit {
       liste = frei;
     }
 
-    return this.globalDataService.arraySortByKey(liste, 'stbnr');
+    return this.collectionUtilsService.arraySortByKey(liste, 'stbnr');
   }
 
   breadcrumb: any = [];
@@ -199,12 +207,12 @@ export class FmdComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     sessionStorage.setItem("PageNumber", "2");
     sessionStorage.setItem("Page2", "FMD");
-    this.breadcrumb = this.globalDataService.ladeBreadcrumb();
+    this.breadcrumb = this.navigationService.ladeBreadcrumb();
     this.formModul.disable();
 
     forkJoin({
-      main: this.globalDataService.get<any[]>(this.modul),
-      context: this.globalDataService.get<any>(`${this.modul}/context`),
+      main: this.apiHttpService.get<any[]>(this.modul),
+      context: this.apiHttpService.get<any>(`${this.modul}/context`),
     }).subscribe({
       next: ({ main, context }) => {
         try {
@@ -235,17 +243,17 @@ export class FmdComponent implements OnInit, AfterViewInit {
 
           this.mitglieder = this.mitglieder.filter((m: any) => m.hauptberuflich == false);
 
-          this.mitglieder = this.globalDataService.arraySortByKey(this.mitglieder, 'stbnr');
-          this.atstraeger = this.globalDataService.arraySortByKey(this.atstraeger, 'stbnr');
+          this.mitglieder = this.collectionUtilsService.arraySortByKey(this.mitglieder, 'stbnr');
+          this.atstraeger = this.collectionUtilsService.arraySortByKey(this.atstraeger, 'stbnr');
           this.dataSource.data = this.atstraeger;
           this.updateTauglichkeitFürAlle();
           this.updateChartData();
         } catch (e: any) {
-          this.globalDataService.erstelleMessage("error", e);
+          this.uiMessageService.erstelleMessage("error", e);
         }
       },
       error: (error: any) => {
-        this.globalDataService.errorAnzeigen(error);
+        this.authSessionService.errorAnzeigen(error);
       }
     });
   }
@@ -265,7 +273,7 @@ export class FmdComponent implements OnInit, AfterViewInit {
     }
     const abfrageUrl = `${this.modul}/${element.id}`;
 
-    this.globalDataService.get(abfrageUrl).subscribe({
+    this.apiHttpService.get(abfrageUrl).subscribe({
       next: (erg: any) => {
         try {
           const details: IATSTraeger = erg;
@@ -283,18 +291,18 @@ export class FmdComponent implements OnInit, AfterViewInit {
             fdisk_aenderung: details.fdisk_aenderung
           });
         } catch (e: any) {
-          this.globalDataService.erstelleMessage('error', e);
+          this.uiMessageService.erstelleMessage('error', e);
         }
       },
       error: (error: any) => {
-        this.globalDataService.errorAnzeigen(error);
+        this.authSessionService.errorAnzeigen(error);
       }
     });
   }
 
   datenSpeichern(): void {
     if (this.formModul.invalid) {
-      this.globalDataService.erstelleMessage('error', 'Bitte alle Pflichtfelder korrekt ausfüllen!');
+      this.uiMessageService.erstelleMessage('error', 'Bitte alle Pflichtfelder korrekt ausfüllen!');
       return;
     }
 
@@ -354,7 +362,7 @@ export class FmdComponent implements OnInit, AfterViewInit {
 
 
     if (!idValue) {
-      this.globalDataService.post(this.modul, objekt, false).subscribe({
+      this.apiHttpService.post(this.modul, objekt, false).subscribe({
         next: (erg: any) => {
           try {
             const newTraeger: any = erg;
@@ -368,7 +376,7 @@ export class FmdComponent implements OnInit, AfterViewInit {
             }
 
             this.atstraeger.push(newTraeger);
-            this.atstraeger = this.globalDataService.arraySortByKey(this.atstraeger, 'stbnr');
+            this.atstraeger = this.collectionUtilsService.arraySortByKey(this.atstraeger, 'stbnr');
             this.dataSource.data = this.atstraeger;
             this.updateChartData();
 
@@ -384,15 +392,15 @@ export class FmdComponent implements OnInit, AfterViewInit {
               fdisk_aenderung: ''
             });
             this.formModul.disable();
-            this.globalDataService.erstelleMessage('success', 'ATS Träger gespeichert!');
+            this.uiMessageService.erstelleMessage('success', 'ATS Träger gespeichert!');
           } catch (e: any) {
-            this.globalDataService.erstelleMessage('error', e);
+            this.uiMessageService.erstelleMessage('error', e);
           }
         },
-        error: (error: any) => this.globalDataService.errorAnzeigen(error)
+        error: (error: any) => this.authSessionService.errorAnzeigen(error)
       });
     } else {
-      this.globalDataService.patch(this.modul, idValue, objekt, false).subscribe({
+      this.apiHttpService.patch(this.modul, idValue, objekt, false).subscribe({
         next: (erg: any) => {
           try {
             const updated: any = erg;
@@ -423,18 +431,18 @@ export class FmdComponent implements OnInit, AfterViewInit {
             this.formModul.disable();
             this.updateChartData();
 
-            this.globalDataService.erstelleMessage('success', 'ATS Träger geändert!');
+            this.uiMessageService.erstelleMessage('success', 'ATS Träger geändert!');
           } catch (e: any) {
-            this.globalDataService.erstelleMessage('error', e);
+            this.uiMessageService.erstelleMessage('error', e);
           }
         },
-        error: (error: any) => this.globalDataService.errorAnzeigen(error)
+        error: (error: any) => this.authSessionService.errorAnzeigen(error)
       });
     }
   }
 
   abbrechen(): void {
-    this.globalDataService.erstelleMessage("info", "ATS Träger nicht gespeichert!");
+    this.uiMessageService.erstelleMessage("info", "ATS Träger nicht gespeichert!");
     this.formModul.reset({
       id: '',
       mitglied_id: 0,
@@ -452,11 +460,11 @@ export class FmdComponent implements OnInit, AfterViewInit {
   datenLoeschen(): void {
     const id = this.formModul.controls['id'].value!;
     if (!id) {
-      this.globalDataService.erstelleMessage('error', 'Kein ATS Träger ausgewählt zum Löschen!');
+      this.uiMessageService.erstelleMessage('error', 'Kein ATS Träger ausgewählt zum Löschen!');
       return;
     }
 
-    this.globalDataService.delete(this.modul, id).subscribe({
+    this.apiHttpService.delete(this.modul, id).subscribe({
       next: (erg: any) => {
         try {
           this.atstraeger = this.atstraeger.filter((m: any) => m.id !== id);
@@ -476,13 +484,13 @@ export class FmdComponent implements OnInit, AfterViewInit {
           });
           this.formModul.disable();
 
-          this.globalDataService.erstelleMessage('success', 'ATS Träger erfolgreich gelöscht!');
+          this.uiMessageService.erstelleMessage('success', 'ATS Träger erfolgreich gelöscht!');
         } catch (e: any) {
-          this.globalDataService.erstelleMessage('error', e);
+          this.uiMessageService.erstelleMessage('error', e);
         }
       },
       error: (error: any) => {
-        this.globalDataService.errorAnzeigen(error);
+        this.authSessionService.errorAnzeigen(error);
       }
     });
   }
@@ -740,24 +748,24 @@ export class FmdComponent implements OnInit, AfterViewInit {
       "mitglied_letzte_untersuchung": element.letzte_untersuchung ?? ""
     }
 
-    this.globalDataService.postBlob(abfrageUrl, payload).subscribe({
+    this.apiHttpService.postBlob(abfrageUrl, payload).subscribe({
       next: (blob: Blob) => {
         if (blob.size === 0) {
-          this.globalDataService.erstelleMessage('error', 'PDF ist leer (0 Bytes).');
+          this.uiMessageService.erstelleMessage('error', 'PDF ist leer (0 Bytes).');
           return;
         }
 
         const url = URL.createObjectURL(blob);
         window.open(url, '_blank');
       },
-      error: (error: any) => this.globalDataService.errorAnzeigen(error)
+      error: (error: any) => this.authSessionService.errorAnzeigen(error)
     });
   }
 
   printOffeneUntersuchugen(): void {
     const today = new Date();
     let data = this.atstraeger.filter((m: any) => m.naechste_untersuchung == null || Number(m.naechste_untersuchung) <= today.getFullYear());
-    data = this.globalDataService.arraySortByKey(data, 'naechste_untersuchung');
+    data = this.collectionUtilsService.arraySortByKey(data, 'naechste_untersuchung');
     this.printListe(data, "untersuchungen");
   }
 
@@ -882,7 +890,7 @@ export class FmdComponent implements OnInit, AfterViewInit {
       };
     });
 
-    const data_sort = this.globalDataService.arraySortByKey(data, "nachname");
+    const data_sort = this.collectionUtilsService.arraySortByKey(data, "nachname");
 
     this.printListe(data_sort, "gesamt");
   }
@@ -908,17 +916,17 @@ export class FmdComponent implements OnInit, AfterViewInit {
       "fmd_export_liste_typ": typ
     }
 
-    this.globalDataService.postBlob(abfrageUrl, payload).subscribe({
+    this.apiHttpService.postBlob(abfrageUrl, payload).subscribe({
       next: (blob: Blob) => {
         if (blob.size === 0) {
-          this.globalDataService.erstelleMessage('error', 'PDF ist leer (0 Bytes).');
+          this.uiMessageService.erstelleMessage('error', 'PDF ist leer (0 Bytes).');
           return;
         }
 
         const url = URL.createObjectURL(blob);
         window.open(url, '_blank');
       },
-      error: (error: any) => this.globalDataService.errorAnzeigen(error)
+      error: (error: any) => this.authSessionService.errorAnzeigen(error)
     });
 
   }

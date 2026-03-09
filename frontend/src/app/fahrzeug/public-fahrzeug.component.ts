@@ -14,7 +14,11 @@ import { MatSelectModule } from "@angular/material/select";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
 
 import { HeaderComponent } from "../_template/header/header.component";
-import { GlobalDataService } from "../_service/global-data.service";
+import { ApiHttpService } from 'src/app/_service/api-http.service';
+import { AuthSessionService } from 'src/app/_service/auth-session.service';
+import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
+import { NavigationService } from 'src/app/_service/navigation.service';
+import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { IFahrzeugPublic, IFahrzeugPublicList } from "../_interface/fahrzeug";
 import { CheckStatus, CHECK_STATUS_OPTIONS } from "./fahrzeug.constants";
 
@@ -40,7 +44,11 @@ import { CheckStatus, CHECK_STATUS_OPTIONS } from "./fahrzeug.constants";
 })
 export class PublicFahrzeugComponent implements OnInit {
   private route = inject(ActivatedRoute);
-  private gds = inject(GlobalDataService);
+  private apiHttpService = inject(ApiHttpService);
+  private authSessionService = inject(AuthSessionService);
+  private collectionUtilsService = inject(CollectionUtilsService);
+  private navigationService = inject(NavigationService);
+  private uiMessageService = inject(UiMessageService);
   private fb = inject(FormBuilder);
 
   breadcrumb: { label: string; url?: string }[] = [];
@@ -81,7 +89,7 @@ export class PublicFahrzeugComponent implements OnInit {
     // Breadcrumb, wenn du willst:
     // sessionStorage.setItem("PageNumber", "2");
     // sessionStorage.setItem("Page2", "FZ");
-    this.breadcrumb = this.gds.ladeBreadcrumb();
+    this.breadcrumb = this.navigationService.ladeBreadcrumb();
 
     this.publicId = String(this.route.snapshot.paramMap.get("publicId") ?? "").trim();
     this.selectedPublicId = this.publicId;
@@ -105,11 +113,11 @@ export class PublicFahrzeugComponent implements OnInit {
     const pin = this.pinForm.controls.pin.value.trim();
     this.loading = true;
 
-    this.gds.post(`public/pin/verify`, { pin }).subscribe({
+    this.apiHttpService.post(`public/pin/verify`, { pin }).subscribe({
       next: (res: any) => {
         const access = String(res?.access_token ?? "");
         if (!access) {
-          this.gds.erstelleMessage("error", "Kein Token erhalten.");
+          this.uiMessageService.erstelleMessage("error", "Kein Token erhalten.");
           return;
         }
 
@@ -120,7 +128,7 @@ export class PublicFahrzeugComponent implements OnInit {
 
         this.loadAfterVerify();
       },
-      error: (err: any) => this.gds.errorAnzeigen(err),
+      error: (err: any) => this.authSessionService.errorAnzeigen(err),
     }).add(() => {
       this.loading = false;
     });
@@ -170,12 +178,12 @@ export class PublicFahrzeugComponent implements OnInit {
     if (!this.token) return;
 
     this.loading = true;
-    this.gds.getWithBearer("public/fahrzeuge", this.token).subscribe({
+    this.apiHttpService.getWithBearer("public/fahrzeuge", this.token).subscribe({
       next: (res: any) => {
         const optionen = (res as IFahrzeugPublicList[]) ?? [];
         this.fahrzeugOptionen = optionen;
       },
-      error: (err: any) => this.gds.errorAnzeigen(err),
+      error: (err: any) => this.authSessionService.errorAnzeigen(err),
     }).add(() => {
       this.loading = false;
     });
@@ -186,13 +194,13 @@ export class PublicFahrzeugComponent implements OnInit {
 
     this.loading = true;
 
-    // Header Bearer via GlobalDataService.getWithBearer()
-    this.gds.getWithBearer(`public/fahrzeuge/${publicId}`, this.token).subscribe({
+    // Header Bearer via ApiHttpService.getWithBearer()
+    this.apiHttpService.getWithBearer(`public/fahrzeuge/${publicId}`, this.token).subscribe({
       next: (res: any) => {
         this.fahrzeug = res as IFahrzeugPublic;
         this.initDraft();
       },
-      error: (err: any) => this.gds.errorAnzeigen(err),
+      error: (err: any) => this.authSessionService.errorAnzeigen(err),
     }).add(() => {
       this.loading = false;
     });

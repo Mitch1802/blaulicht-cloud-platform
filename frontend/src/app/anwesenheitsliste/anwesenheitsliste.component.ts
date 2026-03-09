@@ -14,7 +14,11 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 
 import { HeaderComponent } from '../_template/header/header.component';
-import { GlobalDataService } from '../_service/global-data.service';
+import { ApiHttpService } from '../_service/api-http.service';
+import { AuthSessionService } from '../_service/auth-session.service';
+import { CollectionUtilsService } from '../_service/collection-utils.service';
+import { NavigationService } from '../_service/navigation.service';
+import { UiMessageService } from '../_service/ui-message.service';
 import { IAnwesenheitsliste } from '../_interface/anwesenheitsliste';
 import { IMitglied } from '../_interface/mitglied';
 import { UiPageLayoutComponent, UiSectionCardComponent } from '../ui-library';
@@ -49,7 +53,11 @@ export class AnwesenheitslisteComponent implements OnInit {
   @ViewChild(MatPaginator) paginator?: MatPaginator;
   @ViewChild(MatSort) sort?: MatSort;
 
-  globalDataService = inject(GlobalDataService);
+  private apiHttpService = inject(ApiHttpService);
+  private authSessionService = inject(AuthSessionService);
+  private collectionUtilsService = inject(CollectionUtilsService);
+  private navigationService = inject(NavigationService);
+  private uiMessageService = inject(UiMessageService);
   router = inject(Router);
 
   title = 'Anwesenheitsliste';
@@ -163,12 +171,12 @@ export class AnwesenheitslisteComponent implements OnInit {
       return;
     }
 
-    this.globalDataService.delete(`${this.modul}/${eintragId}/fotos`, foto.id).subscribe({
+    this.apiHttpService.delete(`${this.modul}/${eintragId}/fotos`, foto.id).subscribe({
       next: () => {
         this.bestehendeFotos = (this.bestehendeFotos || []).filter((entry) => String(entry.id) !== String(foto.id));
-        this.globalDataService.erstelleMessage('success', 'Foto gelöscht.');
+        this.uiMessageService.erstelleMessage('success', 'Foto gelöscht.');
       },
-      error: (error: any) => this.globalDataService.errorAnzeigen(error),
+      error: (error: any) => this.authSessionService.errorAnzeigen(error),
     });
   }
 
@@ -200,29 +208,29 @@ export class AnwesenheitslisteComponent implements OnInit {
   ngOnInit(): void {
     sessionStorage.setItem('PageNumber', '2');
     sessionStorage.setItem('Page2', 'ANW');
-    this.breadcrumb = this.globalDataService.ladeBreadcrumb();
+    this.breadcrumb = this.navigationService.ladeBreadcrumb();
 
     this.formModul.disable();
 
     forkJoin({
-      main: this.globalDataService.get<any[]>(this.modul),
-      context: this.globalDataService.get<any>(`${this.modul}/context`),
+      main: this.apiHttpService.get<any[]>(this.modul),
+      context: this.apiHttpService.get<any>(`${this.modul}/context`),
     }).subscribe({
       next: ({ main, context }) => {
         try {
           this.mitglieder = (context.mitglieder as IMitglied[]) ?? [];
-          this.mitglieder = this.globalDataService.arraySortByKey(this.mitglieder, 'stbnr');
+          this.mitglieder = this.collectionUtilsService.arraySortByKey(this.mitglieder, 'stbnr');
           this.mitgliederMap = new Map<number, IMitglied>(this.mitglieder.map((m) => [m.pkid, m]));
 
           this.eintraege = (main as IAnwesenheitsliste[]).map((item) => this.mapEintragMitMitgliedern(item));
           this.sortEintraege();
           this.bindTableControls();
         } catch (e: any) {
-          this.globalDataService.erstelleMessage('error', e);
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
       error: (error: any) => {
-        this.globalDataService.errorAnzeigen(error);
+        this.authSessionService.errorAnzeigen(error);
       }
     });
   }
@@ -238,7 +246,7 @@ export class AnwesenheitslisteComponent implements OnInit {
   }
 
   get dropdownMitglieder(): IMitglied[] {
-    return this.globalDataService.arraySortByKey(this.mitglieder, 'stbnr');
+    return this.collectionUtilsService.arraySortByKey(this.mitglieder, 'stbnr');
   }
 
   get filteredMitgliedOptionen(): IMitglied[] {
@@ -291,7 +299,7 @@ export class AnwesenheitslisteComponent implements OnInit {
     }
 
     const abfrageUrl = `${this.modul}/${element.id}`;
-    this.globalDataService.get(abfrageUrl).subscribe({
+    this.apiHttpService.get(abfrageUrl).subscribe({
       next: (erg: any) => {
         try {
           const details: IAnwesenheitsliste = erg;
@@ -308,10 +316,10 @@ export class AnwesenheitslisteComponent implements OnInit {
           this.resetFotoUploads();
           this.mitgliedSuche.setValue('');
         } catch (e: any) {
-          this.globalDataService.erstelleMessage('error', e);
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
-      error: (error: any) => this.globalDataService.errorAnzeigen(error)
+      error: (error: any) => this.authSessionService.errorAnzeigen(error)
     });
   }
 
@@ -319,7 +327,7 @@ export class AnwesenheitslisteComponent implements OnInit {
     const selectedMitgliedIds = this.formModul.controls['mitglied_ids'].value;
 
     if (this.formModul.invalid || selectedMitgliedIds.length === 0) {
-      this.globalDataService.erstelleMessage('error', 'Bitte alle Pflichtfelder korrekt ausfüllen!');
+      this.uiMessageService.erstelleMessage('error', 'Bitte alle Pflichtfelder korrekt ausfüllen!');
       return;
     }
 
@@ -327,34 +335,34 @@ export class AnwesenheitslisteComponent implements OnInit {
     const payload = this.buildFormDataPayload(selectedMitgliedIds);
 
     if (idValue === '') {
-      this.globalDataService.post(this.modul, payload, true).subscribe({
+      this.apiHttpService.post(this.modul, payload, true).subscribe({
         next: (erg: any) => {
           try {
             const neu = this.mapEintragMitMitgliedern(erg as IAnwesenheitsliste);
             this.eintraege.push(neu);
             this.sortEintraege();
             this.resetFormNachAktion();
-            this.globalDataService.erstelleMessage('success', 'Eintrag erfolgreich gespeichert!');
+            this.uiMessageService.erstelleMessage('success', 'Eintrag erfolgreich gespeichert!');
           } catch (e: any) {
-            this.globalDataService.erstelleMessage('error', e);
+            this.uiMessageService.erstelleMessage('error', String(e));
           }
         },
-        error: (error: any) => this.globalDataService.errorAnzeigen(error)
+        error: (error: any) => this.authSessionService.errorAnzeigen(error)
       });
     } else {
-      this.globalDataService.patch(this.modul, idValue, payload, true).subscribe({
+      this.apiHttpService.patch(this.modul, idValue, payload, true).subscribe({
         next: (erg: any) => {
           try {
             const geaendert = this.mapEintragMitMitgliedern(erg as IAnwesenheitsliste);
             this.eintraege = this.eintraege.map(item => item.id === geaendert.id ? geaendert : item);
             this.sortEintraege();
             this.resetFormNachAktion();
-            this.globalDataService.erstelleMessage('success', 'Eintrag erfolgreich gespeichert!');
+            this.uiMessageService.erstelleMessage('success', 'Eintrag erfolgreich gespeichert!');
           } catch (e: any) {
-            this.globalDataService.erstelleMessage('error', e);
+            this.uiMessageService.erstelleMessage('error', String(e));
           }
         },
-        error: (error: any) => this.globalDataService.errorAnzeigen(error)
+        error: (error: any) => this.authSessionService.errorAnzeigen(error)
       });
     }
   }
@@ -363,19 +371,19 @@ export class AnwesenheitslisteComponent implements OnInit {
     const idValue = this.formModul.controls['id'].value || '';
     if (!idValue) return;
 
-    this.globalDataService.delete(this.modul, idValue).subscribe({
+    this.apiHttpService.delete(this.modul, idValue).subscribe({
       next: () => {
         this.eintraege = this.eintraege.filter(item => item.id !== idValue);
         this.sortEintraege();
         this.resetFormNachAktion();
-        this.globalDataService.erstelleMessage('success', 'Eintrag erfolgreich gelöscht!');
+        this.uiMessageService.erstelleMessage('success', 'Eintrag erfolgreich gelöscht!');
       },
-      error: (error: any) => this.globalDataService.errorAnzeigen(error)
+      error: (error: any) => this.authSessionService.errorAnzeigen(error)
     });
   }
 
   abbrechen(): void {
-    this.globalDataService.erstelleMessage('info', 'Änderungen verworfen.');
+    this.uiMessageService.erstelleMessage('info', 'Änderungen verworfen.');
     this.router.navigate(['/anwesenheitsliste']);
   }
 

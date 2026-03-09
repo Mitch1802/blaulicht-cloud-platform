@@ -1,7 +1,11 @@
 import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HeaderComponent } from '../_template/header/header.component';
-import { GlobalDataService } from '../_service/global-data.service';
+import { ApiHttpService } from 'src/app/_service/api-http.service';
+import { AuthSessionService } from 'src/app/_service/auth-session.service';
+import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
+import { NavigationService } from 'src/app/_service/navigation.service';
+import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -85,8 +89,11 @@ type EinsatzberichtDto = {
   styleUrl: './einsatzbericht.component.sass'
 })
 export class EinsatzberichtComponent implements OnInit {
-  private globalDataService = inject(GlobalDataService);
-
+  private apiHttpService = inject(ApiHttpService);
+  private authSessionService = inject(AuthSessionService);
+  private collectionUtilsService = inject(CollectionUtilsService);
+  private navigationService = inject(NavigationService);
+  private uiMessageService = inject(UiMessageService);
   @ViewChild(MatPaginator) set matPaginator(p: MatPaginator | undefined) {
     if (p) this.dataSource.paginator = p;
   }
@@ -390,12 +397,12 @@ export class EinsatzberichtComponent implements OnInit {
       return;
     }
 
-    this.globalDataService.delete(`einsatzberichte/${berichtId}/fotos`, foto.id).subscribe({
+    this.apiHttpService.delete(`einsatzberichte/${berichtId}/fotos`, foto.id).subscribe({
       next: () => {
         this.bestehendeFotos = this.bestehendeFotos.filter((entry) => String(entry.id) !== String(foto.id));
-        this.globalDataService.erstelleMessage('success', 'Foto gelöscht.');
+        this.uiMessageService.erstelleMessage('success', 'Foto gelöscht.');
       },
-      error: (error: any) => this.globalDataService.errorAnzeigen(error),
+      error: (error: any) => this.authSessionService.errorAnzeigen(error),
     });
   }
 
@@ -459,7 +466,7 @@ export class EinsatzberichtComponent implements OnInit {
   ngOnInit(): void {
     sessionStorage.setItem('PageNumber', '2');
     sessionStorage.setItem('Page2', 'BER');
-    this.breadcrumb = this.globalDataService.ladeBreadcrumb();
+    this.breadcrumb = this.navigationService.ladeBreadcrumb();
 
     this.formBericht.controls.einsatzart.valueChanges.subscribe(() => {
       this.updateConditionalValidation();
@@ -475,7 +482,7 @@ export class EinsatzberichtComponent implements OnInit {
 
     this.updateConditionalValidation();
 
-    this.globalDataService.get<any>('einsatzberichte/context').subscribe({
+    this.apiHttpService.get<any>('einsatzberichte/context').subscribe({
       next: (context: any) => {
         this.fahrzeugOptionen = (context?.fahrzeuge ?? []).map((item: any) => ({
           id: Number(item.pkid),
@@ -492,10 +499,10 @@ export class EinsatzberichtComponent implements OnInit {
           label: item.name ?? `Stelle ${item.pkid}`,
         }));
       },
-      error: (error: any) => this.globalDataService.errorAnzeigen(error),
+      error: (error: any) => this.authSessionService.errorAnzeigen(error),
     });
 
-    this.globalDataService.get<any>('users/self').subscribe({
+    this.apiHttpService.get<any>('users/self').subscribe({
       next: (user: any) => {
         const roles: string[] = Array.isArray(user?.roles) ? user.roles : [];
         const isSuperuser = !!user?.is_superuser;
@@ -520,13 +527,13 @@ export class EinsatzberichtComponent implements OnInit {
   }
 
   ladeBerichte(): void {
-    this.globalDataService.get<any>('einsatzberichte').subscribe({
+    this.apiHttpService.get<any>('einsatzberichte').subscribe({
       next: (response: any) => {
         const data = Array.isArray(response) ? response : (response?.data ?? response?.results ?? []);
         this.berichte = data as EinsatzberichtDto[];
         this.dataSource.data = this.berichte;
       },
-      error: (error: any) => this.globalDataService.errorAnzeigen(error),
+      error: (error: any) => this.authSessionService.errorAnzeigen(error),
     });
   }
 
@@ -565,7 +572,7 @@ export class EinsatzberichtComponent implements OnInit {
 
   uebernehmeLetztenEinsatz(): void {
     this.neuerEntwurf();
-    this.globalDataService.get<any>('einsatzberichte/blaulichtsms/letzter').subscribe({
+    this.apiHttpService.get<any>('einsatzberichte/blaulichtsms/letzter').subscribe({
       next: (response: any) => {
         const mapped = response?.mapped ?? {};
         this.formBericht.patchValue({
@@ -582,9 +589,9 @@ export class EinsatzberichtComponent implements OnInit {
         this.einsatzleiterSuche.setValue(this.formBericht.controls.einsatzleiter.value);
 
         this.updateConditionalValidation();
-        this.globalDataService.erstelleMessage('success', 'Letzter Alarm von BlaulichtSMS übernommen.');
+        this.uiMessageService.erstelleMessage('success', 'Letzter Alarm von BlaulichtSMS übernommen.');
       },
-      error: (error: any) => this.globalDataService.errorAnzeigen(error),
+      error: (error: any) => this.authSessionService.errorAnzeigen(error),
     });
   }
 
@@ -626,26 +633,26 @@ export class EinsatzberichtComponent implements OnInit {
 
   statusUmschalten(bericht: EinsatzberichtDto): void {
     if (!this.canManageStatus) {
-      this.globalDataService.erstelleMessage('error', 'Nur Verwaltung oder Admin duerfen den Status aendern.');
+      this.uiMessageService.erstelleMessage('error', 'Nur Verwaltung oder Admin duerfen den Status aendern.');
       return;
     }
 
     const neuerStatus = bericht.status === 'ABGESCHLOSSEN' ? 'ENTWURF' : 'ABGESCHLOSSEN';
-    this.globalDataService.patch('einsatzberichte', bericht.id, { status: neuerStatus }, false).subscribe({
+    this.apiHttpService.patch('einsatzberichte', bericht.id, { status: neuerStatus }, false).subscribe({
       next: () => {
         if (this.formBericht.controls.id.value === bericht.id) {
           this.formBericht.controls.status.setValue(neuerStatus);
         }
-        this.globalDataService.erstelleMessage('success', `Status auf ${neuerStatus} gesetzt.`);
+        this.uiMessageService.erstelleMessage('success', `Status auf ${neuerStatus} gesetzt.`);
         this.ladeBerichte();
       },
-      error: (error: any) => this.globalDataService.errorAnzeigen(error),
+      error: (error: any) => this.authSessionService.errorAnzeigen(error),
     });
   }
 
   berichtLoeschen(bericht: EinsatzberichtDto): void {
     if (!this.canDeleteBerichte) {
-      this.globalDataService.erstelleMessage('error', 'Keine Berechtigung zum Löschen.');
+      this.uiMessageService.erstelleMessage('error', 'Keine Berechtigung zum Löschen.');
       return;
     }
 
@@ -654,12 +661,12 @@ export class EinsatzberichtComponent implements OnInit {
       return;
     }
 
-    this.globalDataService.delete('einsatzberichte', bericht.id).subscribe({
+    this.apiHttpService.delete('einsatzberichte', bericht.id).subscribe({
       next: () => {
-        this.globalDataService.erstelleMessage('success', 'Einsatzbericht gelöscht.');
+        this.uiMessageService.erstelleMessage('success', 'Einsatzbericht gelöscht.');
         this.ladeBerichte();
       },
-      error: (error: any) => this.globalDataService.errorAnzeigen(error),
+      error: (error: any) => this.authSessionService.errorAnzeigen(error),
     });
   }
 
@@ -760,13 +767,13 @@ export class EinsatzberichtComponent implements OnInit {
 
   speichereBericht(): void {
     if (!this.canEditBerichte) {
-      this.globalDataService.erstelleMessage('error', 'Nur Bericht oder Admin duerfen Inhalte speichern.');
+      this.uiMessageService.erstelleMessage('error', 'Nur Bericht oder Admin duerfen Inhalte speichern.');
       return;
     }
 
     if (this.formBericht.invalid) {
       this.formBericht.markAllAsTouched();
-      this.globalDataService.erstelleMessage('error', 'Bitte alle Pflichtfelder korrekt ausfüllen.');
+      this.uiMessageService.erstelleMessage('error', 'Bitte alle Pflichtfelder korrekt ausfüllen.');
       return;
     }
 
@@ -797,17 +804,17 @@ export class EinsatzberichtComponent implements OnInit {
     this.versicherungFiles.forEach((foto) => fd.append('fotos_versicherung', foto));
 
     const request$ = berichtId
-      ? this.globalDataService.patch('einsatzberichte', berichtId, fd, true)
-      : this.globalDataService.post('einsatzberichte', fd, true);
+      ? this.apiHttpService.patch('einsatzberichte', berichtId, fd, true)
+      : this.apiHttpService.post('einsatzberichte', fd, true);
 
     request$.subscribe({
       next: (saved: any) => {
         this.formBericht.controls.id.setValue(saved?.id ?? berichtId ?? '');
-        this.globalDataService.erstelleMessage('success', 'Einsatzbericht gespeichert.');
+        this.uiMessageService.erstelleMessage('success', 'Einsatzbericht gespeichert.');
         this.ladeBerichte();
         this.viewMode = 'list';
       },
-      error: (error: any) => this.globalDataService.errorAnzeigen(error),
+      error: (error: any) => this.authSessionService.errorAnzeigen(error),
     });
   }
 

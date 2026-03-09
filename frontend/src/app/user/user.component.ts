@@ -4,7 +4,11 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 
 import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IBenutzer } from 'src/app/_interface/benutzer';
-import { GlobalDataService } from 'src/app/_service/global-data.service';
+import { ApiHttpService } from 'src/app/_service/api-http.service';
+import { AuthSessionService } from 'src/app/_service/auth-session.service';
+import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
+import { NavigationService } from 'src/app/_service/navigation.service';
+import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { HeaderComponent } from '../_template/header/header.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
@@ -39,7 +43,11 @@ import { MatIconModule } from '@angular/material/icon';
 ]
 })
 export class UserComponent implements OnInit {
-  globalDataService = inject(GlobalDataService);
+  private apiHttpService = inject(ApiHttpService);
+  private authSessionService = inject(AuthSessionService);
+  private collectionUtilsService = inject(CollectionUtilsService);
+  private navigationService = inject(NavigationService);
+  private uiMessageService = inject(UiMessageService);
   breakpointObserver = inject(BreakpointObserver);
   destroyRef = inject(DestroyRef);
   private readonly adminRoleKey = 'ADMIN';
@@ -127,26 +135,26 @@ export class UserComponent implements OnInit {
   ngOnInit(): void {
     sessionStorage.setItem("PageNumber", "2");
     sessionStorage.setItem("Page2", "V_B");
-    this.breadcrumb = this.globalDataService.ladeBreadcrumb();
+    this.breadcrumb = this.navigationService.ladeBreadcrumb();
     this.formModul.disable();
     this.observeViewport();
 
     forkJoin({
-      usersResponse: this.globalDataService.get<any>(this.modul),
-      contextResponse: this.globalDataService.get<any>(`${this.modul}/context`),
+      usersResponse: this.apiHttpService.get<any>(this.modul),
+      contextResponse: this.apiHttpService.get<any>(`${this.modul}/context`),
     }).subscribe({
       next: ({ usersResponse, contextResponse }) => {
         try {
           this.benutzer = usersResponse.data;
           this.rollen = contextResponse.data.rollen;
-          this.benutzer = this.globalDataService.arraySortByKey(this.benutzer, 'username');
+          this.benutzer = this.collectionUtilsService.arraySortByKey(this.benutzer, 'username');
           this.dataSource.data = this.benutzer;
         } catch (e: any) {
-          this.globalDataService.erstelleMessage("error", e);
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
       error: (error: any) => {
-        this.globalDataService.errorAnzeigen(error);
+        this.authSessionService.errorAnzeigen(error);
       }
     });
   }
@@ -169,7 +177,7 @@ export class UserComponent implements OnInit {
     }
     const abfrageUrl = this.modul + "/" + id;
 
-    this.globalDataService.get(abfrageUrl).subscribe({
+    this.apiHttpService.get(abfrageUrl).subscribe({
       next: (erg: any) => {
         try {
           const details: IBenutzer = erg.data.user;
@@ -187,11 +195,11 @@ export class UserComponent implements OnInit {
           });
           this.setRolesWithAdminRule(this.formModul.controls['roles'].value);
         } catch (e: any) {
-          this.globalDataService.erstelleMessage("error", e);
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
       error: (error: any) => {
-        this.globalDataService.errorAnzeigen(error);
+        this.authSessionService.errorAnzeigen(error);
       }
     });
   }
@@ -203,7 +211,7 @@ export class UserComponent implements OnInit {
   datenLoeschen(): void {
     const id = this.formModul.controls["id"].value!;
 
-    this.globalDataService.delete(this.modul, id).subscribe({
+    this.apiHttpService.delete(this.modul, id).subscribe({
       next: (erg: any) => {
         try {
           const data = this.benutzer;
@@ -218,19 +226,19 @@ export class UserComponent implements OnInit {
           this.dataSource.data = this.benutzer;
           this.formModul.reset({ username: '', first_name: '', last_name: '', roles: [], password1: '', password2: '' });
           this.formModul.disable();
-          this.globalDataService.erstelleMessage("success","Benutzer erfolgreich gelöscht!");
+          this.uiMessageService.erstelleMessage('success', 'Benutzer erfolgreich gelöscht!');
         } catch (e: any) {
-          this.globalDataService.erstelleMessage("error", e);
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
       error: (error: any) => {
-        this.globalDataService.errorAnzeigen(error);
+        this.authSessionService.errorAnzeigen(error);
       }
     });
   }
 
   abbrechen(): void {
-    this.globalDataService.erstelleMessage("info", "Benutzer nicht gespeichert!");
+    this.uiMessageService.erstelleMessage('info', 'Benutzer nicht gespeichert!');
     this.username = "";
     this.formModul.reset({ username: '', first_name: '', last_name: '', roles: [], password1: '', password2: '' });
     this.formModul.disable();
@@ -266,32 +274,32 @@ export class UserComponent implements OnInit {
 
     if (idValue === '' || idValue === null) {
       if (this.formModul.controls["password1"].value == "" || this.formModul.controls["password1"].value == "") {
-        this.globalDataService.erstelleMessage("error", "Passwort 1 & 2 müssen ausgefüllt sein!");
+        this.uiMessageService.erstelleMessage('error', 'Passwort 1 & 2 müssen ausgefüllt sein!');
         return
       }else if (this.formModul.controls["password1"].value !== "" && this.formModul.controls["password2"].value !== "" && this.formModul.controls["password1"].value !== this.formModul.controls["password2"].value) {
-        this.globalDataService.erstelleMessage("error", "Die Passwörter müssen übereinstimmen!");
+        this.uiMessageService.erstelleMessage('error', 'Die Passwörter müssen übereinstimmen!');
         return
       }
-      this.globalDataService.post("users/create", payloadCreate, false).subscribe({
+      this.apiHttpService.post("users/create", payloadCreate, false).subscribe({
         next: (erg: any) => {
           try {
             this.username = "";
             this.benutzer.push(erg.user);
-            this.benutzer = this.globalDataService.arraySortByKey(this.benutzer, 'username');
+            this.benutzer = this.collectionUtilsService.arraySortByKey(this.benutzer, 'username');
             this.dataSource.data = this.benutzer;
             this.formModul.reset({ username: '', first_name: '', last_name: '', roles: [], password1: '', password2: '' });
             this.formModul.disable();
-            this.globalDataService.erstelleMessage("success","Benutzer erfolgreich gespeichert!");
+            this.uiMessageService.erstelleMessage('success', 'Benutzer erfolgreich gespeichert!');
           } catch (e: any) {
-            this.globalDataService.erstelleMessage("error", e);
+            this.uiMessageService.erstelleMessage('error', String(e));
           }
         },
         error: (error: any) => {
-          this.globalDataService.errorAnzeigen(error);
+          this.authSessionService.errorAnzeigen(error);
         }
       });
     } else {
-      this.globalDataService.patch(this.modul, idValue, payloadUpdate, false).subscribe({
+      this.apiHttpService.patch(this.modul, idValue, payloadUpdate, false).subscribe({
         next: (erg: any) => {
           try {
             const data = this.benutzer;
@@ -305,17 +313,17 @@ export class UserComponent implements OnInit {
             }
             this.username = "";
             this.benutzer = dataNew;
-            this.benutzer = this.globalDataService.arraySortByKey(this.benutzer, 'username');
+            this.benutzer = this.collectionUtilsService.arraySortByKey(this.benutzer, 'username');
             this.dataSource.data = this.benutzer;
             this.formModul.reset({ username: '', first_name: '', last_name: '', roles: [], password1: '', password2: '' });
             this.formModul.disable();
-            this.globalDataService.erstelleMessage("success","Benutzer erfolgreich geändert!");
+            this.uiMessageService.erstelleMessage('success', 'Benutzer erfolgreich geändert!');
           } catch (e: any) {
-            this.globalDataService.erstelleMessage("error", e);
+            this.uiMessageService.erstelleMessage('error', String(e));
           }
         },
         error: (error: any) => {
-          this.globalDataService.errorAnzeigen(error);
+          this.authSessionService.errorAnzeigen(error);
         }
       });
     }
@@ -328,25 +336,25 @@ export class UserComponent implements OnInit {
 
   passwortAendern(): void {
     if (this.formModul.controls["password1"].value !== "" && this.formModul.controls["password2"].value !== "" && this.formModul.controls["password1"].value !== this.formModul.controls["password2"].value) {
-      this.globalDataService.erstelleMessage("error","Die Passwörter müssen übereinstimmen!");
+      this.uiMessageService.erstelleMessage('error', 'Die Passwörter müssen übereinstimmen!');
       return
     }
     const dict = {
       "password": this.formModul.controls["password1"].value
     }
     const idValue = this.formModul.controls["id"].value!;
-    this.globalDataService.patch("users/change_password", idValue, dict, false).subscribe({
+    this.apiHttpService.patch("users/change_password", idValue, dict, false).subscribe({
       next: (erg: any) => {
         try {
           this.formModul.controls["password1"].setValue("");
           this.formModul.controls["password2"].setValue("");
-          this.globalDataService.erstelleMessage("success","User Passwort erfolgreich geändert!");
+          this.uiMessageService.erstelleMessage('success', 'User Passwort erfolgreich geändert!');
         } catch (e: any) {
-          this.globalDataService.erstelleMessage("error", e);
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
       error: (error: any) => {
-        this.globalDataService.errorAnzeigen(error);
+        this.authSessionService.errorAnzeigen(error);
       }
     });
   }
