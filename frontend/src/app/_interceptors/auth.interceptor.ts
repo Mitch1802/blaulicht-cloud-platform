@@ -4,7 +4,12 @@ import { Observable, catchError, finalize, map, of, shareReplay, switchMap, thro
 import { environment } from 'src/environments/environment';
 
 let refreshInFlight$: Observable<boolean> | null = null;
+let csrfBootstrapInFlight$: Observable<string> | null = null;
 const csrfHeaderName = 'X-CSRFToken';
+
+type CsrfCookieResponse = {
+  csrfToken?: string;
+};
 
 const isApiRequest = (url: string): boolean => {
   return url.startsWith(environment.apiUrl) || url.startsWith('/api/');
@@ -16,6 +21,10 @@ const isAuthRefreshRequest = (url: string): boolean => {
 
 const isLoginOrLogoutRequest = (url: string): boolean => {
   return /\/auth\/(login|logout)\/?$/.test(url);
+};
+
+const isCsrfCookieRequest = (url: string): boolean => {
+  return /\/auth\/csrf\/?$/.test(url);
 };
 
 const isPublicBearerRequest = (url: string, hasAuthorizationHeader: boolean): boolean => {
@@ -40,13 +49,8 @@ const isMutatingMethod = (method: string): boolean => {
   return method === 'POST' || method === 'PUT' || method === 'PATCH' || method === 'DELETE';
 };
 
-const withCsrfHeader = (request: HttpRequest<unknown>): HttpRequest<unknown> => {
-  if (!isMutatingMethod(request.method) || request.headers.has(csrfHeaderName)) {
-    return request;
-  }
-
-  const csrfToken = readCookieValue('csrftoken');
-  if (!csrfToken) {
+const withCsrfHeader = (request: HttpRequest<unknown>, csrfToken = readCookieValue('csrftoken')): HttpRequest<unknown> => {
+  if (!isMutatingMethod(request.method) || request.headers.has(csrfHeaderName) || !csrfToken) {
     return request;
   }
 
@@ -57,14 +61,38 @@ const withCsrfHeader = (request: HttpRequest<unknown>): HttpRequest<unknown> => 
   });
 };
 
+const ensureCsrfToken = (httpBackend: HttpBackend): Observable<string> => {
+  const existingCsrfToken = readCookieValue('csrftoken');
+  if (existingCsrfToken) {
+    return of(existingCsrfToken);
+  }
+
+  if (!csrfBootstrapInFlight$) {
+    const bareHttpClient = new HttpClient(httpBackend);
+
+    csrfBootstrapInFlight$ = bareHttpClient.get<CsrfCookieResponse>(`${environment.apiUrl}auth/csrf/`, { withCredentials: true }).pipe(
+      map((response) => String(response?.csrfToken || readCookieValue('csrftoken') || '')),
+      finalize(() => {
+        csrfBootstrapInFlight$ = null;
+      }),
+      shareReplay(1)
+    );
+  }
+
+  return csrfBootstrapInFlight$;
+};
+
 const requestAccessTokenRefresh = (httpBackend: HttpBackend): Observable<boolean> => {
   const bareHttpClient = new HttpClient(httpBackend);
-  const csrfToken = readCookieValue('csrftoken');
-  const headers = csrfToken ? { [csrfHeaderName]: csrfToken } : undefined;
+  return ensureCsrfToken(httpBackend).pipe(
+    switchMap((csrfToken) => {
+      const headers = csrfToken ? { [csrfHeaderName]: csrfToken } : undefined;
 
-  return bareHttpClient.post(`${environment.apiUrl}auth/token/refresh/`, {}, { withCredentials: true, headers }).pipe(
-    map(() => true),
-    catchError(() => of(false))
+      return bareHttpClient.post(`${environment.apiUrl}auth/token/refresh/`, {}, { withCredentials: true, headers }).pipe(
+        map(() => true),
+        catchError(() => of(false))
+      );
+    })
   );
 };
 
@@ -74,35 +102,47 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   }
 
   const httpBackend = inject(HttpBackend);
-  const requestWithCredentials = withCsrfHeader(req.clone({ withCredentials: true }));
-  const skipRefresh =
-    isAuthRefreshRequest(requestWithCredentials.url)
-    || isLoginOrLogoutRequest(requestWithCredentials.url)
-    || isPublicBearerRequest(requestWithCredentials.url, requestWithCredentials.headers.has('Authorization'));
+  const requestWithCredentials = req.clone({ withCredentials: true });
 
-  return next(requestWithCredentials).pipe(
-    catchError((error: unknown) => {
-      if (!(error instanceof HttpErrorResponse) || error.status !== 401 || skipRefresh) {
-        return throwError(() => error);
-      }
+  const sendRequest = (requestToSend: HttpRequest<unknown>) => {
+    const skipRefresh =
+      isAuthRefreshRequest(requestToSend.url)
+      || isLoginOrLogoutRequest(requestToSend.url)
+      || isPublicBearerRequest(requestToSend.url, requestToSend.headers.has('Authorization'));
 
-      if (!refreshInFlight$) {
-        refreshInFlight$ = requestAccessTokenRefresh(httpBackend).pipe(
-          finalize(() => {
-            refreshInFlight$ = null;
-          }),
-          shareReplay(1)
+    return next(requestToSend).pipe(
+      catchError((error: unknown) => {
+        if (!(error instanceof HttpErrorResponse) || error.status !== 401 || skipRefresh) {
+          return throwError(() => error);
+        }
+
+        if (!refreshInFlight$) {
+          refreshInFlight$ = requestAccessTokenRefresh(httpBackend).pipe(
+            finalize(() => {
+              refreshInFlight$ = null;
+            }),
+            shareReplay(1)
+          );
+        }
+
+        return refreshInFlight$.pipe(
+          switchMap((refreshSucceeded) => {
+            if (!refreshSucceeded) {
+              return throwError(() => error);
+            }
+
+            return next(requestToSend);
+          })
         );
-      }
+      })
+    );
+  };
 
-      return refreshInFlight$.pipe(
-        switchMap((refreshSucceeded) => {
-          if (!refreshSucceeded) {
-            return throwError(() => error);
-          }
-          return next(requestWithCredentials);
-        })
-      );
-    })
-  );
+  if (isMutatingMethod(requestWithCredentials.method) && !requestWithCredentials.headers.has(csrfHeaderName) && !readCookieValue('csrftoken') && !isCsrfCookieRequest(requestWithCredentials.url)) {
+    return ensureCsrfToken(httpBackend).pipe(
+      switchMap((csrfToken) => sendRequest(withCsrfHeader(requestWithCredentials, csrfToken)))
+    );
+  }
+
+  return sendRequest(withCsrfHeader(requestWithCredentials));
 };
