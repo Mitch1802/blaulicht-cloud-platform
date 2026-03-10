@@ -1,9 +1,9 @@
 name: 04 Deploy Prodserver
 
 on:
-  workflow_run:
-    workflows: ["02 Build & Push Docker Images"]
-    types: [completed]
+  # workflow_run:
+  #   workflows: ["02 Build & Push Docker Images"]
+  #   types: [completed]
 
   workflow_dispatch:
     inputs:
