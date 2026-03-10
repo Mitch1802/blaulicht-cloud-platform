@@ -8,6 +8,14 @@ import { UiMessageService } from '../_service/ui-message.service';
 
 import { StartComponent } from './start.component';
 
+const MOCK_ITEMS_UNORDERED = [
+  { icon: 'settings', modul: 'Konfiguration', rolle: 'ADMIN', kategorie: 'Administration', routerlink: '/konfiguration' },
+  { icon: 'book', modul: 'Einsatzbericht', rolle: 'ADMIN', kategorie: 'Dokumentation', routerlink: '/einsatzbericht' },
+  { icon: 'pending_actions', modul: 'Aufgaben', rolle: 'ADMIN', kategorie: 'Geplant', routerlink: '/aufgaben' },
+  { icon: 'healing', modul: 'FMD', rolle: 'ADMIN', kategorie: 'Fachchargen', routerlink: '/fmd' },
+  { icon: 'construction', modul: 'Inventar', rolle: 'ADMIN', kategorie: 'Verwaltung', routerlink: '/inventar' },
+];
+
 describe('StartComponent', () => {
   let component: StartComponent;
   let fixture: ComponentFixture<StartComponent>;
@@ -52,5 +60,49 @@ describe('StartComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  describe('category ordering', () => {
+    it('should enforce the fixed category order via categoryOrder', () => {
+      expect(component['categoryOrder']).toEqual([
+        'Dokumentation',
+        'Fachchargen',
+        'Verwaltung',
+        'Administration',
+        'Geplant',
+      ]);
+    });
+
+    it('should sort categories in the required order when building categorized items', () => {
+      // Feed all roles so all items are accessible
+      component['meine_rollen'] = ['ADMIN'];
+      component['categorizedItems'] = (component as any)['buildCategories'](MOCK_ITEMS_UNORDERED);
+
+      const names = component['categorizedItems'].map((c: any) => c.name);
+      expect(names).toEqual(['Dokumentation', 'Fachchargen', 'Verwaltung', 'Administration', 'Geplant']);
+    });
+
+    it('should place unknown categories before Geplant', () => {
+      const items = [
+        { modul: 'X', rolle: 'ADMIN', kategorie: 'Geplant', routerlink: '/x' },
+        { modul: 'Y', rolle: 'ADMIN', kategorie: 'Sonstiges', routerlink: '/y' },
+        { modul: 'Z', rolle: 'ADMIN', kategorie: 'Dokumentation', routerlink: '/z' },
+      ];
+      component['meine_rollen'] = ['ADMIN'];
+      const result = (component as any)['buildCategories'](items);
+      const names = result.map((c: any) => c.name);
+      expect(names.indexOf('Dokumentation')).toBeLessThan(names.indexOf('Sonstiges'));
+      expect(names.indexOf('Sonstiges')).toBeLessThan(names.indexOf('Geplant'));
+    });
+
+    it('should keep Geplant last even with mixed input order', () => {
+      const items = [
+        { modul: 'A', rolle: 'ADMIN', kategorie: 'Geplant', routerlink: '/a' },
+        { modul: 'B', rolle: 'ADMIN', kategorie: 'Verwaltung', routerlink: '/b' },
+      ];
+      const result = (component as any)['buildCategories'](items);
+      const names = result.map((c: any) => c.name);
+      expect(names[names.length - 1]).toBe('Geplant');
+    });
   });
 });
