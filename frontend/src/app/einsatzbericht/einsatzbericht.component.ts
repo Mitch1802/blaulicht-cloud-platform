@@ -152,7 +152,6 @@ export class EinsatzberichtComponent implements OnInit {
   mitgliedOptionen: MitgliedOption[] = [];
   einsatzleiterSuche = new FormControl<string>('', { nonNullable: true });
   fahrzeugSuche = new FormControl<string>('', { nonNullable: true });
-  mitgliedSuche = new FormControl<string>('', { nonNullable: true });
   mitalarmiertSuche = new FormControl<string>('', { nonNullable: true });
   berichte: EinsatzberichtDto[] = [];
   dataSource = new MatTableDataSource<EinsatzberichtDto>([]);
@@ -218,20 +217,6 @@ export class EinsatzberichtComponent implements OnInit {
     });
   }
 
-  get filteredMitgliedOptionen(): MitgliedOption[] {
-    const selected = new Set(this.formBericht.controls.mitglieder.value);
-    const search = this.mitgliedSuche.value.trim().toLowerCase();
-    return this.mitgliedOptionen.filter((mitglied) => {
-      if (selected.has(mitglied.id)) {
-        return false;
-      }
-      if (!search) {
-        return true;
-      }
-      return mitglied.label.toLowerCase().includes(search);
-    });
-  }
-
   get einsatzleiterOptionen(): string[] {
     const options = this.mitgliedOptionen.map((mitglied) => mitglied.label);
     const current = this.formBericht.controls.einsatzleiter.value?.trim();
@@ -293,6 +278,18 @@ export class EinsatzberichtComponent implements OnInit {
   get selectedMitgliedOptionen(): MitgliedOption[] {
     const selected = this.formBericht.controls.mitglieder.value;
     return this.mitgliedOptionen.filter((mitglied) => selected.includes(mitglied.id));
+  }
+
+  get mitgliederAuswahlCounter(): number {
+    return this.formBericht.controls.mitglieder.value.length;
+  }
+
+  get mitgliederAuswahlTriggerText(): string {
+    const first = this.selectedMitgliedOptionen[0];
+    if (!first) {
+      return 'Keine Mitglieder ausgewählt';
+    }
+    return first.label;
   }
 
   get bestehendeDokuFotos(): EinsatzberichtFotoDto[] {
@@ -711,20 +708,6 @@ export class EinsatzberichtComponent implements OnInit {
     this.formBericht.controls.fahrzeuge.setValue(next);
   }
 
-  onMitgliedSelected(event: MatAutocompleteSelectedEvent): void {
-    const id = Number(event.option.value);
-    const current = this.formBericht.controls.mitglieder.value;
-    if (!current.includes(id)) {
-      this.formBericht.controls.mitglieder.setValue([...current, id]);
-    }
-    this.mitgliedSuche.setValue('');
-  }
-
-  removeMitglied(id: number): void {
-    const next = this.formBericht.controls.mitglieder.value.filter((x) => x !== id);
-    this.formBericht.controls.mitglieder.setValue(next);
-  }
-
   onMitalarmiertSelected(event: MatAutocompleteSelectedEvent): void {
     const optionId = Number(event.option.value);
     if (!optionId) {
@@ -761,7 +744,6 @@ export class EinsatzberichtComponent implements OnInit {
       this.einsatzleiterSuche.setValue('');
     }
     this.fahrzeugSuche.setValue('');
-    this.mitgliedSuche.setValue('');
     this.mitalarmiertSuche.setValue('');
   }
 

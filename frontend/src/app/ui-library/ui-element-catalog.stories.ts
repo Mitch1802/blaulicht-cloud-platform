@@ -67,6 +67,7 @@ export const AllElements: Story = {
   render: () => ({
     props: {
       selectControl: new FormControl('eins'),
+      multiSelectControl: new FormControl(['eins', 'zwei']),
       autoControl: new FormControl(''),
       options: ['eins', 'zwei', 'drei'],
       displayedColumns: ['name', 'action'],
@@ -143,6 +144,23 @@ export const AllElements: Story = {
                       <mat-option [value]="opt">{{ opt }}</mat-option>
                     }
                   </mat-autocomplete>
+                </mat-form-field>
+              </div>
+
+              <div class="app-col-12 ui-two-col-md">
+                <mat-form-field class="full-width ui-full-width">
+                  <mat-label>Multi-Select mit Counter</mat-label>
+                  <mat-select [formControl]="multiSelectControl" multiple>
+                    <mat-select-trigger>
+                      {{ multiSelectControl.value?.[0] || 'Keine Auswahl' }}
+                      @if ((multiSelectControl.value?.length || 0) > 1) {
+                        <span style="font-size:.78rem; opacity:.72; margin-left:.25rem;">(+{{ (multiSelectControl.value?.length || 0) - 1 }})</span>
+                      }
+                    </mat-select-trigger>
+                    @for (opt of options; track opt) {
+                      <mat-option [value]="opt">{{ opt }}</mat-option>
+                    }
+                  </mat-select>
                 </mat-form-field>
               </div>
 

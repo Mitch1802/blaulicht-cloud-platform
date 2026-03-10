@@ -24,6 +24,7 @@
     "mat-panel-title",
     "mat-progress-bar",
     "mat-select",
+    "mat-select-trigger",
     "mat-step",
     "mat-stepper",
     "mat-tab",

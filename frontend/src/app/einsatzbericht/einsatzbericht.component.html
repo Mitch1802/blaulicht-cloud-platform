@@ -519,31 +519,22 @@
 
                 <div class="autocomplete-multi">
                   <mat-form-field class="full-width">
-                    <mat-label>Mitglied hinzufügen</mat-label>
-                    <input
-                      matInput
-                      [formControl]="mitgliedSuche"
-                      [matAutocomplete]="mitgliedAuto"
-                      placeholder="Name oder StbNr"
-                    />
-                    <mat-autocomplete #mitgliedAuto="matAutocomplete" (optionSelected)="onMitgliedSelected($event)">
-                      @for (mitglied of filteredMitgliedOptionen; track mitglied.id) {
+                    <mat-label>Mitglieder</mat-label>
+                    <mat-select formControlName="mitglieder" multiple>
+                      <mat-select-trigger>
+                        {{ mitgliederAuswahlTriggerText }}
+                        @if (mitgliederAuswahlCounter > 1) {
+                          <span class="selection-counter">(+{{ mitgliederAuswahlCounter - 1 }})</span>
+                        }
+                      </mat-select-trigger>
+
+                      @for (mitglied of mitgliedOptionen; track mitglied.id) {
                         <mat-option [value]="mitglied.id">{{ mitglied.label }}</mat-option>
                       }
-                      @if (filteredMitgliedOptionen.length === 0) {
-                        <mat-option disabled>Keine Mitglieder gefunden.</mat-option>
-                      }
-                    </mat-autocomplete>
+                    </mat-select>
                   </mat-form-field>
 
-                  <mat-chip-set class="role-chips">
-                    @for (mitglied of selectedMitgliedOptionen; track mitglied.id) {
-                      <mat-chip [removable]="true" (removed)="removeMitglied(mitglied.id)">
-                        {{ mitglied.label }}
-                        <mat-icon matChipRemove>cancel</mat-icon>
-                      </mat-chip>
-                    }
-                  </mat-chip-set>
+                  <p class="selection-description">Ausgewählt: {{ mitgliederAuswahlCounter }}</p>
                 </div>
               </section>
             </div>

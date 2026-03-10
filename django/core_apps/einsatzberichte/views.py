@@ -253,21 +253,15 @@ class EinsatzberichtViewSet(ModelViewSet):
             str(payload.get("alarmId") or payload.get("einsatz_id") or payload.get("id") or "").strip()
         )
         alarm_date = self._parse_iso_datetime(payload.get("alarmDate"))
-        end_date = self._parse_iso_datetime(payload.get("endDate"))
-
-        geolocation = payload.get("geolocation") if isinstance(payload.get("geolocation"), dict) else {}
         alarm_groups = payload.get("alarmGroups") if isinstance(payload.get("alarmGroups"), list) else []
         first_group = alarm_groups[0] if alarm_groups and isinstance(alarm_groups[0], dict) else {}
 
         return {
-            "einsatzleiter": payload.get("authorName", ""),
             "einsatzart": payload.get("type", ""),
             "alarmstichwort": payload.get("alarmText", ""),
-            "einsatzadresse": geolocation.get("address", ""),
-            "alarmierende_stelle": first_group.get("groupName", ""),
+            "alarmierende_stelle": first_group.get("authorName", ""),
             "einsatz_datum": alarm_date.date().isoformat() if alarm_date else None,
             "ausgerueckt": alarm_date.strftime("%H:%M") if alarm_date else None,
-            "eingerueckt": end_date.strftime("%H:%M") if end_date else None,
             "blaulichtsms_einsatz_id": einsatz_id,
             "blaulichtsms_payload": payload,
         }
