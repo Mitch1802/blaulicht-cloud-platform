@@ -58,6 +58,7 @@ def read_public_token(token: str) -> dict | None:
 
 
 class PublicPinVerifyView(APIView):
+    authentication_classes = []
     permission_classes = [permissions.AllowAny]
     throttle_classes = [ScopedRateThrottle]
     throttle_scope = "public_pin_verify"
@@ -78,6 +79,7 @@ class PublicPinVerifyView(APIView):
 
 
 class PublicFahrzeugDetailView(APIView):
+    authentication_classes = []
     permission_classes = [permissions.AllowAny]
 
     def get(self, request, public_id: str):
@@ -98,6 +100,7 @@ class PublicFahrzeugDetailView(APIView):
 
 
 class PublicFahrzeugListView(APIView):
+    authentication_classes = []
     permission_classes = [permissions.AllowAny]
 
     def get(self, request):

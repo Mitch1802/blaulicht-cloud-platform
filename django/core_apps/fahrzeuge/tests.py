@@ -2,6 +2,7 @@ from uuid import uuid4
 from unittest.mock import patch, Mock
 from types import SimpleNamespace
 
+from dj_rest_auth.app_settings import api_settings as rest_auth_settings
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -76,6 +77,18 @@ class FahrzeugeEndpointTests(EndpointSmokeMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("access_token", response.data)
 
+    def test_fahrzeuge_public_pin_verify_ignores_invalid_auth_cookie(self):
+        if rest_auth_settings.JWT_AUTH_COOKIE:
+            self.client.cookies[rest_auth_settings.JWT_AUTH_COOKIE] = "invalid.jwt.token"
+
+        with patch("core_apps.fahrzeuge.views.settings.PUBLIC_PIN_ENABLED", True), patch(
+            "core_apps.fahrzeuge.views.settings.PUBLIC_FAHRZEUG_PIN", "1234"
+        ), patch("core_apps.fahrzeuge.views.PublicPinVerifyView.check_throttles", return_value=None):
+            response = self.request_method("post", "public/pin/verify/", data={"pin": "1234"})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("access_token", response.data)
+
     def test_fahrzeuge_public_detail_requires_token_but_not_user_auth(self):
         self.assertEqual(
             self.request_method("get", "public/fahrzeuge/public-test-id/").status_code,
@@ -102,6 +115,20 @@ class FahrzeugeEndpointTests(EndpointSmokeMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertGreaterEqual(len(response.data), 1)
         self.assertEqual(response.data[0]["public_id"], self.fahrzeug.public_id)
+
+    def test_fahrzeuge_public_endpoints_ignore_invalid_auth_cookie_and_accept_public_token(self):
+        if rest_auth_settings.JWT_AUTH_COOKIE:
+            self.client.cookies[rest_auth_settings.JWT_AUTH_COOKIE] = "invalid.jwt.token"
+
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {make_public_token()}")
+
+        list_response = self.request_method("get", "public/fahrzeuge/")
+        detail_response = self.request_method("get", f"public/fahrzeuge/{self.fahrzeug.public_id}/")
+
+        self.assertEqual(list_response.status_code, status.HTTP_200_OK)
+        self.assertGreaterEqual(len(list_response.data), 1)
+        self.assertEqual(detail_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(detail_response.data["public_id"], self.fahrzeug.public_id)
 
     def test_fahrzeuge_auth_endpoints_require_auth_and_role(self):
         self.assert_endpoint_contract("fahrzeuge/")
