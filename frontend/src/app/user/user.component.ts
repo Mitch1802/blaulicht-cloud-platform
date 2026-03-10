@@ -20,6 +20,7 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTabsModule } from '@angular/material/tabs';
 
 @Component({
     selector: 'app-user',
@@ -39,7 +40,8 @@ import { MatIconModule } from '@angular/material/icon';
     MatTableModule,
     MatPaginatorModule,
     MatSort,
-    MatIconModule
+    MatIconModule,
+    MatTabsModule
 ]
 })
 export class UserComponent implements OnInit {
@@ -51,6 +53,7 @@ export class UserComponent implements OnInit {
   breakpointObserver = inject(BreakpointObserver);
   destroyRef = inject(DestroyRef);
   private readonly adminRoleKey = 'ADMIN';
+  private readonly mitgliedRoleKey = 'MITGLIED';
 
   title = "Benutzer Verwaltung";
   modul = "users";
@@ -69,6 +72,10 @@ export class UserComponent implements OnInit {
   benutzer: IBenutzer[] = [];
   breadcrumb: any = [];
   rollen: any = [];
+  rollenOhne: any[] = [];
+  rollenUebersichtSpalten: string[] = ['benutzer'];
+  rollenMatrix: { [userId: string]: string[] } = {};
+  rollenMatrixDirty: Set<string> = new Set();
   private readonly desktopSpaltenBenutzer = ['username', 'first_name', 'last_name', 'rolle', 'actions'];
   private readonly mobileSpaltenBenutzer = ['username', 'rolle', 'actions'];
   sichtbareSpaltenBenutzer: string[] = [...this.desktopSpaltenBenutzer];
@@ -147,8 +154,11 @@ export class UserComponent implements OnInit {
         try {
           this.benutzer = usersResponse.data;
           this.rollen = contextResponse.data.rollen;
+          this.rollenOhne = this.rollen.filter((r: any) => r.key !== this.mitgliedRoleKey);
+          this.rollenUebersichtSpalten = ['benutzer', ...this.rollenOhne.map((r: any) => r.key)];
           this.benutzer = this.collectionUtilsService.arraySortByKey(this.benutzer, 'username');
           this.dataSource.data = this.benutzer;
+          this.initRollenMatrix();
         } catch (e: any) {
           this.uiMessageService.erstelleMessage('error', String(e));
         }
@@ -247,8 +257,8 @@ export class UserComponent implements OnInit {
   datenSpeichern(): void {
     const rollen = this.normalizeRoleKeys(this.formModul.controls["roles"].value);
 
-    if (!rollen.includes("ADMIN") && !rollen.includes("MITGLIED")) {
-      rollen.push("MITGLIED");
+    if (!rollen.includes(this.adminRoleKey) && !rollen.includes(this.mitgliedRoleKey)) {
+      rollen.push(this.mitgliedRoleKey);
     }
 
     this.formModul.controls["roles"].setValue([...rollen]);
@@ -381,5 +391,87 @@ export class UserComponent implements OnInit {
 
   isAdminUser(user: IBenutzer): boolean {
     return this.normalizeRoleKeys(user?.roles).includes('ADMIN');
+  }
+
+  initRollenMatrix(): void {
+    this.rollenMatrix = {};
+    this.rollenMatrixDirty.clear();
+    for (const user of this.benutzer) {
+      this.rollenMatrix[user.id] = this.normalizeRolesWithAdminRule(user.roles);
+    }
+  }
+
+  hasRoleInMatrix(userId: string, roleKey: string): boolean {
+    return (this.rollenMatrix[userId] || []).includes(roleKey);
+  }
+
+  isAdminInMatrix(userId: string): boolean {
+    return (this.rollenMatrix[userId] || []).includes(this.adminRoleKey);
+  }
+
+  isRoleDisabledInMatrix(userId: string, roleKey: string): boolean {
+    const key = String(roleKey ?? '').trim();
+    return key !== this.adminRoleKey && this.isAdminInMatrix(userId);
+  }
+
+  rollenMatrixToggle(userId: string, roleKey: string, event: any): void {
+    const current = [...(this.rollenMatrix[userId] || [])];
+    if (roleKey === this.adminRoleKey) {
+      this.rollenMatrix[userId] = event.checked ? [this.adminRoleKey] : [];
+    } else {
+      if (this.isAdminInMatrix(userId)) return;
+      if (event.checked && !current.includes(roleKey)) {
+        this.rollenMatrix[userId] = [...current, roleKey];
+      } else if (!event.checked) {
+        this.rollenMatrix[userId] = current.filter((r) => r !== roleKey);
+      }
+    }
+    this.rollenMatrixDirty.add(userId);
+  }
+
+  rollenMatrixSpeichern(): void {
+    const dirtyIds = Array.from(this.rollenMatrixDirty);
+    if (dirtyIds.length === 0) {
+      this.uiMessageService.erstelleMessage('info', 'Keine Änderungen vorhanden!');
+      return;
+    }
+
+    const requests = dirtyIds.map((userId) => {
+      const user = this.benutzer.find((u) => u.id === userId);
+      if (!user) return null;
+      const roles = [...(this.rollenMatrix[userId] || [])];
+      if (!roles.includes(this.adminRoleKey) && !roles.includes(this.mitgliedRoleKey)) {
+        roles.push(this.mitgliedRoleKey);
+      }
+      const payload = {
+        id: userId,
+        username: user.username,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        roles,
+      };
+      return this.apiHttpService.patch(this.modul, userId, payload, false);
+    }).filter(Boolean);
+
+    forkJoin(requests as any[]).subscribe({
+      next: (results: any[]) => {
+        try {
+          results.forEach((erg: any) => {
+            const idx = this.benutzer.findIndex((u) => u.id === erg.data.id);
+            if (idx >= 0) {
+              this.benutzer[idx] = erg.data;
+            }
+          });
+          this.dataSource.data = [...this.benutzer];
+          this.rollenMatrixDirty.clear();
+          this.uiMessageService.erstelleMessage('success', 'Rollen erfolgreich gespeichert!');
+        } catch (e: any) {
+          this.uiMessageService.erstelleMessage('error', String(e));
+        }
+      },
+      error: (error: any) => {
+        this.authSessionService.errorAnzeigen(error);
+      }
+    });
   }
 }

@@ -225,6 +225,31 @@ export class StartComponent implements OnInit {
     return category === 'geplant';
   }
 
+  private readonly categoryOrder: string[] = [
+    'Dokumentation',
+    'Fachchargen',
+    'Verwaltung',
+    'Administration',
+    'Geplant',
+  ];
+
+  private categoryRank(name: string): number {
+    const idx = this.categoryOrder.findIndex(
+      (c) => c.toLowerCase() === name.trim().toLowerCase()
+    );
+    if (idx < 0) {
+      // Unknown categories are placed at the slot originally occupied by "Geplant"
+      // (i.e. last known index = length - 1), so they appear before "Geplant" itself.
+      return this.categoryOrder.length - 1;
+    }
+    // "Geplant" is the last entry in categoryOrder; shift it one rank beyond all
+    // known and unknown categories so it always appears last.
+    if (idx === this.categoryOrder.length - 1) {
+      return this.categoryOrder.length;
+    }
+    return idx;
+  }
+
   private buildCategories(items: any[]): { name: string; items: any[] }[] {
     const map = new Map<string, any[]>();
 
@@ -236,18 +261,8 @@ export class StartComponent implements OnInit {
     }
 
     return Array.from(map.entries())
-      .sort(([a], [b]) => {
-        const aPlanned = a.trim().toLowerCase() === 'geplant';
-        const bPlanned = b.trim().toLowerCase() === 'geplant';
-
-        if (aPlanned && !bPlanned) return 1;
-        if (!aPlanned && bPlanned) return -1;
-        return 0;
-      })
-      .map(([name, groupedItems]) => ({
-      name,
-      items: groupedItems,
-      }));
+      .sort(([a], [b]) => this.categoryRank(a) - this.categoryRank(b))
+      .map(([name, groupedItems]) => ({ name, items: groupedItems }));
   }
 
   private normalizeCategory(item: any): string {
