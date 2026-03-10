@@ -1,5 +1,7 @@
 from datetime import date
+from unittest.mock import Mock, patch
 
+import requests
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -154,3 +156,90 @@ class EinsatzberichteEndpointTests(EndpointSmokeMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(Einsatzbericht.objects.filter(id=self.bericht.id).exists())
+
+    def test_blaulichtsms_letzter_uses_dashboard_session_id(self):
+        self.client.force_authenticate(user=self.user_bericht)
+
+        response_payload = {
+            "customerId": "123456",
+            "customerName": "FF Test",
+            "username": "dashboard",
+            "integrations": [],
+            "infos": [],
+            "alarms": [
+                {
+                    "alarmId": "older",
+                    "alarmDate": "2026-03-10T16:00:00.000Z",
+                    "endDate": "2026-03-10T16:30:00.000Z",
+                    "authorName": "Alt",
+                    "alarmText": "Alter Alarm",
+                    "type": "Technik",
+                    "alarmGroups": [{"groupName": "AAZ"}],
+                    "geolocation": {"address": "Altgasse 1"},
+                },
+                {
+                    "alarmId": "latest",
+                    "alarmDate": "2026-03-10T17:30:21.345Z",
+                    "endDate": "2026-03-10T18:05:00.000Z",
+                    "authorName": "Neu",
+                    "alarmText": "Neuester Alarm",
+                    "type": "Brand",
+                    "alarmGroups": [{"groupName": "BLS"}],
+                    "geolocation": {"address": "Hauptplatz 1"},
+                },
+            ],
+        }
+
+        mock_response = Mock()
+        mock_response.content = b'{"ok": true}'
+        mock_response.json.return_value = response_payload
+        mock_response.raise_for_status.return_value = None
+
+        with patch("core_apps.einsatzberichte.views.requests.get", return_value=mock_response) as mock_get, patch(
+            "core_apps.einsatzberichte.views.settings.BLAULICHTSMS_API_URL",
+            "https://api.blaulichtsms.net/blaulicht",
+        ), patch(
+            "core_apps.einsatzberichte.views.settings.BLAULICHTSMS_DASHBOARD_SESSION_ID",
+            "session-123",
+        ), patch("core_apps.einsatzberichte.views.settings.BLAULICHTSMS_TIMEOUT", 12):
+            response = self.request_method("get", "einsatzberichte/blaulichtsms/letzter/")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["mapped"]["blaulichtsms_einsatz_id"], "latest")
+        self.assertEqual(response.data["mapped"]["alarmstichwort"], "Neuester Alarm")
+        self.assertEqual(response.data["mapped"]["alarmierende_stelle"], "BLS")
+        self.assertEqual(response.data["mapped"]["einsatzadresse"], "Hauptplatz 1")
+        mock_get.assert_called_once_with(
+            "https://api.blaulichtsms.net/blaulicht/api/alarm/v1/dashboard/session-123",
+            headers={"Accept": "application/json"},
+            timeout=12,
+        )
+
+    def test_blaulichtsms_letzter_requires_dashboard_session_id(self):
+        self.client.force_authenticate(user=self.user_bericht)
+
+        with patch("core_apps.einsatzberichte.views.settings.BLAULICHTSMS_API_URL", "https://api.blaulichtsms.net/blaulicht"), patch(
+            "core_apps.einsatzberichte.views.settings.BLAULICHTSMS_DASHBOARD_SESSION_ID",
+            "",
+        ):
+            response = self.request_method("get", "einsatzberichte/blaulichtsms/letzter/")
+
+        self.assertEqual(response.status_code, status.HTTP_503_SERVICE_UNAVAILABLE)
+        self.assertEqual(response.data["configured"], False)
+
+    def test_blaulichtsms_letzter_returns_gateway_error_for_expired_dashboard_session(self):
+        self.client.force_authenticate(user=self.user_bericht)
+
+        mock_response = Mock(status_code=status.HTTP_401_UNAUTHORIZED)
+        http_error = requests.HTTPError(response=mock_response)
+
+        with patch("core_apps.einsatzberichte.views.requests.get", side_effect=http_error), patch(
+            "core_apps.einsatzberichte.views.settings.BLAULICHTSMS_API_URL",
+            "https://api.blaulichtsms.net/blaulicht",
+        ), patch(
+            "core_apps.einsatzberichte.views.settings.BLAULICHTSMS_DASHBOARD_SESSION_ID",
+            "expired-session",
+        ):
+            response = self.request_method("get", "einsatzberichte/blaulichtsms/letzter/")
+
+        self.assertEqual(response.status_code, status.HTTP_502_BAD_GATEWAY)

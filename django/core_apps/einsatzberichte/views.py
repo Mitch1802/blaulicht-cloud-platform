@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime
+from urllib.parse import quote
 
 import requests
 from django.conf import settings
@@ -161,16 +162,10 @@ class EinsatzberichtViewSet(ModelViewSet):
     @action(detail=False, methods=["get"], url_path="blaulichtsms/letzter")
     def blaulichtsms_letzter(self, request):
         base_url = getattr(settings, "BLAULICHTSMS_API_URL", "").strip()
-        username = getattr(settings, "BLAULICHTSMS_API_USERNAME", "").strip()
-        password = getattr(settings, "BLAULICHTSMS_API_PASSWORD", "").strip()
-        customer_ids = [
-            str(customer_id).strip()
-            for customer_id in getattr(settings, "BLAULICHTSMS_API_CUSTOMER_IDS", [])
-            if str(customer_id).strip()
-        ]
+        session_id = getattr(settings, "BLAULICHTSMS_DASHBOARD_SESSION_ID", "").strip()
         timeout = getattr(settings, "BLAULICHTSMS_TIMEOUT", 10)
 
-        if not base_url or not username or not password or not customer_ids:
+        if not base_url or not session_id:
             return Response(
                 {
                     "detail": "BlaulichtSMS ist nicht konfiguriert.",
@@ -181,9 +176,7 @@ class EinsatzberichtViewSet(ModelViewSet):
 
         payload = self._fetch_blaulichtsms_payload(
             base_url=base_url,
-            username=username,
-            password=password,
-            customer_ids=customer_ids,
+            session_id=session_id,
             timeout=timeout,
         )
 
@@ -199,47 +192,44 @@ class EinsatzberichtViewSet(ModelViewSet):
     def _fetch_blaulichtsms_payload(
         self,
         base_url: str,
-        username: str,
-        password: str,
-        customer_ids: list[str],
+        session_id: str,
         timeout: int,
     ):
-        url = f"{base_url.rstrip('/')}/api/alarm/v1/list"
-        headers = {"Accept": "application/json", "Content-Type": "application/json"}
-        body = {
-            "username": username,
-            "password": password,
-            "customerIds": customer_ids,
-        }
+        url = f"{base_url.rstrip('/')}/api/alarm/v1/dashboard/{quote(session_id, safe='')}"
+        headers = {"Accept": "application/json"}
 
         try:
-            response = requests.post(url, headers=headers, json=body, timeout=timeout)
+            response = requests.get(url, headers=headers, timeout=timeout)
             response.raise_for_status()
             payload = response.json() if response.content else {}
+        except requests.HTTPError as exc:
+            response = exc.response
+            if response is not None and response.status_code == status.HTTP_401_UNAUTHORIZED:
+                log_event(logger, LOG_SOURCE, "blaulichtsms_dashboard_session_invalid", level="error", endpoint="dashboard", url=url)
+            else:
+                log_exception(logger, LOG_SOURCE, "blaulichtsms_request_failed", endpoint="dashboard", url=url)
+            return None
         except requests.RequestException:
-            log_exception(logger, LOG_SOURCE, "blaulichtsms_request_failed", endpoint="list", url=url)
+            log_exception(logger, LOG_SOURCE, "blaulichtsms_request_failed", endpoint="dashboard", url=url)
             return None
 
         if not isinstance(payload, dict):
             log_event(logger, LOG_SOURCE, "blaulichtsms_invalid_payload", level="error", payload_type=type(payload).__name__)
             return None
 
-        if payload.get("result") != "OK":
-            log_event(
-                logger,
-                LOG_SOURCE,
-                "blaulichtsms_non_ok_result",
-                level="error",
-                result=payload.get("result"),
-                description=payload.get("description"),
-            )
-            return None
-
         alarms = payload.get("alarms")
         if not isinstance(alarms, list) or not alarms:
             return None
 
-        return alarms[0]
+        valid_alarms = [alarm for alarm in alarms if isinstance(alarm, dict)]
+        if not valid_alarms:
+            return None
+
+        return max(valid_alarms, key=self._alarm_sort_key)
+
+    def _alarm_sort_key(self, payload: dict) -> float:
+        alarm_date = self._parse_iso_datetime(payload.get("alarmDate"))
+        return alarm_date.timestamp() if alarm_date else float("-inf")
 
     def _parse_iso_datetime(self, value):
         if not value or not isinstance(value, str):
