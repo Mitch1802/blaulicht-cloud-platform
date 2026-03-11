@@ -144,6 +144,7 @@
                   matInput
                   [formControl]="einsatzleiterSuche"
                   [matAutocomplete]="einsatzleiterAuto"
+                  [errorStateMatcher]="einsatzleiterErrorMatcher"
                   placeholder="Name oder StbNr"
                 />
                 <mat-autocomplete #einsatzleiterAuto="matAutocomplete" (optionSelected)="onEinsatzleiterSelected($event)">
@@ -154,6 +155,9 @@
                     <mat-option disabled>Kein Einsatzleiter gefunden.</mat-option>
                   }
                 </mat-autocomplete>
+                @if (formBericht.controls.einsatzleiter.hasError('required')) {
+                  <mat-error>Einsatzleiter ist erforderlich!</mat-error>
+                }
               </mat-form-field>
             </div>
 

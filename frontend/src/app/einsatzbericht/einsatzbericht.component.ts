@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, inject } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, FormGroupDirective, NgForm, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HeaderComponent } from '../_template/header/header.component';
 import { ApiHttpService } from 'src/app/_service/api-http.service';
 import { AuthSessionService } from 'src/app/_service/auth-session.service';
@@ -13,6 +13,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { ErrorStateMatcher } from '@angular/material/core';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -150,7 +151,12 @@ export class EinsatzberichtComponent implements OnInit {
 
   fahrzeugOptionen: FahrzeugOption[] = [];
   mitgliedOptionen: MitgliedOption[] = [];
-  einsatzleiterSuche = new FormControl<string>('', { nonNullable: true });
+  einsatzleiterSuche = new FormControl<string>('', { nonNullable: true, validators: [Validators.required] });
+
+  einsatzleiterErrorMatcher: ErrorStateMatcher = {
+    isErrorState: (_control: AbstractControl | null, _form: FormGroupDirective | NgForm | null) =>
+      this.formBericht.controls.einsatzleiter.touched && this.formBericht.controls.einsatzleiter.invalid,
+  };
   fahrzeugSuche = new FormControl<string>('', { nonNullable: true });
   mitalarmiertSuche = new FormControl<string>('', { nonNullable: true });
   berichte: EinsatzberichtDto[] = [];
