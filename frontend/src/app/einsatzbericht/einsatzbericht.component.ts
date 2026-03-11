@@ -572,15 +572,24 @@ export class EinsatzberichtComponent implements OnInit {
     this.apiHttpService.get<any>('einsatzberichte/blaulichtsms/letzter').subscribe({
       next: (response: any) => {
         const mapped = response?.mapped ?? {};
+
+        const alarmtext = String(mapped.alarmstichwort ?? '').trim();
+        const parsedAlarm = this.parseBlaulichtAlarmtext(alarmtext);
+
+        const uebernommeneEinsatzart = parsedAlarm.einsatzart || String(mapped.einsatzart ?? '').trim();
+        const uebernommenesStichwort = this.sanitizeAlarmstichwort(parsedAlarm.alarmstichwort || alarmtext);
+        const uebernommeneAdresse = parsedAlarm.einsatzadresse
+          || String(mapped.einsatzadresse ?? '').trim()
+          || String(response?.raw?.geolocation?.address ?? '').trim();
+        const uebernommeneAlarmierendeStelle = this.resolveAlarmierendeStelle(mapped.alarmierende_stelle);
+
         this.formBericht.patchValue({
-          einsatzleiter: mapped.einsatzleiter ?? '',
-          einsatzart: mapped.einsatzart ?? '',
-          alarmstichwort: mapped.alarmstichwort ?? '',
-          einsatzadresse: mapped.einsatzadresse ?? '',
-          alarmierendeStelle: mapped.alarmierende_stelle ?? '',
+          einsatzart: uebernommeneEinsatzart || 'Sonstiges',
+          alarmstichwort: uebernommenesStichwort,
+          einsatzadresse: uebernommeneAdresse,
+          alarmierendeStelle: uebernommeneAlarmierendeStelle,
           einsatzDatum: this.normalizeDateInput(mapped.einsatz_datum),
           ausgerueckt: mapped.ausgerueckt ?? '',
-          eingerueckt: mapped.eingerueckt ?? '',
         });
 
         this.einsatzleiterSuche.setValue(this.formBericht.controls.einsatzleiter.value);
@@ -590,6 +599,482 @@ export class EinsatzberichtComponent implements OnInit {
       },
       error: (error: any) => this.authSessionService.errorAnzeigen(error),
     });
+  }
+
+  private parseBlaulichtAlarmtext(alarmtext: string): {
+    einsatzart: string;
+    alarmstichwort: string;
+    einsatzadresse: string;
+  } {
+    let text = this.normalizeAlarmText(alarmtext);
+    if (!text) {
+      return {
+        einsatzart: '',
+        alarmstichwort: '',
+        einsatzadresse: '',
+      };
+    }
+
+    // 1. Zeitklammer entfernen: (HH:MM) oder (HH:MM:SS)
+    text = text.replace(/\(\d{1,2}:\d{2}(?::\d{2})?\)\s*/g, '').trim();
+
+    // 2. Einsatzart extrahieren
+    const einsatzart = this.mapAlarmTextToEinsatzart(text);
+
+    // 3. Stichwort: alles bis zum ersten Punkt
+    const firstDotIndex = text.indexOf('.');
+    let alarmstichwort = '';
+    if (firstDotIndex > -1) {
+      alarmstichwort = text.substring(0, firstDotIndex).trim();
+    } else {
+      alarmstichwort = text.trim();
+    }
+
+    // 4. Adresse: vom ersten Punkt bis zum ersten Doppelpunkt (falls vorhanden)
+    let einsatzadresse = '';
+    if (firstDotIndex > -1) {
+      const afterDot = text.substring(firstDotIndex + 1).trim();
+      const firstColonIndex = afterDot.indexOf(':');
+
+      if (firstColonIndex > -1) {
+        // Adresse bis zum Doppelpunkt
+        einsatzadresse = afterDot.substring(0, firstColonIndex).trim();
+      } else {
+        // Kein Doppelpunkt: nimm alles nach dem Punkt, entferne Klammern + Koordinaten
+        einsatzadresse = afterDot.replace(/\([^)]*\)/g, '').trim();
+      }
+    }
+
+    // 5. Cleanup
+    alarmstichwort = this.sanitizeAlarmstichwort(alarmstichwort).trim();
+    einsatzadresse = this.removeCoordinates(einsatzadresse).trim();
+
+    return {
+      einsatzart,
+      alarmstichwort,
+      einsatzadresse,
+    };
+  }
+
+  private normalizeAlarmText(value: string): string {
+    return String(value ?? '')
+      .replace(/\\r\\n|\\n|\\r/g, '\n')
+      .replace(/\r\n?/g, '\n')
+      .split('\n')
+      .map((line) => line.replace(/\s+/g, ' ').trim())
+      .filter((line) => line !== '')
+      .join('\n')
+      .trim();
+  }
+
+  private resolveAlarmierendeStelle(value: unknown): string {
+    const normalized = String(value ?? '').replace(/\s+/g, ' ').trim();
+    if (!normalized) {
+      return 'AAZ / BAZ / LWZ';
+    }
+
+    if (/^IP_AG_[A-Z0-9_]+$/i.test(normalized)) {
+      return 'AAZ / BAZ / LWZ';
+    }
+
+    if (/^(AAZ\s*\/\s*BAZ\s*\/\s*LWZ|AAZ|BAZ|LWZ|LEITSTELLE)$/i.test(normalized)) {
+      return 'AAZ / BAZ / LWZ';
+    }
+
+    if (/^eigenalarmiert$/i.test(normalized)) {
+      return 'Eigenalarmiert';
+    }
+
+    if (/^keine\s*alarmiert$/i.test(normalized)) {
+      return 'Keine Alarmiert';
+    }
+
+    return normalized;
+  }
+
+  private sanitizeAlarmstichwort(value: string): string {
+    const withoutDateAndTime = String(value ?? '')
+      .replace(/\b\d{1,2}[./-]\d{1,2}[./-]\d{2,4}\b/g, ' ')
+      .replace(/\b\d{1,2}:\d{2}(?::\d{2})?\s*(?:uhr)?\b/gi, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    return this.cleanupAlarmSegment(withoutDateAndTime);
+  }
+
+  private toAlarmSegments(value: string): string[] {
+    const segments: string[] = [];
+    String(value ?? '')
+      .split('\n')
+      .map((line) => line.trim())
+      .filter((line) => line !== '')
+      .forEach((line) => {
+        // Split nach ,;|. und ". " (Punkt + Leerzeichen), aber nicht bei Dezimalzahlen wie "km 1.4"
+        line
+          .split(/[,;|]|\.\s+/)
+          .map((part) => part.trim())
+          .filter((part) => part !== '')
+          .forEach((part) => segments.push(part));
+      });
+
+    return segments;
+  }
+
+  private extractStichwortAndAdresse(
+    segments: string[],
+    fallbackText: string,
+  ): { alarmstichwort: string; einsatzadresse: string } {
+    let alarmstichwort = '';
+    const adressSegmente: string[] = [];
+
+    for (const rawSegment of segments) {
+      const segment = this.cleanupAlarmSegment(rawSegment);
+      if (!segment) {
+        continue;
+      }
+
+      const labeledAddress = this.extractLabeledAddress(segment);
+      if (labeledAddress) {
+        if (!alarmstichwort && labeledAddress.alarmstichwort) {
+          alarmstichwort = labeledAddress.alarmstichwort;
+        }
+        if (labeledAddress.einsatzadresse) {
+          adressSegmente.push(labeledAddress.einsatzadresse);
+        }
+        continue;
+      }
+
+      const splitResult = this.trySplitSegment(segment);
+      if (!alarmstichwort && splitResult.alarmstichwort) {
+        alarmstichwort = splitResult.alarmstichwort;
+      }
+      if (splitResult.einsatzadresse) {
+        adressSegmente.push(splitResult.einsatzadresse);
+        continue;
+      }
+
+      const cleaned = this.cleanupAlarmSegment(this.removeLeadingAlarmToken(segment));
+      if (!cleaned) {
+        continue;
+      }
+
+      // Zuerst checken: ist es eine gültige Adresse (auch wenn Meta-Segment)?
+      if (this.looksLikeAddress(cleaned)) {
+        adressSegmente.push(cleaned);
+        continue;
+      }
+
+      // Jetzt Meta-Segment checken (nur NACH Adresse-Check)
+      if (this.isAlarmMetaSegment(cleaned)) {
+        continue;
+      }
+
+      if (!alarmstichwort) {
+        alarmstichwort = cleaned;
+        continue;
+      }
+
+      if (adressSegmente.length > 0) {
+        adressSegmente.push(cleaned);
+      }
+    }
+
+    if (!alarmstichwort) {
+      alarmstichwort = this.cleanupAlarmSegment(this.removeLeadingAlarmToken(fallbackText));
+    }
+
+    const einsatzadresse = this.uniqueAndJoinSegments(adressSegmente) || this.tryExtractAddressFromText(fallbackText);
+    return {
+      alarmstichwort,
+      einsatzadresse,
+    };
+  }
+
+  private uniqueAndJoinSegments(segments: string[]): string {
+    const uniqueSegments = Array.from(
+      new Set(
+        segments
+          .map((segment) => this.cleanupAlarmSegment(segment))
+          .filter((segment) => segment !== ''),
+      ),
+    );
+    return uniqueSegments.join(', ').trim();
+  }
+
+  private extractLabeledAddress(segment: string): { alarmstichwort: string; einsatzadresse: string } | null {
+    const match = segment.match(/^(.*?)(?:\b(einsatzort|einsatzadresse|adresse|ort|objekt)\b)\s*[:\-]\s*(.+)$/i);
+    if (!match) {
+      return null;
+    }
+
+    return {
+      alarmstichwort: this.cleanupAlarmSegment(this.removeLeadingAlarmToken(match[1] ?? '')),
+      einsatzadresse: this.cleanupAlarmSegment(match[3] ?? ''),
+    };
+  }
+
+  private trySplitSegment(segment: string): { alarmstichwort: string; einsatzadresse: string } {
+    const cleaned = this.cleanupAlarmSegment(segment);
+    if (!cleaned) {
+      return {
+        alarmstichwort: '',
+        einsatzadresse: '',
+      };
+    }
+
+    const separators = [' - ', ':'];
+    for (const separator of separators) {
+      const splitIndex = cleaned.indexOf(separator);
+      if (splitIndex <= 0 || splitIndex >= cleaned.length - separator.length) {
+        continue;
+      }
+
+      const left = this.cleanupAlarmSegment(this.removeLeadingAlarmToken(cleaned.slice(0, splitIndex)));
+      const right = this.cleanupAlarmSegment(cleaned.slice(splitIndex + separator.length));
+      
+      const leftIsAddress = left && this.looksLikeAddress(left);
+      const rightIsAddress = right && this.looksLikeAddress(right);
+      
+      // Wenn beide aussehen wie Adresse: nimm left als stichwort + adresse
+      if (leftIsAddress && rightIsAddress) {
+        return {
+          alarmstichwort: left,
+          einsatzadresse: left,
+        };
+      }
+      
+      // Wenn rechts wie Adresse: right = Adresse, left = Stichwort
+      if (rightIsAddress) {
+        return {
+          alarmstichwort: left || cleaned,
+          einsatzadresse: right,
+        };
+      }
+      
+      // Wenn links wie Adresse: left = Adresse, right ignorieren (es ist beschreibung der adresse)
+      if (leftIsAddress) {
+        return {
+          alarmstichwort: '',
+          einsatzadresse: left,
+        };
+      }
+    }
+
+    return {
+      alarmstichwort: this.cleanupAlarmSegment(this.removeLeadingAlarmToken(cleaned)),
+      einsatzadresse: '',
+    };
+  }
+
+  private tryExtractAddressFromText(value: string): string {
+    const normalized = this.cleanupAlarmSegment(value);
+    if (!normalized) {
+      return '';
+    }
+
+    const postalCodeMatch = normalized.match(/\b\d{4}\s+[^,;|]{2,}\b/);
+    if (postalCodeMatch) {
+      return this.cleanupAlarmSegment(postalCodeMatch[0]);
+    }
+
+    const streetMatch = normalized.match(/\b[^,;|]{3,}\s(?:strasse|str\.|gasse|weg|platz|allee|ring|kai|hof|zeile)\s+\d+[A-Za-z0-9\/-]*/i);
+    if (streetMatch) {
+      return this.cleanupAlarmSegment(streetMatch[0]);
+    }
+
+    const kilometerMatch = normalized.match(/\b[A-Z]?\d{1,3}\s+km\s*\d+(?:[.,]\d+)?\b/i);
+    if (kilometerMatch) {
+      return this.cleanupAlarmSegment(kilometerMatch[0]);
+    }
+
+    return '';
+  }
+
+  private extractAlarmToken(value: string): string {
+    const match = String(value ?? '').match(/\b(BSW|[BTS])\s?(\d{1,2})([A-Z]?)\b/i);
+    if (!match) {
+      return '';
+    }
+
+    return `${(match[1] ?? '').toUpperCase()}${match[2] ?? ''}${(match[3] ?? '').toUpperCase()}`;
+  }
+
+  private removeLeadingTimeAndToken(value: string, alarmToken: string): string {
+    let normalized = String(value ?? '').trim();
+
+    // Zeit in voller Form: YYYY-MM-DD HH:MM(:SS)
+    normalized = normalized.replace(/^\d{1,2}[./-]\d{1,2}[./-]\d{2,4}\s+\d{1,2}:\d{2}(?::\d{2})?\s*(?:uhr)?\s*[-|,:]?\s*/i, '');
+    
+    // Zeit nur: HH:MM(:SS), auch in Klammern
+    normalized = normalized.replace(/^\(\d{1,2}:\d{2}(?::\d{2})?\)\s*[-|,:]?\s*/i, '');
+    normalized = normalized.replace(/^\d{1,2}:\d{2}(?::\d{2})?\s*(?:uhr)?\s*[-|,:]?\s*/i, '');
+
+    if (alarmToken) {
+      const escapedToken = this.escapeRegex(alarmToken).replace(/([A-Za-z]+)(\d+)/, '$1\\s*$2');
+      normalized = normalized.replace(new RegExp(`^${escapedToken}\\b\\s*[-|,:]?\\s*`, 'i'), '');
+    }
+
+    normalized = normalized.replace(/^(alarmierung|alarm|meldung)\s*[:\-]\s*/i, '');
+    return normalized.trim();
+  }
+
+  private escapeRegex(value: string): string {
+    return String(value ?? '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  private cleanupAlarmSegment(value: string): string {
+    const withoutUrls = String(value ?? '').replace(/https?:\/\/\S+/gi, ' ');
+    const withoutCoords = this.removeCoordinates(withoutUrls);
+    return withoutCoords
+      .replace(/\s+/g, ' ')
+      .replace(/^[,;|:\-]+/, '')
+      .replace(/[,;|:\-]+$/, '')
+      .replace(/\(\s*\)/g, '') // leere Klammern entfernen
+      .trim();
+  }
+
+  private removeCoordinates(value: string): string {
+    return String(value ?? '')
+      .replace(/\b(?:koordinaten?|coords?)\b\s*[:=]?\s*\d{1,2}[.,]\d{3,}\s*[,/ ]\s*\d{1,3}[.,]\d{3,}\b/gi, ' ')
+      .replace(/\b\d{1,2}[.,]\d{3,}\s*[,/ ]\s*\d{1,3}[.,]\d{3,}\b/gi, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  private isAlarmMetaSegment(value: string): boolean {
+    const normalized = String(value ?? '').trim();
+    if (!normalized) {
+      return true;
+    }
+
+    if (this.isCoordinateOnlySegment(normalized)) {
+      return true;
+    }
+
+    if (/^https?:\/\//i.test(normalized)) {
+      return true;
+    }
+
+    if (/^(alarmzeit|zeit|datum|einsatznr|einsatznummer|objektid|objektnummer|id|alarmierung|blaulichtsms)\b/i.test(normalized)) {
+      return true;
+    }
+
+    if (/^(?:IP_AG_[A-Z0-9_]+|AAZ\s*\/\s*BAZ\s*\/\s*LWZ|AAZ|BAZ|LWZ|LEITSTELLE)\b/i.test(normalized)) {
+      return true;
+    }
+
+    if (/^\d{1,2}:\d{2}(?::\d{2})?$/.test(normalized)) {
+      return true;
+    }
+
+    if (/^(?:BSW|[BTS])\s?\d{1,2}[A-Z]?$/i.test(normalized)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  private isCoordinateOnlySegment(value: string): boolean {
+    return /^\d{1,2}[.,]\d{3,}\s*[,/ ]\s*\d{1,3}[.,]\d{3,}$/.test(String(value ?? '').trim());
+  }
+
+  private removeLeadingAlarmToken(value: string): string {
+    const normalized = String(value ?? '').replace(/\s+/g, ' ').trim();
+    if (!normalized) {
+      return '';
+    }
+
+    const withoutTime = normalized.replace(/^\d{1,2}:\d{2}(?::\d{2})?\s*(?:uhr)?\s*[-|,:]?\s*/i, '').trim();
+    const tokenMatch = withoutTime.match(/^(BSW|[BTS])\s?(\d{1,2})([A-Z]?)\b\s*[-|,:]?\s*/i);
+    if (tokenMatch) {
+      return withoutTime.slice(tokenMatch[0].length).trim();
+    }
+
+    return withoutTime;
+  }
+
+  private looksLikeAddress(value: string): boolean {
+    const normalized = this.cleanupAlarmSegment(value);
+    if (!normalized || this.isCoordinateOnlySegment(normalized)) {
+      return false;
+    }
+
+    // Keine Beschreibungswoerter (Aktionswoerter am Anfang)
+    if (/^(?:auf|an|in|zu|bei|von|durch|unter|ueber|aus|hat|ist|wird|befindet|liegt|gegen)\b/i.test(normalized)) {
+      return false;
+    }
+
+    // PLZ-Pattern (4 Ziffern)
+    if (/\b\d{4}\b/.test(normalized)) {
+      return true;
+    }
+
+    // Kilometer/L-Strasse (L2004 km 1.4) - hohe Konfidenz
+    if (/\b(?:L\d+|km\s*\d)/i.test(normalized)) {
+      return true;
+    }
+
+    // Strasse mit Hausnummer Pattern ("Weinbergstrasse 21") - hohe Konfidenz
+    if (/\b[A-Za-z][A-Za-z.'\- ]+\s+\d{1,4}[A-Za-z0-9\/-]*\b/i.test(normalized)) {
+      return true;
+    }
+
+    // Strasse-Name allein nur akzeptieren, wenn kombiniert mit Hausnummer oder km
+    if (/\b(?:strasse|str\.|gasse|weg|platz|allee|ring|kai|hof|siedlung|zeile)\b/i.test(normalized)) {
+      if (/\d{1,4}|km|L\d+/i.test(normalized)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private mapAlarmTokenToEinsatzart(token: string): string {
+    if (!token) {
+      return '';
+    }
+
+    const normalizedToken = token.replace(/\s+/g, '').toUpperCase();
+
+    if (/^BSW\d*[A-Z]*$/.test(normalizedToken)) {
+      return 'Brandsicherheitswache';
+    }
+    if (/^B\d*[A-Z]*$/.test(normalizedToken)) {
+      return 'Brandeinsatz';
+    }
+    if (/^T\d*[A-Z]*$/.test(normalizedToken)) {
+      return 'Technischer Einsatz';
+    }
+    if (/^S\d*[A-Z]*$/.test(normalizedToken)) {
+      return 'Schadstoffeinsatz';
+    }
+
+    return '';
+  }
+
+  private mapAlarmTextToEinsatzart(alarmtext: string): string {
+    const value = String(alarmtext ?? '');
+    if (!value) {
+      return '';
+    }
+
+    if (/\b(?:BSW\s?\d*|brandsicherheitswache)\b/i.test(value)) {
+      return 'Brandsicherheitswache';
+    }
+
+    if (/\b(?:S\s?\d+|schadstoff|gefahrgut|chemikal|gasaustritt|oelaustritt)\b/i.test(value)) {
+      return 'Schadstoffeinsatz';
+    }
+
+    if (/\b(?:B\s?\d+|brand|rauch|feuer|bma|brandmeldeanlage)\b/i.test(value)) {
+      return 'Brandeinsatz';
+    }
+
+    if (/\b(?:T\s?\d+|verkehrsunfall|vku|bergung|sturmschaden|tueroeffnung|tierrettung|anforderung|hilfeleistung|wasserschaden)\b/i.test(value)) {
+      return 'Technischer Einsatz';
+    }
+
+    return '';
   }
 
   berichtBearbeiten(bericht: EinsatzberichtDto): void {
