@@ -215,6 +215,18 @@ export class EinsatzberichtComponent implements OnInit {
     return this.formBericht.controls.einsatzart.value === 'Technischer Einsatz';
   }
 
+  get section1HasError(): boolean {
+    const c = this.formBericht.controls;
+    return [c.einsatzleiter, c.einsatzart, c.alarmstichwort, c.einsatzadresse, c.alarmierendeStelle, c.einsatzDatum, c.ausgerueckt, c.eingerueckt]
+      .some((ctrl) => ctrl.invalid && ctrl.touched);
+  }
+
+  get section2HasError(): boolean {
+    const c = this.formBericht.controls;
+    return [c.lageBeimEintreffen, c.gesetzteMassnahmen]
+      .some((ctrl) => ctrl.invalid && ctrl.touched);
+  }
+
   get isBMA(): boolean {
     return /\bbma\b/i.test(this.formBericht.controls.alarmstichwort.value);
   }
