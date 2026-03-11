@@ -31,6 +31,7 @@ class EinsatzberichtSerializer(serializers.ModelSerializer):
         many=True,
         required=False,
     )
+    einsatzleiter = serializers.CharField(required=True, allow_blank=False)
     fotos = EinsatzberichtFotoSerializer(many=True, read_only=True)
 
     class Meta:

@@ -258,6 +258,9 @@ class EinsatzberichtViewSet(ModelViewSet):
         alarm_groups = payload.get("alarmGroups") if isinstance(payload.get("alarmGroups"), list) else []
         first_group = alarm_groups[0] if alarm_groups and isinstance(alarm_groups[0], dict) else {}
 
+        # Zusagende Mitglieder extrahieren
+        confirmed_member_ids = self._extract_confirmed_member_ids(payload)
+
         return {
             "einsatzart": payload.get("type", ""),
             "alarmstichwort": payload.get("alarmText", ""),
@@ -266,7 +269,58 @@ class EinsatzberichtViewSet(ModelViewSet):
             "ausgerueckt": alarm_date.strftime("%H:%M") if alarm_date else None,
             "blaulichtsms_einsatz_id": einsatz_id,
             "blaulichtsms_payload": payload,
+            "mitglieder_ids": confirmed_member_ids,  # ← neu hinzugefügt
         }
+
+    def _extract_confirmed_member_ids(self, payload: dict) -> list:
+        """Extrahiert lokale Mitglieder-IDs aus BlaulichtSMS recipients mit participation='yes'"""
+        recipients = payload.get("recipients", [])
+        if not isinstance(recipients, list):
+            return []
+
+        confirmed_names = [
+            r.get("name", "").strip()
+            for r in recipients
+            if isinstance(r, dict) and r.get("participation") == "yes" and r.get("name", "").strip()
+        ]
+
+        if not confirmed_names:
+            return []
+
+        # Alle Mitglieder laden für Matching
+        all_members = Mitglied.objects.exclude(
+            dienststatus__in=[Mitglied.Dienststatus.ABGEMELDET, Mitglied.Dienststatus.RESERVE]
+        ).values_list("pkid", "vorname", "nachname")
+
+        matched_ids = []
+        for bls_name in confirmed_names:
+            # Versuche zu matchen: exakt oder via Vorname + Nachname
+            member_id = self._match_member_by_name(bls_name, all_members)
+            if member_id is not None:
+                matched_ids.append(member_id)
+
+        return matched_ids
+
+    def _match_member_by_name(self, bls_name: str, all_members) -> int | None:
+        """Matcht einen BlaulichtSMS Namen mit einem lokalen Mitglied"""
+        bls_name_lower = bls_name.lower().strip()
+
+        for pkid, vorname, nachname in all_members:
+            if not vorname or not nachname:
+                continue
+
+            full_name = f"{vorname} {nachname}".lower().strip()
+
+            # Exaktes oder Case-insensitives Match
+            if bls_name_lower == full_name:
+                return pkid
+
+            # Reverse: "Nachname Vorname" auch versuchen
+            reverse_name = f"{nachname} {vorname}".lower().strip()
+            if bls_name_lower == reverse_name:
+                return pkid
+
+        return None
 
     @action(detail=True, methods=["delete"], url_path=r"fotos/(?P<foto_id>[^/.]+)")
     def foto_loeschen(self, request, id=None, foto_id=None):

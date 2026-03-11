@@ -583,6 +583,9 @@ export class EinsatzberichtComponent implements OnInit {
           || String(response?.raw?.geolocation?.address ?? '').trim();
         const uebernommeneAlarmierendeStelle = this.resolveAlarmierendeStelle(mapped.alarmierende_stelle);
 
+        // Zusagende Mitglieder extrahieren
+        const confirmedMemberIds = Array.isArray(mapped.mitglieder_ids) ? mapped.mitglieder_ids : [];
+
         this.formBericht.patchValue({
           einsatzart: uebernommeneEinsatzart || 'Sonstiges',
           alarmstichwort: uebernommenesStichwort,
@@ -590,12 +593,17 @@ export class EinsatzberichtComponent implements OnInit {
           alarmierendeStelle: uebernommeneAlarmierendeStelle,
           einsatzDatum: this.normalizeDateInput(mapped.einsatz_datum),
           ausgerueckt: mapped.ausgerueckt ?? '',
+          mitglieder: confirmedMemberIds,
         });
 
         this.einsatzleiterSuche.setValue(this.formBericht.controls.einsatzleiter.value);
 
         this.updateConditionalValidation();
-        this.uiMessageService.erstelleMessage('success', 'Letzter Alarm von BlaulichtSMS übernommen.');
+        if (confirmedMemberIds.length > 0) {
+          this.uiMessageService.erstelleMessage('success', `Alarm übernommen. ${confirmedMemberIds.length} Mitglied(er) haben zugesagt.`);
+        } else {
+          this.uiMessageService.erstelleMessage('success', 'Letzter Alarm von BlaulichtSMS übernommen.');
+        }
       },
       error: (error: any) => this.authSessionService.errorAnzeigen(error),
     });
