@@ -50,6 +50,15 @@
     &:hover
         border-color: rgba(theme.$app-primary, .3)
 
+    &.has-error
+        border-color: rgba(theme.$app-error, .75)
+
+        .mat-expansion-panel-header
+            background: rgba(theme.$app-error, .07)
+
+            &:hover
+                background: rgba(theme.$app-error, .12)
+
     .mat-expansion-panel-header
         background: rgba(theme.$app-surface-variant, .62)
 
@@ -59,6 +68,16 @@
 .form-section-title
     color: theme.$app-primary
     font-weight: 600
+    display: inline-flex
+    align-items: center
+    gap: .3rem
+
+.section-error-icon
+    color: theme.$app-error
+    font-size: 1.1rem
+    width: 1.1rem
+    height: 1.1rem
+    vertical-align: middle
 
 .form-section-subtitle
     opacity: .72

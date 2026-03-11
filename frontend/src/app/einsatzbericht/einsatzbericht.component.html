@@ -104,10 +104,13 @@
         </div>
 
         <mat-accordion class="bericht-accordion" [multi]="false">
-          <mat-expansion-panel class="form-section">
+          <mat-expansion-panel class="form-section" [class.has-error]="section1HasError">
             <mat-expansion-panel-header>
               <mat-panel-title>
                 <span class="form-section-title">1. Alarmdaten</span>
+                @if (section1HasError) {
+                  <mat-icon class="section-error-icon">error</mat-icon>
+                }
               </mat-panel-title>
               <mat-panel-description>
                 <span class="form-section-subtitle">Grunddaten zum Alarm und zur Alarmierung</span>
@@ -210,10 +213,13 @@
             </div>
           </mat-expansion-panel>
 
-          <mat-expansion-panel class="form-section">
+          <mat-expansion-panel class="form-section" [class.has-error]="section2HasError">
             <mat-expansion-panel-header>
               <mat-panel-title>
                 <span class="form-section-title">2. Tätigkeiten</span>
+                @if (section2HasError) {
+                  <mat-icon class="section-error-icon">error</mat-icon>
+                }
               </mat-panel-title>
               <mat-panel-description>
                 <span class="form-section-subtitle">Verlauf und durchgeführte Maßnahmen</span>
@@ -398,104 +404,105 @@
                   </div>
                 }
               </div>
+              @if (isTechnisch) {
+                <div class="upload-row">
+                  <label class="upload-label" for="zulassungDateien">Zulassungsschein Dateien</label>
+                  <input #zulassungDateienInput id="zulassungDateien" class="file-input-hidden" type="file" multiple accept=".jpg,.jpeg,.png,.pdf" (change)="onDokumentSelected($event, 'zulassungsschein')" />
+                  <button mat-flat-button type="button" color="primary" class="upload-button" (click)="zulassungDateienInput.click()">Dateien auswählen</button>
+                  @if (zulassungFiles.length > 0) {
+                    <div class="preview-grid">
+                      @for (file of zulassungFiles; track file; let i = $index) {
+                        <article class="preview-card">
+                          @if (file.type.startsWith('image/')) {
+                            <img class="preview-image" [src]="getFilePreviewUrl(file)" [alt]="file.name" />
+                          } @else {
+                            <div class="preview-file">PDF</div>
+                          }
+                          <div class="preview-meta">
+                            <button mat-flat-button class="ui-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(getFilePreviewUrl(file))">
+                              <mat-icon>open_in_new</mat-icon>
+                            </button>
+                            <button mat-flat-button class="ui-action-btn" type="button" color="warn" aria-label="Datei entfernen" (click)="removeSelectedDokument(i, 'zulassungsschein')">
+                              <mat-icon>delete</mat-icon>
+                            </button>
+                          </div>
+                        </article>
+                      }
+                    </div>
+                  }
 
-              <div class="upload-row">
-                <label class="upload-label" for="zulassungDateien">Zulassungsschein Dateien</label>
-                <input #zulassungDateienInput id="zulassungDateien" class="file-input-hidden" type="file" multiple accept=".jpg,.jpeg,.png,.pdf" (change)="onDokumentSelected($event, 'zulassungsschein')" />
-                <button mat-flat-button type="button" color="primary" class="upload-button" (click)="zulassungDateienInput.click()">Dateien auswählen</button>
-                @if (zulassungFiles.length > 0) {
-                  <div class="preview-grid">
-                    @for (file of zulassungFiles; track file; let i = $index) {
-                      <article class="preview-card">
-                        @if (file.type.startsWith('image/')) {
-                          <img class="preview-image" [src]="getFilePreviewUrl(file)" [alt]="file.name" />
-                        } @else {
-                          <div class="preview-file">PDF</div>
-                        }
-                        <div class="preview-meta">
-                          <button mat-flat-button class="ui-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(getFilePreviewUrl(file))">
-                            <mat-icon>open_in_new</mat-icon>
-                          </button>
-                          <button mat-flat-button class="ui-action-btn" type="button" color="warn" aria-label="Datei entfernen" (click)="removeSelectedDokument(i, 'zulassungsschein')">
-                            <mat-icon>delete</mat-icon>
-                          </button>
-                        </div>
-                      </article>
-                    }
-                  </div>
-                }
+                  @if (bestehendeZulassungFotos.length > 0) {
+                    <div class="preview-grid existing-previews">
+                      @for (foto of bestehendeZulassungFotos; track foto.id) {
+                        <article class="preview-card">
+                          @if (isImagePath(foto.foto_url)) {
+                            <img class="preview-image" [src]="foto.foto_url" [alt]="getFileNameFromPath(foto.foto_url)" />
+                          } @else {
+                            <div class="preview-file">PDF</div>
+                          }
+                          <div class="preview-meta">
+                            <button mat-flat-button class="ui-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(foto.foto_url)">
+                              <mat-icon>open_in_new</mat-icon>
+                            </button>
+                            <button mat-flat-button class="ui-action-btn" type="button" color="warn" aria-label="Datei löschen" (click)="loescheBestehendesFoto(foto)">
+                              <mat-icon>delete</mat-icon>
+                            </button>
+                          </div>
+                        </article>
+                      }
+                    </div>
+                  }
+                </div>
 
-                @if (bestehendeZulassungFotos.length > 0) {
-                  <div class="preview-grid existing-previews">
-                    @for (foto of bestehendeZulassungFotos; track foto.id) {
-                      <article class="preview-card">
-                        @if (isImagePath(foto.foto_url)) {
-                          <img class="preview-image" [src]="foto.foto_url" [alt]="getFileNameFromPath(foto.foto_url)" />
-                        } @else {
-                          <div class="preview-file">PDF</div>
-                        }
-                        <div class="preview-meta">
-                          <button mat-flat-button class="ui-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(foto.foto_url)">
-                            <mat-icon>open_in_new</mat-icon>
-                          </button>
-                          <button mat-flat-button class="ui-action-btn" type="button" color="warn" aria-label="Datei löschen" (click)="loescheBestehendesFoto(foto)">
-                            <mat-icon>delete</mat-icon>
-                          </button>
-                        </div>
-                      </article>
-                    }
-                  </div>
-                }
-              </div>
+                <div class="upload-row">
+                  <label class="upload-label" for="versicherungDateien">Versicherungsschein Dateien</label>
+                  <input #versicherungDateienInput id="versicherungDateien" class="file-input-hidden" type="file" multiple accept=".jpg,.jpeg,.png,.pdf" (change)="onDokumentSelected($event, 'versicherungsschein')" />
+                  <button mat-flat-button type="button" color="primary" class="upload-button" (click)="versicherungDateienInput.click()">Dateien auswählen</button>
+                  @if (versicherungFiles.length > 0) {
+                    <div class="preview-grid">
+                      @for (file of versicherungFiles; track file; let i = $index) {
+                        <article class="preview-card">
+                          @if (file.type.startsWith('image/')) {
+                            <img class="preview-image" [src]="getFilePreviewUrl(file)" [alt]="file.name" />
+                          } @else {
+                            <div class="preview-file">PDF</div>
+                          }
+                          <div class="preview-meta">
+                            <button mat-flat-button class="ui-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(getFilePreviewUrl(file))">
+                              <mat-icon>open_in_new</mat-icon>
+                            </button>
+                            <button mat-flat-button class="ui-action-btn" type="button" color="warn" aria-label="Datei entfernen" (click)="removeSelectedDokument(i, 'versicherungsschein')">
+                              <mat-icon>delete</mat-icon>
+                            </button>
+                          </div>
+                        </article>
+                      }
+                    </div>
+                  }
 
-              <div class="upload-row">
-                <label class="upload-label" for="versicherungDateien">Versicherungsschein Dateien</label>
-                <input #versicherungDateienInput id="versicherungDateien" class="file-input-hidden" type="file" multiple accept=".jpg,.jpeg,.png,.pdf" (change)="onDokumentSelected($event, 'versicherungsschein')" />
-                <button mat-flat-button type="button" color="primary" class="upload-button" (click)="versicherungDateienInput.click()">Dateien auswählen</button>
-                @if (versicherungFiles.length > 0) {
-                  <div class="preview-grid">
-                    @for (file of versicherungFiles; track file; let i = $index) {
-                      <article class="preview-card">
-                        @if (file.type.startsWith('image/')) {
-                          <img class="preview-image" [src]="getFilePreviewUrl(file)" [alt]="file.name" />
-                        } @else {
-                          <div class="preview-file">PDF</div>
-                        }
-                        <div class="preview-meta">
-                          <button mat-flat-button class="ui-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(getFilePreviewUrl(file))">
-                            <mat-icon>open_in_new</mat-icon>
-                          </button>
-                          <button mat-flat-button class="ui-action-btn" type="button" color="warn" aria-label="Datei entfernen" (click)="removeSelectedDokument(i, 'versicherungsschein')">
-                            <mat-icon>delete</mat-icon>
-                          </button>
-                        </div>
-                      </article>
-                    }
-                  </div>
-                }
-
-                @if (bestehendeVersicherungFotos.length > 0) {
-                  <div class="preview-grid existing-previews">
-                    @for (foto of bestehendeVersicherungFotos; track foto.id) {
-                      <article class="preview-card">
-                        @if (isImagePath(foto.foto_url)) {
-                          <img class="preview-image" [src]="foto.foto_url" [alt]="getFileNameFromPath(foto.foto_url)" />
-                        } @else {
-                          <div class="preview-file">PDF</div>
-                        }
-                        <div class="preview-meta">
-                          <button mat-flat-button class="ui-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(foto.foto_url)">
-                            <mat-icon>open_in_new</mat-icon>
-                          </button>
-                          <button mat-flat-button class="ui-action-btn" type="button" color="warn" aria-label="Datei löschen" (click)="loescheBestehendesFoto(foto)">
-                            <mat-icon>delete</mat-icon>
-                          </button>
-                        </div>
-                      </article>
-                    }
-                  </div>
-                }
-              </div>
+                  @if (bestehendeVersicherungFotos.length > 0) {
+                    <div class="preview-grid existing-previews">
+                      @for (foto of bestehendeVersicherungFotos; track foto.id) {
+                        <article class="preview-card">
+                          @if (isImagePath(foto.foto_url)) {
+                            <img class="preview-image" [src]="foto.foto_url" [alt]="getFileNameFromPath(foto.foto_url)" />
+                          } @else {
+                            <div class="preview-file">PDF</div>
+                          }
+                          <div class="preview-meta">
+                            <button mat-flat-button class="ui-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(foto.foto_url)">
+                              <mat-icon>open_in_new</mat-icon>
+                            </button>
+                            <button mat-flat-button class="ui-action-btn" type="button" color="warn" aria-label="Datei löschen" (click)="loescheBestehendesFoto(foto)">
+                              <mat-icon>delete</mat-icon>
+                            </button>
+                          </div>
+                        </article>
+                      }
+                    </div>
+                  }
+                </div>
+              }
             </section>
             </div>
           </mat-expansion-panel>
