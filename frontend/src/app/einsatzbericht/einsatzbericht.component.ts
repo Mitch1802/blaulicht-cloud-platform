@@ -600,6 +600,7 @@ export class EinsatzberichtComponent implements OnInit {
           einsatzDatum: this.normalizeDateInput(mapped.einsatz_datum),
           ausgerueckt: mapped.ausgerueckt ?? '',
           mitglieder: confirmedMemberIds,
+          lageBeimEintreffen: parsedAlarm.lageBeimEintreffen,
         });
 
         this.einsatzleiterSuche.setValue(this.formBericht.controls.einsatzleiter.value);
@@ -619,6 +620,7 @@ export class EinsatzberichtComponent implements OnInit {
     einsatzart: string;
     alarmstichwort: string;
     einsatzadresse: string;
+    lageBeimEintreffen: string;
   } {
     let text = this.normalizeAlarmText(alarmtext);
     if (!text) {
@@ -626,6 +628,7 @@ export class EinsatzberichtComponent implements OnInit {
         einsatzart: '',
         alarmstichwort: '',
         einsatzadresse: '',
+        lageBeimEintreffen: '',
       };
     }
 
@@ -646,13 +649,19 @@ export class EinsatzberichtComponent implements OnInit {
 
     // 4. Adresse: vom ersten Punkt bis zum ersten Doppelpunkt (falls vorhanden)
     let einsatzadresse = '';
+    let lageBeimEintreffen = '';
     if (firstDotIndex > -1) {
       const afterDot = text.substring(firstDotIndex + 1).trim();
+      const hasBMA = /\[BMA:/i.test(afterDot);
       const firstColonIndex = afterDot.indexOf(':');
 
       if (firstColonIndex > -1) {
         // Adresse bis zum Doppelpunkt
         einsatzadresse = afterDot.substring(0, firstColonIndex).trim();
+        // Text nach dem Doppelpunkt → Lage beim Eintreffen (außer bei BMA-Meldungen)
+        if (!hasBMA) {
+          lageBeimEintreffen = afterDot.substring(firstColonIndex + 1).trim();
+        }
       } else {
         // Kein Doppelpunkt: nimm alles nach dem Punkt, entferne Klammern + Koordinaten
         einsatzadresse = afterDot.replace(/\([^)]*\)/g, '').trim();
@@ -662,11 +671,13 @@ export class EinsatzberichtComponent implements OnInit {
     // 5. Cleanup
     alarmstichwort = this.sanitizeAlarmstichwort(alarmstichwort).trim();
     einsatzadresse = this.removeCoordinates(einsatzadresse).trim();
+    lageBeimEintreffen = this.removeCoordinates(lageBeimEintreffen).replace(/\(\s*\)/g, '').replace(/\s+/g, ' ').trim();
 
     return {
       einsatzart,
       alarmstichwort,
       einsatzadresse,
+      lageBeimEintreffen,
     };
   }
 
