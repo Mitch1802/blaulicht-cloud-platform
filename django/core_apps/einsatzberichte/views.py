@@ -141,7 +141,9 @@ class EinsatzberichtViewSet(ModelViewSet):
                 "vorname": m.vorname,
                 "nachname": m.nachname,
             }
-            for m in Mitglied.objects.exclude(dienststatus=Mitglied.Dienststatus.RESERVE).order_by("stbnr")
+            for m in Mitglied.objects.exclude(
+                dienststatus__in=[Mitglied.Dienststatus.ABGEMELDET, Mitglied.Dienststatus.RESERVE]
+            ).order_by("stbnr")
         ]
 
         mitalarmiert_stellen = [
