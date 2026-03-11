@@ -1,8 +1,13 @@
+import logging
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 
+from core_apps.common.email import send_welcome_email
 from .models import User, Role
+
+logger = logging.getLogger(__name__)
 
 User = get_user_model()
 
@@ -132,6 +137,17 @@ class AdminCreateUserSerializer(serializers.ModelSerializer):
         # roles setzen (dein Role Modell nutzt key)
         role_qs = Role.objects.filter(key__in=roles)
         user.roles.set(role_qs)
+
+        # Zugangsdaten per E-Mail senden, falls eine Adresse hinterlegt ist.
+        # Hinweis: Das Senden des Klartext-Passworts ist nur bei admin-erstellten
+        # Erstkonten akzeptabel. Nutzer sollten ihr Passwort nach dem ersten Login
+        # umgehend ändern (Aufforderung ist in der E-Mail enthalten).
+        send_welcome_email(
+            username=user.username,
+            password=pwd,
+            email=user.email or "",
+            first_name=user.first_name or "",
+        )
 
         return user
 

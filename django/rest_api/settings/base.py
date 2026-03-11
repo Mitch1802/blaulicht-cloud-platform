@@ -226,6 +226,18 @@ PUBLIC_FAHRZEUG_PIN = env("PUBLIC_FAHRZEUG_PIN")
 PUBLIC_PIN_ENABLED = bool(PUBLIC_FAHRZEUG_PIN)
 
 BLAULICHTSMS_API_URL = env.str("BLAULICHTSMS_API_URL", default="")
+
+# Email configuration
+# Use "django.core.mail.backends.smtp.EmailBackend" in production
+# Use "django.core.mail.backends.console.EmailBackend" for local development
+EMAIL_BACKEND = env("DJANGO_EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend")
+EMAIL_HOST = env("DJANGO_EMAIL_HOST", default="")
+EMAIL_PORT = env.int("DJANGO_EMAIL_PORT", default=587)
+EMAIL_USE_TLS = env.bool("DJANGO_EMAIL_USE_TLS", default=True)
+EMAIL_HOST_USER = env("DJANGO_EMAIL_HOST_USER", default="")
+EMAIL_HOST_PASSWORD = env("DJANGO_EMAIL_HOST_PASSWORD", default="")
+DEFAULT_FROM_EMAIL = env("DJANGO_DEFAULT_FROM_EMAIL", default="noreply@blaulichtcloud.at")
+EMAIL_TIMEOUT = env.int("DJANGO_EMAIL_TIMEOUT", default=10)
 BLAULICHTSMS_DASHBOARD_SESSION_ID = env.str(
     "BLAULICHTSMS_DASHBOARD_SESSION_ID",
     default=env.str("BLAULICHTSMS_DASHBOARD_SESSIONID", default=""),
