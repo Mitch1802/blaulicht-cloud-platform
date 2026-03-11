@@ -19,6 +19,6 @@ self.addEventListener('fetch', (event) => {
   }
 
   event.respondWith(
-    fetch(new Request(request, { cache: 'no-store' })).catch(() => fetch(request))
+    fetch(new Request(request, { cache: 'no-store' })).catch(() => fetch(new Request(request, { cache: 'no-store' })))
   );
 });
