@@ -32,6 +32,16 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(default=timezone.now)
 
+    # Mitgliederzugehörigkeit (optional)
+    mitglied = models.OneToOneField(
+        "mitglieder.Mitglied",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="benutzer",
+        verbose_name=_("Mitglied"),
+    )
+
     # Multiple roles pro User
     roles = models.ManyToManyField(
         Role,

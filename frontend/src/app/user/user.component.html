@@ -135,6 +135,20 @@
               </div>
             </section>
 
+            <section class="app-grid form-grid">
+              <div class="app-col-12 app-col-lg-6 mb-3">
+                <mat-form-field class="full-width">
+                  <mat-label>Mitgliederzugehörigkeit</mat-label>
+                  <mat-select formControlName="mitglied_id">
+                    <mat-option [value]="null">— Kein Mitglied —</mat-option>
+                    @for (mitglied of mitglieder; track mitglied.pkid) {
+                      <mat-option [value]="mitglied.pkid">{{ getMitgliedLabel(mitglied) }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            </section>
+
             <section class="role-row" aria-label="Rollen">
               @for (rolle of rollen; track rolle) {
                 @if (rolle.key !== 'MITGLIED') {

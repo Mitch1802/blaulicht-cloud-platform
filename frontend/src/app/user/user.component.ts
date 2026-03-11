@@ -4,6 +4,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 
 import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IBenutzer } from 'src/app/_interface/benutzer';
+import { IMitglied } from 'src/app/_interface/mitglied';
 import { ApiHttpService } from 'src/app/_service/api-http.service';
 import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
@@ -15,6 +16,7 @@ import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
 import { MatButton } from '@angular/material/button';
 import { MatInput } from '@angular/material/input';
 import { MatCheckbox } from '@angular/material/checkbox';
+import { MatOption, MatSelect } from '@angular/material/select';
 import { forkJoin } from 'rxjs';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
@@ -37,6 +39,8 @@ import { MatTabsModule } from '@angular/material/tabs';
     MatInput,
     MatError,
     MatCheckbox,
+    MatSelect,
+    MatOption,
     MatTableModule,
     MatPaginatorModule,
     MatSort,
@@ -70,6 +74,7 @@ export class UserComponent implements OnInit {
   }
 
   benutzer: IBenutzer[] = [];
+  mitglieder: IMitglied[] = [];
   breadcrumb: any = [];
   rollen: any = [];
   rollenOhne: any[] = [];
@@ -134,6 +139,7 @@ export class UserComponent implements OnInit {
     username: new FormControl('', Validators.required),
     first_name: new FormControl('', Validators.required),
     last_name: new FormControl('', Validators.required),
+    mitglied_id: new FormControl<number | null>(null),
     roles: new FormControl<string[]>([]),
     password1: new FormControl('', Validators.minLength(8)),
     password2: new FormControl('',Validators.minLength(8))
@@ -154,6 +160,7 @@ export class UserComponent implements OnInit {
         try {
           this.benutzer = usersResponse.data;
           this.rollen = contextResponse.data.rollen;
+          this.mitglieder = contextResponse.data.mitglieder || [];
           this.rollenOhne = this.rollen.filter((r: any) => r.key !== this.mitgliedRoleKey);
           this.rollenUebersichtSpalten = ['benutzer', ...this.rollenOhne.map((r: any) => r.key)];
           this.benutzer = this.collectionUtilsService.arraySortByKey(this.benutzer, 'username');
@@ -199,6 +206,7 @@ export class UserComponent implements OnInit {
             username: details.username,
             first_name: details.first_name,
             last_name: details.last_name,
+            mitglied_id: details.mitglied_id ?? null,
             roles: normalizedRoles,
             password1: "",
             password2: ""
@@ -234,7 +242,7 @@ export class UserComponent implements OnInit {
           this.username = "";
           this.benutzer = dataNew;
           this.dataSource.data = this.benutzer;
-          this.formModul.reset({ username: '', first_name: '', last_name: '', roles: [], password1: '', password2: '' });
+          this.formModul.reset({ username: '', first_name: '', last_name: '', mitglied_id: null, roles: [], password1: '', password2: '' });
           this.formModul.disable();
           this.uiMessageService.erstelleMessage('success', 'Benutzer erfolgreich gelöscht!');
         } catch (e: any) {
@@ -250,7 +258,7 @@ export class UserComponent implements OnInit {
   abbrechen(): void {
     this.uiMessageService.erstelleMessage('info', 'Benutzer nicht gespeichert!');
     this.username = "";
-    this.formModul.reset({ username: '', first_name: '', last_name: '', roles: [], password1: '', password2: '' });
+    this.formModul.reset({ username: '', first_name: '', last_name: '', mitglied_id: null, roles: [], password1: '', password2: '' });
     this.formModul.disable();
   }
 
@@ -269,6 +277,7 @@ export class UserComponent implements OnInit {
       username: this.formModul.controls["username"].value || '',
       first_name: this.formModul.controls["first_name"].value || '',
       last_name: this.formModul.controls["last_name"].value || '',
+      mitglied_id: this.formModul.controls["mitglied_id"].value || null,
       roles: rollen,
       password1: this.formModul.controls["password1"].value || '',
       password2: this.formModul.controls["password2"].value || ''
@@ -279,6 +288,7 @@ export class UserComponent implements OnInit {
       username: this.formModul.controls["username"].value || '',
       first_name: this.formModul.controls["first_name"].value || '',
       last_name: this.formModul.controls["last_name"].value || '',
+      mitglied_id: this.formModul.controls["mitglied_id"].value || null,
       roles: rollen,
     };
 
@@ -297,7 +307,7 @@ export class UserComponent implements OnInit {
             this.benutzer.push(erg.user);
             this.benutzer = this.collectionUtilsService.arraySortByKey(this.benutzer, 'username');
             this.dataSource.data = this.benutzer;
-            this.formModul.reset({ username: '', first_name: '', last_name: '', roles: [], password1: '', password2: '' });
+            this.formModul.reset({ username: '', first_name: '', last_name: '', mitglied_id: null, roles: [], password1: '', password2: '' });
             this.formModul.disable();
             this.uiMessageService.erstelleMessage('success', 'Benutzer erfolgreich gespeichert!');
           } catch (e: any) {
@@ -325,7 +335,7 @@ export class UserComponent implements OnInit {
             this.benutzer = dataNew;
             this.benutzer = this.collectionUtilsService.arraySortByKey(this.benutzer, 'username');
             this.dataSource.data = this.benutzer;
-            this.formModul.reset({ username: '', first_name: '', last_name: '', roles: [], password1: '', password2: '' });
+            this.formModul.reset({ username: '', first_name: '', last_name: '', mitglied_id: null, roles: [], password1: '', password2: '' });
             this.formModul.disable();
             this.uiMessageService.erstelleMessage('success', 'Benutzer erfolgreich geändert!');
           } catch (e: any) {
@@ -473,5 +483,9 @@ export class UserComponent implements OnInit {
         this.authSessionService.errorAnzeigen(error);
       }
     });
+  }
+
+  getMitgliedLabel(mitglied: IMitglied): string {
+    return `${mitglied.stbnr} ${mitglied.vorname} ${mitglied.nachname}`;
   }
 }

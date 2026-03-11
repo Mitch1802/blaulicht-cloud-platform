@@ -6,48 +6,35 @@
       <h2>{{ title }}</h2>
     </div>
     <mat-card-content>
-        <form [formGroup]="formModul" (ngSubmit)="datenSpeichern()">
-          <input hidden type="text"  formControlName="id" />
-          <button
-            mat-flat-button
-            color="accent"
-            [hidden]="!formModul.valid"
-            type="submit"
-          >
-            Daten speichern
-          </button>
+        <form [formGroup]="formModul">
+          <input hidden type="text" formControlName="id" />
+
           <section class="app-grid mt-2">
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <mat-form-field hintLabel="* Pflichtfeld">
-                <mat-label>Benutzername</mat-label>
-                <input matInput type="text" formControlName="username" />
-                @if (formModul.controls['username'].hasError('required')) {
-                <mat-error> Benutzername ist erforderlich! </mat-error>
+              <mat-form-field>
+                <mat-label>E-Mail-Adresse</mat-label>
+                <input matInput type="email" formControlName="email" />
+                @if (formModul.controls['email'].hasError('email')) {
+                  <mat-error>Bitte eine gültige E-Mail-Adresse eingeben!</mat-error>
                 }
               </mat-form-field>
+            </div>
+            <div class="app-col-12 app-col-lg-4 m-0 app-grid auswahl-button">
+              <button
+                mat-flat-button
+                class="app-col-auto"
+                color="accent"
+                [disabled]="!formModul.valid"
+                type="button"
+                (click)="emailSpeichern()"
+              >
+                E-Mail speichern
+              </button>
             </div>
           </section>
-          <section class="app-grid mt-2">
-            <div class="app-col-12 app-col-lg-6 mb-3">
-              <mat-form-field hintLabel="* Pflichtfeld">
-                <mat-label>Vorname</mat-label>
-                <input matInput type="text" formControlName="first_name" />
-                @if (formModul.controls['first_name'].hasError('required')) {
-                <mat-error> Vorname ist erforderlich! </mat-error>
-                }
-              </mat-form-field>
-            </div>
-            <div class="app-col-12 app-col-lg-6 mb-3">
-              <mat-form-field hintLabel="* Pflichtfeld">
-                <mat-label>Nachname</mat-label>
-                <input matInput type="text" formControlName="last_name" />
-                @if (formModul.controls['last_name'].hasError('required')) {
-                <mat-error> Nachname ist erforderlich! </mat-error>
-                }
-              </mat-form-field>
-            </div>
-          </section>
+
           <hr />
+
           <section class="app-grid mt-3">
             <div class="app-col-12 app-col-lg-4 mb-3">
               <mat-form-field>

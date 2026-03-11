@@ -56,8 +56,12 @@ class UserContextView(APIView):
     renderer_classes = [UserJSONRenderer]
 
     def get(self, request):
+        from core_apps.mitglieder.models import Mitglied
+        from core_apps.mitglieder.serializers import MitgliedSerializer
+
         rollen = RoleSerializer(Role.objects.all(), many=True).data
-        return Response({"rollen": rollen})
+        mitglieder = MitgliedSerializer(Mitglied.objects.all(), many=True).data
+        return Response({"rollen": rollen, "mitglieder": mitglieder})
 
 
 class UserRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
