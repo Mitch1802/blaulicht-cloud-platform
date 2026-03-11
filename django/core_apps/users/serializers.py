@@ -35,7 +35,9 @@ class UserSerializer(serializers.ModelSerializer):
     mitglied_id = serializers.SerializerMethodField()
 
     def get_mitglied_id(self, obj):
-        return obj.mitglied_id  # Django auto-column for the OneToOneField FK
+        # Django auto-generates `mitglied_id` as the integer FK column for the OneToOneField,
+        # pointing to the primary key (pkid) of the related Mitglied object.
+        return obj.mitglied_id
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -53,7 +55,7 @@ class UserSerializer(serializers.ModelSerializer):
         # Handle mitglied_id from raw request data (not in validated_data since it's SerializerMethodField)
         if "mitglied_id" in self.initial_data:
             raw_mitglied_id = self.initial_data.get("mitglied_id")
-            if raw_mitglied_id:
+            if raw_mitglied_id is not None:
                 from core_apps.mitglieder.models import Mitglied
                 try:
                     instance.mitglied = Mitglied.objects.get(pkid=int(raw_mitglied_id))
@@ -152,7 +154,7 @@ class AdminCreateUserSerializer(serializers.ModelSerializer):
         user = User(**validated_data)
         user.set_password(pwd)
 
-        if mitglied_pkid:
+        if mitglied_pkid is not None:
             from core_apps.mitglieder.models import Mitglied
             try:
                 user.mitglied = Mitglied.objects.get(pkid=mitglied_pkid)
