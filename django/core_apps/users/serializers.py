@@ -32,6 +32,10 @@ class UserSerializer(serializers.ModelSerializer):
         queryset=Role.objects.none(),
         required=False
     )
+    mitglied_id = serializers.SerializerMethodField()
+
+    def get_mitglied_id(self, obj):
+        return obj.mitglied_id  # Django auto-column for the OneToOneField FK
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -45,6 +49,18 @@ class UserSerializer(serializers.ModelSerializer):
 
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
+
+        # Handle mitglied_id from raw request data (not in validated_data since it's SerializerMethodField)
+        if "mitglied_id" in self.initial_data:
+            raw_mitglied_id = self.initial_data.get("mitglied_id")
+            if raw_mitglied_id:
+                from core_apps.mitglieder.models import Mitglied
+                try:
+                    instance.mitglied = Mitglied.objects.get(pkid=int(raw_mitglied_id))
+                except (Mitglied.DoesNotExist, ValueError, TypeError):
+                    instance.mitglied = None
+            else:
+                instance.mitglied = None
 
         instance.save()
 
@@ -72,6 +88,7 @@ class UserSerializer(serializers.ModelSerializer):
             "is_superuser",
             "date_joined",
             "roles",
+            "mitglied_id",
         ]
         read_only_fields = ["pkid", "id", "is_superuser", "date_joined"]
 
@@ -114,10 +131,11 @@ class AdminCreateUserSerializer(serializers.ModelSerializer):
     password1 = serializers.CharField(write_only=True)
     password2 = serializers.CharField(write_only=True)
     roles = serializers.ListField(child=serializers.CharField(), required=True, write_only=True)
+    mitglied_id = serializers.IntegerField(required=False, allow_null=True, write_only=True)
 
     class Meta:
         model = User
-        fields = ("username", "first_name", "last_name", "email", "password1", "password2", "roles")
+        fields = ("username", "first_name", "last_name", "email", "password1", "password2", "roles", "mitglied_id")
 
     def validate(self, attrs):
         if attrs["password1"] != attrs["password2"]:
@@ -129,9 +147,18 @@ class AdminCreateUserSerializer(serializers.ModelSerializer):
         roles = validated_data.pop("roles")
         pwd = validated_data.pop("password1")
         validated_data.pop("password2", None)
+        mitglied_pkid = validated_data.pop("mitglied_id", None)
 
         user = User(**validated_data)
         user.set_password(pwd)
+
+        if mitglied_pkid:
+            from core_apps.mitglieder.models import Mitglied
+            try:
+                user.mitglied = Mitglied.objects.get(pkid=mitglied_pkid)
+            except (Mitglied.DoesNotExist, ValueError, TypeError):
+                pass
+
         user.save()
 
         # roles setzen (dein Role Modell nutzt key)
@@ -157,12 +184,17 @@ class UserSelfSerializer(serializers.ModelSerializer):
         slug_field='key',
         read_only=True
     )
+    mitglied_id = serializers.SerializerMethodField()
+
+    def get_mitglied_id(self, obj):
+        return obj.mitglied_id
 
     class Meta:
         model = User
-        # NUR das, was ein User selbst ändern darf:
-        fields = ("id", "username", "first_name", "last_name", "roles")
-        read_only_fields = ("id", "roles")
+        # Ein Benutzer kann nur seine E-Mail-Adresse selbst ändern.
+        # Passwortänderung erfolgt über den separaten change_password-Endpunkt.
+        fields = ("id", "username", "email", "roles", "mitglied_id")
+        read_only_fields = ("id", "username", "roles", "mitglied_id")
 
     def update(self, instance, validated_data):
         return super().update(instance, validated_data)

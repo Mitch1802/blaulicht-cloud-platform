@@ -4,7 +4,9 @@ export interface IBenutzer {
     name: string,
     first_name: string,
     last_name: string,
+    email?: string,
     is_active: boolean,
     password: string,
-    roles: any
+    roles: any,
+    mitglied_id?: number | null
 }
