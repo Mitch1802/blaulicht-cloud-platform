@@ -58,6 +58,9 @@ type EinsatzberichtDto = {
   brand_kategorie: string;
   brand_aus: string;
   technisch_kategorie: string;
+  bma_meldergruppe: string;
+  bma_melder: string;
+  bma_fehl_tauschungsalarm: string;
   mitalarmiert: number[];
   fahrzeuge: number[];
   mitglieder: number[];
@@ -196,6 +199,9 @@ export class EinsatzberichtComponent implements OnInit {
     brandKategorie: new FormControl<string>('', { nonNullable: true }),
     brandAus: new FormControl<string>('', { nonNullable: true }),
     technischKategorie: new FormControl<string>('', { nonNullable: true }),
+    bmaMeldergruppe: new FormControl<string>('', { nonNullable: true }),
+    bmaMelder: new FormControl<string>('', { nonNullable: true }),
+    bmaFehlTauschungsalarm: new FormControl<string>('', { nonNullable: true }),
     mitalarmiert: new FormControl<number[]>([], { nonNullable: true }),
     fahrzeuge: new FormControl<number[]>([], { nonNullable: true }),
     mitglieder: new FormControl<number[]>([], { nonNullable: true }),
@@ -208,6 +214,12 @@ export class EinsatzberichtComponent implements OnInit {
   get isTechnisch(): boolean {
     return this.formBericht.controls.einsatzart.value === 'Technischer Einsatz';
   }
+
+  get isBMA(): boolean {
+    return /\bbma\b/i.test(this.formBericht.controls.alarmstichwort.value);
+  }
+
+  bmaFehlTauschungsalarmOptionen = ['Fehlalarm', 'Täuschungsalarm'];
 
   get filteredFahrzeugOptionen(): FahrzeugOption[] {
     const selected = new Set(this.formBericht.controls.fahrzeuge.value);
@@ -475,6 +487,10 @@ export class EinsatzberichtComponent implements OnInit {
       this.updateConditionalValidation();
     });
 
+    this.formBericht.controls.alarmstichwort.valueChanges.subscribe(() => {
+      this.updateConditionalValidation();
+    });
+
     this.formBericht.controls.technischKategorie.valueChanges.subscribe(() => {
       this.updateConditionalValidation();
     });
@@ -563,6 +579,9 @@ export class EinsatzberichtComponent implements OnInit {
       brandKategorie: '',
       brandAus: '',
       technischKategorie: '',
+      bmaMeldergruppe: '',
+      bmaMelder: '',
+      bmaFehlTauschungsalarm: '',
       mitalarmiert: [],
       fahrzeuge: [],
       mitglieder: [],
@@ -600,6 +619,9 @@ export class EinsatzberichtComponent implements OnInit {
           einsatzDatum: this.normalizeDateInput(mapped.einsatz_datum),
           ausgerueckt: mapped.ausgerueckt ?? '',
           mitglieder: confirmedMemberIds,
+          lageBeimEintreffen: parsedAlarm.lageBeimEintreffen,
+          bmaMeldergruppe: parsedAlarm.bmaMeldergruppe,
+          bmaMelder: parsedAlarm.bmaMelder,
         });
 
         this.einsatzleiterSuche.setValue(this.formBericht.controls.einsatzleiter.value);
@@ -619,6 +641,9 @@ export class EinsatzberichtComponent implements OnInit {
     einsatzart: string;
     alarmstichwort: string;
     einsatzadresse: string;
+    lageBeimEintreffen: string;
+    bmaMeldergruppe: string;
+    bmaMelder: string;
   } {
     let text = this.normalizeAlarmText(alarmtext);
     if (!text) {
@@ -626,6 +651,9 @@ export class EinsatzberichtComponent implements OnInit {
         einsatzart: '',
         alarmstichwort: '',
         einsatzadresse: '',
+        lageBeimEintreffen: '',
+        bmaMeldergruppe: '',
+        bmaMelder: '',
       };
     }
 
@@ -646,27 +674,46 @@ export class EinsatzberichtComponent implements OnInit {
 
     // 4. Adresse: vom ersten Punkt bis zum ersten Doppelpunkt (falls vorhanden)
     let einsatzadresse = '';
+    let lageBeimEintreffen = '';
     if (firstDotIndex > -1) {
       const afterDot = text.substring(firstDotIndex + 1).trim();
+      const hasBMA = /\[BMA:/i.test(afterDot);
       const firstColonIndex = afterDot.indexOf(':');
 
       if (firstColonIndex > -1) {
         // Adresse bis zum Doppelpunkt
         einsatzadresse = afterDot.substring(0, firstColonIndex).trim();
+        // Text nach dem Doppelpunkt → Lage beim Eintreffen (außer bei BMA-Meldungen)
+        if (!hasBMA) {
+          lageBeimEintreffen = afterDot.substring(firstColonIndex + 1).trim();
+        }
       } else {
         // Kein Doppelpunkt: nimm alles nach dem Punkt, entferne Klammern + Koordinaten
         einsatzadresse = afterDot.replace(/\([^)]*\)/g, '').trim();
       }
     }
 
-    // 5. Cleanup
+    // 5. BMA-Daten: [BMA: Meldergruppe-Melder] extrahieren
+    let bmaMeldergruppe = '';
+    let bmaMelder = '';
+    const bmaMatch = text.match(/\[BMA:\s*([^-\]]+?)\s*-\s*([^\]]+)\]/i);
+    if (bmaMatch) {
+      bmaMeldergruppe = bmaMatch[1].trim();
+      bmaMelder = bmaMatch[2].trim();
+    }
+
+    // 6. Cleanup
     alarmstichwort = this.sanitizeAlarmstichwort(alarmstichwort).trim();
     einsatzadresse = this.removeCoordinates(einsatzadresse).trim();
+    lageBeimEintreffen = this.removeCoordinates(lageBeimEintreffen).replace(/\(\s*\)/g, '').replace(/\s+/g, ' ').trim();
 
     return {
       einsatzart,
       alarmstichwort,
       einsatzadresse,
+      lageBeimEintreffen,
+      bmaMeldergruppe,
+      bmaMelder,
     };
   }
 
@@ -1109,6 +1156,9 @@ export class EinsatzberichtComponent implements OnInit {
       brandKategorie: bericht.brand_kategorie || '',
       brandAus: bericht.brand_aus || '',
       technischKategorie: bericht.technisch_kategorie || '',
+      bmaMeldergruppe: bericht.bma_meldergruppe || '',
+      bmaMelder: bericht.bma_melder || '',
+      bmaFehlTauschungsalarm: bericht.bma_fehl_tauschungsalarm || '',
       mitalarmiert: this.resolveMitalarmiertSelectValue(bericht.mitalarmiert),
       fahrzeuge: bericht.fahrzeuge || [],
       mitglieder: bericht.mitglieder || [],
@@ -1276,6 +1326,9 @@ export class EinsatzberichtComponent implements OnInit {
     fd.append('brand_kategorie', this.isBrand ? (form.brandKategorie || '') : '');
     fd.append('brand_aus', this.isBrand ? (form.brandAus || '') : '');
     fd.append('technisch_kategorie', form.technischKategorie || '');
+    fd.append('bma_meldergruppe', this.isBMA ? (form.bmaMeldergruppe || '') : '');
+    fd.append('bma_melder', this.isBMA ? (form.bmaMelder || '') : '');
+    fd.append('bma_fehl_tauschungsalarm', this.isBMA ? (form.bmaFehlTauschungsalarm || '') : '');
     form.mitalarmiert.forEach((stelleId) => fd.append('mitalarmiert', String(stelleId)));
 
     form.fahrzeuge.forEach((fahrzeugId) => fd.append('fahrzeuge', String(fahrzeugId)));
@@ -1303,6 +1356,9 @@ export class EinsatzberichtComponent implements OnInit {
     const brandKategorie = this.formBericht.controls.brandKategorie;
     const brandAus = this.formBericht.controls.brandAus;
     const technischKategorie = this.formBericht.controls.technischKategorie;
+    const bmaMeldergruppe = this.formBericht.controls.bmaMeldergruppe;
+    const bmaMelder = this.formBericht.controls.bmaMelder;
+    const bmaFehlTauschungsalarm = this.formBericht.controls.bmaFehlTauschungsalarm;
 
     brandKategorie.clearValidators();
     brandAus.clearValidators();
@@ -1328,6 +1384,18 @@ export class EinsatzberichtComponent implements OnInit {
     } else {
       if (technischKategorie.value) {
         technischKategorie.setValue('', { emitEvent: false });
+      }
+    }
+
+    if (!this.isBMA) {
+      if (bmaMeldergruppe.value) {
+        bmaMeldergruppe.setValue('', { emitEvent: false });
+      }
+      if (bmaMelder.value) {
+        bmaMelder.setValue('', { emitEvent: false });
+      }
+      if (bmaFehlTauschungsalarm.value) {
+        bmaFehlTauschungsalarm.setValue('', { emitEvent: false });
       }
     }
 

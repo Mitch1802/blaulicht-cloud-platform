@@ -8,8 +8,7 @@ describe('EinsatzberichtComponent - parseBlaulichtAlarmtext', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ EinsatzberichtComponent ],
-      imports: [ HttpClientTestingModule, ReactiveFormsModule ]
+      imports: [ EinsatzberichtComponent, HttpClientTestingModule, ReactiveFormsModule ]
     })
     .compileComponents();
 
@@ -33,5 +32,52 @@ describe('EinsatzberichtComponent - parseBlaulichtAlarmtext', () => {
     console.log('Example 2 Result:', result);
     expect(result.alarmstichwort).toBe('Bergung - PKW');
     expect(result.einsatzadresse).toContain('L2004 km 1.4');
+  });
+
+  it('should extract lageBeimEintreffen from text after colon', () => {
+    const input = '(16:59) T1 Objekt/Baum - Umgestürzt. Weinbergstrasse 21, 2432 Schwadorf: Bäume auf Strasse (48.075, 16.5827)';
+    const result = (component as any).parseBlaulichtAlarmtext(input);
+
+    expect(result.lageBeimEintreffen).toContain('Bäume auf Strasse');
+    expect(result.einsatzadresse).toContain('Weinbergstrasse 21');
+  });
+
+  it('should not extract lageBeimEintreffen when [BMA: is present', () => {
+    const input = '(10:00) B2 BMA - Ausgelöst. Hauptstrasse 1, 2000 Wien: [BMA: Alarmzone 3] (48.2, 16.3)';
+    const result = (component as any).parseBlaulichtAlarmtext(input);
+
+    expect(result.lageBeimEintreffen).toBe('');
+    expect(result.einsatzadresse).toContain('Hauptstrasse 1');
+  });
+
+  it('should extract bmaMeldergruppe and bmaMelder from [BMA: X-Y] pattern', () => {
+    const input = '(10:00) B2 BMA - Ausgelöst. Hauptstrasse 1, 2000 Wien: [BMA: 5-32] (48.2, 16.3)';
+    const result = (component as any).parseBlaulichtAlarmtext(input);
+
+    expect(result.bmaMeldergruppe).toBe('5');
+    expect(result.bmaMelder).toBe('32');
+  });
+
+  it('should extract bmaMeldergruppe and bmaMelder with alphanumeric values', () => {
+    const input = '(10:00) B2 BMA - Ausgelöst. Teststrasse 5, 1010 Wien: [BMA: A12-031] (48.2, 16.3)';
+    const result = (component as any).parseBlaulichtAlarmtext(input);
+
+    expect(result.bmaMeldergruppe).toBe('A12');
+    expect(result.bmaMelder).toBe('031');
+  });
+
+  it('should return empty bmaMeldergruppe and bmaMelder when no BMA pattern present', () => {
+    const input = '(12:16) T1 Bergung - PKW. L2004 km 1.4 (Schwadorf -> Rauchenwarth) (48.075, 16.5644)';
+    const result = (component as any).parseBlaulichtAlarmtext(input);
+
+    expect(result.bmaMeldergruppe).toBe('');
+    expect(result.bmaMelder).toBe('');
+  });
+
+  it('should return empty lageBeimEintreffen when no colon after address', () => {
+    const input = '(12:16) T1 Bergung - PKW. L2004 km 1.4 (Schwadorf -> Rauchenwarth) (48.075, 16.5644)';
+    const result = (component as any).parseBlaulichtAlarmtext(input);
+
+    expect(result.lageBeimEintreffen).toBe('');
   });
 });

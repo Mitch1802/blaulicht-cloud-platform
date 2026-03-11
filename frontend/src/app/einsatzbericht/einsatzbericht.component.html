@@ -281,6 +281,26 @@
                     <h3>Einsatzspezifische Details</h3>
                     <p class="empty">Für diese Einsatzart gibt es keine zusätzlichen Kategorien.</p>
                   }
+                  @if (isBMA) {
+                    <h3>BMA-Details</h3>
+                    <mat-form-field class="full-width">
+                      <mat-label>Meldergruppe</mat-label>
+                      <input matInput formControlName="bmaMeldergruppe" />
+                    </mat-form-field>
+                    <mat-form-field class="full-width">
+                      <mat-label>Melder</mat-label>
+                      <input matInput formControlName="bmaMelder" />
+                    </mat-form-field>
+                    <mat-form-field class="full-width">
+                      <mat-label>Fehl- oder Täuschungsalarm</mat-label>
+                      <mat-select formControlName="bmaFehlTauschungsalarm">
+                        <mat-option value="">Kein Fehl-/Täuschungsalarm</mat-option>
+                        @for (opt of bmaFehlTauschungsalarmOptionen; track opt) {
+                          <mat-option [value]="opt">{{ opt }}</mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
+                  }
                 </div>
 
                 <div class="conditional-block">

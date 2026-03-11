@@ -48,6 +48,20 @@ class Einsatzbericht(TimeStampedModel):
     brand_kategorie = models.CharField(_("Brand Kategorie"), max_length=120, blank=True, default="")
     brand_aus = models.TimeField(_("Brand aus"), null=True, blank=True)
     technisch_kategorie = models.CharField(_("Technisch Kategorie"), max_length=120, blank=True, default="")
+
+    bma_meldergruppe = models.CharField(_("BMA Meldergruppe"), max_length=120, blank=True, default="")
+    bma_melder = models.CharField(_("BMA Melder"), max_length=120, blank=True, default="")
+    bma_fehl_tauschungsalarm = models.CharField(
+        _("Fehl- oder Täuschungsalarm"),
+        max_length=20,
+        blank=True,
+        default="",
+        choices=[
+            ("", "Kein Fehl-/Täuschungsalarm"),
+            ("Fehlalarm", "Fehlalarm"),
+            ("Täuschungsalarm", "Täuschungsalarm"),
+        ],
+    )
     mitalarmierte_stellen = models.ManyToManyField(MitalarmierteStelle, related_name="einsatzberichte", blank=True)
 
     status = models.CharField(_("Status"), choices=Status.choices, default=Status.ENTWURF, max_length=20)
