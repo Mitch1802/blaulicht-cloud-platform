@@ -16,7 +16,7 @@ import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
 import { MatButton } from '@angular/material/button';
 import { MatInput } from '@angular/material/input';
 import { MatCheckbox } from '@angular/material/checkbox';
-import { MatOption, MatSelect } from '@angular/material/select';
+import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { forkJoin } from 'rxjs';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
@@ -39,8 +39,7 @@ import { MatTabsModule } from '@angular/material/tabs';
     MatInput,
     MatError,
     MatCheckbox,
-    MatSelect,
-    MatOption,
+    MatAutocompleteModule,
     MatTableModule,
     MatPaginatorModule,
     MatSort,
@@ -139,11 +138,35 @@ export class UserComponent implements OnInit {
     username: new FormControl('', Validators.required),
     first_name: new FormControl('', Validators.required),
     last_name: new FormControl('', Validators.required),
+    email: new FormControl('', Validators.email),
     mitglied_id: new FormControl<number | null>(null),
     roles: new FormControl<string[]>([]),
     password1: new FormControl('', Validators.minLength(8)),
     password2: new FormControl('',Validators.minLength(8))
   });
+
+  mitgliedSuche = new FormControl<string>('', { nonNullable: true });
+
+  get filteredMitgliedOptionen(): IMitglied[] {
+    const search = this.mitgliedSuche.value.trim().toLowerCase();
+    if (!search) {
+      return this.mitglieder;
+    }
+    return this.mitglieder.filter((m) =>
+      this.getMitgliedLabel(m).toLowerCase().includes(search)
+    );
+  }
+
+  onMitgliedSelected(event: MatAutocompleteSelectedEvent): void {
+    const mitglied = event.option.value as IMitglied | null;
+    if (!mitglied) {
+      this.formModul.controls['mitglied_id'].setValue(null);
+      this.mitgliedSuche.setValue('');
+    } else {
+      this.formModul.controls['mitglied_id'].setValue(mitglied.pkid);
+      this.mitgliedSuche.setValue(this.getMitgliedLabel(mitglied));
+    }
+  }
 
   ngOnInit(): void {
     sessionStorage.setItem("PageNumber", "2");
@@ -206,11 +229,14 @@ export class UserComponent implements OnInit {
             username: details.username,
             first_name: details.first_name,
             last_name: details.last_name,
+            email: details.email || '',
             mitglied_id: details.mitglied_id ?? null,
             roles: normalizedRoles,
             password1: "",
             password2: ""
           });
+          const selectedMitglied = this.mitglieder.find((m) => m.pkid === details.mitglied_id);
+          this.mitgliedSuche.setValue(selectedMitglied ? this.getMitgliedLabel(selectedMitglied) : '');
           this.setRolesWithAdminRule(this.formModul.controls['roles'].value);
         } catch (e: any) {
           this.uiMessageService.erstelleMessage('error', String(e));
@@ -242,7 +268,8 @@ export class UserComponent implements OnInit {
           this.username = "";
           this.benutzer = dataNew;
           this.dataSource.data = this.benutzer;
-          this.formModul.reset({ username: '', first_name: '', last_name: '', mitglied_id: null, roles: [], password1: '', password2: '' });
+          this.formModul.reset({ username: '', first_name: '', last_name: '', email: '', mitglied_id: null, roles: [], password1: '', password2: '' });
+          this.mitgliedSuche.setValue('');
           this.formModul.disable();
           this.uiMessageService.erstelleMessage('success', 'Benutzer erfolgreich gelöscht!');
         } catch (e: any) {
@@ -258,7 +285,8 @@ export class UserComponent implements OnInit {
   abbrechen(): void {
     this.uiMessageService.erstelleMessage('info', 'Benutzer nicht gespeichert!');
     this.username = "";
-    this.formModul.reset({ username: '', first_name: '', last_name: '', mitglied_id: null, roles: [], password1: '', password2: '' });
+    this.formModul.reset({ username: '', first_name: '', last_name: '', email: '', mitglied_id: null, roles: [], password1: '', password2: '' });
+    this.mitgliedSuche.setValue('');
     this.formModul.disable();
   }
 
@@ -277,6 +305,7 @@ export class UserComponent implements OnInit {
       username: this.formModul.controls["username"].value || '',
       first_name: this.formModul.controls["first_name"].value || '',
       last_name: this.formModul.controls["last_name"].value || '',
+      email: this.formModul.controls["email"].value || '',
       mitglied_id: this.formModul.controls["mitglied_id"].value || null,
       roles: rollen,
       password1: this.formModul.controls["password1"].value || '',
@@ -288,6 +317,7 @@ export class UserComponent implements OnInit {
       username: this.formModul.controls["username"].value || '',
       first_name: this.formModul.controls["first_name"].value || '',
       last_name: this.formModul.controls["last_name"].value || '',
+      email: this.formModul.controls["email"].value || '',
       mitglied_id: this.formModul.controls["mitglied_id"].value || null,
       roles: rollen,
     };
@@ -307,7 +337,8 @@ export class UserComponent implements OnInit {
             this.benutzer.push(erg.user);
             this.benutzer = this.collectionUtilsService.arraySortByKey(this.benutzer, 'username');
             this.dataSource.data = this.benutzer;
-            this.formModul.reset({ username: '', first_name: '', last_name: '', mitglied_id: null, roles: [], password1: '', password2: '' });
+            this.formModul.reset({ username: '', first_name: '', last_name: '', email: '', mitglied_id: null, roles: [], password1: '', password2: '' });
+            this.mitgliedSuche.setValue('');
             this.formModul.disable();
             this.uiMessageService.erstelleMessage('success', 'Benutzer erfolgreich gespeichert!');
           } catch (e: any) {
@@ -335,7 +366,8 @@ export class UserComponent implements OnInit {
             this.benutzer = dataNew;
             this.benutzer = this.collectionUtilsService.arraySortByKey(this.benutzer, 'username');
             this.dataSource.data = this.benutzer;
-            this.formModul.reset({ username: '', first_name: '', last_name: '', mitglied_id: null, roles: [], password1: '', password2: '' });
+            this.formModul.reset({ username: '', first_name: '', last_name: '', email: '', mitglied_id: null, roles: [], password1: '', password2: '' });
+            this.mitgliedSuche.setValue('');
             this.formModul.disable();
             this.uiMessageService.erstelleMessage('success', 'Benutzer erfolgreich geändert!');
           } catch (e: any) {

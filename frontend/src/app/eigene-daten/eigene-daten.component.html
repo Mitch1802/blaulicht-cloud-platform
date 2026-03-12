@@ -11,7 +11,7 @@
 
           <section class="app-grid mt-2">
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <mat-form-field>
+              <mat-form-field class="full-width">
                 <mat-label>E-Mail-Adresse</mat-label>
                 <input matInput type="email" formControlName="email" />
                 @if (formModul.controls['email'].hasError('email')) {
@@ -19,25 +19,25 @@
                 }
               </mat-form-field>
             </div>
-            <div class="app-col-12 app-col-lg-4 m-0 app-grid auswahl-button">
-              <button
-                mat-flat-button
-                class="app-col-auto"
-                color="accent"
-                [disabled]="!formModul.valid"
-                type="button"
-                (click)="emailSpeichern()"
-              >
-                E-Mail speichern
-              </button>
-            </div>
           </section>
+
+          <div class="form-actions">
+            <button
+              mat-flat-button
+              color="accent"
+              [disabled]="!formModul.valid"
+              type="button"
+              (click)="emailSpeichern()"
+            >
+              E-Mail speichern
+            </button>
+          </div>
 
           <hr />
 
           <section class="app-grid mt-3">
             <div class="app-col-12 app-col-lg-4 mb-3">
-              <mat-form-field>
+              <mat-form-field class="full-width">
                 <mat-label>Passwort</mat-label>
                 <input matInput type="password" formControlName="password1" />
                 @if (formModul.controls['password1'].hasError('minlength')) {
@@ -48,7 +48,7 @@
               </mat-form-field>
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3">
-              <mat-form-field>
+              <mat-form-field class="full-width">
                 <mat-label>Passwort wiederholen</mat-label>
                 <input matInput type="password" formControlName="password2" />
                 @if (formModul.controls['password2'].hasError('minlength')) {
@@ -58,21 +58,19 @@
                 }
               </mat-form-field>
             </div>
-            <div
-              class="app-col-12 app-col-lg-4 m-0 app-grid auswahl-button"
-            >
-              <button
-                mat-flat-button
-                class="app-col-auto"
-                color="accent"
-                [disabled]="!formModul.valid"
-                type="button"
-                (click)="passwortAendern()"
-              >
-                Passwort ändern
-              </button>
-            </div>
           </section>
+
+          <div class="form-actions">
+            <button
+              mat-flat-button
+              color="accent"
+              [disabled]="!formModul.valid"
+              type="button"
+              (click)="passwortAendern()"
+            >
+              Passwort ändern
+            </button>
+          </div>
         </form>
     </mat-card-content>
   </mat-card>
