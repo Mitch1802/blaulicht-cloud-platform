@@ -353,7 +353,7 @@
               <mat-form-field class="full-width">
                 <mat-label>Teilnehmer</mat-label>
                 <mat-select formControlName="teilnehmer_ids" multiple (selectionChange)="onEventTeilnehmerAuswahlGeaendert()">
-                  @for (member of jugendMitglieder; track member.pkid) {
+                  @for (member of sortedJugendMitglieder; track member.pkid) {
                     <mat-option [value]="member.pkid">{{ getMitgliedMitRangText(member) }}</mat-option>
                   }
                 </mat-select>

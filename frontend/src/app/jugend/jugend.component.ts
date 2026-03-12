@@ -543,6 +543,22 @@ export class JugendComponent implements OnInit {
     return rang !== '' ? rang : 'ohne Rang';
   }
 
+  get sortedJugendMitglieder(): IMitglied[] {
+    const selectedIds = this.formEvent.controls.teilnehmer_ids.value;
+    const idToMitglied = new Map(this.jugendMitglieder.map((m) => [m.pkid, m]));
+
+    // Ausgewählte Mitglieder in der Reihenfolge des selectedIds arrays
+    const selectedMembers = selectedIds
+      .map((id) => idToMitglied.get(id))
+      .filter((m): m is IMitglied => m !== undefined);
+
+    // Nicht ausgewählte Mitglieder
+    const selectedSet = new Set(selectedIds);
+    const unselectedMembers = this.jugendMitglieder.filter((m) => !selectedSet.has(m.pkid));
+
+    return [...selectedMembers, ...unselectedMembers];
+  }
+
   getMitgliedMitRangText(m: IMitglied): string {
     return `${m.stbnr} - ${m.vorname} ${m.nachname} (${this.getRangText(m.dienstgrad)})`;
   }

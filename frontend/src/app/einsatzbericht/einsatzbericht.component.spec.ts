@@ -20,7 +20,7 @@ describe('EinsatzberichtComponent - parseBlaulichtAlarmtext', () => {
     const result = (component as any).parseBlaulichtAlarmtext(input);
     
     console.log('Example 1 Result:', result);
-    expect(result.alarmstichwort).toBe('Objekt/Baum - Umgestürzt');
+    expect(result.alarmstichwort).toBe('T1 Objekt/Baum - Umgestürzt');
     expect(result.einsatzadresse).toContain('Weinbergstrasse 21');
     expect(result.einsatzadresse).toContain('2432 Schwadorf');
   });
@@ -30,7 +30,7 @@ describe('EinsatzberichtComponent - parseBlaulichtAlarmtext', () => {
     const result = (component as any).parseBlaulichtAlarmtext(input);
     
     console.log('Example 2 Result:', result);
-    expect(result.alarmstichwort).toBe('Bergung - PKW');
+    expect(result.alarmstichwort).toBe('T1 Bergung - PKW');
     expect(result.einsatzadresse).toContain('L2004 km 1.4');
   });
 
@@ -79,5 +79,13 @@ describe('EinsatzberichtComponent - parseBlaulichtAlarmtext', () => {
     const result = (component as any).parseBlaulichtAlarmtext(input);
 
     expect(result.lageBeimEintreffen).toBe('');
+  });
+
+  it('should derive einsatzart only from final alarmstichwort and ignore later alarm text', () => {
+    const input = '(12:16) T1 Tueroeffnung. Hauptstrasse 1, 2000 Wien: BMA wurde vom Betreiber bestaetigt';
+    const result = (component as any).parseBlaulichtAlarmtext(input);
+
+    expect(result.alarmstichwort).toBe('T1 Tueroeffnung');
+    expect(result.einsatzart).toBe('Technischer Einsatz');
   });
 });

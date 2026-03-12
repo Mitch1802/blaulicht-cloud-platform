@@ -252,9 +252,12 @@ export class AnwesenheitslisteComponent implements OnInit {
   get filteredMitgliedOptionen(): IMitglied[] {
     const selectedIds = this.formModul.controls['mitglied_ids'].value;
     const search = this.mitgliedSuche.value.trim().toLowerCase();
+    const idToMitglied = new Map(this.dropdownMitglieder.map((m) => [m.pkid, m]));
 
-    return this.dropdownMitglieder
-      .filter((mitglied) => !selectedIds.includes(mitglied.pkid))
+    // Ausgewählte Mitglieder in der Reihenfolge des selectedIds arrays
+    const selectedMembers = selectedIds
+      .map((id) => idToMitglied.get(id))
+      .filter((m): m is IMitglied => m !== undefined)
       .filter((mitglied) => {
         if (!search) {
           return true;
@@ -262,6 +265,20 @@ export class AnwesenheitslisteComponent implements OnInit {
         const label = `${mitglied.stbnr ?? ''} ${mitglied.vorname ?? ''} ${mitglied.nachname ?? ''}`.toLowerCase();
         return label.includes(search);
       });
+
+    // Nicht ausgewählte Mitglieder
+    const selectedSet = new Set(selectedIds);
+    const unselectedMembers = this.dropdownMitglieder
+      .filter((mitglied) => !selectedSet.has(mitglied.pkid))
+      .filter((mitglied) => {
+        if (!search) {
+          return true;
+        }
+        const label = `${mitglied.stbnr ?? ''} ${mitglied.vorname ?? ''} ${mitglied.nachname ?? ''}`.toLowerCase();
+        return label.includes(search);
+      });
+
+    return [...selectedMembers, ...unselectedMembers];
   }
 
   get selectedMitgliedOptionen(): IMitglied[] {

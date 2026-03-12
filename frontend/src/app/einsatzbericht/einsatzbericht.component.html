@@ -559,7 +559,7 @@
                         }
                       </mat-select-trigger>
 
-                      @for (mitglied of mitgliedOptionen; track mitglied.id) {
+                      @for (mitglied of sortedMitgliedOptionen; track mitglied.id) {
                         <mat-option [value]="mitglied.id">{{ mitglied.label }}</mat-option>
                       }
                     </mat-select>

@@ -233,18 +233,51 @@ export class EinsatzberichtComponent implements OnInit {
 
   bmaFehlTauschungsalarmOptionen = ['Fehlalarm', 'Täuschungsalarm'];
 
+  get sortedFahrzeugOptionen(): FahrzeugOption[] {
+    const selectedIds = this.formBericht.controls.fahrzeuge.value;
+    const idToFahrzeug = new Map(this.fahrzeugOptionen.map((f) => [f.id, f]));
+
+    // Ausgewählte Fahrzeuge in der Reihenfolge des selectedIds arrays
+    const selectedVehicles = selectedIds
+      .map((id) => idToFahrzeug.get(id))
+      .filter((f): f is FahrzeugOption => f !== undefined);
+
+    // Nicht ausgewählte Fahrzeuge
+    const selectedSet = new Set(selectedIds);
+    const unselectedVehicles = this.fahrzeugOptionen.filter((f) => !selectedSet.has(f.id));
+
+    return [...selectedVehicles, ...unselectedVehicles];
+  }
+
   get filteredFahrzeugOptionen(): FahrzeugOption[] {
     const selected = new Set(this.formBericht.controls.fahrzeuge.value);
     const search = this.fahrzeugSuche.value.trim().toLowerCase();
-    return this.fahrzeugOptionen.filter((fahrzeug) => {
-      if (selected.has(fahrzeug.id)) {
-        return false;
-      }
-      if (!search) {
-        return true;
-      }
-      return fahrzeug.label.toLowerCase().includes(search);
-    });
+    const selectedIds = this.formBericht.controls.fahrzeuge.value;
+    const idToFahrzeug = new Map(this.fahrzeugOptionen.map((f) => [f.id, f]));
+
+    // Ausgewählte Fahrzeuge in der Reihenfolge des selectedIds arrays
+    const selectedVehicles = selectedIds
+      .map((id) => idToFahrzeug.get(id))
+      .filter((f): f is FahrzeugOption => f !== undefined)
+      .filter((fahrzeug) => {
+        if (!search) {
+          return true;
+        }
+        return fahrzeug.label.toLowerCase().includes(search);
+      });
+
+    // Nicht ausgewählte Fahrzeuge
+    const selectedSet = new Set(selectedIds);
+    const unselectedVehicles = this.fahrzeugOptionen
+      .filter((fahrzeug) => !selectedSet.has(fahrzeug.id))
+      .filter((fahrzeug) => {
+        if (!search) {
+          return true;
+        }
+        return fahrzeug.label.toLowerCase().includes(search);
+      });
+
+    return [...selectedVehicles, ...unselectedVehicles];
   }
 
   get einsatzleiterOptionen(): string[] {
@@ -273,19 +306,51 @@ export class EinsatzberichtComponent implements OnInit {
     return this.alarmierendeStelleOptionenBasis;
   }
 
+  get sortedMitalarmiertOptionen(): MitalarmiertStelleOption[] {
+    const selectedIds = this.formBericht.controls.mitalarmiert.value;
+    const idToOption = new Map(this.mitalarmiertOptionen.map((o) => [o.id, o]));
+
+    // Ausgewählte Stellen in der Reihenfolge des selectedIds arrays
+    const selectedOptions = selectedIds
+      .map((id) => idToOption.get(id))
+      .filter((o): o is MitalarmiertStelleOption => o !== undefined);
+
+    // Nicht ausgewählte Stellen
+    const selectedSet = new Set(selectedIds);
+    const unselectedOptions = this.mitalarmiertOptionen.filter((o) => !selectedSet.has(o.id));
+
+    return [...selectedOptions, ...unselectedOptions];
+  }
+
   get filteredMitalarmiertOptionen(): MitalarmiertStelleOption[] {
     const selected = new Set(this.formBericht.controls.mitalarmiert.value);
     const search = this.mitalarmiertSuche.value.trim().toLowerCase();
+    const selectedIds = this.formBericht.controls.mitalarmiert.value;
+    const idToOption = new Map(this.mitalarmiertOptionen.map((o) => [o.id, o]));
 
-    return this.mitalarmiertOptionen.filter((option) => {
-      if (selected.has(option.id)) {
-        return false;
-      }
-      if (!search) {
-        return true;
-      }
-      return option.label.toLowerCase().includes(search);
-    });
+    // Ausgewählte Stellen in der Reihenfolge des selectedIds arrays
+    const selectedOptions = selectedIds
+      .map((id) => idToOption.get(id))
+      .filter((o): o is MitalarmiertStelleOption => o !== undefined)
+      .filter((option) => {
+        if (!search) {
+          return true;
+        }
+        return option.label.toLowerCase().includes(search);
+      });
+
+    // Nicht ausgewählte Stellen
+    const selectedSet = new Set(selectedIds);
+    const unselectedOptions = this.mitalarmiertOptionen
+      .filter((option) => !selectedSet.has(option.id))
+      .filter((option) => {
+        if (!search) {
+          return true;
+        }
+        return option.label.toLowerCase().includes(search);
+      });
+
+    return [...selectedOptions, ...unselectedOptions];
   }
 
   get selectedMitalarmiertOptionen(): MitalarmiertStelleOption[] {
@@ -320,6 +385,22 @@ export class EinsatzberichtComponent implements OnInit {
       return 'Keine Mitglieder ausgewählt';
     }
     return first.label;
+  }
+
+  get sortedMitgliedOptionen(): MitgliedOption[] {
+    const selectedIds = this.formBericht.controls.mitglieder.value;
+    const idToMitglied = new Map(this.mitgliedOptionen.map((m) => [m.id, m]));
+
+    // Ausgewählte Mitglieder in der Reihenfolge des selectedIds arrays
+    const selectedMembers = selectedIds
+      .map((id) => idToMitglied.get(id))
+      .filter((m): m is MitgliedOption => m !== undefined);
+
+    // Nicht ausgewählte Mitglieder
+    const selectedSet = new Set(selectedIds);
+    const unselectedMembers = this.mitgliedOptionen.filter((m) => !selectedSet.has(m.id));
+
+    return [...selectedMembers, ...unselectedMembers];
   }
 
   get bestehendeDokuFotos(): EinsatzberichtFotoDto[] {
@@ -672,10 +753,7 @@ export class EinsatzberichtComponent implements OnInit {
     // 1. Zeitklammer entfernen: (HH:MM) oder (HH:MM:SS)
     text = text.replace(/\(\d{1,2}:\d{2}(?::\d{2})?\)\s*/g, '').trim();
 
-    // 2. Einsatzart extrahieren
-    const einsatzart = this.mapAlarmTextToEinsatzart(text);
-
-    // 3. Stichwort: alles bis zum ersten Punkt
+    // 2. Stichwort: alles bis zum ersten Punkt
     const firstDotIndex = text.indexOf('.');
     let alarmstichwort = '';
     if (firstDotIndex > -1) {
@@ -714,10 +792,13 @@ export class EinsatzberichtComponent implements OnInit {
       bmaMelder = bmaMatch[2].trim();
     }
 
-    // 6. Cleanup
+    // 5. Cleanup
     alarmstichwort = this.sanitizeAlarmstichwort(alarmstichwort).trim();
     einsatzadresse = this.removeCoordinates(einsatzadresse).trim();
     lageBeimEintreffen = this.removeCoordinates(lageBeimEintreffen).replace(/\(\s*\)/g, '').replace(/\s+/g, ' ').trim();
+
+    // 6. Einsatzart nur aus dem finalen Alarmstichwort bestimmen
+    const einsatzart = this.mapAlarmTextToEinsatzart(alarmstichwort);
 
     return {
       einsatzart,
