@@ -124,5 +124,19 @@
     "rolle": "ADMIN, AUSBILDUNG",
     "kategorie": "Geplant",
     "routerlink": "/ausbildung"
+  },
+  {
+    "icon": "psychology",
+    "modul": "Quiz",
+    "rolle": "ADMIN, MITGLIED",
+    "kategorie": "Geplant",
+    "routerlink": "/quiz"
+  },
+  {
+    "icon": "connected_tv",
+    "modul": "Homepage",
+    "rolle": "ADMIN, VERWALTUNG",
+    "kategorie": "Geplant",
+    "routerlink": "/homepage"
   }
 ]
