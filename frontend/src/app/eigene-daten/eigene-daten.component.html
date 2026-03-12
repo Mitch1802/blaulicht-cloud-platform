@@ -10,7 +10,7 @@
           <input hidden type="text" formControlName="id" />
 
           <section class="app-grid mt-2">
-            <div class="app-col-12 app-col-lg-6 mb-3">
+            <div class="app-col-12 app-col-lg-8 mb-3">
               <mat-form-field class="full-width">
                 <mat-label>E-Mail-Adresse</mat-label>
                 <input matInput type="email" formControlName="email" />
@@ -19,19 +19,20 @@
                 }
               </mat-form-field>
             </div>
-          </section>
 
-          <div class="form-actions">
-            <button
-              mat-flat-button
-              color="accent"
-              [disabled]="!formModul.valid"
-              type="button"
-              (click)="emailSpeichern()"
-            >
-              E-Mail speichern
-            </button>
-          </div>
+            <div class="app-col-12 app-col-lg-4 mb-3">
+              <button
+                mat-flat-button
+                color="accent"
+                [disabled]="!formModul.valid"
+                type="button"
+                (click)="emailSpeichern()"
+                class="full-width"
+              >
+                E-Mail speichern
+              </button>
+            </div>
+          </section>
 
           <hr />
 
@@ -58,19 +59,20 @@
                 }
               </mat-form-field>
             </div>
-          </section>
 
-          <div class="form-actions">
-            <button
-              mat-flat-button
-              color="accent"
-              [disabled]="!formModul.valid"
-              type="button"
-              (click)="passwortAendern()"
-            >
-              Passwort ändern
-            </button>
-          </div>
+            <div class="app-col-12 app-col-lg-4 mb-3">
+              <button
+                mat-flat-button
+                color="accent"
+                [disabled]="!formModul.valid"
+                type="button"
+                (click)="passwortAendern()"
+                class="full-width"
+              >
+                Passwort ändern
+              </button>
+            </div>
+          </section>
         </form>
     </mat-card-content>
   </mat-card>
