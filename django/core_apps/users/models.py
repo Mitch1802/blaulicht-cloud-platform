@@ -23,8 +23,6 @@ class Role(models.Model):
 class User(AbstractBaseUser, PermissionsMixin):
     pkid = models.BigAutoField(primary_key=True, editable=False)
     id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    first_name = models.CharField(verbose_name=_("first name"), max_length=50)
-    last_name = models.CharField(verbose_name=_("last name"), max_length=50)
     username = models.CharField(
         verbose_name=_("username"), max_length=50, db_index=True, unique=True
     )
@@ -51,7 +49,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
 
     USERNAME_FIELD = "username"
-    REQUIRED_FIELDS = ["first_name", "last_name"]
+    REQUIRED_FIELDS = []
 
     objects = CustomUserManager()
 
@@ -64,11 +62,11 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @property
     def get_full_name(self):
-        return f"{self.first_name.title()} {self.last_name.title()}"
+        return self.username
 
     @property
     def get_short_name(self):
-        return self.first_name
+        return self.username
     
     def has_role(self, key: str) -> bool:
         normalized = str(key or "").strip()

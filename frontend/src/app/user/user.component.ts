@@ -80,7 +80,7 @@ export class UserComponent implements OnInit {
   rollenUebersichtSpalten: string[] = ['benutzer'];
   rollenMatrix: { [userId: string]: string[] } = {};
   rollenMatrixDirty: Set<string> = new Set();
-  private readonly desktopSpaltenBenutzer = ['username', 'first_name', 'last_name', 'rolle', 'actions'];
+  private readonly desktopSpaltenBenutzer = ['username', 'mitglied_name', 'rolle', 'actions'];
   private readonly mobileSpaltenBenutzer = ['username', 'rolle', 'actions'];
   sichtbareSpaltenBenutzer: string[] = [...this.desktopSpaltenBenutzer];
 
@@ -136,8 +136,6 @@ export class UserComponent implements OnInit {
   formModul = new FormGroup({
     id: new FormControl(''),
     username: new FormControl('', Validators.required),
-    first_name: new FormControl('', Validators.required),
-    last_name: new FormControl('', Validators.required),
     email: new FormControl('', Validators.email),
     mitglied_id: new FormControl<number | null>(null),
     roles: new FormControl<string[]>([]),
@@ -152,6 +150,13 @@ export class UserComponent implements OnInit {
     if (!search) {
       return this.mitglieder;
     }
+
+    const selectedMitgliedId = this.formModul.controls['mitglied_id'].value;
+    const selectedMitglied = this.mitglieder.find((m) => m.pkid === selectedMitgliedId);
+    if (selectedMitglied && search === this.getMitgliedLabel(selectedMitglied).toLowerCase()) {
+      return this.mitglieder;
+    }
+
     return this.mitglieder.filter((m) =>
       this.getMitgliedLabel(m).toLowerCase().includes(search)
     );
@@ -227,8 +232,6 @@ export class UserComponent implements OnInit {
           this.formModul.setValue({
             id: details.id,
             username: details.username,
-            first_name: details.first_name,
-            last_name: details.last_name,
             email: details.email || '',
             mitglied_id: details.mitglied_id ?? null,
             roles: normalizedRoles,
@@ -268,7 +271,7 @@ export class UserComponent implements OnInit {
           this.username = "";
           this.benutzer = dataNew;
           this.dataSource.data = this.benutzer;
-          this.formModul.reset({ username: '', first_name: '', last_name: '', email: '', mitglied_id: null, roles: [], password1: '', password2: '' });
+          this.formModul.reset({ username: '', email: '', mitglied_id: null, roles: [], password1: '', password2: '' });
           this.mitgliedSuche.setValue('');
           this.formModul.disable();
           this.uiMessageService.erstelleMessage('success', 'Benutzer erfolgreich gelöscht!');
@@ -285,7 +288,7 @@ export class UserComponent implements OnInit {
   abbrechen(): void {
     this.uiMessageService.erstelleMessage('info', 'Benutzer nicht gespeichert!');
     this.username = "";
-    this.formModul.reset({ username: '', first_name: '', last_name: '', email: '', mitglied_id: null, roles: [], password1: '', password2: '' });
+    this.formModul.reset({ username: '', email: '', mitglied_id: null, roles: [], password1: '', password2: '' });
     this.mitgliedSuche.setValue('');
     this.formModul.disable();
   }
@@ -303,8 +306,6 @@ export class UserComponent implements OnInit {
     const payloadCreate = {
       id: this.formModul.controls["id"].value || '',
       username: this.formModul.controls["username"].value || '',
-      first_name: this.formModul.controls["first_name"].value || '',
-      last_name: this.formModul.controls["last_name"].value || '',
       email: this.formModul.controls["email"].value || '',
       mitglied_id: this.formModul.controls["mitglied_id"].value || null,
       roles: rollen,
@@ -315,8 +316,6 @@ export class UserComponent implements OnInit {
     const payloadUpdate = {
       id: this.formModul.controls["id"].value || '',
       username: this.formModul.controls["username"].value || '',
-      first_name: this.formModul.controls["first_name"].value || '',
-      last_name: this.formModul.controls["last_name"].value || '',
       email: this.formModul.controls["email"].value || '',
       mitglied_id: this.formModul.controls["mitglied_id"].value || null,
       roles: rollen,
@@ -337,7 +336,7 @@ export class UserComponent implements OnInit {
             this.benutzer.push(erg.user);
             this.benutzer = this.collectionUtilsService.arraySortByKey(this.benutzer, 'username');
             this.dataSource.data = this.benutzer;
-            this.formModul.reset({ username: '', first_name: '', last_name: '', email: '', mitglied_id: null, roles: [], password1: '', password2: '' });
+            this.formModul.reset({ username: '', email: '', mitglied_id: null, roles: [], password1: '', password2: '' });
             this.mitgliedSuche.setValue('');
             this.formModul.disable();
             this.uiMessageService.erstelleMessage('success', 'Benutzer erfolgreich gespeichert!');
@@ -366,7 +365,7 @@ export class UserComponent implements OnInit {
             this.benutzer = dataNew;
             this.benutzer = this.collectionUtilsService.arraySortByKey(this.benutzer, 'username');
             this.dataSource.data = this.benutzer;
-            this.formModul.reset({ username: '', first_name: '', last_name: '', email: '', mitglied_id: null, roles: [], password1: '', password2: '' });
+            this.formModul.reset({ username: '', email: '', mitglied_id: null, roles: [], password1: '', password2: '' });
             this.mitgliedSuche.setValue('');
             this.formModul.disable();
             this.uiMessageService.erstelleMessage('success', 'Benutzer erfolgreich geändert!');
@@ -488,8 +487,6 @@ export class UserComponent implements OnInit {
       const payload = {
         id: userId,
         username: user.username,
-        first_name: user.first_name,
-        last_name: user.last_name,
         roles,
       };
       return this.apiHttpService.patch(this.modul, userId, payload, false);
@@ -519,5 +516,10 @@ export class UserComponent implements OnInit {
 
   getMitgliedLabel(mitglied: IMitglied): string {
     return `${mitglied.stbnr} ${mitglied.vorname} ${mitglied.nachname}`;
+  }
+  getMitgliedNameByUser(element: IBenutzer): string {
+    if (!element.mitglied_id) return '';
+    const m = this.mitglieder.find((m) => m.pkid === element.mitglied_id);
+    return m ? `${m.vorname} ${m.nachname}` : '';
   }
 }

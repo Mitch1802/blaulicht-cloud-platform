@@ -83,8 +83,6 @@ class UserSerializer(serializers.ModelSerializer):
             "pkid",
             "id",
             "username",
-            "first_name",
-            "last_name",
             "email",
             "is_active",
             "is_superuser",
@@ -106,10 +104,22 @@ class UserDetailSerializer(serializers.ModelSerializer):
         slug_field='key',
         queryset=Role.objects.all()
     )
+    mitglied_id = serializers.SerializerMethodField()
+    display_name = serializers.SerializerMethodField()
+
+    def get_mitglied_id(self, obj):
+        return obj.mitglied_id
+
+    def get_display_name(self, obj):
+        if obj.mitglied:
+            full_name = f"{obj.mitglied.vorname} {obj.mitglied.nachname}".strip()
+            if full_name:
+                return full_name
+        return obj.username
 
     class Meta:
         model = User
-        fields = ["id", "username", "first_name", "last_name", "roles"]
+        fields = ["id", "username", "roles", "mitglied_id", "display_name"]
 
 class ChangePasswordSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
@@ -137,7 +147,7 @@ class AdminCreateUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("username", "first_name", "last_name", "email", "password1", "password2", "roles", "mitglied_id")
+        fields = ("username", "email", "password1", "password2", "roles", "mitglied_id")
 
     def validate(self, attrs):
         if attrs["password1"] != attrs["password2"]:
@@ -175,7 +185,7 @@ class AdminCreateUserSerializer(serializers.ModelSerializer):
             username=user.username,
             password=pwd,
             email=user.email or "",
-            first_name=user.first_name or "",
+            first_name="",
         )
 
         return user

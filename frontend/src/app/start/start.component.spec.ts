@@ -34,8 +34,7 @@ describe('StartComponent', () => {
     apiHttpServiceSpy.get.and.returnValue(of({
       user: {
         roles: ['MITGLIED'],
-        first_name: 'Max',
-        last_name: 'Mustermann',
+        display_name: 'Max Mustermann',
         username: 'max',
       },
       main: [],

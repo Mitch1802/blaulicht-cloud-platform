@@ -38,14 +38,9 @@
                 <td mat-cell *matCellDef="let element">{{ element.username }}</td>
               </ng-container>
 
-              <ng-container matColumnDef="first_name">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>Vorname</th>
-                <td mat-cell *matCellDef="let element">{{ element.first_name }}</td>
-              </ng-container>
-
-              <ng-container matColumnDef="last_name">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>Nachname</th>
-                <td mat-cell *matCellDef="let element">{{ element.last_name }}</td>
+              <ng-container matColumnDef="mitglied_name">
+                <th mat-header-cell *matHeaderCellDef>Name</th>
+                <td mat-cell *matCellDef="let element">{{ getMitgliedNameByUser(element) }}</td>
               </ng-container>
 
               <ng-container matColumnDef="rolle">
@@ -121,27 +116,6 @@
                   <input matInput type="email" formControlName="email" />
                   @if (formModul.controls['email'].hasError('email')) {
                     <mat-error>Bitte eine gültige E-Mail-Adresse eingeben!</mat-error>
-                  }
-                </mat-form-field>
-              </div>
-            </section>
-
-            <section class="app-grid form-grid">
-              <div class="app-col-12 app-col-lg-6 mb-3">
-                <mat-form-field hintLabel="* Pflichtfeld" class="full-width">
-                  <mat-label>Vorname</mat-label>
-                  <input matInput type="text" formControlName="first_name" />
-                  @if (formModul.controls['first_name'].hasError('required')) {
-                    <mat-error> Vorname ist erforderlich! </mat-error>
-                  }
-                </mat-form-field>
-              </div>
-              <div class="app-col-12 app-col-lg-6 mb-3">
-                <mat-form-field hintLabel="* Pflichtfeld" class="full-width">
-                  <mat-label>Nachname</mat-label>
-                  <input matInput type="text" formControlName="last_name" />
-                  @if (formModul.controls['last_name'].hasError('required')) {
-                    <mat-error> Nachname ist erforderlich! </mat-error>
                   }
                 </mat-form-field>
               </div>

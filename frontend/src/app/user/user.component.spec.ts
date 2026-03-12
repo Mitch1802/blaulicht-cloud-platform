@@ -17,8 +17,8 @@ const MOCK_ROLLEN = [
 ];
 
 const MOCK_BENUTZER = [
-  { id: '1', username: 'user1', name: 'User One', first_name: 'User', last_name: 'One', is_active: true, password: '', roles: ['PROTOKOLL'] },
-  { id: '2', username: 'admin', name: 'Admin User', first_name: 'Admin', last_name: 'User', is_active: true, password: '', roles: ['ADMIN'] },
+  { id: '1', username: 'user1', name: 'User One', is_active: true, password: '', roles: ['PROTOKOLL'] },
+  { id: '2', username: 'admin', name: 'Admin User', is_active: true, password: '', roles: ['ADMIN'] },
 ];
 
 describe('UserComponent', () => {

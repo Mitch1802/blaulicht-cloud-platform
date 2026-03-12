@@ -33,8 +33,7 @@ export class StartComponent implements OnInit {
   breadcrumb: any[] = [];
   start_konfig: any[] = [];
   username = '';
-  first_name = '';
-  last_name = '';
+  display_name = '';
   meine_rollen: string[] = [];
   isAdminViewer = false;
   countsLoaded = false;
@@ -78,9 +77,8 @@ export class StartComponent implements OnInit {
         try {
           const user = erg.user;
           this.meine_rollen = this.normalizeRoles(user?.roles);
-          this.first_name = user.first_name;
-          this.last_name = user.last_name;
-          this.username = user.username;
+          this.username = user?.username ?? '';
+          this.display_name = user?.display_name || this.username;
 
           const main = Array.isArray(erg?.main) ? erg.main : [];
           const konfigs = main.find((m: any) => m.modul === 'start');
