@@ -85,21 +85,14 @@
                   </mat-form-field>
                 </div>
 
-                <div class="app-col-12 app-col-lg-3">
+                <div class="app-col-12 app-col-lg-5">
                   <div class="photo-upload-box">
-                    <div class="photo-preview-wrap">
-                      @if (getPhotoPreviewUrl(row); as photoUrl) {
-                        <img [src]="photoUrl" alt="Mitgliedsfoto" class="row-photo-preview" />
-                      } @else {
-                        <span class="photo-placeholder">Kein Upload</span>
-                      }
-                    </div>
-
                     <div class="photo-upload-actions">
                       <label class="photo-upload-label" [class.disabled]="loading">
                         <input type="file" accept="image/*" (change)="onPhotoSelected(row, $event)" [disabled]="loading" />
                         Foto waehlen
                       </label>
+
                       <button
                         mat-flat-button
                         color="warn"
@@ -107,26 +100,31 @@
                         (click)="removePhoto(row)"
                         [disabled]="loading"
                       >
-                        Foto entfernen
+                        Foto loeschen
+                      </button>
+
+                      <button
+                        mat-flat-button
+                        color="primary"
+                        type="button"
+                        (click)="openPhotoPreview(row)"
+                        [disabled]="loading || !hasPhotoPreview(row)"
+                      >
+                        Vorschau
+                      </button>
+
+                      <button
+                        mat-flat-button
+                        color="warn"
+                        type="button"
+                        (click)="removePosition(section, row)"
+                        [disabled]="loading"
+                      >
+                        Entfernen
                       </button>
                     </div>
 
                     <small>{{ getPhotoStatusText(row) }}</small>
-                  </div>
-                </div>
-
-                <div class="app-col-12 app-col-lg-2 row-meta">
-                  <div class="row-actions">
-                    <button
-                      mat-flat-button
-                      color="warn"
-                      type="button"
-                      (click)="removePosition(section, row)"
-                      [disabled]="loading"
-                    >
-                      Entfernen
-                    </button>
-                  </div>
                 </div>
               </article>
             }
@@ -136,3 +134,16 @@
     </div>
   </ui-section-card>
 </ui-page-layout>
+
+@if (photoModalOpen && photoModalUrl) {
+  <div class="photo-modal-backdrop" (click)="closePhotoPreview()">
+    <section class="photo-modal" role="dialog" aria-modal="true" aria-label="Bildvorschau" (click)="$event.stopPropagation()">
+      <header class="photo-modal-head">
+        <h3>Bildvorschau</h3>
+        <button mat-flat-button color="primary" type="button" (click)="closePhotoPreview()">Schliessen</button>
+      </header>
+
+      <img [src]="photoModalUrl" alt="Bildvorschau" class="photo-modal-image" />
+    </section>
+  </div>
+}

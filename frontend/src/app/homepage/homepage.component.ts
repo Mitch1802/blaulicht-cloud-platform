@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButton } from '@angular/material/button';
@@ -102,7 +102,7 @@ const DEFAULT_PLAN_TEMPLATE: ReadonlyArray<HomepageSectionTemplate> = [
   templateUrl: './homepage.component.html',
   styleUrl: './homepage.component.sass',
 })
-export class HomepageComponent implements OnInit {
+export class HomepageComponent implements OnInit, OnDestroy {
   private apiHttpService = inject(ApiHttpService);
   private authSessionService = inject(AuthSessionService);
   private collectionUtilsService = inject(CollectionUtilsService);
@@ -119,6 +119,8 @@ export class HomepageComponent implements OnInit {
 
   sections: HomepageSectionDraft[] = [];
   mitglieder: IMitglied[] = [];
+  photoModalOpen = false;
+  photoModalUrl: string | null = null;
 
   private sectionCounter = 0;
   private rowCounter = 0;
@@ -126,12 +128,18 @@ export class HomepageComponent implements OnInit {
   private mitgliedControls = new Map<string, FormControl<string>>();
   private pendingPhotoUploads = new Map<string, File>();
   private pendingPhotoRemovals = new Set<string>();
+  private pendingPhotoPreviewUrls = new Map<string, string>();
 
   ngOnInit(): void {
     sessionStorage.setItem('PageNumber', '2');
     sessionStorage.setItem('Page2', 'HOME');
     this.breadcrumb = this.navigationService.ladeBreadcrumb();
     this.ladeDaten();
+  }
+
+  ngOnDestroy(): void {
+    this.closePhotoPreview();
+    this.clearAllPendingPhotoPreviewUrls();
   }
 
   private ladeDaten(): void {
@@ -149,8 +157,10 @@ export class HomepageComponent implements OnInit {
 
           this.sections = this.mapRowsToSections(Array.isArray(rows) ? rows : []);
           this.mitgliedControls.clear();
+          this.clearAllPendingPhotoPreviewUrls();
           this.pendingPhotoUploads.clear();
           this.pendingPhotoRemovals.clear();
+          this.closePhotoPreview();
           this.normalizeSectionsInPlace();
         } catch (e: any) {
           this.uiMessageService.erstelleMessage('error', String(e));
@@ -477,6 +487,11 @@ export class HomepageComponent implements OnInit {
       return;
     }
 
+    this.revokePendingPhotoPreview(row.local_id);
+    if (typeof URL !== 'undefined' && typeof URL.createObjectURL === 'function') {
+      this.pendingPhotoPreviewUrls.set(row.local_id, URL.createObjectURL(selectedFile));
+    }
+
     this.pendingPhotoUploads.set(row.local_id, selectedFile);
     this.pendingPhotoRemovals.delete(row.local_id);
 
@@ -488,6 +503,7 @@ export class HomepageComponent implements OnInit {
   removePhoto(row: HomepageRowDraft): void {
     const hadPendingUpload = this.pendingPhotoUploads.has(row.local_id);
     if (hadPendingUpload) {
+      this.revokePendingPhotoPreview(row.local_id);
       this.pendingPhotoUploads.delete(row.local_id);
       if (row.photo_url) {
         this.pendingPhotoRemovals.add(row.local_id);
@@ -509,7 +525,32 @@ export class HomepageComponent implements OnInit {
       return null;
     }
 
+    const pendingPreviewUrl = this.pendingPhotoPreviewUrls.get(row.local_id);
+    if (pendingPreviewUrl) {
+      return pendingPreviewUrl;
+    }
+
     return this.normalizePhotoUrl(row.photo_url);
+  }
+
+  hasPhotoPreview(row: HomepageRowDraft): boolean {
+    return this.getPhotoPreviewUrl(row) !== null;
+  }
+
+  openPhotoPreview(row: HomepageRowDraft): void {
+    const previewUrl = this.getPhotoPreviewUrl(row);
+    if (!previewUrl) {
+      this.uiMessageService.erstelleMessage('info', 'Kein Bild fuer die Vorschau vorhanden.');
+      return;
+    }
+
+    this.photoModalUrl = previewUrl;
+    this.photoModalOpen = true;
+  }
+
+  closePhotoPreview(): void {
+    this.photoModalOpen = false;
+    this.photoModalUrl = null;
   }
 
   getPhotoStatusText(row: HomepageRowDraft): string {
@@ -615,8 +656,10 @@ export class HomepageComponent implements OnInit {
               try {
                 this.sections = this.mapRowsToSections(finalRows);
                 this.mitgliedControls.clear();
+                this.clearAllPendingPhotoPreviewUrls();
                 this.pendingPhotoUploads.clear();
                 this.pendingPhotoRemovals.clear();
+                this.closePhotoPreview();
                 this.normalizeSectionsInPlace();
                 this.uiMessageService.erstelleMessage('success', 'Dienstpostenplan gespeichert.');
               } catch (e: any) {
@@ -759,7 +802,25 @@ export class HomepageComponent implements OnInit {
   }
 
   private clearPendingPhotoState(row: HomepageRowDraft): void {
+    this.revokePendingPhotoPreview(row.local_id);
     this.pendingPhotoUploads.delete(row.local_id);
     this.pendingPhotoRemovals.delete(row.local_id);
+  }
+
+  private revokePendingPhotoPreview(localId: string): void {
+    const objectUrl = this.pendingPhotoPreviewUrls.get(localId);
+    if (objectUrl && typeof URL !== 'undefined' && typeof URL.revokeObjectURL === 'function') {
+      URL.revokeObjectURL(objectUrl);
+    }
+    this.pendingPhotoPreviewUrls.delete(localId);
+  }
+
+  private clearAllPendingPhotoPreviewUrls(): void {
+    for (const objectUrl of this.pendingPhotoPreviewUrls.values()) {
+      if (typeof URL !== 'undefined' && typeof URL.revokeObjectURL === 'function') {
+        URL.revokeObjectURL(objectUrl);
+      }
+    }
+    this.pendingPhotoPreviewUrls.clear();
   }
 }

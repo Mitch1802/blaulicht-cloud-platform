@@ -1,6 +1,7 @@
 from collections import OrderedDict
 from typing import Any, cast
 
+from django.conf import settings
 from django.db import transaction
 from rest_framework import filters, permissions, status
 from rest_framework.decorators import action
@@ -17,6 +18,11 @@ from .models import HomepageDienstposten
 from .serializers import HomepageDienstpostenSerializer, dienstgrad_to_image_filename
 
 
+def _build_member_photo_path(stbnr: Any) -> str:
+    media_prefix = str(getattr(settings, "MEDIA_URL", "/")).rstrip("/") + "/"
+    return f"{media_prefix}homepage/mitglieder/{stbnr}.jpg"
+
+
 def _resolve_photo_value(row: HomepageDienstposten) -> str:
     photo_field = getattr(row, "photo", None)
     if photo_field and getattr(photo_field, "name", ""):
@@ -26,9 +32,15 @@ def _resolve_photo_value(row: HomepageDienstposten) -> str:
             pass
 
     if row.mitglied and row.mitglied.stbnr not in (None, ""):
-        return str(row.mitglied.stbnr)
+        return _build_member_photo_path(row.mitglied.stbnr)
 
-    return row.fallback_photo or "X"
+    fallback_photo = (row.fallback_photo or "").strip()
+    if fallback_photo and fallback_photo.upper() != "X":
+        if fallback_photo.isdigit():
+            return _build_member_photo_path(fallback_photo)
+        return fallback_photo
+
+    return "X"
 
 
 def _delete_row_photo_file(row: HomepageDienstposten) -> None:

@@ -33,46 +33,16 @@
   padding: .55rem .55rem .3rem
   background: rgba(theme.$app-surface-variant, .46)
 
-.row-meta
-  display: flex
-  flex-direction: column
-  align-items: flex-end
-
-.row-actions
-  display: flex
-  justify-content: flex-end
-  align-items: flex-start
-  gap: .45rem
-  flex-wrap: wrap
-
 .photo-upload-box
   display: grid
   gap: .45rem
 
-.photo-preview-wrap
-  border: 1px solid rgba(theme.$app-border, .95)
-  border-radius: .65rem
-  background: rgba(theme.$app-surface, .86)
-  min-height: 92px
-  display: flex
-  align-items: center
-  justify-content: center
-  overflow: hidden
-
-.row-photo-preview
-  width: 100%
-  max-height: 140px
-  object-fit: cover
-
-.photo-placeholder
-  font-size: .78rem
-  font-weight: 600
-  color: theme.$app-text-muted
-
 .photo-upload-actions
   display: flex
-  flex-wrap: wrap
+  flex-wrap: nowrap
+  align-items: center
   gap: .4rem
+  overflow-x: auto
 
 .photo-upload-label
   display: inline-flex
@@ -98,14 +68,51 @@
   font-size: .75rem
   color: theme.$app-text-muted
 
+.photo-modal-backdrop
+  position: fixed
+  inset: 0
+  z-index: 1200
+  display: flex
+  align-items: center
+  justify-content: center
+  padding: 1rem
+  background: rgba(0, 0, 0, .58)
+
+.photo-modal
+  width: min(920px, 100%)
+  max-height: calc(100vh - 2rem)
+  border-radius: .8rem
+  border: 1px solid rgba(theme.$app-border, .95)
+  background: rgba(theme.$app-surface, .98)
+  padding: .75rem
+  display: grid
+  gap: .7rem
+
+.photo-modal-head
+  display: flex
+  align-items: center
+  justify-content: space-between
+  gap: .5rem
+
+  h3
+    margin: 0
+    font-size: 1rem
+    color: theme.$app-primary-deep
+
+.photo-modal-image
+  width: 100%
+  max-height: calc(100vh - 9rem)
+  object-fit: contain
+  border-radius: .55rem
+  background: rgba(theme.$app-surface-variant, .5)
+
 @media (max-width: 1100px)
-  .row-photo-preview
-    max-height: 180px
+  .photo-modal
+    padding: .6rem
+
+  .photo-modal-image
+    max-height: calc(100vh - 8.5rem)
 
 @media (max-width: 900px)
-  .section-actions,
-  .row-actions
+  .section-actions
     justify-content: flex-start
-
-  .row-meta
-    align-items: flex-start
