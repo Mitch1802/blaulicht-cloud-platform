@@ -70,6 +70,9 @@ export class NavigationService {
     } else if (page === 'NEWS') {
       link = '/news';
       kuerzel = 'News';
+    } else if (page === 'HOME') {
+      link = '/homepage';
+      kuerzel = 'Homepage';
     } else if (page === 'FZ') {
       link = '/fahrzeuge';
       kuerzel = 'Fahrzeug Beladung';

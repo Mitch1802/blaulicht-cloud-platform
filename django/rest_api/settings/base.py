@@ -36,6 +36,7 @@ LOCAL_APPS = [
     "core_apps.modul_konfiguration",
     "core_apps.fmd",
     "core_apps.news",
+    "core_apps.homepage",
     "core_apps.inventar",
     "core_apps.atemschutz_masken",
     "core_apps.atemschutz_geraete",

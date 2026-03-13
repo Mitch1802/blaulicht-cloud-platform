@@ -1,0 +1,133 @@
+<app-header [breadcrumb]="breadcrumb"></app-header>
+
+<ui-page-layout [title]="title">
+  <ui-section-card title="Dienstpostenplan verwalten">
+    <div class="ui-top-actions">
+      <button mat-flat-button color="primary" type="button" (click)="addSection()" [disabled]="loading">
+        Sektion hinzufuegen
+      </button>
+      <button mat-flat-button color="accent" type="button" (click)="speichern()" [disabled]="loading">
+        Alle Aenderungen speichern
+      </button>
+      <button mat-flat-button color="primary" type="button" (click)="apiVorschauNeuLaden()" [disabled]="loading">
+        API-Vorschau neu laden
+      </button>
+    </div>
+
+    <div class="sections-wrap">
+      @for (section of sections; track section.local_id) {
+        <section class="plan-section">
+          <header class="plan-section-head app-grid">
+            <div class="app-col-12 app-col-lg-4">
+              <mat-form-field class="ui-full-width" hintLabel="* Pflichtfeld">
+                <mat-label>Sektionstitel</mat-label>
+                <input
+                  matInput
+                  [(ngModel)]="section.title"
+                  [ngModelOptions]="{ standalone: true }"
+                  (ngModelChange)="onSectionMetaChanged(section)"
+                  placeholder="z. B. Kommando"
+                />
+              </mat-form-field>
+            </div>
+            <div class="app-col-12 app-col-lg-3">
+              <mat-form-field class="ui-full-width" hintLabel="* Pflichtfeld">
+                <mat-label>Sektions-ID</mat-label>
+                <input
+                  matInput
+                  [(ngModel)]="section.id"
+                  [ngModelOptions]="{ standalone: true }"
+                  (ngModelChange)="onSectionMetaChanged(section)"
+                  placeholder="kommando"
+                />
+              </mat-form-field>
+            </div>
+            <div class="app-col-12 app-col-lg-5 section-actions">
+              <button mat-flat-button color="accent" type="button" (click)="addPosition(section)" [disabled]="loading">
+                Position hinzufuegen
+              </button>
+              <button mat-flat-button color="warn" type="button" (click)="removeSection(section)" [disabled]="loading">
+                Sektion loeschen
+              </button>
+            </div>
+          </header>
+
+          <div class="plan-rows">
+            @for (row of section.members; track row.local_id; let rowIndex = $index) {
+              <article class="plan-row app-grid">
+                <div class="app-col-12 app-col-lg-3">
+                  <mat-form-field class="ui-full-width" hintLabel="* Pflichtfeld">
+                    <mat-label>Position</mat-label>
+                    <input
+                      matInput
+                      [(ngModel)]="row.position"
+                      [ngModelOptions]="{ standalone: true }"
+                      (ngModelChange)="onRowChanged(section, row, rowIndex)"
+                      placeholder="z. B. Kommandant"
+                    />
+                  </mat-form-field>
+                </div>
+
+                <div class="app-col-12 app-col-lg-5">
+                  <mat-form-field class="ui-full-width">
+                    <mat-label>Name auswaehlen</mat-label>
+                    <input
+                      matInput
+                      [formControl]="getMitgliedControl(row)"
+                      [matAutocomplete]="mitgliedAuto"
+                      placeholder="StbNr, Name oder Dienstgrad"
+                    />
+                    <mat-autocomplete #mitgliedAuto="matAutocomplete" (optionSelected)="onMitgliedSelected(row, $event)">
+                      @for (mitglied of getFilteredMitglieder(row); track mitglied.pkid) {
+                        <mat-option [value]="mitglied.pkid">{{ getMitgliedLabel(mitglied) }}</mat-option>
+                      }
+                      @if (getFilteredMitglieder(row).length === 0) {
+                        <mat-option disabled>Keine Mitglieder gefunden.</mat-option>
+                      }
+                    </mat-autocomplete>
+                  </mat-form-field>
+                </div>
+
+                <div class="app-col-12 app-col-lg-2 row-preview">
+                  <strong>{{ resolveAnzeigename(row) }}</strong>
+                  <span>{{ resolveDienstgrad(row) || 'ohne Dienstgrad' }}</span>
+                </div>
+
+                <div class="app-col-12 app-col-lg-2 row-actions">
+                  <button mat-flat-button color="primary" type="button" (click)="clearMitglied(row)" [disabled]="loading">
+                    Leeren
+                  </button>
+                  <button
+                    mat-flat-button
+                    color="warn"
+                    type="button"
+                    (click)="removePosition(section, row)"
+                    [disabled]="loading"
+                  >
+                    Entfernen
+                  </button>
+                </div>
+              </article>
+            }
+          </div>
+        </section>
+      }
+    </div>
+  </ui-section-card>
+
+  <ui-section-card title="Generierte API-Vorschau">
+    <p class="api-path">Public Endpoint: {{ apiPublicPath }}</p>
+
+    <div class="preview-grid">
+      <section class="preview-block">
+        <h3>Lokale Vorschau (noch nicht gespeichert)</h3>
+        <pre>{{ localPreviewJson }}</pre>
+      </section>
+
+      <section class="preview-block">
+        <h3>Gespeicherte API-Antwort</h3>
+        <pre>{{ apiPreviewJson }}</pre>
+      </section>
+    </div>
+  </ui-section-card>
+</ui-page-layout>

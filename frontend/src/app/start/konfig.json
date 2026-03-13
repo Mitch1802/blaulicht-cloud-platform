@@ -136,7 +136,7 @@
     "icon": "connected_tv",
     "modul": "Homepage",
     "rolle": "ADMIN, VERWALTUNG",
-    "kategorie": "Geplant",
+    "kategorie": "Verwaltung",
     "routerlink": "/homepage"
   }
 ]

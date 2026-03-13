@@ -62,6 +62,11 @@ export const routes: Routes = [
     loadComponent: () => import("./news/news.component").then(m => m.NewsComponent),
   },
   {
+    path: 'homepage',
+    canActivate: [authGuard],
+    loadComponent: () => import("./homepage/homepage.component").then(m => m.HomepageComponent),
+  },
+  {
     path: 'newsfeed',
     loadComponent: () => import("./news-extern/news-extern.component").then(m => m.NewsExternComponent),
   },
