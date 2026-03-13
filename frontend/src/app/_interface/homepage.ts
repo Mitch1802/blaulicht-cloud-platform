@@ -8,6 +8,7 @@ export interface IHomepageDienstposten {
   position_order: number;
   mitglied_id?: number | null;
   mitglied_name?: string | null;
+  photo_url?: string | null;
   fallback_name: string;
   fallback_dienstgrad: string;
   fallback_photo: string;

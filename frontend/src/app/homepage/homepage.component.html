@@ -9,9 +9,6 @@
       <button mat-flat-button color="accent" type="button" (click)="speichern()" [disabled]="loading">
         Alle Aenderungen speichern
       </button>
-      <button mat-flat-button color="primary" type="button" (click)="apiVorschauNeuLaden()" [disabled]="loading">
-        API-Vorschau neu laden
-      </button>
     </div>
 
     <div class="sections-wrap">
@@ -68,7 +65,7 @@
                   </mat-form-field>
                 </div>
 
-                <div class="app-col-12 app-col-lg-5">
+                <div class="app-col-12 app-col-lg-4">
                   <mat-form-field class="ui-full-width">
                     <mat-label>Name auswaehlen</mat-label>
                     <input
@@ -88,12 +85,42 @@
                   </mat-form-field>
                 </div>
 
+                <div class="app-col-12 app-col-lg-3">
+                  <div class="photo-upload-box">
+                    <div class="photo-preview-wrap">
+                      @if (getPhotoPreviewUrl(row); as photoUrl) {
+                        <img [src]="photoUrl" alt="Mitgliedsfoto" class="row-photo-preview" />
+                      } @else {
+                        <span class="photo-placeholder">Kein Upload</span>
+                      }
+                    </div>
+
+                    <div class="photo-upload-actions">
+                      <label class="photo-upload-label" [class.disabled]="loading">
+                        <input type="file" accept="image/*" (change)="onPhotoSelected(row, $event)" [disabled]="loading" />
+                        Foto waehlen
+                      </label>
+                      <button
+                        mat-flat-button
+                        color="warn"
+                        type="button"
+                        (click)="removePhoto(row)"
+                        [disabled]="loading"
+                      >
+                        Foto entfernen
+                      </button>
+                    </div>
+
+                    <small>{{ getPhotoStatusText(row) }}</small>
+                  </div>
+                </div>
+
                 <div class="app-col-12 app-col-lg-2 row-preview">
                   <strong>{{ resolveAnzeigename(row) }}</strong>
                   <span>{{ resolveDienstgrad(row) || 'ohne Dienstgrad' }}</span>
                 </div>
 
-                <div class="app-col-12 app-col-lg-2 row-actions">
+                <div class="app-col-12 app-col-lg-12 row-actions">
                   <button mat-flat-button color="primary" type="button" (click)="clearMitglied(row)" [disabled]="loading">
                     Leeren
                   </button>
@@ -112,22 +139,6 @@
           </div>
         </section>
       }
-    </div>
-  </ui-section-card>
-
-  <ui-section-card title="Generierte API-Vorschau">
-    <p class="api-path">Public Endpoint: {{ apiPublicPath }}</p>
-
-    <div class="preview-grid">
-      <section class="preview-block">
-        <h3>Lokale Vorschau (noch nicht gespeichert)</h3>
-        <pre>{{ localPreviewJson }}</pre>
-      </section>
-
-      <section class="preview-block">
-        <h3>Gespeicherte API-Antwort</h3>
-        <pre>{{ apiPreviewJson }}</pre>
-      </section>
     </div>
   </ui-section-card>
 </ui-page-layout>

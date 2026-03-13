@@ -39,6 +39,9 @@ def dienstgrad_to_image_filename(dienstgrad: str | None) -> str:
 
 
 class HomepageDienstpostenSerializer(serializers.ModelSerializer):
+    photo = serializers.ImageField(required=False, allow_null=True, write_only=True)
+    photo_url = serializers.SerializerMethodField(read_only=True)
+    remove_photo = serializers.BooleanField(required=False, default=False, write_only=True)
     mitglied_id = serializers.PrimaryKeyRelatedField(
         source="mitglied",
         queryset=Mitglied.objects.all(),
@@ -64,6 +67,9 @@ class HomepageDienstpostenSerializer(serializers.ModelSerializer):
             "position_order",
             "mitglied_id",
             "mitglied_name",
+            "photo",
+            "photo_url",
+            "remove_photo",
             "fallback_name",
             "fallback_dienstgrad",
             "fallback_photo",
@@ -78,10 +84,58 @@ class HomepageDienstpostenSerializer(serializers.ModelSerializer):
             return None
         return f"{obj.mitglied.vorname} {obj.mitglied.nachname}".strip()
 
+    def get_photo_url(self, obj: HomepageDienstposten) -> str | None:
+        f = getattr(obj, "photo", None)
+        try:
+            return f.url if f and getattr(f, "name", "") else None
+        except Exception:
+            return None
+
     def get_photo_preview(self, obj: HomepageDienstposten) -> str:
+        photo_url = self.get_photo_url(obj)
+        if photo_url:
+            return photo_url
+
         if obj.mitglied and obj.mitglied.stbnr not in (None, ""):
             return str(obj.mitglied.stbnr)
         return obj.fallback_photo or "X"
+
+    def create(self, validated_data):
+        validated_data.pop("remove_photo", False)
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        remove_photo = bool(validated_data.pop("remove_photo", False))
+        new_photo = validated_data.pop("photo", serializers.empty)
+
+        old_photo_storage = instance.photo.storage if getattr(instance, "photo", None) else None
+        old_photo_name = instance.photo.name if getattr(instance, "photo", None) else ""
+
+        instance = super().update(instance, validated_data)
+
+        if new_photo is not serializers.empty:
+            instance.photo = new_photo
+            instance.save(update_fields=["photo", "updated_at"])
+
+            if old_photo_storage and old_photo_name and old_photo_name != instance.photo.name:
+                try:
+                    old_photo_storage.delete(old_photo_name)
+                except Exception:
+                    pass
+
+            return instance
+
+        if remove_photo and instance.photo and instance.photo.name:
+            storage, name = instance.photo.storage, instance.photo.name
+            instance.photo.delete(save=False)
+            try:
+                storage.delete(name)
+            except Exception:
+                pass
+            instance.photo = None
+            instance.save(update_fields=["photo", "updated_at"])
+
+        return instance
 
     def get_dienstgrad_preview(self, obj: HomepageDienstposten) -> str:
         if obj.mitglied:

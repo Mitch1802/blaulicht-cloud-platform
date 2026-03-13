@@ -4,7 +4,7 @@ from typing import Any, cast
 from django.db import transaction
 from rest_framework import filters, permissions, status
 from rest_framework.decorators import action
-from rest_framework.parsers import JSONParser
+from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
@@ -17,17 +17,44 @@ from .models import HomepageDienstposten
 from .serializers import HomepageDienstpostenSerializer, dienstgrad_to_image_filename
 
 
+def _resolve_photo_value(row: HomepageDienstposten) -> str:
+    photo_field = getattr(row, "photo", None)
+    if photo_field and getattr(photo_field, "name", ""):
+        try:
+            return photo_field.url
+        except Exception:
+            pass
+
+    if row.mitglied and row.mitglied.stbnr not in (None, ""):
+        return str(row.mitglied.stbnr)
+
+    return row.fallback_photo or "X"
+
+
+def _delete_row_photo_file(row: HomepageDienstposten) -> None:
+    photo_field = getattr(row, "photo", None)
+    if not photo_field or not getattr(photo_field, "name", ""):
+        return
+
+    storage = photo_field.storage
+    name = photo_field.name
+    try:
+        storage.delete(name)
+    except Exception:
+        pass
+
+
 def _build_public_member_payload(row: HomepageDienstposten) -> dict[str, str]:
     mitglied = row.mitglied
 
     if mitglied is not None:
         name = f"{mitglied.vorname} {mitglied.nachname}".strip() or row.fallback_name or "Nicht definiert"
         dienstgrad = (mitglied.dienstgrad or row.fallback_dienstgrad or "").strip()
-        photo = str(mitglied.stbnr) if mitglied.stbnr not in (None, "") else (row.fallback_photo or "X")
+        photo = _resolve_photo_value(row)
     else:
         name = (row.fallback_name or "Nicht definiert").strip()
         dienstgrad = (row.fallback_dienstgrad or "").strip()
-        photo = row.fallback_photo or "X"
+        photo = _resolve_photo_value(row)
 
     dienstgrad_img = (row.fallback_dienstgrad_img or dienstgrad_to_image_filename(dienstgrad)).strip()
 
@@ -68,7 +95,7 @@ class HomepageDienstpostenViewSet(ModelViewSet):
         permissions.IsAuthenticated,
         HasAnyRolePermission.with_roles("ADMIN", "VERWALTUNG"),
     ]
-    parser_classes = [JSONParser]
+    parser_classes = [JSONParser, MultiPartParser, FormParser]
     lookup_field = "id"
     pagination_class = None
     filter_backends = [filters.OrderingFilter]
@@ -113,8 +140,14 @@ class HomepageDienstpostenViewSet(ModelViewSet):
 
             if replace:
                 if saved_ids:
+                    rows_to_delete = list(self.get_queryset().exclude(id__in=saved_ids))
+                    for row in rows_to_delete:
+                        _delete_row_photo_file(row)
                     self.get_queryset().exclude(id__in=saved_ids).delete()
                 else:
+                    rows_to_delete = list(self.get_queryset())
+                    for row in rows_to_delete:
+                        _delete_row_photo_file(row)
                     self.get_queryset().delete()
 
         if not saved_ids:
@@ -122,6 +155,10 @@ class HomepageDienstpostenViewSet(ModelViewSet):
 
         saved_rows = self.get_queryset().filter(id__in=saved_ids)
         return Response(self.get_serializer(saved_rows, many=True).data, status=status.HTTP_200_OK)
+
+    def perform_destroy(self, instance):
+        _delete_row_photo_file(instance)
+        super().perform_destroy(instance)
 
 
 class PublicHomepageViewSet(ReadOnlyModelViewSet):

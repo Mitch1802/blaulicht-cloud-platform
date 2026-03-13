@@ -1,9 +1,19 @@
+import os
+import re
+
 from django.db import models
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
 from core_apps.common.models import TimeStampedModel
 from core_apps.mitglieder.models import Mitglied
+
+
+def homepage_photo_path(instance, filename):
+    cleaned = os.path.basename(filename or "upload.jpg")
+    cleaned = re.sub(r"[^\w.\-]+", "_", cleaned)
+    item_id = str(getattr(instance, "id", "") or "neu")
+    return os.path.join("homepage", item_id, cleaned)
 
 
 class HomepageDienstposten(TimeStampedModel):
@@ -23,6 +33,7 @@ class HomepageDienstposten(TimeStampedModel):
     fallback_dienstgrad = models.CharField(verbose_name=_("Fallback Dienstgrad"), max_length=50, blank=True)
     fallback_photo = models.CharField(verbose_name=_("Fallback Foto"), max_length=32, default="X")
     fallback_dienstgrad_img = models.CharField(verbose_name=_("Fallback Dienstgrad Bild"), max_length=120, blank=True)
+    photo = models.ImageField(_("Foto Datei"), upload_to=homepage_photo_path, blank=True, null=True)
 
     class Meta(TimeStampedModel.Meta):
         ordering = ["section_order", "position_order", "position", "pkid"]

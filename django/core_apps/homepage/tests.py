@@ -155,3 +155,31 @@ class HomepageEndpointTests(EndpointSmokeMixin, APITestCase):
             for member in section.get("members", [])
         )
         self.assertTrue(fallback_present)
+
+    def test_public_response_prefers_uploaded_photo_path(self):
+        kommando_row = (
+            HomepageDienstposten.objects.filter(section_id="kommando", position="Kommandant")
+            .order_by("-pkid")
+            .first()
+        )
+        if kommando_row is None:
+            self.fail("Kein Kommandant-Dienstposten fuer den Test gefunden.")
+
+        kommando_row.photo.name = "homepage/114/test.jpg"
+        kommando_row.save(update_fields=["photo", "updated_at"])
+
+        response = self.request_method("get", "homepage/public/")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        sections = response.data.get("sections", [])
+        kommando = next((section for section in sections if section.get("id") == "kommando"), None)
+        if kommando is None:
+            self.fail("Kommando-Sektion fehlt in der Public-Response.")
+
+        member_entries = [entry for entry in kommando.get("members", []) if entry.get("position") == "Kommandant"]
+        if not member_entries:
+            self.fail("Kommandant-Eintrag fehlt in der Public-Response.")
+
+        self.assertTrue(
+            any(str(entry.get("photo", "")).startswith("/api/files/homepage/114/") for entry in member_entries)
+        )

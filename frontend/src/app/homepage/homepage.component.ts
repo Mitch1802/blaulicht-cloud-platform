@@ -5,16 +5,11 @@ import { MatButton } from '@angular/material/button';
 import { MatOption } from '@angular/material/core';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { forkJoin } from 'rxjs';
+import { Observable, forkJoin, map, of } from 'rxjs';
 
 import { HeaderComponent } from '../_template/header/header.component';
 import { IMitglied } from '../_interface/mitglied';
-import {
-  IHomepageDienstposten,
-  IHomepagePublicMember,
-  IHomepagePublicResponse,
-  IHomepagePublicSection,
-} from '../_interface/homepage';
+import { IHomepageDienstposten } from '../_interface/homepage';
 import { ApiHttpService } from '../_service/api-http.service';
 import { AuthSessionService } from '../_service/auth-session.service';
 import { CollectionUtilsService } from '../_service/collection-utils.service';
@@ -39,6 +34,12 @@ interface HomepageSectionDraft {
   title: string;
   order: number;
   members: HomepageRowDraft[];
+}
+
+interface PendingPhotoOperation {
+  row_key: string;
+  file?: File;
+  remove_photo?: boolean;
 }
 
 const DEFAULT_PLAN_TEMPLATE: ReadonlyArray<HomepageSectionTemplate> = [
@@ -112,24 +113,19 @@ export class HomepageComponent implements OnInit {
   modul = 'homepage/intern';
   modulBulk = 'homepage/intern/bulk';
   modulContext = 'homepage/context';
-  modulPublic = 'homepage/public';
 
   breadcrumb: any[] = [];
   loading = false;
 
   sections: HomepageSectionDraft[] = [];
   mitglieder: IMitglied[] = [];
-  localPreviewJson = '{\n  "sections": []\n}';
-  apiPreviewJson = '{\n  "sections": []\n}';
 
   private sectionCounter = 0;
   private rowCounter = 0;
   private mitgliederByPkid = new Map<number, IMitglied>();
   private mitgliedControls = new Map<string, FormControl<string>>();
-
-  get apiPublicPath(): string {
-    return `${this.apiHttpService.AppUrl}${this.modulPublic}/`;
-  }
+  private pendingPhotoUploads = new Map<string, File>();
+  private pendingPhotoRemovals = new Set<string>();
 
   ngOnInit(): void {
     sessionStorage.setItem('PageNumber', '2');
@@ -153,9 +149,9 @@ export class HomepageComponent implements OnInit {
 
           this.sections = this.mapRowsToSections(Array.isArray(rows) ? rows : []);
           this.mitgliedControls.clear();
+          this.pendingPhotoUploads.clear();
+          this.pendingPhotoRemovals.clear();
           this.normalizeSectionsInPlace();
-          this.rebuildLocalPreview();
-          this.refreshApiPreview();
         } catch (e: any) {
           this.uiMessageService.erstelleMessage('error', String(e));
         } finally {
@@ -260,6 +256,7 @@ export class HomepageComponent implements OnInit {
       fallback_photo: (source?.fallback_photo || 'X').trim() || 'X',
       fallback_dienstgrad_img:
         (source?.fallback_dienstgrad_img || this.resolveDienstgradImage(source?.fallback_dienstgrad || '')).trim(),
+      photo_url: source?.photo_url || null,
       created_at: source?.created_at,
       updated_at: source?.updated_at,
     };
@@ -314,7 +311,6 @@ export class HomepageComponent implements OnInit {
 
     this.sections = [...this.sections, section];
     this.normalizeSectionsInPlace();
-    this.rebuildLocalPreview();
   }
 
   removeSection(section: HomepageSectionDraft): void {
@@ -323,11 +319,13 @@ export class HomepageComponent implements OnInit {
       return;
     }
 
-    section.members.forEach((member) => this.mitgliedControls.delete(member.local_id));
+    section.members.forEach((member) => {
+      this.mitgliedControls.delete(member.local_id);
+      this.clearPendingPhotoState(member);
+    });
     this.sections = this.sections.filter((item) => item.local_id !== section.local_id);
 
     this.normalizeSectionsInPlace();
-    this.rebuildLocalPreview();
   }
 
   addPosition(section: HomepageSectionDraft): void {
@@ -335,7 +333,6 @@ export class HomepageComponent implements OnInit {
     section.members.push(this.createRowDraft(section, `Neue Position ${positionOrder}`, positionOrder));
 
     this.normalizeSectionsInPlace();
-    this.rebuildLocalPreview();
   }
 
   removePosition(section: HomepageSectionDraft, row: HomepageRowDraft): void {
@@ -346,13 +343,13 @@ export class HomepageComponent implements OnInit {
 
     section.members = section.members.filter((entry) => entry.local_id !== row.local_id);
     this.mitgliedControls.delete(row.local_id);
+    this.clearPendingPhotoState(row);
 
     if (section.members.length === 0) {
       section.members.push(this.createRowDraft(section, 'Neue Position', 1));
     }
 
     this.normalizeSectionsInPlace();
-    this.rebuildLocalPreview();
   }
 
   onSectionMetaChanged(section: HomepageSectionDraft): void {
@@ -360,7 +357,6 @@ export class HomepageComponent implements OnInit {
     section.title = (section.title || 'Sektion').trim() || 'Sektion';
 
     this.normalizeSectionsInPlace();
-    this.rebuildLocalPreview();
   }
 
   onRowChanged(section: HomepageSectionDraft, row: HomepageRowDraft, rowIndex: number): void {
@@ -370,7 +366,6 @@ export class HomepageComponent implements OnInit {
     row.section_title = section.title;
     row.section_order = section.order;
 
-    this.rebuildLocalPreview();
   }
 
   private normalizeSectionsInPlace(): void {
@@ -455,7 +450,6 @@ export class HomepageComponent implements OnInit {
     row.fallback_dienstgrad_img = this.resolveDienstgradImage(row.fallback_dienstgrad);
 
     this.getMitgliedControl(row).setValue(this.getMitgliedLabel(mitglied), { emitEvent: false });
-    this.rebuildLocalPreview();
   }
 
   clearMitglied(row: HomepageRowDraft): void {
@@ -466,7 +460,83 @@ export class HomepageComponent implements OnInit {
     row.fallback_dienstgrad_img = '';
 
     this.getMitgliedControl(row).setValue('', { emitEvent: false });
-    this.rebuildLocalPreview();
+  }
+
+  onPhotoSelected(row: HomepageRowDraft, event: Event): void {
+    const input = event.target as HTMLInputElement | null;
+    const selectedFile = input?.files?.[0];
+
+    if (!selectedFile) {
+      return;
+    }
+
+    if (!selectedFile.type.startsWith('image/')) {
+      this.uiMessageService.erstelleMessage('error', 'Bitte nur Bilddateien auswaehlen.');
+      if (input) {
+        input.value = '';
+      }
+      return;
+    }
+
+    const maxSizeBytes = this.apiHttpService.MaxUploadSize * 1024;
+    if (selectedFile.size > maxSizeBytes) {
+      this.uiMessageService.erstelleMessage('error', `Datei ist zu gross (max. ${this.apiHttpService.MaxUploadSize / 1024} MB).`);
+      if (input) {
+        input.value = '';
+      }
+      return;
+    }
+
+    this.pendingPhotoUploads.set(row.local_id, selectedFile);
+    this.pendingPhotoRemovals.delete(row.local_id);
+
+    if (input) {
+      input.value = '';
+    }
+  }
+
+  removePhoto(row: HomepageRowDraft): void {
+    const hadPendingUpload = this.pendingPhotoUploads.has(row.local_id);
+    if (hadPendingUpload) {
+      this.pendingPhotoUploads.delete(row.local_id);
+      if (row.photo_url) {
+        this.pendingPhotoRemovals.add(row.local_id);
+      } else {
+        this.pendingPhotoRemovals.delete(row.local_id);
+      }
+      return;
+    }
+
+    if (!row.photo_url) {
+      return;
+    }
+
+    this.pendingPhotoRemovals.add(row.local_id);
+  }
+
+  getPhotoPreviewUrl(row: HomepageRowDraft): string | null {
+    if (this.pendingPhotoRemovals.has(row.local_id)) {
+      return null;
+    }
+
+    return this.normalizePhotoUrl(row.photo_url);
+  }
+
+  getPhotoStatusText(row: HomepageRowDraft): string {
+    const pendingFile = this.pendingPhotoUploads.get(row.local_id);
+    if (pendingFile) {
+      return `Neues Foto bereit: ${pendingFile.name}`;
+    }
+
+    if (this.pendingPhotoRemovals.has(row.local_id)) {
+      return 'Foto wird beim Speichern entfernt.';
+    }
+
+    if (row.photo_url) {
+      return 'Eigenes Foto gespeichert.';
+    }
+
+    return 'Kein eigenes Foto gespeichert.';
   }
 
   getMitgliedLabel(mitglied: IMitglied): string {
@@ -553,6 +623,8 @@ export class HomepageComponent implements OnInit {
       }
     }
 
+    const pendingPhotoOperations = this.collectPendingPhotoOperations();
+
     this.loading = true;
     this.apiHttpService
       .post<IHomepageDienstposten[]>(
@@ -565,42 +637,33 @@ export class HomepageComponent implements OnInit {
       )
       .subscribe({
         next: (savedRows) => {
-          try {
-            this.sections = this.mapRowsToSections(Array.isArray(savedRows) ? savedRows : []);
-            this.mitgliedControls.clear();
-            this.normalizeSectionsInPlace();
-            this.rebuildLocalPreview();
-            this.refreshApiPreview();
-            this.uiMessageService.erstelleMessage('success', 'Dienstpostenplan gespeichert.');
-          } catch (e: any) {
-            this.uiMessageService.erstelleMessage('error', String(e));
-          } finally {
-            this.loading = false;
-          }
+          const normalizedSavedRows = Array.isArray(savedRows) ? savedRows : [];
+          this.executePendingPhotoOperations(normalizedSavedRows, pendingPhotoOperations).subscribe({
+            next: (finalRows) => {
+              try {
+                this.sections = this.mapRowsToSections(finalRows);
+                this.mitgliedControls.clear();
+                this.pendingPhotoUploads.clear();
+                this.pendingPhotoRemovals.clear();
+                this.normalizeSectionsInPlace();
+                this.uiMessageService.erstelleMessage('success', 'Dienstpostenplan gespeichert.');
+              } catch (e: any) {
+                this.uiMessageService.erstelleMessage('error', String(e));
+              } finally {
+                this.loading = false;
+              }
+            },
+            error: (error: any) => {
+              this.loading = false;
+              this.authSessionService.errorAnzeigen(error);
+            },
+          });
         },
         error: (error: any) => {
           this.loading = false;
           this.authSessionService.errorAnzeigen(error);
         },
       });
-  }
-
-  apiVorschauNeuLaden(): void {
-    this.refreshApiPreview(true);
-  }
-
-  private refreshApiPreview(showSuccessMessage = false): void {
-    this.apiHttpService.get<IHomepagePublicResponse>(this.modulPublic).subscribe({
-      next: (response) => {
-        this.apiPreviewJson = JSON.stringify(response ?? { sections: [] }, null, 2);
-        if (showSuccessMessage) {
-          this.uiMessageService.erstelleMessage('success', 'API-Vorschau aktualisiert.');
-        }
-      },
-      error: () => {
-        this.apiPreviewJson = JSON.stringify({ sections: [] }, null, 2);
-      },
-    });
   }
 
   private flattenRowsForSave(): IHomepageDienstposten[] {
@@ -621,45 +684,110 @@ export class HomepageComponent implements OnInit {
     );
   }
 
-  private rebuildLocalPreview(): void {
-    const payload = this.buildPublicPayloadFromSections(this.sections);
-    this.localPreviewJson = JSON.stringify(payload, null, 2);
+  private collectPendingPhotoOperations(): PendingPhotoOperation[] {
+    return this.sections.flatMap((section) =>
+      section.members
+        .map((row) => {
+          const file = this.pendingPhotoUploads.get(row.local_id);
+          const removePhoto = this.pendingPhotoRemovals.has(row.local_id);
+
+          if (!file && !removePhoto) {
+            return null;
+          }
+
+          return {
+            row_key: this.createRowKey(section.id, section.order, row.position_order),
+            file,
+            remove_photo: removePhoto,
+          } as PendingPhotoOperation;
+        })
+        .filter((item): item is PendingPhotoOperation => item !== null),
+    );
   }
 
-  private buildPublicPayloadFromSections(sections: HomepageSectionDraft[]): IHomepagePublicResponse {
-    const normalizedSections: IHomepagePublicSection[] = sections
-      .map((section) => ({
-        id: section.id,
-        title: section.title,
-        members: section.members.map((row) => this.buildPublicMemberFromRow(row)),
-      }))
-      .filter((section) => section.members.length > 0);
-
-    return { sections: normalizedSections };
-  }
-
-  private buildPublicMemberFromRow(row: HomepageRowDraft): IHomepagePublicMember {
-    if (row.mitglied_id) {
-      const mitglied = this.mitgliederByPkid.get(row.mitglied_id);
-      if (mitglied) {
-        const dienstgrad = (mitglied.dienstgrad || '').trim();
-        return {
-          photo: String(mitglied.stbnr ?? 'X'),
-          name: `${mitglied.vorname} ${mitglied.nachname}`.trim(),
-          dienstgrad,
-          dienstgrad_img: row.fallback_dienstgrad_img || this.resolveDienstgradImage(dienstgrad),
-          position: row.position,
-        };
-      }
+  private executePendingPhotoOperations(
+    savedRows: IHomepageDienstposten[],
+    operations: PendingPhotoOperation[],
+  ): Observable<IHomepageDienstposten[]> {
+    if (operations.length === 0 || savedRows.length === 0) {
+      return of(savedRows);
     }
 
-    const dienstgrad = (row.fallback_dienstgrad || '').trim();
-    return {
-      photo: row.fallback_photo || 'X',
-      name: row.fallback_name || 'Nicht definiert',
-      dienstgrad,
-      dienstgrad_img: row.fallback_dienstgrad_img || this.resolveDienstgradImage(dienstgrad),
-      position: row.position,
-    };
+    const savedRowsByKey = new Map<string, IHomepageDienstposten>();
+    for (const row of savedRows) {
+      savedRowsByKey.set(this.createRowKey(row.section_id, row.section_order, row.position_order), row);
+    }
+
+    const updateRequests = operations
+      .map((operation) => {
+        const target = savedRowsByKey.get(operation.row_key);
+        if (!target?.id) {
+          return null;
+        }
+
+        if (operation.file) {
+          const payload = new FormData();
+          payload.append('photo', operation.file, operation.file.name);
+          return this.apiHttpService.patch<IHomepageDienstposten>(this.modul, target.id, payload, true);
+        }
+
+        if (operation.remove_photo) {
+          return this.apiHttpService.patch<IHomepageDienstposten>(this.modul, target.id, { remove_photo: true }, false);
+        }
+
+        return null;
+      })
+      .filter((item): item is Observable<IHomepageDienstposten> => item !== null);
+
+    if (updateRequests.length === 0) {
+      return of(savedRows);
+    }
+
+    return forkJoin(updateRequests).pipe(
+      map((updatedRows) => {
+        const updatedById = new Map<string, IHomepageDienstposten>();
+
+        for (const row of savedRows) {
+          if (row.id) {
+            updatedById.set(String(row.id), row);
+          }
+        }
+
+        for (const row of updatedRows) {
+          if (row.id) {
+            updatedById.set(String(row.id), row);
+          }
+        }
+
+        return savedRows.map((row) => {
+          if (!row.id) {
+            return row;
+          }
+          return updatedById.get(String(row.id)) || row;
+        });
+      }),
+    );
+  }
+
+  private createRowKey(sectionId: string, sectionOrder: number, positionOrder: number): string {
+    return `${sectionId}|${sectionOrder}|${positionOrder}`;
+  }
+
+  private normalizePhotoUrl(rawValue: string | null | undefined): string | null {
+    const value = String(rawValue || '').trim();
+    if (!value) {
+      return null;
+    }
+
+    if (value.startsWith('http://') || value.startsWith('https://') || value.startsWith('/')) {
+      return value;
+    }
+
+    return `${this.apiHttpService.AppUrl}${value.replace(/^\/+/, '')}`;
+  }
+
+  private clearPendingPhotoState(row: HomepageRowDraft): void {
+    this.pendingPhotoUploads.delete(row.local_id);
+    this.pendingPhotoRemovals.delete(row.local_id);
   }
 }
