@@ -11,6 +11,7 @@ from rest_framework.views import APIView
 from core_apps.common.permissions import HasAnyRolePermission
 from core_apps.anwesenheitsliste.models import AnwesenheitslisteFoto
 from core_apps.einsatzberichte.models import EinsatzberichtFoto
+from core_apps.homepage.models import HomepageDienstposten
 from core_apps.inventar.models import Inventar
 from core_apps.news.models import News
 
@@ -89,6 +90,12 @@ class MediaNewsGetFileView(BaseMediaGetFileView):
     permission_classes = [permissions.AllowAny]
     subdirectory = "news"
 
+
+class MediaHomepageGetFileView(BaseMediaGetFileView):
+    """Abruf von Homepage-Mediendateien."""
+    permission_classes = [permissions.AllowAny]
+    subdirectory = "homepage"
+
 class MediaInventarGetFileView(BaseMediaGetFileView):
     """Abruf von Inventar-Mediendateien."""
     subdirectory = "inventar"
@@ -109,7 +116,7 @@ class MediaCleanupOrphansView(APIView):
 
     def post(self, request, *args, **kwargs):
         target = request.data.get("target", "all")
-        valid_targets = {"all", "news", "inventar", "einsatzberichte", "anwesenheitsliste"}
+        valid_targets = {"all", "news", "homepage", "inventar", "einsatzberichte", "anwesenheitsliste"}
         if target not in valid_targets:
             allowed = ", ".join(sorted(valid_targets))
             return Response({"detail": f"target muss einer der folgenden Werte sein: {allowed}."}, status=status.HTTP_400_BAD_REQUEST)
@@ -120,6 +127,8 @@ class MediaCleanupOrphansView(APIView):
         checks = []
         if target in ("all", "news"):
             checks.append(("news", lambda: _safe_refset(News, "foto")))
+        if target in ("all", "homepage"):
+            checks.append(("homepage", lambda: _safe_refset(HomepageDienstposten, "photo", "homepage")))
         if target in ("all", "inventar"):
             checks.append(("inventar", lambda: _safe_refset(Inventar, "foto")))
         if target in ("all", "einsatzberichte"):

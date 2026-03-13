@@ -47,7 +47,7 @@ export class KonfigurationComponent implements OnInit {
   backupColumns: string[] = ['name', 'actions'];
   cleanupColumns: string[] = ['target', 'filename'];
   backup_msg = "";
-  cleanupTarget: 'all' | 'news' | 'inventar' | 'einsatzberichte' | 'anwesenheitsliste' = 'all';
+  cleanupTarget: 'all' | 'news' | 'homepage' | 'inventar' | 'einsatzberichte' | 'anwesenheitsliste' = 'all';
   cleanupRunning = false;
   cleanupSummary = '';
   cleanupFiles: Array<{ target: string; targetLabel: string; filename: string }> = [];
@@ -55,6 +55,7 @@ export class KonfigurationComponent implements OnInit {
   private readonly cleanupTargetLabels: Record<string, string> = {
     all: 'Alle Pfade',
     news: 'News',
+    homepage: 'Homepage',
     inventar: 'Inventar',
     einsatzberichte: 'Einsatzberichte',
     anwesenheitsliste: 'Anwesenheitsliste',

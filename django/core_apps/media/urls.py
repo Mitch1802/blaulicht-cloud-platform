@@ -1,5 +1,6 @@
 from django.urls import path
 from .views import (
+    MediaHomepageGetFileView,
     MediaNewsGetFileView,
     MediaInventarGetFileView,
     MediaEinsatzberichteGetFileView,
@@ -10,6 +11,7 @@ from .views import (
 
 urlpatterns = [
     path("news/<path:filename>", MediaNewsGetFileView.as_view(), name="news-file-get"),
+    path("homepage/<path:filename>", MediaHomepageGetFileView.as_view(), name="homepage-file-get"),
     path("inventar/<path:filename>", MediaInventarGetFileView.as_view(), name="inventar-file-get"),
     path("einsatzberichte/<path:filename>", MediaEinsatzberichteGetFileView.as_view(), name="einsatzberichte-file-get"),
     path("anwesenheitsliste/<path:filename>", MediaAnwesenheitslisteGetFileView.as_view(), name="anwesenheitsliste-file-get"),

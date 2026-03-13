@@ -452,16 +452,6 @@ export class HomepageComponent implements OnInit {
     this.getMitgliedControl(row).setValue(this.getMitgliedLabel(mitglied), { emitEvent: false });
   }
 
-  clearMitglied(row: HomepageRowDraft): void {
-    row.mitglied_id = null;
-    row.fallback_name = 'Nicht definiert';
-    row.fallback_dienstgrad = '';
-    row.fallback_photo = 'X';
-    row.fallback_dienstgrad_img = '';
-
-    this.getMitgliedControl(row).setValue('', { emitEvent: false });
-  }
-
   onPhotoSelected(row: HomepageRowDraft, event: Event): void {
     const input = event.target as HTMLInputElement | null;
     const selectedFile = input?.files?.[0];
@@ -548,24 +538,6 @@ export class HomepageComponent implements OnInit {
   getRangText(dienstgrad: string | undefined): string {
     const rang = String(dienstgrad ?? '').trim();
     return rang !== '' ? rang : 'ohne Dienstgrad';
-  }
-
-  resolveAnzeigename(row: HomepageRowDraft): string {
-    if (row.mitglied_id) {
-      const mitglied = this.mitgliederByPkid.get(row.mitglied_id);
-      if (mitglied) {
-        return `${mitglied.vorname} ${mitglied.nachname}`.trim();
-      }
-    }
-    return row.fallback_name || 'Nicht definiert';
-  }
-
-  resolveDienstgrad(row: HomepageRowDraft): string {
-    if (row.mitglied_id) {
-      const mitglied = this.mitgliederByPkid.get(row.mitglied_id);
-      return (mitglied?.dienstgrad || '').trim();
-    }
-    return (row.fallback_dienstgrad || '').trim();
   }
 
   private resolveDienstgradImage(dienstgrad: string | undefined): string {

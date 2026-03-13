@@ -115,24 +115,18 @@
                   </div>
                 </div>
 
-                <div class="app-col-12 app-col-lg-2 row-preview">
-                  <strong>{{ resolveAnzeigename(row) }}</strong>
-                  <span>{{ resolveDienstgrad(row) || 'ohne Dienstgrad' }}</span>
-                </div>
-
-                <div class="app-col-12 app-col-lg-12 row-actions">
-                  <button mat-flat-button color="primary" type="button" (click)="clearMitglied(row)" [disabled]="loading">
-                    Leeren
-                  </button>
-                  <button
-                    mat-flat-button
-                    color="warn"
-                    type="button"
-                    (click)="removePosition(section, row)"
-                    [disabled]="loading"
-                  >
-                    Entfernen
-                  </button>
+                <div class="app-col-12 app-col-lg-2 row-meta">
+                  <div class="row-actions">
+                    <button
+                      mat-flat-button
+                      color="warn"
+                      type="button"
+                      (click)="removePosition(section, row)"
+                      [disabled]="loading"
+                    >
+                      Entfernen
+                    </button>
+                  </div>
                 </div>
               </article>
             }
