@@ -121,7 +121,7 @@ export class ApiHttpService {
   }
 
   cleanupOrphanMedia(payload: {
-    target?: 'all' | 'news' | 'inventar' | 'einsatzberichte' | 'anwesenheitsliste';
+    target?: 'all' | 'news' | 'homepage' | 'inventar' | 'einsatzberichte' | 'anwesenheitsliste';
     delete?: boolean;
     allow_missing_db?: boolean;
   }): Observable<any> {
