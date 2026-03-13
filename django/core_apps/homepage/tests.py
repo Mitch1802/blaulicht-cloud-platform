@@ -156,7 +156,7 @@ class HomepageEndpointTests(EndpointSmokeMixin, APITestCase):
         )
         self.assertTrue(fallback_present)
 
-    def test_public_response_uses_member_photo_path_instead_of_stbnr(self):
+    def test_public_response_uses_stbnr_without_uploaded_photo(self):
         response = self.request_method("get", "homepage/public/")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -170,8 +170,8 @@ class HomepageEndpointTests(EndpointSmokeMixin, APITestCase):
             self.fail("Kommandant-Eintrag fehlt in der Public-Response.")
 
         photo_values = [str(entry.get("photo", "")) for entry in member_entries]
-        self.assertTrue(any(value.startswith("/api/files/homepage/mitglieder/") for value in photo_values))
-        self.assertFalse(any(value.isdigit() for value in photo_values))
+        self.assertTrue(any(value == str(self.mitglied.stbnr) for value in photo_values))
+        self.assertFalse(any(value.startswith("/api/files/homepage/mitglieder/") for value in photo_values))
 
     def test_public_response_prefers_uploaded_photo_path(self):
         kommando_row = (
