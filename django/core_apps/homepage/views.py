@@ -16,6 +16,8 @@ from core_apps.mitglieder.serializers import MitgliedSerializer
 from .models import HomepageDienstposten
 from .serializers import HomepageDienstpostenSerializer, dienstgrad_to_image_filename
 
+DEFAULT_PHOTO_FILENAME = "X.png"
+
 
 def _resolve_photo_value(row: HomepageDienstposten) -> str:
     photo_field = getattr(row, "photo", None)
@@ -24,12 +26,7 @@ def _resolve_photo_value(row: HomepageDienstposten) -> str:
             return photo_field.url
         except Exception:
             pass
-
-    if row.mitglied and row.mitglied.stbnr not in (None, ""):
-        return str(row.mitglied.stbnr)
-
-    fallback = (row.fallback_photo or "X").strip()
-    return "X.png" if fallback == "X" else fallback
+    return DEFAULT_PHOTO_FILENAME
 
 
 def _delete_row_photo_file(row: HomepageDienstposten) -> None:
