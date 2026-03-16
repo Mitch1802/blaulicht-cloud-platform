@@ -200,3 +200,24 @@ class HomepageEndpointTests(EndpointSmokeMixin, APITestCase):
         self.assertTrue(
             any(str(entry.get("photo", "")).startswith("/api/files/homepage/114/") for entry in member_entries)
         )
+
+    def test_public_response_uses_default_image_when_no_photo(self):
+        response = self.request_method("get", "homepage/public/")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        sections = response.data.get("sections", [])
+
+        fallback_member_photos = [
+            str(member.get("photo", ""))
+            for section in sections
+            for member in section.get("members", [])
+            if member.get("name") == "Nicht definiert"
+        ]
+        self.assertTrue(
+            len(fallback_member_photos) > 0,
+            "Kein Fallback-Mitglied in der Public-Response gefunden.",
+        )
+        self.assertTrue(
+            all(photo == "X.png" for photo in fallback_member_photos),
+            f"Erwartet 'X.png' fuer Fallback-Eintraege, erhalten: {fallback_member_photos}",
+        )

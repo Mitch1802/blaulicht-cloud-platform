@@ -28,7 +28,8 @@ def _resolve_photo_value(row: HomepageDienstposten) -> str:
     if row.mitglied and row.mitglied.stbnr not in (None, ""):
         return str(row.mitglied.stbnr)
 
-    return row.fallback_photo or "X"
+    fallback = (row.fallback_photo or "X").strip()
+    return "X.png" if fallback == "X" else fallback
 
 
 def _delete_row_photo_file(row: HomepageDienstposten) -> None:
