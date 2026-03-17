@@ -1,7 +1,7 @@
-<app-header [breadcrumb]="breadcrumb"></app-header>
+<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
-<ui-page-layout [title]="title">
-  <ui-section-card title="Dienstpostenplan verwalten">
+<imr-page-layout [title]="title">
+  <imr-section-card title="Dienstpostenplan verwalten">
     <div class="ui-top-actions">
       <button mat-flat-button color="primary" type="button" (click)="addSection()" [disabled]="loading">
         Sektion hinzufügen
@@ -133,8 +133,8 @@
         </section>
       }
     </div>
-  </ui-section-card>
-</ui-page-layout>
+  </imr-section-card>
+</imr-page-layout>
 
 @if (photoModalOpen && photoModalUrl) {
   <div class="photo-modal-backdrop" (click)="closePhotoPreview()">

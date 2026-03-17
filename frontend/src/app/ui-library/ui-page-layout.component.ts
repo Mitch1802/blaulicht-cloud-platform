@@ -1,18 +1,19 @@
-import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
+import { ImrPageLayoutComponent } from '../imr-ui-library/imr-page-layout.component';
 
+/**
+ * @deprecated Verwende `<imr-page-layout>` aus der IMR UI Library.
+ * Diese Komponente bleibt aus Backward-Compatibility-Gründen erhalten.
+ */
 @Component({
   selector: 'ui-page-layout',
   standalone: true,
-  imports: [CommonModule],
+  imports: [ImrPageLayoutComponent],
   template: `
-    <section class="ui-page">
-      <header class="ui-page__head">
-        <h1>{{ title }}</h1>
-        <ng-content select="[uiPageActions]"></ng-content>
-      </header>
+    <imr-page-layout [title]="title">
+      <ng-content select="[uiPageActions]" imrPageActions></ng-content>
       <ng-content></ng-content>
-    </section>
+    </imr-page-layout>
   `,
 })
 export class UiPageLayoutComponent {

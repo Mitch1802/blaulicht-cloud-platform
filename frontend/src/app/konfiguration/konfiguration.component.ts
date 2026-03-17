@@ -14,7 +14,7 @@ import { MatInput } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { environment } from "src/environments/environment";
 import { Router } from '@angular/router';
-import { HeaderComponent } from '../_template/header/header.component';
+import { ImrHeaderComponent } from '../imr-ui-library';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatOption, MatSelect } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
@@ -23,7 +23,7 @@ import { MatTableModule } from '@angular/material/table';
     selector: 'app-konfiguration',
     templateUrl: './konfiguration.component.html',
     styleUrls: ['./konfiguration.component.sass'],
-    imports: [HeaderComponent, MatCardModule, FormsModule, ReactiveFormsModule, MatButton, MatFormField, MatLabel, MatInput, MatError, MatIconModule, MatChipsModule, MatSelect, MatOption, MatTableModule]
+    imports: [ImrHeaderComponent, MatCardModule, FormsModule, ReactiveFormsModule, MatButton, MatFormField, MatLabel, MatInput, MatError, MatIconModule, MatChipsModule, MatSelect, MatOption, MatTableModule]
 })
 export class KonfigurationComponent implements OnInit {
   private apiHttpService = inject(ApiHttpService);

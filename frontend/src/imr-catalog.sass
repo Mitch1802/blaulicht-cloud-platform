@@ -1,0 +1,1135 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// imr-catalog.sass  ·  IMR UI-Katalog – Design-Token & Komponenten-Stile
+//
+// Dieses File ist die zentrale Styling-Quelle der IMR UI Library.
+// Es wird von styles.sass importiert und definiert:
+//   • CSS Custom Properties (Design-Tokens) für alle IMR-Komponenten
+//   • Material Design 3-Overrides für Angular-Material-Elemente
+//   • Layout-Hilfssysteme (Grid, Utility-Klassen)
+//
+// Eigene Komponenten (imr-*) müssen ihre Stile nur noch via CSS-Variablen
+// anpassen und benötigen keine eigene Farblogik.
+// ─────────────────────────────────────────────────────────────────────────────
+@use './theme' as theme
+
+// ══════════════════════════════════════════════════════════════════════════════
+// 1. IMR Design-Tokens – CSS Custom Properties
+// ══════════════════════════════════════════════════════════════════════════════
+
+:root
+    // ── Farben ──────────────────────────────────────────────────────────────
+    --imr-primary:            #{theme.$imr-primary}
+    --imr-primary-dark:       #{theme.$imr-primary-dark}
+    --imr-primary-deep:       #{theme.$imr-primary-deep}
+    --imr-primary-soft:       #{theme.$imr-primary-light}
+    --imr-accent:             #{theme.$imr-secondary}
+    --imr-accent-soft:        #{theme.$imr-secondary-light}
+    --imr-error:              #{theme.$imr-error}
+    --imr-success:            #{theme.$imr-success}
+    --imr-warning:            #{theme.$imr-warning}
+
+    // ── Oberflächen ──────────────────────────────────────────────────────────
+    --imr-surface:            #{theme.$imr-surface}
+    --imr-surface-variant:    #{theme.$imr-surface-variant}
+    --imr-border:             #{theme.$imr-border}
+    --imr-text:               #{theme.$imr-text}
+    --imr-text-muted:         #{theme.$imr-text-muted}
+
+    // ── Steuerelemente (Buttons, Inputs, Chips) ───────────────────────────────
+    --imr-control-radius:     10px
+    --imr-control-height:     40px
+    --imr-control-bg:         #{rgba(theme.$imr-primary-light, .35)}
+    --imr-control-border:     #{rgba(theme.$imr-border, .95)}
+    --imr-control-transition: transform .14s ease, box-shadow .14s ease, background-color .14s ease, border-color .14s ease
+
+    // ── Cards ────────────────────────────────────────────────────────────────
+    --imr-card-radius:        1rem
+    --imr-card-border:        #{rgba(theme.$imr-border, .9)}
+    --imr-card-bg:            #{rgba(theme.$imr-surface, .92)}
+    --imr-card-shadow:        0 8px 28px #{rgba(theme.$imr-primary-dark, .08)}
+    --imr-card-padding:       .6rem .75rem .55rem
+    --imr-card-padding-mobile: .4rem .45rem .35rem
+
+    // ── Seiten-Layout ────────────────────────────────────────────────────────
+    --imr-page-max-width:     #{theme.$app-page-max-width}
+    --imr-page-padding:       1rem 1rem 2rem
+    --imr-page-padding-mobile: .75rem .75rem 1.5rem
+
+    // ── Header / Navigation ──────────────────────────────────────────────────
+    --imr-header-height:      56px
+    --imr-header-bg:          #{theme.$imr-primary-deep}
+    --imr-header-shadow:      #{rgba(theme.$imr-primary-deep, .3)}
+    --imr-breadcrumb-bg:      #{rgba(theme.$imr-primary-dark, .14)}
+
+    // ── Tabellen ─────────────────────────────────────────────────────────────
+    --imr-table-header-bg:    #{theme.$imr-primary-deep}
+    --imr-table-row-even-bg:  #{rgba(theme.$imr-primary-light, .15)}
+    --imr-table-row-hover-bg: #{rgba(theme.$imr-primary-light, .4)}
+    --imr-table-border:       #{rgba(theme.$imr-border, .95)}
+
+    // ── Grid ─────────────────────────────────────────────────────────────────
+    --imr-grid-columns:       12
+    --imr-grid-row-gap:       .75rem
+    --imr-grid-col-gap:       1rem
+
+// Header-Variante hell
+body.header-variant-light
+    --imr-header-bg:          #{theme.$imr-primary}
+    --imr-header-shadow:      #{rgba(theme.$imr-primary-dark, .12)}
+    --imr-breadcrumb-bg:      #{rgba(theme.$imr-primary-light, .32)}
+
+
+// ══════════════════════════════════════════════════════════════════════════════
+// 2. Globale Basis-Stile
+// ══════════════════════════════════════════════════════════════════════════════
+
+html, body
+    background: theme.$imr-background
+    min-height: 100vh
+    margin: 0
+    padding: 0
+    color: theme.$imr-text
+    -webkit-font-smoothing: antialiased
+    text-rendering: optimizeLegibility
+
+a
+    color: theme.$imr-primary
+
+    &:hover
+        color: theme.$imr-primary-dark
+
+button, a, .link-card, .link-card *
+    cursor: pointer
+
+p
+    cursor: default
+
+h1
+    text-align: center
+    color: theme.$imr-primary-dark
+
+.footer
+    color: theme.$imr-text-muted
+    text-align: center
+    padding-top: 10px
+    white-space: pre-wrap
+
+.a-tel, .a-mailto
+    color: theme.$imr-text
+    text-decoration: none
+
+.border
+    border: solid 1px rgba(theme.$imr-border, .95)
+
+.mehrzeiliger-text
+    content: "\A"
+    white-space: pre-wrap
+
+// ══════════════════════════════════════════════════════════════════════════════
+// 3. Material Design 3 – Angular Material Overrides
+// ══════════════════════════════════════════════════════════════════════════════
+
+// ── Toolbar (imr-header intern) ──────────────────────────────────────────────
+mat-toolbar
+    height: var(--imr-header-height)
+    display: flex
+    flex-wrap: wrap
+    background: var(--imr-header-bg)
+    box-shadow: 0 6px 16px var(--imr-header-shadow)
+    position: sticky
+    top: 0
+    z-index: 500
+
+    .spacer
+        flex: 1 1 auto
+
+    .title
+        font-size: 20px
+        font-weight: 600
+        color: white
+        letter-spacing: .2px
+
+    mat-icon
+        color: white
+
+// ── Buttons ──────────────────────────────────────────────────────────────────
+.mat-mdc-button,
+.mat-mdc-outlined-button,
+.mat-mdc-unelevated-button,
+.mat-mdc-raised-button,
+.mat-mdc-icon-button
+    border-radius: var(--imr-control-radius)
+    min-height: var(--imr-control-height)
+    height: var(--imr-control-height)
+    font-weight: 600
+    letter-spacing: .2px
+    border: 1px solid var(--imr-control-border)
+    background: var(--imr-control-bg)
+    color: theme.$imr-primary-deep
+    box-shadow: 0 4px 10px rgba(theme.$imr-primary-deep, .12)
+    transition: var(--imr-control-transition)
+
+    &:hover:not(:disabled)
+        transform: translateY(-1px)
+        background: rgba(theme.$imr-primary-light, .5)
+        border-color: rgba(theme.$imr-primary, .35)
+        box-shadow: 0 6px 14px rgba(theme.$imr-primary-deep, .18)
+
+    &:active:not(:disabled)
+        transform: translateY(0)
+
+    &:focus-visible
+        outline: 2px solid rgba(theme.$imr-primary, .55)
+        outline-offset: 2px
+
+.mat-mdc-button,
+.mat-mdc-outlined-button,
+.mat-mdc-unelevated-button,
+.mat-mdc-raised-button
+    padding-inline: 1rem
+
+.mat-mdc-icon-button
+    width: var(--imr-control-height)
+    min-width: var(--imr-control-height)
+    height: var(--imr-control-height)
+    padding: 0
+
+.mat-mdc-button.mat-primary,
+.mat-mdc-unelevated-button.mat-primary,
+.mat-mdc-raised-button.mat-primary,
+.mat-mdc-button.mat-accent,
+.mat-mdc-unelevated-button.mat-accent,
+.mat-mdc-raised-button.mat-accent,
+.mat-mdc-button.mat-warn,
+.mat-mdc-unelevated-button.mat-warn,
+.mat-mdc-raised-button.mat-warn
+    color: #fff
+
+.mat-mdc-unelevated-button.mat-primary,
+.mat-mdc-raised-button.mat-primary
+    background: theme.$imr-primary-deep !important
+    border-color: rgba(theme.$imr-primary-deep, .84) !important
+    box-shadow: 0 6px 14px rgba(theme.$imr-primary-deep, .24)
+
+    &:hover:not(:disabled)
+        background: theme.$imr-primary-dark !important
+        border-color: rgba(theme.$imr-primary-deep, .9) !important
+
+.mat-mdc-unelevated-button.mat-accent,
+.mat-mdc-raised-button.mat-accent
+    background: theme.$imr-secondary !important
+    border-color: rgba(theme.$imr-secondary, .86) !important
+    box-shadow: 0 6px 14px rgba(theme.$imr-secondary, .24)
+
+    &:hover:not(:disabled)
+        background: color-mix(in srgb, #{theme.$imr-secondary} 86%, #000 14%) !important
+        border-color: rgba(theme.$imr-secondary, .95) !important
+
+.mat-mdc-unelevated-button.mat-warn,
+.mat-mdc-raised-button.mat-warn
+    background: theme.$imr-error !important
+    border-color: rgba(theme.$imr-error, .88) !important
+    box-shadow: 0 6px 14px rgba(theme.$imr-error, .24)
+
+    &:hover:not(:disabled)
+        background: color-mix(in srgb, #{theme.$imr-error} 86%, #000 14%) !important
+        border-color: rgba(theme.$imr-error, .95) !important
+
+.mat-mdc-button.mat-primary,
+.mat-mdc-outlined-button.mat-primary
+    color: theme.$imr-primary-deep
+    border-color: rgba(theme.$imr-primary, .42)
+    background: rgba(theme.$imr-primary-light, .34)
+
+.mat-mdc-button.mat-accent,
+.mat-mdc-outlined-button.mat-accent
+    color: color-mix(in srgb, #{theme.$imr-secondary} 86%, #000 14%)
+    border-color: rgba(theme.$imr-secondary, .46)
+    background: rgba(theme.$imr-secondary-light, .55)
+
+.mat-mdc-button.mat-warn,
+.mat-mdc-outlined-button.mat-warn
+    color: color-mix(in srgb, #{theme.$imr-error} 86%, #000 14%)
+    border-color: rgba(theme.$imr-error, .45)
+    background: rgba(theme.$imr-error, .12)
+
+.mat-mdc-icon-button.mat-primary,
+.mat-mdc-icon-button.mat-accent,
+.mat-mdc-icon-button.mat-warn
+    box-shadow: none
+
+.mat-mdc-icon-button.mat-primary
+    color: theme.$imr-primary-deep
+    background: rgba(theme.$imr-primary-light, .35)
+    border-color: rgba(theme.$imr-primary, .4)
+
+.mat-mdc-icon-button.mat-accent
+    color: color-mix(in srgb, #{theme.$imr-secondary} 86%, #000 14%)
+    background: rgba(theme.$imr-secondary-light, .52)
+    border-color: rgba(theme.$imr-secondary, .45)
+
+.mat-mdc-icon-button.mat-warn
+    color: color-mix(in srgb, #{theme.$imr-error} 86%, #000 14%)
+    background: rgba(theme.$imr-error, .12)
+    border-color: rgba(theme.$imr-error, .45)
+
+.mat-mdc-button-base:disabled
+    opacity: .55
+    box-shadow: none
+
+.mat-mdc-button,
+.mat-mdc-outlined-button,
+.mat-mdc-unelevated-button,
+.mat-mdc-raised-button,
+.mat-mdc-icon-button,
+.mat-mdc-chip
+    border-radius: var(--imr-control-radius) !important
+
+// ── Disabled-Cursor ──────────────────────────────────────────────────────────
+.mat-form-field-disabled,
+.mat-form-field-disabled input,
+.mat-form-field-disabled textarea,
+.mat-form-field-disabled mat-label,
+.mat-mdc-button-disabled,
+.mat-mdc-button-disabled span,
+div:has(> .mat-mdc-button-disabled)
+    cursor: not-allowed
+
+// ── Cards ────────────────────────────────────────────────────────────────────
+mat-card
+    padding: 10px
+
+.mat-mdc-card
+    border-radius: var(--imr-card-radius)
+    border: 1px solid var(--imr-card-border)
+    background-color: var(--imr-card-bg)
+    box-shadow: var(--imr-card-shadow)
+
+.mat-mdc-card-title
+    padding-bottom: 12px
+    color: theme.$imr-primary-dark
+
+.mat-mdc-card-subtitle
+    padding: 12px
+    color: theme.$imr-text-muted
+
+.link-card
+    .mat-mdc-card
+        align-items: center
+        justify-content: center
+
+        mat-icon
+            width: 112px
+            height: 112px
+            font-size: 112px
+            line-height: 1
+
+// ── Formfelder ───────────────────────────────────────────────────────────────
+mat-form-field,
+.mat-mdc-form-field
+    width: 100%
+
+.mat-mdc-form-field
+    .mat-mdc-form-field-hint-wrapper,
+    .mat-mdc-form-field-error-wrapper
+        min-height: 0
+
+    p
+        width: 100%
+        text-align: left
+        white-space: nowrap
+        text-overflow: ellipsis
+        overflow: hidden
+        margin-block: 0px
+
+.mat-mdc-form-field .mdc-notched-outline__leading,
+.mat-mdc-form-field .mdc-notched-outline__notch,
+.mat-mdc-form-field .mdc-notched-outline__trailing
+    border-color: rgba(theme.$imr-border, .95)
+
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing
+    border-color: theme.$imr-primary
+
+.mat-mdc-form-field .mdc-floating-label,
+.mat-mdc-form-field .mat-mdc-input-element,
+.mat-mdc-form-field .mat-mdc-select-value-text
+    color: theme.$imr-text
+
+.mat-mdc-form-field .mat-mdc-form-field-hint,
+.mat-mdc-form-field .mat-mdc-form-field-error,
+.mat-mdc-form-field .mat-mdc-form-field-required-marker
+    color: theme.$imr-text-muted
+
+.mat-mdc-input-element::placeholder
+    color: rgba(theme.$imr-text-muted, .9)
+
+mat-select
+    margin: 0px
+    padding: 0px
+
+// ── Tabellen ─────────────────────────────────────────────────────────────────
+.mat-mdc-table
+    background: transparent
+    border: 1px solid var(--imr-table-border)
+    border-radius: .8rem
+    overflow: hidden
+
+    .mat-mdc-header-row
+        background: var(--imr-table-header-bg)
+        border-bottom: 1px solid rgba(theme.$imr-primary-deep, .95)
+
+    .mat-mdc-header-cell
+        color: #fff
+        font-weight: 700
+        letter-spacing: .2px
+        font-size: .9rem
+
+    .mat-mdc-row
+        transition: background-color .14s ease
+
+        &:nth-child(even)
+            background-color: var(--imr-table-row-even-bg)
+
+        &:hover
+            background-color: var(--imr-table-row-hover-bg)
+
+// ── Chips ────────────────────────────────────────────────────────────────────
+.mat-mdc-chip-set .mdc-evolution-chip-set__chips
+    gap: .42rem
+
+.mat-mdc-chip,
+.mat-mdc-standard-chip
+    --mdc-chip-container-height: var(--imr-control-height)
+    border-radius: var(--imr-control-radius)
+    height: var(--imr-control-height)
+    min-height: var(--imr-control-height)
+    border: 1px solid var(--imr-control-border)
+    background: var(--imr-control-bg)
+    color: theme.$imr-primary-deep
+    box-shadow: 0 4px 10px rgba(theme.$imr-primary-deep, .12)
+    transition: var(--imr-control-transition)
+
+    .mdc-evolution-chip__cell,
+    .mdc-evolution-chip__action--primary,
+    .mdc-evolution-chip__action--trailing
+        height: var(--imr-control-height)
+        min-height: var(--imr-control-height)
+
+    .mdc-evolution-chip__text-label,
+    .mat-mdc-chip-action-label
+        color: inherit
+        font-weight: 600
+        letter-spacing: .2px
+
+    &:hover
+        transform: translateY(-1px)
+        background: rgba(theme.$imr-primary-light, .5)
+        border-color: rgba(theme.$imr-primary, .35)
+        box-shadow: 0 6px 14px rgba(theme.$imr-primary-deep, .18)
+
+    &:focus-within
+        outline: 2px solid rgba(theme.$imr-primary, .55)
+        outline-offset: 2px
+
+.mat-mdc-standard-chip.mdc-evolution-chip--selected
+    background: theme.$imr-primary-deep
+    border-color: rgba(theme.$imr-primary-deep, .85)
+    color: #fff
+
+    .mdc-evolution-chip__text-label,
+    .mat-mdc-chip-remove,
+    .mat-icon
+        color: #fff
+
+// ── Tabs ─────────────────────────────────────────────────────────────────────
+.mat-mdc-tab-group
+    --mdc-secondary-navigation-tab-container-height: 46px
+
+    .mdc-tab
+        border-radius: .55rem .55rem 0 0
+
+    .mdc-tab--active .mdc-tab__text-label
+        color: theme.$imr-primary-dark
+        font-weight: 700
+
+    .mdc-tab:focus-visible
+        outline: 2px solid rgba(theme.$imr-primary, .5)
+        outline-offset: -2px
+
+// ── Expansion Panel ──────────────────────────────────────────────────────────
+.mat-expansion-panel
+    border: 1px solid rgba(theme.$imr-border, .9)
+    border-radius: .7rem
+    overflow: hidden
+
+// ── Paginator ────────────────────────────────────────────────────────────────
+.mat-mdc-paginator
+    border-top: 1px solid rgba(theme.$imr-border, .9)
+    background-color: rgba(theme.$imr-surface, .88)
+
+// ── Snackbar ─────────────────────────────────────────────────────────────────
+.app-snackbar
+    --mdc-snackbar-supporting-text-size: 1rem
+    --mdc-snackbar-supporting-text-line-height: 1.35rem
+    --mdc-snackbar-supporting-text-color: #fff
+    --mat-snack-bar-button-color: #fff
+    border-radius: .75rem
+    white-space: pre-line
+    word-break: break-word
+    box-shadow: 0 10px 24px rgba(0, 0, 0, .28)
+    opacity: .96
+    border: 1px solid rgba(255, 255, 255, .22)
+
+.cdk-overlay-container .mat-mdc-snack-bar-container.app-snackbar
+    --mdc-snackbar-supporting-text-size: 1rem
+    --mdc-snackbar-supporting-text-line-height: 1.35rem
+    --mdc-snackbar-supporting-text-color: #fff
+    --mat-snack-bar-button-color: #fff
+
+    .mdc-snackbar__surface
+        border-radius: .75rem
+        box-shadow: 0 10px 24px rgba(0, 0, 0, .28)
+        opacity: .96
+        white-space: pre-line
+        word-break: break-word
+        border-left: 5px solid rgba(255, 255, 255, .55)
+
+.app-snackbar--success
+    --mdc-snackbar-container-color: #{theme.$imr-success}
+
+.app-snackbar--info
+    --mdc-snackbar-container-color: #{theme.$imr-primary}
+
+.app-snackbar--error
+    --mdc-snackbar-container-color: #{theme.$imr-error}
+
+.msg-snackbar-success
+    @extend .app-snackbar
+    @extend .app-snackbar--success
+
+.msg-snackbar-info
+    @extend .app-snackbar
+    @extend .app-snackbar--info
+
+.msg-snackbar-error
+    @extend .app-snackbar
+    @extend .app-snackbar--error
+
+// ── Listen ───────────────────────────────────────────────────────────────────
+mat-list
+    padding-top: 0
+    padding-bottom: 0
+
+.mat-mdc-list-base
+    padding-top: 0
+    padding-bottom: 0
+
+mat-list-item
+    height: auto
+    padding-left: 0
+    padding-right: 0
+    padding-top: 5px
+
+.mat-mdc-list-item
+    min-height: auto
+
+mat-list-item span span
+    display: flex
+    align-items: center
+    margin: 0
+
+.mat-mdc-list-item .mdc-list-item__content
+    display: flex
+    align-items: center
+    margin: 0
+    color: theme.$imr-text
+
+    mat-icon
+        padding-right: 5px
+
+.mat-list-link span, .mat-tree-link span
+    text-decoration: underline
+    color: theme.$imr-primary
+    cursor: pointer
+
+// ── Error-Banner ─────────────────────────────────────────────────────────────
+.error-top
+    color: white
+    background-color: theme.$imr-error
+    text-align: center
+    padding: 10px
+    font-size: 1.2rem
+
+
+// ══════════════════════════════════════════════════════════════════════════════
+// 4. IMR-Komponenten-Stile (für imr-* Komponenten via Host oder Wrapper-Klassen)
+// ══════════════════════════════════════════════════════════════════════════════
+
+// ── imr-page-layout ──────────────────────────────────────────────────────────
+.imr-page
+    max-width: var(--imr-page-max-width)
+    margin: 0 auto
+    padding: var(--imr-page-padding)
+
+.imr-page__head
+    margin: 0 0 1.5rem
+
+    h1
+        margin: 0
+        color: theme.$imr-primary
+        font-size: clamp(1.5rem, 2.4vw, 2.1rem)
+        line-height: 1.2
+
+// ── imr-section-card ─────────────────────────────────────────────────────────
+.imr-card
+    border-radius: var(--imr-card-radius) !important
+
+.imr-card__head
+    display: flex
+    align-items: center
+    justify-content: space-between
+    padding: 1rem 1rem 0
+
+    h2
+        margin: 0
+        color: theme.$imr-primary
+        font-size: 1.1rem
+
+.imr-card__content
+    padding: var(--imr-card-padding) !important
+
+// ── imr-top-actions ──────────────────────────────────────────────────────────
+.imr-top-actions
+    display: flex
+    gap: .6rem
+    flex-wrap: wrap
+    margin: .25rem 0 .8rem
+
+    > .mat-mdc-button-base,
+    > a.mat-mdc-button-base,
+    > [mat-flat-button],
+    > [mat-stroked-button],
+    > [mat-raised-button],
+    > [mat-button],
+    > [mat-icon-button]
+        min-height: var(--imr-control-height)
+        height: var(--imr-control-height)
+
+// ── imr-form-actions ─────────────────────────────────────────────────────────
+.imr-form-actions
+    display: flex
+    flex-wrap: wrap
+    gap: .6rem
+    margin-bottom: .8rem
+
+    > .mat-mdc-button-base,
+    > a.mat-mdc-button-base,
+    > [mat-flat-button],
+    > [mat-stroked-button],
+    > [mat-raised-button],
+    > [mat-button],
+    > [mat-icon-button]
+        min-height: var(--imr-control-height)
+        height: var(--imr-control-height)
+
+// ── imr-form ─────────────────────────────────────────────────────────────────
+.imr-form
+    margin-top: .2rem
+
+// ── imr-form-grid ────────────────────────────────────────────────────────────
+.imr-form-grid
+    margin-top: .2rem
+
+// ── imr-two-col-md ───────────────────────────────────────────────────────────
+.imr-two-col-md
+    grid-column: span 12
+
+// ── imr-full-width ───────────────────────────────────────────────────────────
+.imr-full-width
+    width: 100%
+
+// ── imr-table-wrap ───────────────────────────────────────────────────────────
+.imr-table-wrap
+    overflow-x: auto
+    margin-top: .5rem
+
+// ── imr-action-cell ──────────────────────────────────────────────────────────
+.imr-action-cell
+    display: flex
+    gap: .35rem
+    align-items: center
+
+td.imr-action-cell
+    display: table-cell
+    vertical-align: middle
+    white-space: nowrap
+
+    > * + *
+        margin-left: .35rem
+
+    .mat-icon
+        margin: 0
+        font-size: 20px
+        width: 20px
+        height: 20px
+        line-height: 20px
+
+    > .mat-mdc-button-base,
+    > a.mat-mdc-button-base,
+    > [mat-flat-button],
+    > [mat-stroked-button],
+    > [mat-raised-button],
+    > [mat-button],
+    > [mat-icon-button],
+    > .imr-action-btn
+        min-width: 2.25rem
+        width: 2.25rem
+        min-height: 2.25rem
+        height: 2.25rem
+        padding: 0
+        box-shadow: none
+
+    > .ms-2
+        margin-left: 0 !important
+
+    > .px-0
+        padding-left: 0 !important
+        padding-right: 0 !important
+
+.imr-action-btn
+    min-width: 2.25rem
+    width: 2.25rem
+    height: 2.25rem
+    padding: 0
+
+// ── imr-chips ────────────────────────────────────────────────────────────────
+.imr-chips
+    margin-top: .3rem
+    display: flex
+    flex-wrap: wrap
+    gap: .4rem
+
+    .mat-mdc-chip
+        min-height: var(--imr-control-height)
+        height: var(--imr-control-height)
+        border-radius: var(--imr-control-radius)
+        border: 1px solid var(--imr-control-border)
+        background: var(--imr-control-bg)
+        color: theme.$imr-primary-deep
+
+    .mat-mdc-chip .mat-mdc-chip-action,
+    .mat-mdc-chip .mdc-evolution-chip__action
+        min-height: var(--imr-control-height)
+
+    .mat-mdc-chip .mat-mdc-chip-remove,
+    .mat-mdc-chip [matChipRemove]
+        border-radius: var(--imr-control-radius)
+
+// ── imr-breadcrumb ───────────────────────────────────────────────────────────
+.imr-breadcrumb
+    display: flex
+    flex-wrap: wrap
+    padding: .5rem
+    background: var(--imr-breadcrumb-bg)
+    border-bottom: 1px solid rgba(theme.$imr-border, .7)
+
+    button
+        margin-right: 5px
+        padding: 7px
+        min-width: 0
+
+// ── imr-lending (Leihe/Inventar-Panel) ───────────────────────────────────────
+.imr-lending-panel
+    border: 1px solid rgba(theme.$imr-primary, .16)
+    border-radius: .75rem
+    padding: .8rem
+    background: rgba(theme.$imr-primary-light, .18)
+
+.imr-lending-panel-head
+    display: flex
+    align-items: center
+    justify-content: space-between
+    gap: .75rem
+    margin-bottom: .75rem
+
+.imr-lending-empty
+    margin: .25rem 0 .75rem
+    color: rgba(theme.$imr-primary-dark, .76)
+
+.imr-lending-row
+    border: 1px solid rgba(theme.$imr-primary, .14)
+    border-radius: .65rem
+    padding: .65rem .65rem .15rem
+    margin-bottom: .6rem
+    background: #fff
+
+.imr-lending-row-remove
+    display: flex
+    align-items: flex-start
+    justify-content: flex-end
+
+.imr-lending-summary
+    margin: .2rem 0 0
+    font-size: .92rem
+    color: rgba(theme.$imr-primary-dark, .84)
+
+// ── imr-transaction (Buchungs-Dialog) ────────────────────────────────────────
+.imr-transaction-backdrop
+    position: fixed
+    inset: 0
+    z-index: 1200
+    display: flex
+    align-items: center
+    justify-content: center
+    padding: 1rem
+    background: rgba(theme.$imr-primary-dark, .55)
+
+.imr-transaction-dialog
+    width: min(620px, 100%)
+    max-height: calc(100vh - 2rem)
+    overflow: auto
+    background: #fff
+    border-radius: .9rem
+    box-shadow: 0 16px 40px rgba(0, 0, 0, .28)
+    padding: 1rem
+
+.imr-transaction-head
+    display: flex
+    align-items: center
+    justify-content: space-between
+    margin-bottom: .5rem
+
+    h3
+        margin: 0
+        color: theme.$imr-primary
+
+.imr-transaction-meta
+    margin: .2rem 0
+    color: rgba(theme.$imr-primary-dark, .86)
+
+.imr-transaction-form
+    margin-top: .85rem
+
+.imr-transaction-note
+    margin: .2rem 0 .8rem
+    font-size: .9rem
+    color: rgba(theme.$imr-primary-dark, .84)
+
+.imr-transaction-actions
+    display: flex
+    justify-content: flex-end
+    gap: .6rem
+
+// ── imr-form-section ─────────────────────────────────────────────────────────
+.imr-form-section
+    border-radius: .75rem !important
+    border: 1px solid rgba(theme.$imr-border, .9)
+    background: rgba(theme.$imr-surface, .94)
+
+.imr-form-section-title
+    color: theme.$imr-primary-deep
+    font-weight: 600
+
+.imr-form-section-subtitle
+    color: theme.$imr-text-muted
+
+.imr-form-section-body
+    padding-top: .35rem
+
+
+// ══════════════════════════════════════════════════════════════════════════════
+// 5. Grid-System
+// ══════════════════════════════════════════════════════════════════════════════
+
+.container, .app-container
+    width: min(1280px, 100%)
+    margin-left: auto
+    margin-right: auto
+    padding-left: 1rem
+    padding-right: 1rem
+
+.row, .app-grid
+    display: grid
+    grid-template-columns: repeat(var(--imr-grid-columns), minmax(0, 1fr))
+    gap: var(--imr-grid-row-gap) var(--imr-grid-col-gap)
+    margin: 0
+
+.row > :where([class*='col-']),
+.row > :where([class*='app-col-']),
+.row > :where(.col),
+.app-grid > :where([class*='col-']),
+.app-grid > :where([class*='app-col-']),
+.app-grid > :where(.col),
+.app-grid > :where(.app-col)
+    grid-column: span 12
+    min-width: 0
+
+.row.justify-content-center > :where([class*='col-']),
+.row.justify-content-center > :where([class*='app-col-']),
+.row.justify-content-center > :where(.col),
+.app-grid.justify-content-center > :where([class*='col-']),
+.app-grid.justify-content-center > :where([class*='app-col-']),
+.app-grid.justify-content-center > :where(.col),
+.app-grid.justify-content-center > :where(.app-col)
+    justify-self: center
+
+.row.align-items-center, .app-grid.align-items-center
+    align-items: center
+
+.row.align-items-end, .app-grid.align-items-end
+    align-items: end
+
+.col, .app-col
+    grid-column: span 12
+
+.col-auto, .app-col-auto
+    grid-column: auto
+
+.col-2, .app-col-2
+    grid-column: span 2
+
+.col-3, .app-col-3
+    grid-column: span 3
+
+.col-4, .app-col-4
+    grid-column: span 4
+
+.col-6, .app-col-6
+    grid-column: span 6
+
+.col-7, .app-col-7
+    grid-column: span 7
+
+.col-8, .app-col-8
+    grid-column: span 8
+
+.col-12, .app-col-12
+    grid-column: span 12
+
+@media (min-width: 768px)
+    .col-md-6, .app-col-md-6
+        grid-column: span 6
+
+    .col-md-10, .app-col-md-10
+        grid-column: span 10
+
+@media (min-width: 1200px)
+    .col-lg-2, .app-col-lg-2
+        grid-column: span 2
+
+    .col-lg-3, .app-col-lg-3
+        grid-column: span 3
+
+    .col-lg-4, .app-col-lg-4
+        grid-column: span 4
+
+    .col-lg-5, .app-col-lg-5
+        grid-column: span 5
+
+    .col-lg-6, .app-col-lg-6
+        grid-column: span 6
+
+    .col-lg-7, .app-col-lg-7
+        grid-column: span 7
+
+    .col-lg-8, .app-col-lg-8
+        grid-column: span 8
+
+    .col-lg-9, .app-col-lg-9
+        grid-column: span 9
+
+    .col-lg-12, .app-col-lg-12
+        grid-column: span 12
+
+
+// ══════════════════════════════════════════════════════════════════════════════
+// 6. Utility-Klassen
+// ══════════════════════════════════════════════════════════════════════════════
+
+.text-center
+    text-align: center
+
+.text-end
+    text-align: end
+
+.m-0
+    margin: 0 !important
+
+.m-2
+    margin: .5rem !important
+
+.m-3
+    margin: 1rem !important
+
+.mx-0
+    margin-left: 0 !important
+    margin-right: 0 !important
+
+.my-2
+    margin-top: .5rem !important
+    margin-bottom: .5rem !important
+
+.mt-2
+    margin-top: .5rem !important
+
+.mt-3
+    margin-top: 1rem !important
+
+.mb-0
+    margin-bottom: 0 !important
+
+.mb-2
+    margin-bottom: .5rem !important
+
+.mb-3
+    margin-bottom: 1rem !important
+
+.me-2
+    margin-right: .5rem !important
+
+.me-3
+    margin-right: 1rem !important
+
+.ms-2
+    margin-left: .5rem !important
+
+.p-0
+    padding: 0 !important
+
+.p-2
+    padding: .5rem !important
+
+.pt-2
+    padding-top: .5rem !important
+
+.pt-3
+    padding-top: 1rem !important
+
+.ps-3
+    padding-left: 1rem !important
+
+.content
+    width: min(1280px, 100%)
+    margin: 1rem auto 0
+    padding: 0 1rem 2rem
+    color: theme.$imr-text
+
+.content > [class*='app-col-'],
+.content > [class*='col-']
+    display: block
+    grid-column: auto !important
+    margin-left: auto !important
+    margin-right: auto !important
+    width: min(980px, 100%)
+    max-width: 980px
+
+.content > [class*='app-col-'] > .mat-mdc-card,
+.content > [class*='col-'] > .mat-mdc-card
+    width: 100%
+
+.content-item
+    padding: 5px
+
+    img
+        display: flex
+        justify-content: center
+        align-self: center
+
+.autocomplete-multi
+    display: flex
+    flex-direction: column
+    gap: .25rem
+
+.auswahl-button
+    white-space: nowrap
+
+
+// ══════════════════════════════════════════════════════════════════════════════
+// 7. Responsive Overrides
+// ══════════════════════════════════════════════════════════════════════════════
+
+@media only screen and (min-width: 768px)
+    .imr-two-col-md, .ui-two-col-md
+        grid-column: span 6
+
+    .imr-two-col-md.mb-3,
+    .imr-form-grid .app-col-lg-12.mb-3,
+    .ui-two-col-md.mb-3,
+    .ui-form-grid .app-col-lg-12.mb-3
+        margin-bottom: .6rem !important
+
+@media only screen and (max-width: 700px)
+    .imr-page, .ui-page
+        padding: var(--imr-page-padding-mobile)
+
+    .imr-page__head, .ui-page__head, .page-head
+        margin-bottom: 1rem
+
+        h1
+            font-size: 1.4rem
+
+    .imr-card__head, .ui-card__head, .section-head
+        padding: .85rem .85rem 0
+
+        h2
+            font-size: 1rem
+
+    .imr-top-actions, .imr-form-actions,
+    .ui-top-actions, .ui-actions, .top-actions, .form-actions, .actions-row
+        button
+            width: 100%
+
+    .password-action, .actions-row.full-width
+        align-items: stretch
+
+    .imr-lending-panel-head, .ui-lending-panel-head
+        flex-direction: column
+        align-items: stretch
+
+    .imr-lending-row-remove, .ui-lending-row-remove
+        justify-content: stretch
+
+        button
+            width: 100%
+
+    .imr-transaction-actions, .ui-transaction-actions
+        flex-direction: column
+
+        button
+            width: 100%
+
+@media (max-width: 768px)
+    mat-toolbar
+        height: 52px
+
+        .title
+            font-size: 17px
+
+        img
+            width: 48px
+
+    .mat-mdc-card
+        border-radius: .85rem
+
+    .settings-card > .mat-mdc-card-content,
+    .settings-card mat-card-content
+        padding: var(--imr-card-padding-mobile) !important
+
+    .imr-card__content
+        padding: var(--imr-card-padding-mobile) !important
+
+    .mat-mdc-header-cell, .mat-mdc-cell
+        font-size: .86rem
+
+    .imr-breadcrumb, .breadcrumb
+        padding: .4rem .35rem
+
+        button
+            margin-right: 4px
+            min-height: 2.2rem
+
+@media (max-width: 575px)
+    .auswahl-button
+        padding-top: 20px

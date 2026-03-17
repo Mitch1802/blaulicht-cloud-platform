@@ -1,23 +1,19 @@
-import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
-import { MatCardModule } from '@angular/material/card';
+import { ImrSectionCardComponent } from '../imr-ui-library/imr-section-card.component';
 
+/**
+ * @deprecated Verwende `<imr-section-card>` aus der IMR UI Library.
+ * Diese Komponente bleibt aus Backward-Compatibility-Gründen erhalten.
+ */
 @Component({
   selector: 'ui-section-card',
   standalone: true,
-  imports: [CommonModule, MatCardModule],
+  imports: [ImrSectionCardComponent],
   template: `
-    <mat-card class="ui-card">
-      @if (title) {
-        <div class="ui-card__head">
-          <h2>{{ title }}</h2>
-          <ng-content select="[uiCardActions]"></ng-content>
-        </div>
-      }
-      <mat-card-content class="ui-card__content">
-        <ng-content></ng-content>
-      </mat-card-content>
-    </mat-card>
+    <imr-section-card [title]="title">
+      <ng-content select="[uiCardActions]" imrCardActions></ng-content>
+      <ng-content></ng-content>
+    </imr-section-card>
   `,
 })
 export class UiSectionCardComponent {

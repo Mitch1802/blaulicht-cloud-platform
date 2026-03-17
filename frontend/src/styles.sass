@@ -1,663 +1,195 @@
-/* You can add global styles to this file, and also import other style files */
+// ─────────────────────────────────────────────────────────────────────────────
+// styles.sass  ·  Globale Stile der Blaulicht-Cloud-Platform
+//
+// Zweck dieses Files:
+//   1. IMR-Katalog importieren (enthält alle Komponenten-Tokens und Stile)
+//   2. Basis-Font für :root setzen
+//   3. Backward-compatible --app-* CSS-Variablen bereitstellen
+//      (zeigen auf die --imr-* Variablen aus dem IMR-Katalog)
+//   4. Komponenten-spezifische Overrides, die nicht generisch genug
+//      für den Katalog sind (z. B. Atemschutz-Teilkomponenten)
+// ─────────────────────────────────────────────────────────────────────────────
 @use './theme' as theme
+@use './imr-catalog'
 
+
+// ══════════════════════════════════════════════════════════════════════════════
+// 1. Basis-Font
+// ══════════════════════════════════════════════════════════════════════════════
 
 :root
     font-family: "Roboto", sans-serif
-    --app-primary: #{theme.$app-primary}
-    --app-primary-dark: #{theme.$app-primary-dark}
-    --app-primary-soft: #{theme.$app-primary-light}
-    --app-accent: #{theme.$app-secondary}
-    --app-accent-soft: #{theme.$app-secondary-light}
-    --app-surface: #{theme.$app-surface}
-    --app-surface-variant: #{theme.$app-surface-variant}
-    --app-border: #{theme.$app-border}
-    --app-text: #{theme.$app-text}
-    --app-text-muted: #{theme.$app-text-muted}
-    --app-control-radius: 10px
-    --app-control-height: 40px
-    --app-control-bg: #{rgba(theme.$app-primary-light, .35)}
-    --app-control-border: #{rgba(theme.$app-border, .95)}
-    --app-card-content-padding: .6rem .75rem .55rem
-    --app-card-content-padding-mobile: .4rem .45rem .35rem
-    --header-bg: #{theme.$app-primary-deep}
-    --header-shadow: #{rgba(theme.$app-primary-deep, .3)}
-    --breadcrumb-bg: #{rgba(theme.$app-primary-dark, .14)}
 
-body.header-variant-light
-    --header-bg: #{theme.$app-primary}
-    --header-shadow: #{rgba(theme.$app-primary-dark, .12)}
-    --breadcrumb-bg: #{rgba(theme.$app-primary-light, .32)}
+    // ── Backward-compatible CSS-Variablen (aliassen auf --imr-*) ─────────────
+    --app-primary:             var(--imr-primary)
+    --app-primary-dark:        var(--imr-primary-dark)
+    --app-primary-soft:        var(--imr-primary-soft)
+    --app-accent:              var(--imr-accent)
+    --app-accent-soft:         var(--imr-accent-soft)
+    --app-surface:             var(--imr-surface)
+    --app-surface-variant:     var(--imr-surface-variant)
+    --app-border:              var(--imr-border)
+    --app-text:                var(--imr-text)
+    --app-text-muted:          var(--imr-text-muted)
+    --app-control-radius:      var(--imr-control-radius)
+    --app-control-height:      var(--imr-control-height)
+    --app-control-bg:          var(--imr-control-bg)
+    --app-control-border:      var(--imr-control-border)
+    --app-card-content-padding: var(--imr-card-padding)
+    --app-card-content-padding-mobile: var(--imr-card-padding-mobile)
+    --header-bg:               var(--imr-header-bg)
+    --header-shadow:           var(--imr-header-shadow)
+    --breadcrumb-bg:           var(--imr-breadcrumb-bg)
 
-html, body
-    background: theme.$app-background
-    min-height: 100vh
-    margin: 0
-    padding: 0
-    color: theme.$app-text
-    -webkit-font-smoothing: antialiased
-    text-rendering: optimizeLegibility
+    // ── Grid-Variablen (Backward-compat) ─────────────────────────────────────
+    --app-grid-columns:        var(--imr-grid-columns)
+    --app-grid-row-gap:        var(--imr-grid-row-gap)
+    --app-grid-col-gap:        var(--imr-grid-col-gap)
 
-a
-    color: theme.$app-primary
 
-    &:hover
-        color: theme.$app-primary-dark
+// ══════════════════════════════════════════════════════════════════════════════
+// 2. Backward-compatible Klassen-Aliases  (→ imr-Klassen)
+// ══════════════════════════════════════════════════════════════════════════════
 
-mat-toolbar
-    height: 56px
-    display: flex
-    flex-wrap: wrap
-    background: var(--header-bg)
-    box-shadow: 0 6px 16px var(--header-shadow)
-    position: sticky
-    top: 0
-    z-index: 500
-
-    .spacer
-        flex: 1 1 auto
-
-    .title
-        font-size: 20px
-        font-weight: 600
-        color: white
-        letter-spacing: .2px
-
-    mat-icon
-        color: white
-
-h1
-    text-align: center
-    color: theme.$app-primary-dark
-
-button, a, .link-card, .link-card *
-    cursor: pointer
-
-.link-card
-    .mat-mdc-card
-        align-items: center
-        justify-content: center
-
-        mat-icon
-            width: 112px
-            height: 112px
-            font-size: 112px
-            line-height: 1
-
-p
-    cursor: default
-
-.mat-form-field-disabled,
-.mat-form-field-disabled input,
-.mat-form-field-disabled textarea,
-.mat-form-field-disabled mat-label,
-.mat-mdc-button-disabled,
-.mat-mdc-button-disabled span,
-div:has(> .mat-mdc-button-disabled)
-    cursor: not-allowed
-
-.mat-mdc-button,
-.mat-mdc-outlined-button,
-.mat-mdc-unelevated-button,
-.mat-mdc-raised-button,
-.mat-mdc-icon-button
-    border-radius: var(--app-control-radius)
-    min-height: var(--app-control-height)
-    height: var(--app-control-height)
-    font-weight: 600
-    letter-spacing: .2px
-    border: 1px solid var(--app-control-border)
-    background: var(--app-control-bg)
-    color: theme.$app-primary-deep
-    box-shadow: 0 4px 10px rgba(theme.$app-primary-deep, .12)
-    transition: transform .14s ease, box-shadow .14s ease, background-color .14s ease, border-color .14s ease
-
-    &:hover:not(:disabled)
-        transform: translateY(-1px)
-        background: rgba(theme.$app-primary-light, .5)
-        border-color: rgba(theme.$app-primary, .35)
-        box-shadow: 0 6px 14px rgba(theme.$app-primary-deep, .18)
-
-    &:active:not(:disabled)
-        transform: translateY(0)
-
-    &:focus-visible
-        outline: 2px solid rgba(theme.$app-primary, .55)
-        outline-offset: 2px
-
-.mat-mdc-button,
-.mat-mdc-outlined-button,
-.mat-mdc-unelevated-button,
-.mat-mdc-raised-button
-    padding-inline: 1rem
-
-.mat-mdc-icon-button
-    width: var(--app-control-height)
-    min-width: var(--app-control-height)
-    height: var(--app-control-height)
-    padding: 0
-
-.mat-mdc-button.mat-primary,
-.mat-mdc-unelevated-button.mat-primary,
-.mat-mdc-raised-button.mat-primary,
-.mat-mdc-button.mat-accent,
-.mat-mdc-unelevated-button.mat-accent,
-.mat-mdc-raised-button.mat-accent,
-.mat-mdc-button.mat-warn,
-.mat-mdc-unelevated-button.mat-warn,
-.mat-mdc-raised-button.mat-warn
-    color: #fff
-
-.mat-mdc-unelevated-button.mat-primary,
-.mat-mdc-raised-button.mat-primary
-    background: theme.$app-primary-deep !important
-    border-color: rgba(theme.$app-primary-deep, .84) !important
-    box-shadow: 0 6px 14px rgba(theme.$app-primary-deep, .24)
-
-    &:hover:not(:disabled)
-        background: theme.$app-primary-dark !important
-        border-color: rgba(theme.$app-primary-deep, .9) !important
-
-.mat-mdc-unelevated-button.mat-accent,
-.mat-mdc-raised-button.mat-accent
-    background: theme.$app-secondary !important
-    border-color: rgba(theme.$app-secondary, .86) !important
-    box-shadow: 0 6px 14px rgba(theme.$app-secondary, .24)
-
-    &:hover:not(:disabled)
-        background: color-mix(in srgb, #{theme.$app-secondary} 86%, #000 14%) !important
-        border-color: rgba(theme.$app-secondary, .95) !important
-
-.mat-mdc-unelevated-button.mat-warn,
-.mat-mdc-raised-button.mat-warn
-    background: theme.$app-error !important
-    border-color: rgba(theme.$app-error, .88) !important
-    box-shadow: 0 6px 14px rgba(theme.$app-error, .24)
-
-    &:hover:not(:disabled)
-        background: color-mix(in srgb, #{theme.$app-error} 86%, #000 14%) !important
-        border-color: rgba(theme.$app-error, .95) !important
-
-.mat-mdc-button.mat-primary,
-.mat-mdc-outlined-button.mat-primary
-    color: theme.$app-primary-deep
-    border-color: rgba(theme.$app-primary, .42)
-    background: rgba(theme.$app-primary-light, .34)
-
-.mat-mdc-button.mat-accent,
-.mat-mdc-outlined-button.mat-accent
-    color: color-mix(in srgb, #{theme.$app-secondary} 86%, #000 14%)
-    border-color: rgba(theme.$app-secondary, .46)
-    background: rgba(theme.$app-secondary-light, .55)
-
-.mat-mdc-button.mat-warn,
-.mat-mdc-outlined-button.mat-warn
-    color: color-mix(in srgb, #{theme.$app-error} 86%, #000 14%)
-    border-color: rgba(theme.$app-error, .45)
-    background: rgba(theme.$app-error, .12)
-
-.mat-mdc-icon-button.mat-primary,
-.mat-mdc-icon-button.mat-accent,
-.mat-mdc-icon-button.mat-warn
-    box-shadow: none
-
-.mat-mdc-icon-button.mat-primary
-    color: theme.$app-primary-deep
-    background: rgba(theme.$app-primary-light, .35)
-    border-color: rgba(theme.$app-primary, .4)
-
-.mat-mdc-icon-button.mat-accent
-    color: color-mix(in srgb, #{theme.$app-secondary} 86%, #000 14%)
-    background: rgba(theme.$app-secondary-light, .52)
-    border-color: rgba(theme.$app-secondary, .45)
-
-.mat-mdc-icon-button.mat-warn
-    color: color-mix(in srgb, #{theme.$app-error} 86%, #000 14%)
-    background: rgba(theme.$app-error, .12)
-    border-color: rgba(theme.$app-error, .45)
-
+// Seiten-Layout
 .ui-page,
 .app-page,
 section[class$='-page'],
 .anwesenheitsliste-page,
 .fmd-page
-    max-width: theme.$app-page-max-width
-    margin: 0 auto
-    padding: 1rem 1rem 2rem
+    @extend .imr-page
 
 .ui-page__head,
 .page-head
-    margin: 0 0 1.5rem
+    @extend .imr-page__head
 
-    h1
-        margin: 0
-        color: theme.$app-primary
-        font-size: clamp(1.5rem, 2.4vw, 2.1rem)
-        line-height: 1.2
-
+// Section-Card
 .ui-card,
 .settings-card
-    border-radius: .9rem !important
+    @extend .imr-card
 
 .ui-card__head,
 .section-head
-    display: flex
-    align-items: center
-    justify-content: space-between
-    padding: 1rem 1rem 0
-
-    h2
-        margin: 0
-        color: theme.$app-primary
-        font-size: 1.1rem
+    @extend .imr-card__head
 
 .ui-card__content,
 .settings-card > .mat-mdc-card-content,
 .settings-card mat-card-content
-    padding: 1rem !important
+    @extend .imr-card__content
 
+// Actions
 .ui-top-actions,
 .top-actions,
 .actions-row
-    display: flex
-    gap: .6rem
-    flex-wrap: wrap
-    margin: .25rem 0 .8rem
+    @extend .imr-top-actions
 
+.ui-actions,
+.form-actions
+    @extend .imr-form-actions
+
+// Forms
 .ui-form,
 .edit-form
-    margin-top: .2rem
-
-.ui-actions,
-.form-actions
-    display: flex
-    flex-wrap: wrap
-    gap: .6rem
-    margin-bottom: .8rem
-
-.ui-top-actions,
-.top-actions,
-.actions-row,
-.ui-actions,
-.form-actions
-    > .mat-mdc-button-base,
-    > a.mat-mdc-button-base,
-    > [mat-flat-button],
-    > [mat-stroked-button],
-    > [mat-raised-button],
-    > [mat-button],
-    > [mat-icon-button]
-        min-height: var(--app-control-height)
-        height: var(--app-control-height)
+    @extend .imr-form
 
 .ui-form-grid,
 .form-grid
-    margin-top: .2rem
-
-.selector-row,
-.role-row
-    margin-top: .2rem
-
-.password-action,
-.actions-row.full-width
-    display: flex
-    align-items: end
+    @extend .imr-form-grid
 
 .ui-two-col-md
-    grid-column: span 12
+    @extend .imr-two-col-md
 
 .ui-full-width,
 .full-width
-    width: 100%
+    @extend .imr-full-width
 
-.ui-chips,
-.role-chips
-    margin-top: .3rem
-    display: flex
-    flex-wrap: wrap
-    gap: .4rem
-
-.ui-chips .mat-mdc-chip,
-.role-chips .mat-mdc-chip
-    min-height: var(--app-control-height)
-    height: var(--app-control-height)
-    border-radius: var(--app-control-radius)
-    border: 1px solid var(--app-control-border)
-    background: var(--app-control-bg)
-    color: theme.$app-primary-deep
-
-.ui-chips .mat-mdc-chip .mat-mdc-chip-action,
-.ui-chips .mat-mdc-chip .mdc-evolution-chip__action,
-.role-chips .mat-mdc-chip .mat-mdc-chip-action,
-.role-chips .mat-mdc-chip .mdc-evolution-chip__action
-    min-height: var(--app-control-height)
-
-.ui-chips .mat-mdc-chip .mat-mdc-chip-remove,
-.ui-chips .mat-mdc-chip [matChipRemove],
-.role-chips .mat-mdc-chip .mat-mdc-chip-remove,
-.role-chips .mat-mdc-chip [matChipRemove]
-    border-radius: var(--app-control-radius)
-
+// Tables
 .ui-table-wrap,
 .table-wrap
-    overflow-x: auto
-    margin-top: .5rem
-
-.backup-table-wrap,
-.cleanup-table-wrap
-    border-radius: .8rem
-
-    table
-        width: 100%
-
-        .mat-mdc-row
-            min-height: 3rem
-
-        .mat-mdc-cell,
-        .mat-mdc-header-cell
-            vertical-align: middle
+    @extend .imr-table-wrap
 
 .ui-action-cell
-    display: flex
-    gap: .35rem
-    align-items: center
-
-td.ui-action-cell
-    display: table-cell
-    vertical-align: middle
-    white-space: nowrap
-
-    > * + *
-        margin-left: .35rem
-
-    .mat-icon
-        margin: 0
-        font-size: 20px
-        width: 20px
-        height: 20px
-        line-height: 20px
-
-    > .mat-mdc-button-base,
-    > a.mat-mdc-button-base,
-    > [mat-flat-button],
-    > [mat-stroked-button],
-    > [mat-raised-button],
-    > [mat-button],
-    > [mat-icon-button],
-    > .ui-action-btn
-        min-width: 2.25rem
-        width: 2.25rem
-        min-height: 2.25rem
-        height: 2.25rem
-        padding: 0
-        box-shadow: none
-
-    > .ms-2
-        margin-left: 0 !important
-
-    > .px-0
-        padding-left: 0 !important
-        padding-right: 0 !important
+    @extend .imr-action-cell
 
 .ui-action-btn
-    min-width: 2.25rem
-    width: 2.25rem
-    height: 2.25rem
-    padding: 0
+    @extend .imr-action-btn
 
+// Chips
+.ui-chips,
+.role-chips
+    @extend .imr-chips
+
+// Breadcrumb
+.breadcrumb
+    @extend .imr-breadcrumb
+
+// Lending
 .ui-lending-panel
-    border: 1px solid rgba(theme.$app-primary, .16)
-    border-radius: .75rem
-    padding: .8rem
-    background: rgba(theme.$app-primary-light, .18)
+    @extend .imr-lending-panel
 
 .ui-lending-panel-head
-    display: flex
-    align-items: center
-    justify-content: space-between
-    gap: .75rem
-    margin-bottom: .75rem
+    @extend .imr-lending-panel-head
 
 .ui-lending-empty
-    margin: .25rem 0 .75rem
-    color: rgba(theme.$app-primary-dark, .76)
+    @extend .imr-lending-empty
 
 .ui-lending-row
-    border: 1px solid rgba(theme.$app-primary, .14)
-    border-radius: .65rem
-    padding: .65rem .65rem .15rem
-    margin-bottom: .6rem
-    background: #fff
+    @extend .imr-lending-row
 
 .ui-lending-row-remove
-    display: flex
-    align-items: flex-start
-    justify-content: flex-end
+    @extend .imr-lending-row-remove
 
 .ui-lending-summary
-    margin: .2rem 0 0
-    font-size: .92rem
-    color: rgba(theme.$app-primary-dark, .84)
+    @extend .imr-lending-summary
 
+// Transaction
 .ui-transaction-backdrop
-    position: fixed
-    inset: 0
-    z-index: 1200
-    display: flex
-    align-items: center
-    justify-content: center
-    padding: 1rem
-    background: rgba(theme.$app-primary-dark, .55)
+    @extend .imr-transaction-backdrop
 
 .ui-transaction-dialog
-    width: min(620px, 100%)
-    max-height: calc(100vh - 2rem)
-    overflow: auto
-    background: #fff
-    border-radius: .9rem
-    box-shadow: 0 16px 40px rgba(0, 0, 0, .28)
-    padding: 1rem
+    @extend .imr-transaction-dialog
 
 .ui-transaction-head
-    display: flex
-    align-items: center
-    justify-content: space-between
-    margin-bottom: .5rem
-
-    h3
-        margin: 0
-        color: theme.$app-primary
+    @extend .imr-transaction-head
 
 .ui-transaction-meta
-    margin: .2rem 0
-    color: rgba(theme.$app-primary-dark, .86)
+    @extend .imr-transaction-meta
 
 .ui-transaction-form
-    margin-top: .85rem
+    @extend .imr-transaction-form
 
 .ui-transaction-note
-    margin: .2rem 0 .8rem
-    font-size: .9rem
-    color: rgba(theme.$app-primary-dark, .84)
+    @extend .imr-transaction-note
 
 .ui-transaction-actions
-    display: flex
-    justify-content: flex-end
-    gap: .6rem
+    @extend .imr-transaction-actions
 
+// Form sections
 .form-section
-    border-radius: .75rem !important
-    border: 1px solid rgba(theme.$app-border, .9)
-    background: rgba(theme.$app-surface, .94)
+    @extend .imr-form-section
 
 .form-section-title
-    color: theme.$app-primary-deep
-    font-weight: 600
+    @extend .imr-form-section-title
 
 .form-section-subtitle
-    color: theme.$app-text-muted
+    @extend .imr-form-section-subtitle
 
 .form-section-body
-    padding-top: .35rem
+    @extend .imr-form-section-body
 
-.autocomplete-multi
-    display: flex
-    flex-direction: column
-    gap: .25rem
 
-@media only screen and (min-width: 768px)
-    .ui-two-col-md
-        grid-column: span 6
+// ══════════════════════════════════════════════════════════════════════════════
+// 3. Komponenten-spezifische Stile (nicht generisch genug für den Katalog)
+// ══════════════════════════════════════════════════════════════════════════════
 
-    .ui-two-col-md.mb-3,
-    .ui-form-grid .app-col-lg-12.mb-3,
-    .form-grid .app-col-lg-12.mb-3
-        margin-bottom: .6rem !important
-
-@media only screen and (max-width: 700px)
-    .ui-page,
-    .app-page,
-    section[class$='-page'],
-    .anwesenheitsliste-page,
-    .fmd-page
-        padding: .75rem .75rem 1.5rem
-
-    .ui-page__head,
-    .page-head
-        margin-bottom: 1rem
-
-        h1
-            font-size: 1.4rem
-
-    .ui-card__head,
-    .section-head
-        padding: .85rem .85rem 0
-
-        h2
-            font-size: 1rem
-
-    .ui-top-actions,
-    .ui-actions,
-    .top-actions,
-    .form-actions,
-    .actions-row
-        button
-            width: 100%
-
-    .password-action,
-    .actions-row.full-width
-        align-items: stretch
-
-    .ui-lending-panel-head
-        flex-direction: column
-        align-items: stretch
-
-    .ui-lending-row-remove
-        justify-content: stretch
-
-        button
-            width: 100%
-
-    .ui-transaction-actions
-        flex-direction: column
-
-        button
-            width: 100%
-
-.mat-mdc-button-base:disabled
-    opacity: .55
-    box-shadow: none
-
-.mat-mdc-form-field
-    width: 100%
-
-.mat-mdc-card
-    border-radius: 1rem
-    border: 1px solid rgba(theme.$app-border, .9)
-    background-color: rgba(theme.$app-surface, .92)
-    box-shadow: 0 8px 28px rgba(theme.$app-primary-dark, .08)
-
-.mat-mdc-table
-    background: transparent
-    border: 1px solid rgba(theme.$app-border, .95)
-    border-radius: .8rem
-    overflow: hidden
-
-    .mat-mdc-header-row
-        background: theme.$app-primary-deep
-        border-bottom: 1px solid rgba(theme.$app-primary-deep, .95)
-
-    .mat-mdc-header-cell
-        color: #fff
-        font-weight: 700
-        letter-spacing: .2px
-        font-size: .9rem
-
-    .mat-mdc-row
-        transition: background-color .14s ease
-
-        &:nth-child(even)
-            background-color: rgba(theme.$app-primary-light, .15)
-
-        &:hover
-            background-color: rgba(theme.$app-primary-light, .4)
-
-.breadcrumb
-    display: flex
-    flex-wrap: wrap
-    padding: .5rem
-    background: var(--breadcrumb-bg)
-    border-bottom: 1px solid rgba(theme.$app-border, .7)
-
-    button
-        margin-right: 5px
-        padding: 7px
-        min-width: 0
-
-.error-top
-    color: white
-    background-color: theme.$app-error
-    text-align: center
-    padding: 10px
-    font-size: 1.2rem
-
-mat-card
-    padding: 10px
-
-.mat-mdc-card-title
-    padding-bottom: 12px
-    color: theme.$app-primary-dark
-
-.mat-mdc-card-subtitle
-    padding: 12px
-    color: theme.$app-text-muted
-
-.content
-    width: min(1280px, 100%)
-    margin: 1rem auto 0
-    padding: 0 1rem 2rem
-    color: theme.$app-text
-
-.content > [class*='app-col-'],
-.content > [class*='col-']
-    display: block
-    grid-column: auto !important
-    margin-left: auto !important
-    margin-right: auto !important
-    width: min(980px, 100%)
-    max-width: 980px
-
-.content > [class*='app-col-'] > .mat-mdc-card,
-.content > [class*='col-'] > .mat-mdc-card
-    width: 100%
-
+// ── Atemschutz-Teilkomponenten ────────────────────────────────────────────────
 .atemschutz-subcontent
     margin-top: 0
 
     .mat-mdc-card
         border-radius: .9rem
-        border: 1px solid rgba(theme.$app-border, .9)
-        background-color: rgba(theme.$app-surface, .92)
+        border: 1px solid rgba(theme.$imr-border, .9)
+        background-color: rgba(theme.$imr-surface, .92)
 
     .mat-mdc-card-header
         display: flex
@@ -668,7 +200,7 @@ mat-card
     .mat-mdc-card-title
         margin: 0
         padding-bottom: 0
-        color: theme.$app-primary
+        color: theme.$imr-primary
         font-size: 1.1rem
         line-height: 1.25
 
@@ -724,466 +256,31 @@ mat-card
             padding-left: .45rem
             padding-right: .45rem
 
-:root
-    --app-grid-columns: 12
-    --app-grid-row-gap: .75rem
-    --app-grid-col-gap: 1rem
+// ── Sonstige Legacy-Stile ─────────────────────────────────────────────────────
+.backup-table-wrap,
+.cleanup-table-wrap
+    border-radius: .8rem
 
-.container,
-.app-container
-    width: min(1280px, 100%)
-    margin-left: auto
-    margin-right: auto
-    padding-left: 1rem
-    padding-right: 1rem
+    table
+        width: 100%
 
-.row,
-.app-grid
-    display: grid
-    grid-template-columns: repeat(var(--app-grid-columns), minmax(0, 1fr))
-    gap: var(--app-grid-row-gap) var(--app-grid-col-gap)
-    margin: 0
+        .mat-mdc-row
+            min-height: 3rem
 
-.row > :where([class*='col-']),
-.row > :where([class*='app-col-']),
-.row > :where(.col),
-.app-grid > :where([class*='col-']),
-.app-grid > :where([class*='app-col-']),
-.app-grid > :where(.col),
-.app-grid > :where(.app-col)
-    grid-column: span 12
-    min-width: 0
+        .mat-mdc-cell,
+        .mat-mdc-header-cell
+            vertical-align: middle
 
-.row.justify-content-center > :where([class*='col-']),
-.row.justify-content-center > :where([class*='app-col-']),
-.row.justify-content-center > :where(.col),
-.app-grid.justify-content-center > :where([class*='col-']),
-.app-grid.justify-content-center > :where([class*='app-col-']),
-.app-grid.justify-content-center > :where(.col),
-.app-grid.justify-content-center > :where(.app-col)
-    justify-self: center
+.selector-row,
+.role-row
+    margin-top: .2rem
 
-.row.align-items-center,
-.app-grid.align-items-center
-    align-items: center
-
-.row.align-items-end,
-.app-grid.align-items-end
+.password-action,
+.actions-row.full-width
+    display: flex
     align-items: end
 
-.col,
-.app-col
-    grid-column: span 12
-
-.col-auto,
-.app-col-auto
-    grid-column: auto
-
-.col-2,
-.app-col-2
-    grid-column: span 2
-
-.col-3,
-.app-col-3
-    grid-column: span 3
-
-.col-4,
-.app-col-4
-    grid-column: span 4
-
-.col-6,
-.app-col-6
-    grid-column: span 6
-
-.col-7,
-.app-col-7
-    grid-column: span 7
-
-.col-8,
-.app-col-8
-    grid-column: span 8
-
-.col-12,
-.app-col-12
-    grid-column: span 12
-
-@media (min-width: 768px)
-    .col-md-6,
-    .app-col-md-6
-        grid-column: span 6
-
-    .col-md-10,
-    .app-col-md-10
-        grid-column: span 10
-
-@media (min-width: 1200px)
-    .col-lg-2,
-    .app-col-lg-2
-        grid-column: span 2
-
-    .col-lg-3,
-    .app-col-lg-3
-        grid-column: span 3
-
-    .col-lg-4,
-    .app-col-lg-4
-        grid-column: span 4
-
-    .col-lg-5,
-    .app-col-lg-5
-        grid-column: span 5
-
-    .col-lg-6,
-    .app-col-lg-6
-        grid-column: span 6
-
-    .col-lg-7,
-    .app-col-lg-7
-        grid-column: span 7
-
-    .col-lg-8,
-    .app-col-lg-8
-        grid-column: span 8
-
-    .col-lg-9,
-    .app-col-lg-9
-        grid-column: span 9
-
-    .col-lg-12,
-    .app-col-lg-12
-        grid-column: span 12
-
-.text-center
-    text-align: center
-
-.text-end
-    text-align: end
-
-.m-0
-    margin: 0 !important
-
-.m-2
-    margin: .5rem !important
-
-.m-3
-    margin: 1rem !important
-
-.mx-0
-    margin-left: 0 !important
-    margin-right: 0 !important
-
-.my-2
-    margin-top: .5rem !important
-    margin-bottom: .5rem !important
-
-.mt-2
-    margin-top: .5rem !important
-
-.mt-3
-    margin-top: 1rem !important
-
-.mb-0
-    margin-bottom: 0 !important
-
-.mb-2
-    margin-bottom: .5rem !important
-
-.mb-3
-    margin-bottom: 1rem !important
-
-.me-2
-    margin-right: .5rem !important
-
-.me-3
-    margin-right: 1rem !important
-
-.ms-2
-    margin-left: .5rem !important
-
-.p-0
-    padding: 0 !important
-
-.p-2
-    padding: .5rem !important
-
-.pt-2
-    padding-top: .5rem !important
-
-.pt-3
-    padding-top: 1rem !important
-
-.ps-3
-    padding-left: 1rem !important
-
-.content-item
-    padding: 5px
-
-    img
-        display: flex
-        justify-content: center
-        align-self: center
-
-.mehrzeiliger-text
-    content: "\A"
-    white-space: pre-wrap
-
-.mat-list-link span
-    text-decoration: underline
-    color: theme.$app-primary
-    cursor: pointer
-
-.mat-tree-link span
-    text-decoration: underline
-    color: theme.$app-primary
-    cursor: pointer
-
-mat-list
-    padding-top: 0
-    padding-bottom: 0
-
-.mat-mdc-list-base
-    padding-top: 0
-    padding-bottom: 0
-
-mat-list-item
-    height: auto
-    padding-left: 0
-    padding-right: 0
-    padding-top: 5px
-
-.mat-mdc-list-item
-    min-height: auto
-
-mat-list-item span span
+.autocomplete-multi
     display: flex
-    align-items: center
-    margin: 0
-
-.mat-mdc-list-item .mdc-list-item__content
-    display: flex
-    align-items: center
-    margin: 0
-    color: theme.$app-text
-
-    mat-icon
-        padding-right: 5px
-
-// Dynamisch hint-/error-platzhalter nur zeigen wenn sichtbar
-.mat-mdc-form-field
-    .mat-mdc-form-field-hint-wrapper,
-    .mat-mdc-form-field-error-wrapper
-        min-height: 0
-    p
-        width: 100%
-        text-align: left
-        white-space: nowrap
-        text-overflow: ellipsis
-        overflow: hidden
-        margin-block: 0px
-
-mat-form-field
-    width: 100%
-
-.mat-mdc-form-field .mdc-notched-outline__leading,
-.mat-mdc-form-field .mdc-notched-outline__notch,
-.mat-mdc-form-field .mdc-notched-outline__trailing
-    border-color: rgba(theme.$app-border, .95)
-
-.mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
-.mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
-.mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing
-    border-color: theme.$app-primary
-
-.mat-mdc-form-field .mdc-floating-label,
-.mat-mdc-form-field .mat-mdc-input-element,
-.mat-mdc-form-field .mat-mdc-select-value-text
-    color: theme.$app-text
-
-.mat-mdc-form-field .mat-mdc-form-field-hint,
-.mat-mdc-form-field .mat-mdc-form-field-error,
-.mat-mdc-form-field .mat-mdc-form-field-required-marker
-    color: theme.$app-text-muted
-
-.mat-mdc-input-element::placeholder
-    color: rgba(theme.$app-text-muted, .9)
-
-mat-select
-    margin: 0px
-    padding: 0px
-
-.app-snackbar
-    --mdc-snackbar-supporting-text-size: 1rem
-    --mdc-snackbar-supporting-text-line-height: 1.35rem
-    --mdc-snackbar-supporting-text-color: #fff
-    --mat-snack-bar-button-color: #fff
-    border-radius: .75rem
-    white-space: pre-line
-    word-break: break-word
-    box-shadow: 0 10px 24px rgba(0, 0, 0, .28)
-    opacity: .96
-    border: 1px solid rgba(255, 255, 255, .22)
-
-.cdk-overlay-container .mat-mdc-snack-bar-container.app-snackbar
-    --mdc-snackbar-supporting-text-size: 1rem
-    --mdc-snackbar-supporting-text-line-height: 1.35rem
-    --mdc-snackbar-supporting-text-color: #fff
-    --mat-snack-bar-button-color: #fff
-
-    .mdc-snackbar__surface
-        border-radius: .75rem
-        box-shadow: 0 10px 24px rgba(0, 0, 0, .28)
-        opacity: .96
-        white-space: pre-line
-        word-break: break-word
-
-    .mdc-snackbar__surface
-        border-left: 5px solid rgba(255, 255, 255, .55)
-
-.app-snackbar--success
-    --mdc-snackbar-container-color: #{theme.$app-success}
-
-.app-snackbar--info
-    --mdc-snackbar-container-color: #{theme.$app-primary}
-
-.app-snackbar--error
-    --mdc-snackbar-container-color: #{theme.$app-error}
-
-// Backward compatibility (falls noch ältere panelClass-Namen verwendet werden)
-.msg-snackbar-success
-    @extend .app-snackbar
-    @extend .app-snackbar--success
-
-.msg-snackbar-info
-    @extend .app-snackbar
-    @extend .app-snackbar--info
-
-.msg-snackbar-error
-    @extend .app-snackbar
-    @extend .app-snackbar--error
-
-.footer
-    color: theme.$app-text-muted
-    text-align: center
-    padding-top: 10px
-    white-space: pre-wrap
-
-
-.a-tel, .a-mailto
-    color: theme.$app-text
-    text-decoration: none
-
-.border
-    border: solid 1px rgba(theme.$app-border, .95)
-
-.mat-mdc-tab-group
-    --mdc-secondary-navigation-tab-container-height: 46px
-
-    .mdc-tab
-        border-radius: .55rem .55rem 0 0
-
-    .mdc-tab--active .mdc-tab__text-label
-        color: theme.$app-primary-dark
-        font-weight: 700
-
-    .mdc-tab:focus-visible
-        outline: 2px solid rgba(theme.$app-primary, .5)
-        outline-offset: -2px
-
-.mat-mdc-chip-set .mdc-evolution-chip-set__chips
-    gap: .42rem
-
-.mat-mdc-chip,
-.mat-mdc-standard-chip
-    --mdc-chip-container-height: var(--app-control-height)
-    border-radius: var(--app-control-radius)
-    height: var(--app-control-height)
-    min-height: var(--app-control-height)
-    border: 1px solid var(--app-control-border)
-    background: var(--app-control-bg)
-    color: theme.$app-primary-deep
-    box-shadow: 0 4px 10px rgba(theme.$app-primary-deep, .12)
-    transition: transform .14s ease, box-shadow .14s ease, background-color .14s ease, border-color .14s ease
-
-    .mdc-evolution-chip__cell,
-    .mdc-evolution-chip__action--primary,
-    .mdc-evolution-chip__action--trailing
-        height: var(--app-control-height)
-        min-height: var(--app-control-height)
-
-    .mdc-evolution-chip__text-label,
-    .mat-mdc-chip-action-label
-        color: inherit
-        font-weight: 600
-        letter-spacing: .2px
-
-    &:hover
-        transform: translateY(-1px)
-        background: rgba(theme.$app-primary-light, .5)
-        border-color: rgba(theme.$app-primary, .35)
-        box-shadow: 0 6px 14px rgba(theme.$app-primary-deep, .18)
-
-    &:focus-within
-        outline: 2px solid rgba(theme.$app-primary, .55)
-        outline-offset: 2px
-
-.mat-mdc-standard-chip.mdc-evolution-chip--selected
-    background: theme.$app-primary-deep
-    border-color: rgba(theme.$app-primary-deep, .85)
-    color: #fff
-
-    .mdc-evolution-chip__text-label,
-    .mat-mdc-chip-remove,
-    .mat-icon
-        color: #fff
-
-.mat-mdc-button,
-.mat-mdc-outlined-button,
-.mat-mdc-unelevated-button,
-.mat-mdc-raised-button,
-.mat-mdc-icon-button,
-.mat-mdc-chip
-    border-radius: var(--app-control-radius) !important
-
-.mat-expansion-panel
-    border: 1px solid rgba(theme.$app-border, .9)
-    border-radius: .7rem
-    overflow: hidden
-
-.mat-mdc-paginator
-    border-top: 1px solid rgba(theme.$app-border, .9)
-    background-color: rgba(theme.$app-surface, .88)
-
-@media (max-width: 768px)
-    mat-toolbar
-        height: 52px
-
-        .title
-            font-size: 17px
-
-        img
-            width: 48px
-
-    .mat-mdc-card
-        border-radius: .85rem
-
-    .settings-card > .mat-mdc-card-content,
-    .settings-card mat-card-content
-        padding: var(--app-card-content-padding-mobile) !important
-
-    .mat-mdc-header-cell,
-    .mat-mdc-cell
-        font-size: .86rem
-
-    .breadcrumb
-        padding: .4rem .35rem
-
-        button
-            margin-right: 4px
-            min-height: 2.2rem
-
-@media (max-width: 575px)
-    .auswahl-button
-        padding-top: 20px
-
-.auswahl-button
-    white-space: nowrap
+    flex-direction: column
+    gap: .25rem

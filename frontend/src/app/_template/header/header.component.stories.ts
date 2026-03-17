@@ -54,7 +54,7 @@ const getBreadcrumbByPreset = (preset: 'kurz' | 'mittel' | 'lang') => {
 
 const meta: Meta<HeaderStoryArgs> = {
   title: 'Design System/Layout/App Header',
-  component: HeaderComponent,
+  component: ImrHeaderComponent,
   tags: ['autodocs'],
   parameters: {
     layout: 'fullscreen',

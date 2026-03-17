@@ -1,8 +1,14 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// theme.sass
+// Definiert ausschließlich das Material Design 3-Theme und die Hauptfarben.
+// Alle weiteren Design-Tokens (Abstände, Radien, komponentenspezifische Werte)
+// werden in imr-catalog.sass verwaltet.
+// ─────────────────────────────────────────────────────────────────────────────
 @use '@angular/material' as mat
 
 @include mat.core()
 
-
+// ── Material Design 3 Theme ───────────────────────────────────────────────────
 $blaulichtcloud-theme: mat.define-theme((
 	color: (
 		theme-type: light,
@@ -21,24 +27,39 @@ $blaulichtcloud-theme: mat.define-theme((
 @include mat.all-component-themes($blaulichtcloud-theme)
 @include mat.color-variants-backwards-compatibility($blaulichtcloud-theme)
 
+// ── Hauptfarben (werden in imr-catalog.sass zu CSS-Variablen) ─────────────────
+$imr-primary:        mat.get-theme-color($blaulichtcloud-theme, primary, 40)
+$imr-primary-dark:   mat.get-theme-color($blaulichtcloud-theme, primary, 30)
+$imr-primary-deep:   mat.get-theme-color($blaulichtcloud-theme, primary, 20)
+$imr-primary-light:  mat.get-theme-color($blaulichtcloud-theme, primary, 90)
+$imr-secondary:      mat.get-theme-color($blaulichtcloud-theme, tertiary, 40)
+$imr-secondary-light: mat.get-theme-color($blaulichtcloud-theme, tertiary, 90)
+$imr-warning:        #e4c01e85
+$imr-error:          mat.get-theme-color($blaulichtcloud-theme, error, 40)
+$imr-success:        mat.get-theme-color($blaulichtcloud-theme, tertiary, 40)
+$imr-background:     mat.get-theme-color($blaulichtcloud-theme, surface)
+$imr-surface:        mat.get-theme-color($blaulichtcloud-theme, surface-container)
+$imr-surface-variant: mat.get-theme-color($blaulichtcloud-theme, surface-container-high)
+$imr-border:         mat.get-theme-color($blaulichtcloud-theme, outline-variant)
+$imr-text:           mat.get-theme-color($blaulichtcloud-theme, on-surface)
+$imr-text-muted:     mat.get-theme-color($blaulichtcloud-theme, on-surface-variant)
 
-
-/* Variablen */
-$app-primary: mat.get-theme-color($blaulichtcloud-theme, primary, 40)
-$app-primary-dark: mat.get-theme-color($blaulichtcloud-theme, primary, 30)
-$app-primary-deep: mat.get-theme-color($blaulichtcloud-theme, primary, 20)
-$app-primary-light: mat.get-theme-color($blaulichtcloud-theme, primary, 90)
-$app-secondary: mat.get-theme-color($blaulichtcloud-theme, tertiary, 40)
-$app-secondary-light: mat.get-theme-color($blaulichtcloud-theme, tertiary, 90)
-$app-warning: #e4c01e85
-$app-error: mat.get-theme-color($blaulichtcloud-theme, error, 40)
-$app-success: mat.get-theme-color($blaulichtcloud-theme, tertiary, 40)
-$app-background: mat.get-theme-color($blaulichtcloud-theme, surface)
-$app-surface: mat.get-theme-color($blaulichtcloud-theme, surface-container)
-$app-surface-variant: mat.get-theme-color($blaulichtcloud-theme, surface-container-high)
-$app-border: mat.get-theme-color($blaulichtcloud-theme, outline-variant)
-$app-text: mat.get-theme-color($blaulichtcloud-theme, on-surface)
-$app-text-muted: mat.get-theme-color($blaulichtcloud-theme, on-surface-variant)
+// ── Backward-compatibility aliases (bestehende styles.sass-Referenzen) ────────
+$app-primary:        $imr-primary
+$app-primary-dark:   $imr-primary-dark
+$app-primary-deep:   $imr-primary-deep
+$app-primary-light:  $imr-primary-light
+$app-secondary:      $imr-secondary
+$app-secondary-light: $imr-secondary-light
+$app-warning:        $imr-warning
+$app-error:          $imr-error
+$app-success:        $imr-success
+$app-background:     $imr-background
+$app-surface:        $imr-surface
+$app-surface-variant: $imr-surface-variant
+$app-border:         $imr-border
+$app-text:           $imr-text
+$app-text-muted:     $imr-text-muted
 
 $app-page-max-width: 1600px
 

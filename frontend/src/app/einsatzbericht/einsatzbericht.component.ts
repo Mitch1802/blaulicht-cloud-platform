@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, FormGroupDirective, NgForm, ReactiveFormsModule, Validators } from '@angular/forms';
-import { HeaderComponent } from '../_template/header/header.component';
+import { ImrHeaderComponent } from '../imr-ui-library';
 import { ApiHttpService } from 'src/app/_service/api-http.service';
 import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
@@ -73,7 +73,7 @@ type EinsatzberichtDto = {
   standalone: true,
   selector: 'app-einsatzbericht',
   imports: [
-    HeaderComponent,
+    ImrHeaderComponent,
     ReactiveFormsModule,
     MatCardModule,
     MatFormFieldModule,

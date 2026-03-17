@@ -4,14 +4,14 @@ import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
-import { HeaderComponent } from '../_template/header/header.component';
+import { ImrHeaderComponent } from '../imr-ui-library';
 import { MatCardModule } from '@angular/material/card';
 import { Router, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
     selector: 'app-atemschutz',
-    imports: [HeaderComponent, MatCardModule, MatIconModule, RouterLink],
+    imports: [ImrHeaderComponent, MatCardModule, MatIconModule, RouterLink],
     templateUrl: './atemschutz.component.html',
     styleUrl: './atemschutz.component.sass'
 })

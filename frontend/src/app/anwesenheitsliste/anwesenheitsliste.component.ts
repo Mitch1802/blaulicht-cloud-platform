@@ -13,7 +13,7 @@ import { MatIcon } from '@angular/material/icon';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 
-import { HeaderComponent } from '../_template/header/header.component';
+import { ImrHeaderComponent } from '../imr-ui-library';
 import { ApiHttpService } from '../_service/api-http.service';
 import { AuthSessionService } from '../_service/auth-session.service';
 import { CollectionUtilsService } from '../_service/collection-utils.service';
@@ -21,15 +21,15 @@ import { NavigationService } from '../_service/navigation.service';
 import { UiMessageService } from '../_service/ui-message.service';
 import { IAnwesenheitsliste } from '../_interface/anwesenheitsliste';
 import { IMitglied } from '../_interface/mitglied';
-import { UiPageLayoutComponent, UiSectionCardComponent } from '../ui-library';
+import { ImrPageLayoutComponent, ImrSectionCardComponent } from '../imr-ui-library';
 import { DateInputMaskDirective } from '../_directive/date-input-mask.directive';
 
 @Component({
   selector: 'app-anwesenheitsliste',
   imports: [
-    HeaderComponent,
-    UiPageLayoutComponent,
-    UiSectionCardComponent,
+    ImrHeaderComponent,
+    ImrPageLayoutComponent,
+    ImrSectionCardComponent,
     FormsModule,
     ReactiveFormsModule,
     MatFormField,
