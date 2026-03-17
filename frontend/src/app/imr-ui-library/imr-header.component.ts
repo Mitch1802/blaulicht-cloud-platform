@@ -7,6 +7,24 @@ import { AuthSessionService } from '../_service/auth-session.service';
 import { environment } from 'src/environments/environment';
 
 /**
+ * Breadcrumb-Eintrag für `<imr-header>`.
+ * Unterstützt sowohl `kuerzel`/`link` (NavigationService) als auch
+ * `label`/`url` (alternative Konvention mancher Komponenten).
+ */
+export interface ImrBreadcrumbItem {
+  /** Anzeigetext des Breadcrumb-Eintrags (primär) */
+  kuerzel?: string;
+  /** Anzeigetext des Breadcrumb-Eintrags (alternativ) */
+  label?: string;
+  /** Navigations-URL (primär) */
+  link?: string | null;
+  /** Navigations-URL (alternativ) */
+  url?: string | null;
+  /** Laufende Nummer (optional, von NavigationService gesetzt) */
+  number?: number;
+}
+
+/**
  * `<imr-header>`
  *
  * Haupt-Header der Anwendung basierend auf Material Design 3 Toolbar.
@@ -58,7 +76,7 @@ export class ImrHeaderComponent {
   protected appTitle: string = environment.title;
 
   /** Breadcrumb-Einträge für die Navigationsleiste */
-  @Input() breadcrumb: any[] = [];
+  @Input() breadcrumb: ImrBreadcrumbItem[] = [];
 
   get hasBreadcrumb(): boolean {
     return Array.isArray(this.breadcrumb) && this.breadcrumb.length > 0;

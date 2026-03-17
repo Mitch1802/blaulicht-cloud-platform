@@ -197,7 +197,19 @@ Haupt-Header der Anwendung (Toolbar + Breadcrumb).
 
 | Input | Typ | Pflicht | Beschreibung |
 |-------|-----|---------|--------------|
-| `breadcrumb` | `any[]` | ❌ | Breadcrumb-Einträge mit `kuerzel`/`link` oder `label`/`url` Properties |
+| `breadcrumb` | `ImrBreadcrumbItem[]` | ❌ | Breadcrumb-Einträge für die Navigation |
+
+**`ImrBreadcrumbItem` Interface:**
+
+```typescript
+export interface ImrBreadcrumbItem {
+  kuerzel?: string;   // Anzeigetext (primär, von NavigationService)
+  label?: string;     // Anzeigetext (alternativ)
+  link?: string | null;  // Navigations-URL (primär)
+  url?: string | null;   // Navigations-URL (alternativ)
+  number?: number;    // Laufende Nummer (optional)
+}
+```
 
 ```html
 <imr-header [breadcrumb]="breadcrumb"></imr-header>
