@@ -5,7 +5,7 @@ import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
-import { HeaderComponent } from '../_template/header/header.component';
+import { ImrHeaderComponent } from '../imr-ui-library';
 import { MatCardModule } from '@angular/material/card';
 import { Router } from '@angular/router';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -33,7 +33,7 @@ Chart.register(ChartDataLabels);
 @Component({
   selector: 'app-fmd',
   imports: [
-    HeaderComponent,
+    ImrHeaderComponent,
     MatCardModule,
     MatTabsModule,
     FormsModule,

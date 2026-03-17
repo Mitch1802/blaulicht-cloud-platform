@@ -4,7 +4,7 @@ import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
-import { HeaderComponent } from '../header/header.component';
+import { ImrHeaderComponent } from '../../imr-ui-library';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
 import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
@@ -25,7 +25,7 @@ import { DateInputMaskDirective } from '../../_directive/date-input-mask.directi
 @Component({
   selector: 'app--atemschutzgeraete',
   imports: [
-    HeaderComponent,
+    ImrHeaderComponent,
     MatCardModule,
     MatTabsModule,
     FormsModule,

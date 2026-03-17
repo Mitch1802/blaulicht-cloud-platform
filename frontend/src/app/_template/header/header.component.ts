@@ -1,31 +1,17 @@
-import { Component, Input, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { AuthSessionService } from 'src/app/_service/auth-session.service';
-import { MatToolbar } from '@angular/material/toolbar';
-import { MatIconButton } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { environment } from 'src/environments/environment';
+import { Component, Input } from '@angular/core';
+import { ImrHeaderComponent } from 'src/app/imr-ui-library/imr-header.component';
+import type { ImrBreadcrumbItem } from 'src/app/imr-ui-library/imr-header.component';
 
-
+/**
+ * @deprecated Verwende `<imr-header>` aus der IMR UI Library.
+ * Diese Komponente bleibt aus Backward-Compatibility-Gründen erhalten.
+ */
 @Component({
     selector: 'app-header',
-    templateUrl: './header.component.html',
-    styleUrls: ['./header.component.sass'],
-    imports: [
-        MatToolbar,
-        RouterLink,
-        MatIconButton,
-        MatIconModule
-    ]
+    standalone: true,
+    imports: [ImrHeaderComponent],
+    template: `<imr-header [breadcrumb]="breadcrumb"></imr-header>`,
 })
 export class HeaderComponent {
-  authSessionService = inject(AuthSessionService);
-
-  title: string = environment.title;
-
-  @Input() breadcrumb!: any;
-
-  get hasBreadcrumb(): boolean {
-    return Array.isArray(this.breadcrumb) && this.breadcrumb.length > 0;
-  }
+  @Input() breadcrumb: ImrBreadcrumbItem[] = [];
 }

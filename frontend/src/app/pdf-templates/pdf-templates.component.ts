@@ -21,7 +21,7 @@ import { MatButton } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { Router } from '@angular/router';
-import { HeaderComponent } from '../_template/header/header.component';
+import { ImrHeaderComponent } from '../imr-ui-library';
 import { FormatService } from '../helpers/format.service';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatIcon } from '@angular/material/icon';
@@ -33,7 +33,7 @@ import { MatOption, MatSelect } from '@angular/material/select';
 @Component({
   selector: 'app-pdf-templates',
   imports: [
-    HeaderComponent,
+    ImrHeaderComponent,
     MatCardModule,
     FormsModule,
     ReactiveFormsModule,

@@ -4,7 +4,7 @@ import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
-import { HeaderComponent } from '../header/header.component';
+import { ImrHeaderComponent } from '../../imr-ui-library';
 import { MatCardModule } from '@angular/material/card';
 import { IAtemschutzGeraetProtokoll } from 'src/app/_interface/atemschutz_geraet_protokoll';
 import { IMitglied } from 'src/app/_interface/mitglied';
@@ -18,7 +18,7 @@ import { MatInputModule } from '@angular/material/input';
 @Component({
   selector: 'app-atemschutz-dienstbuch',
   imports: [
-    HeaderComponent,
+    ImrHeaderComponent,
     MatCardModule,
     MatTableModule,
     MatSortModule,

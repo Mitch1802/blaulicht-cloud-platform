@@ -7,7 +7,7 @@ import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { Observable, forkJoin, map, of } from 'rxjs';
 
-import { HeaderComponent } from '../_template/header/header.component';
+import { ImrHeaderComponent } from '../imr-ui-library';
 import { IMitglied } from '../_interface/mitglied';
 import { IHomepageDienstposten } from '../_interface/homepage';
 import { ApiHttpService } from '../_service/api-http.service';
@@ -15,7 +15,7 @@ import { AuthSessionService } from '../_service/auth-session.service';
 import { CollectionUtilsService } from '../_service/collection-utils.service';
 import { NavigationService } from '../_service/navigation.service';
 import { UiMessageService } from '../_service/ui-message.service';
-import { UiPageLayoutComponent, UiSectionCardComponent } from '../ui-library';
+import { ImrPageLayoutComponent, ImrSectionCardComponent } from '../imr-ui-library';
 
 interface HomepageSectionTemplate {
   id: string;
@@ -87,9 +87,9 @@ const DEFAULT_PLAN_TEMPLATE: ReadonlyArray<HomepageSectionTemplate> = [
 @Component({
   selector: 'app-homepage',
   imports: [
-    HeaderComponent,
-    UiPageLayoutComponent,
-    UiSectionCardComponent,
+    ImrHeaderComponent,
+    ImrPageLayoutComponent,
+    ImrSectionCardComponent,
     FormsModule,
     ReactiveFormsModule,
     MatFormField,

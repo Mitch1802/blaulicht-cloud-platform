@@ -6,7 +6,7 @@ import { CollectionUtilsService } from 'src/app/_service/collection-utils.servic
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { MatCardModule } from '@angular/material/card';
-import { HeaderComponent } from '../_template/header/header.component';
+import { ImrHeaderComponent } from '../imr-ui-library';
 import { MatTabsModule } from '@angular/material/tabs';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IStammdaten } from '../_interface/stammdaten';
@@ -28,7 +28,7 @@ type RechnungPosition = {
   standalone: true,
   imports: [
     CommonModule,
-    HeaderComponent,
+    ImrHeaderComponent,
     MatCardModule,
     MatTabsModule,
     MatButtonModule,

@@ -10,7 +10,7 @@ import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
-import { HeaderComponent } from '../_template/header/header.component';
+import { ImrHeaderComponent } from '../imr-ui-library';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
 import { MatButton } from '@angular/material/button';
@@ -29,7 +29,7 @@ import { MatTabsModule } from '@angular/material/tabs';
     templateUrl: './user.component.html',
     styleUrls: ['./user.component.sass'],
     imports: [
-    HeaderComponent,
+    ImrHeaderComponent,
     MatCardModule,
     FormsModule,
     ReactiveFormsModule,

@@ -3,7 +3,7 @@ import { ApiHttpService } from '../_service/api-http.service';
 import { AuthSessionService } from '../_service/auth-session.service';
 import { NavigationService } from '../_service/navigation.service';
 import { UiMessageService } from '../_service/ui-message.service';
-import { HeaderComponent } from '../_template/header/header.component';
+import { ImrHeaderComponent } from '../imr-ui-library';
 import { MatCardModule } from '@angular/material/card';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -15,7 +15,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   styleUrls: ['./start.component.sass'],
   standalone: true,
   imports: [
-    HeaderComponent,
+    ImrHeaderComponent,
     MatCardModule,
     RouterLink,
     MatIconModule,

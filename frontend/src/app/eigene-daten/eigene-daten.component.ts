@@ -9,11 +9,11 @@ import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
 
 import { MatButton } from '@angular/material/button';
 import { MatInput } from '@angular/material/input';
-import { HeaderComponent } from '../_template/header/header.component';
+import { ImrHeaderComponent } from '../imr-ui-library';
 
 @Component({
   selector: 'app-eigene-daten',
-  imports: [HeaderComponent, MatCardModule, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatButton, MatInput, MatError],
+  imports: [ImrHeaderComponent, MatCardModule, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatButton, MatInput, MatError],
   templateUrl: './eigene-daten.component.html',
   styleUrl: './eigene-daten.component.sass'
 })

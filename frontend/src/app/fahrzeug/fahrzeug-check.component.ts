@@ -23,7 +23,7 @@ import { CollectionUtilsService } from 'src/app/_service/collection-utils.servic
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { IFahrzeugDetail } from "../_interface/fahrzeug";
-import { HeaderComponent } from "../_template/header/header.component";
+import { ImrHeaderComponent } from "../imr-ui-library";
 
 type ResultFG = FormGroup<{
   item_id: FormControl<string>;
@@ -52,7 +52,7 @@ type CheckRoomView = {
   standalone: true,
   selector: "app-fahrzeug-check",
   imports: [
-    HeaderComponent,
+    ImrHeaderComponent,
     CommonModule,
     ReactiveFormsModule,
     MatCardModule,
