@@ -4,10 +4,10 @@
   <ui-section-card title="Dienstpostenplan verwalten">
     <div class="ui-top-actions">
       <button mat-flat-button color="primary" type="button" (click)="addSection()" [disabled]="loading">
-        Sektion hinzufuegen
+        Sektion hinzufügen
       </button>
       <button mat-flat-button color="accent" type="button" (click)="speichern()" [disabled]="loading">
-        Alle Aenderungen speichern
+        Alle Änderungen speichern
       </button>
     </div>
 
@@ -41,10 +41,10 @@
             </div>
             <div class="app-col-12 app-col-lg-5 section-actions">
               <button mat-flat-button color="accent" type="button" (click)="addPosition(section)" [disabled]="loading">
-                Position hinzufuegen
+                Position hinzufügen
               </button>
               <button mat-flat-button color="warn" type="button" (click)="removeSection(section)" [disabled]="loading">
-                Sektion loeschen
+                Sektion löschen
               </button>
             </div>
           </header>
@@ -90,7 +90,7 @@
                     <div class="photo-upload-actions">
                       <label class="photo-upload-label" [class.disabled]="loading">
                         <input type="file" accept="image/*" (change)="onPhotoSelected(row, $event)" [disabled]="loading" />
-                        Foto waehlen
+                        Foto wählen
                       </label>
 
                       <button
@@ -100,7 +100,7 @@
                         (click)="removePhoto(row)"
                         [disabled]="loading"
                       >
-                        Foto loeschen
+                        Foto löschen
                       </button>
 
                       <button
@@ -120,7 +120,7 @@
                         (click)="removePosition(section, row)"
                         [disabled]="loading"
                       >
-                        Entfernen
+                        Position entfernen
                       </button>
                     </div>
 
