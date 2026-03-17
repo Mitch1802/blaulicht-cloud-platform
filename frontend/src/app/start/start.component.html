@@ -2,7 +2,26 @@
 
 <section class="start-page">
   <header class="welcome">
-    <h1>Hallo {{ display_name }}!</h1>
+    <div class="welcome-kicker">Blaulicht Cloud Platform</div>
+    <div class="welcome-main">
+      <div>
+        <h1>Hallo {{ display_name }}!</h1>
+        <p class="welcome-copy">
+          {{ getVisibleModuleCount() }} Module in {{ categorizedItems.length }} Bereichen stehen aktuell für dich bereit.
+        </p>
+      </div>
+
+      <div class="welcome-stats" aria-hidden="true">
+        <div class="welcome-stat-card">
+          <span class="welcome-stat-label">Module</span>
+          <strong>{{ getVisibleModuleCount() }}</strong>
+        </div>
+        <div class="welcome-stat-card">
+          <span class="welcome-stat-label">Bereiche</span>
+          <strong>{{ categorizedItems.length }}</strong>
+        </div>
+      </div>
+    </div>
   </header>
 
   <section class="module-section">
@@ -11,33 +30,58 @@
     } @else {
       @for (category of categorizedItems; track category.name) {
         <section class="category-block">
-          <h3 class="category-title">{{ category.name }}</h3>
+          <div class="category-head">
+            <h3 class="category-title">{{ category.name }}</h3>
+            <span class="category-count">{{ category.items.length }} Module</span>
+          </div>
           <div class="module-grid">
             @for (item of category.items; track item) {
               @if (isPlannedItem(item)) {
-                <mat-card class="module-card planned">
+                <mat-card class="module-card planned" aria-disabled="true">
                   @if (showFreigeschaltetBadge(item)) {
                     <span class="user-count-badge" [matTooltip]="'Benutzer: ' + getFreigeschaltetCount(item)" matTooltipPosition="above">
                       {{ getFreigeschaltetCount(item) }}
                     </span>
                   }
                   <span class="planned-badge">GEPLANT</span>
-                  <mat-icon class="module-icon material-icons-outlined">{{ item.icon }}</mat-icon>
-                  <div class="module-title" [matTooltip]="item.modul" matTooltipPosition="above">{{ item.modul }}</div>
+                  <div class="module-icon-shell">
+                    <mat-icon class="module-icon material-icons-outlined">{{ item.icon }}</mat-icon>
+                  </div>
+                  <div class="module-card-body">
+                    <div class="module-title" [matTooltip]="item.modul" matTooltipPosition="above">{{ item.modul }}</div>
+                    <div class="module-meta">Noch nicht freigeschaltet</div>
+                  </div>
                 </mat-card>
               } @else {
-                <mat-card class="module-card" [class.admin-only]="isAdminOnly(item)" [routerLink]="item.routerlink">
-                  @if (showFreigeschaltetBadge(item)) {
-                    <span class="user-count-badge" [matTooltip]="'Benutzer: ' + getFreigeschaltetCount(item)" matTooltipPosition="above">
-                      {{ getFreigeschaltetCount(item) }}
-                    </span>
-                  }
-                  @if (isAdminOnly(item)) {
-                    <span class="admin-badge">ADMIN</span>
-                  }
-                  <mat-icon class="module-icon material-icons-outlined">{{ item.icon }}</mat-icon>
-                  <div class="module-title" [matTooltip]="item.modul" matTooltipPosition="above">{{ item.modul }}</div>
-                </mat-card>
+                <a
+                  class="module-card-link"
+                  [routerLink]="item.routerlink"
+                  [attr.aria-label]="'Modul öffnen: ' + item.modul"
+                >
+                  <mat-card class="module-card" [class.admin-only]="isAdminOnly(item)">
+                    @if (showFreigeschaltetBadge(item)) {
+                      <span class="user-count-badge" [matTooltip]="'Benutzer: ' + getFreigeschaltetCount(item)" matTooltipPosition="above">
+                        {{ getFreigeschaltetCount(item) }}
+                      </span>
+                    }
+                    @if (isAdminOnly(item)) {
+                      <span class="admin-badge">ADMIN</span>
+                    }
+                    <div class="module-icon-shell">
+                      <mat-icon class="module-icon material-icons-outlined">{{ item.icon }}</mat-icon>
+                    </div>
+                    <div class="module-card-body">
+                      <div class="module-title" [matTooltip]="item.modul" matTooltipPosition="above">{{ item.modul }}</div>
+                      <div class="module-meta">
+                        @if (isAdminOnly(item)) {
+                          Nur für Administration
+                        } @else {
+                          Direkt öffnen
+                        }
+                      </div>
+                    </div>
+                  </mat-card>
+                </a>
               }
             }
           </div>

@@ -8,6 +8,7 @@ import {
   ElementRef,
   inject,
 } from '@angular/core';
+import { A11yModule } from '@angular/cdk/a11y';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormControl,
@@ -23,7 +24,6 @@ import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
-import { NgStyle } from '@angular/common';
 import { MatButton } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -49,6 +49,7 @@ interface IVerleihungFormEintrag {
   selector: 'app-inventar',
   imports: [
     ImrHeaderComponent,
+    A11yModule,
     MatCardModule,
     FormsModule,
     ReactiveFormsModule,
@@ -57,7 +58,6 @@ interface IVerleihungFormEintrag {
     MatButton,
     MatInputModule,
     MatError,
-    NgStyle,
     MatAutocompleteModule,
     MatCheckboxModule,
     MatTableModule,
@@ -103,6 +103,8 @@ export class InventarComponent implements OnInit, AfterViewInit {
   rueckgabeModalOffen = false;
   rueckgabeArtikel: IInventar | null = null;
   rueckgabeVerleihungen: IInventarVerleihung[] = [];
+  private focusBeforeTransactionModal: HTMLElement | null = null;
+  private focusBeforeImageModal: HTMLElement | null = null;
 
   ausborgenForm = new FormGroup({
     an: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
@@ -255,6 +257,10 @@ export class InventarComponent implements OnInit, AfterViewInit {
       return;
     }
 
+    this.focusBeforeTransactionModal =
+      typeof document !== 'undefined' && document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
     this.ausborgenArtikel = element;
     this.ausborgenForm.reset({ an: '', anzahl: 1, bis: '' });
     this.ausborgenModalOffen = true;
@@ -264,6 +270,12 @@ export class InventarComponent implements OnInit, AfterViewInit {
     this.ausborgenModalOffen = false;
     this.ausborgenArtikel = null;
     this.ausborgenForm.reset({ an: '', anzahl: 1, bis: '' });
+
+    const focusTarget = this.focusBeforeTransactionModal;
+    this.focusBeforeTransactionModal = null;
+    if (focusTarget && typeof focusTarget.focus === 'function') {
+      focusTarget.focus();
+    }
   }
 
   openRueckgabeModal(element: IInventar): void {
@@ -273,6 +285,10 @@ export class InventarComponent implements OnInit, AfterViewInit {
       return;
     }
 
+    this.focusBeforeTransactionModal =
+      typeof document !== 'undefined' && document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
     this.rueckgabeArtikel = element;
     this.rueckgabeVerleihungen = verleihungen;
     this.rueckgabeForm.reset({ eintragIndex: 0, anzahl: 1 });
@@ -284,6 +300,12 @@ export class InventarComponent implements OnInit, AfterViewInit {
     this.rueckgabeArtikel = null;
     this.rueckgabeVerleihungen = [];
     this.rueckgabeForm.reset({ eintragIndex: 0, anzahl: 1 });
+
+    const focusTarget = this.focusBeforeTransactionModal;
+    this.focusBeforeTransactionModal = null;
+    if (focusTarget && typeof focusTarget.focus === 'function') {
+      focusTarget.focus();
+    }
   }
 
   onRueckgabeAuswahlChange(): void {
@@ -895,12 +917,25 @@ export class InventarComponent implements OnInit, AfterViewInit {
 
   openModal(): void {
     const modal: any = document.getElementById('myModal');
-    if (modal) modal.style.display = 'block';
+    if (modal) {
+      this.focusBeforeImageModal =
+        typeof document !== 'undefined' && document.activeElement instanceof HTMLElement
+          ? document.activeElement
+          : null;
+      modal.style.display = 'block';
+      modal.focus();
+    }
   }
 
   closeModal(): void {
     const modal: any = document.getElementById('myModal');
     if (modal) modal.style.display = 'none';
+
+    const focusTarget = this.focusBeforeImageModal;
+    this.focusBeforeImageModal = null;
+    if (focusTarget && typeof focusTarget.focus === 'function') {
+      focusTarget.focus();
+    }
   }
 
   /** Nach Create/Update Formular, UI & File-Input zurücksetzen */

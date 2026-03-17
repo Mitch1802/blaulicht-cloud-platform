@@ -137,10 +137,20 @@
 </imr-page-layout>
 
 @if (photoModalOpen && photoModalUrl) {
-  <div class="photo-modal-backdrop" (click)="closePhotoPreview()">
-    <section class="photo-modal" role="dialog" aria-modal="true" aria-label="Bildvorschau" (click)="$event.stopPropagation()">
+  <div class="photo-modal-backdrop" (click)="closePhotoPreview()" (keydown.escape)="closePhotoPreview()">
+    <section
+      class="photo-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="photo-modal-title"
+      cdkTrapFocus
+      [cdkTrapFocusAutoCapture]="true"
+      tabindex="-1"
+      (click)="$event.stopPropagation()"
+      (keydown.escape)="closePhotoPreview()"
+    >
       <header class="photo-modal-head">
-        <h3>Bildvorschau</h3>
+        <h3 id="photo-modal-title">Bildvorschau</h3>
         <button mat-flat-button color="primary" type="button" (click)="closePhotoPreview()">Schliessen</button>
       </header>
 

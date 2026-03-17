@@ -10,7 +10,7 @@ import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
 import { MatSelect } from '@angular/material/select';
-import { NgStyle } from '@angular/common';
+import { A11yModule } from '@angular/cdk/a11y';
 import { MatOption } from '@angular/material/core';
 import { MatButton } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
@@ -38,7 +38,7 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
     MatInputModule,
     MatIcon,
     MatError,
-    NgStyle,
+    A11yModule,
     MatAutocompleteModule,
     MatTableModule,
     MatPaginatorModule,
@@ -82,7 +82,17 @@ export class NewsComponent implements OnInit {
   filePfad = '';
   fileFound = false;
   btnUploadStatus = false;
+  imageModalOpen = false;
   private selectedPreviewUrl = '';
+  private focusBeforePhotoModal: HTMLElement | null = null;
+
+  get filteredNewsCount(): number {
+    return this.newsDataSource.filteredData.length;
+  }
+
+  private normalizeFilterValue(value: string): string {
+    return String(value || '').trim().toLowerCase();
+  }
 
   formAuswahl = new FormGroup({
     news: new FormControl<number | ''>('')
@@ -441,6 +451,7 @@ export class NewsComponent implements OnInit {
       this.fileFound = false;
       this.fileName = '';
       this.filePfad = '';
+      this.imageModalOpen = false;
       return;
     }
     const sizeKB = Math.round(file.size / 1024);
@@ -460,13 +471,30 @@ export class NewsComponent implements OnInit {
   }
 
   openModal(): void {
-    const modal: any = document.getElementById('myModal');
-    if (modal) modal.style.display = 'block';
+    if (!this.fileFound) {
+      return;
+    }
+    this.focusBeforePhotoModal = document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null;
+    this.imageModalOpen = true;
   }
 
   closeModal(): void {
-    const modal: any = document.getElementById('myModal');
-    if (modal) modal.style.display = 'none';
+    if (!this.imageModalOpen) {
+      return;
+    }
+    this.imageModalOpen = false;
+    setTimeout(() => {
+      this.focusBeforePhotoModal?.focus();
+      this.focusBeforePhotoModal = null;
+    }, 0);
+  }
+
+  closeModalIfBackdrop(event: MouseEvent): void {
+    if (event.target === event.currentTarget) {
+      this.closeModal();
+    }
   }
 
   newsfeedOeffnen(): void {
@@ -474,7 +502,7 @@ export class NewsComponent implements OnInit {
   }
 
   applyFilter(value: string): void {
-    this.newsDataSource.filter = (value || '').trim().toLowerCase();
+    this.newsDataSource.filter = this.normalizeFilterValue(value);
     this.newsDataSource.paginator?.firstPage();
   }
 
@@ -487,6 +515,7 @@ export class NewsComponent implements OnInit {
     this.fileName = '';
     this.filePfad = '';
     this.fileFound = false;
+    this.imageModalOpen = false;
     if (this.selectedPreviewUrl) {
       URL.revokeObjectURL(this.selectedPreviewUrl);
       this.selectedPreviewUrl = '';

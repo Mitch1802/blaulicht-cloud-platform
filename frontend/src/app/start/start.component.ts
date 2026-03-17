@@ -267,4 +267,8 @@ export class StartComponent implements OnInit {
     const raw = String(item?.kategorie ?? item?.category ?? '').trim();
     return raw || 'Allgemein';
   }
+
+  getVisibleModuleCount(): number {
+    return this.categorizedItems.reduce((sum, category) => sum + category.items.length, 0);
+  }
 }

@@ -65,7 +65,8 @@ section[class$='-page'],
 
 // Section-Card
 .ui-card,
-.settings-card
+.settings-card,
+.section-card
     @extend .imr-card
 
 .ui-card__head,
@@ -74,13 +75,20 @@ section[class$='-page'],
 
 .ui-card__content,
 .settings-card > .mat-mdc-card-content,
-.settings-card mat-card-content
+.settings-card mat-card-content,
+.section-card > .mat-mdc-card-content,
+.section-card mat-card-content
     @extend .imr-card__content
+
+.section-card > .mat-mdc-card-header,
+.section-card mat-card-header
+    @extend .imr-card__head
 
 // Actions
 .ui-top-actions,
 .top-actions,
-.actions-row
+.actions-row,
+.actions-top
     @extend .imr-top-actions
 
 .ui-actions,

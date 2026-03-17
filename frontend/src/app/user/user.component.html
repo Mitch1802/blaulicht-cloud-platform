@@ -8,6 +8,10 @@
   <mat-card class="settings-card">
     <div class="section-head">
       <h2>Benutzer verwalten</h2>
+      <div class="section-head-meta">
+        <span class="table-status-badge">{{ benutzerCount }} Benutzer</span>
+        <span class="table-status-badge">{{ rollenCount }} Rollen</span>
+      </div>
     </div>
 
     <mat-card-content>
@@ -16,15 +20,6 @@
         <mat-tab label="Benutzer">
           @if (formModul.disabled) {
           <div class="top-actions">
-            <mat-form-field class="filter-field">
-              <mat-label>Filter</mat-label>
-              <input
-                matInput
-                #filterInput
-                (input)="applyFilter(filterInput.value)"
-                placeholder="Suchen..."
-              />
-            </mat-form-field>
             <button mat-flat-button color="accent" (click)="neueDetails()" type="button">
               Hinzufügen
             </button>
@@ -32,6 +27,22 @@
           }
 
           <div class="table-wrap" [hidden]="!formModul.disabled">
+            <div class="table-toolbar">
+              <mat-form-field class="filter-field" appearance="outline">
+                <mat-label>Filter</mat-label>
+                <input
+                  matInput
+                  #filterInput
+                  (input)="applyFilter(filterInput.value)"
+                  placeholder="Name, Mitglied oder Rolle"
+                />
+                <mat-icon matSuffix>search</mat-icon>
+              </mat-form-field>
+              <span class="table-status-badge" [class.warn]="filteredBenutzerCount === 0">
+                Sichtbar {{ filteredBenutzerCount }} / {{ benutzerCount }}
+              </span>
+            </div>
+
             <table mat-table [dataSource]="dataSource" matSort>
               <ng-container matColumnDef="username">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Benutzername</th>
@@ -55,13 +66,14 @@
               </ng-container>
 
               <ng-container matColumnDef="actions">
-                <th mat-header-cell *matHeaderCellDef>Aktionen</th>
+                <th mat-header-cell *matHeaderCellDef class="table-actions-head">Aktionen</th>
                 <td mat-cell *matCellDef="let element" class="ui-action-cell">
                   <button
                     mat-flat-button
                     class="ui-action-btn"
                     color="primary"
                     (click)="auswahlBearbeiten(element)"
+                    [attr.aria-label]="'Benutzer ' + element.username + ' bearbeiten'"
                   >
                     <mat-icon class="m-0">edit</mat-icon>
                   </button>
@@ -70,6 +82,15 @@
 
               <tr mat-header-row *matHeaderRowDef="sichtbareSpaltenBenutzer"></tr>
               <tr mat-row *matRowDef="let row; columns: sichtbareSpaltenBenutzer"></tr>
+              <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell table-empty-cell" [attr.colspan]="sichtbareSpaltenBenutzer.length">
+                  <div class="table-empty-state compact">
+                    <mat-icon class="table-empty-icon">person_search</mat-icon>
+                    <span class="table-empty-title">Keine Benutzer gefunden</span>
+                    <span class="table-empty-copy">Bitte Filter anpassen oder neuen Benutzer anlegen.</span>
+                  </div>
+                </td>
+              </tr>
             </table>
 
             <mat-paginator
@@ -224,6 +245,10 @@
             </button>
           </div>
           <div class="table-wrap rollen-matrix-wrap">
+            <div class="table-toolbar">
+              <span class="table-status-badge">{{ benutzerCount }} Benutzer</span>
+              <span class="table-status-badge">{{ rollenCount }} Rollen</span>
+            </div>
             <table mat-table [dataSource]="benutzer" class="rollen-matrix-table">
               <ng-container matColumnDef="benutzer">
                 <th mat-header-cell *matHeaderCellDef>Benutzer</th>
@@ -249,6 +274,15 @@
 
               <tr mat-header-row *matHeaderRowDef="rollenUebersichtSpalten"></tr>
               <tr mat-row *matRowDef="let row; columns: rollenUebersichtSpalten"></tr>
+              <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell table-empty-cell" [attr.colspan]="rollenUebersichtSpalten.length">
+                  <div class="table-empty-state compact">
+                    <mat-icon class="table-empty-icon">groups</mat-icon>
+                    <span class="table-empty-title">Keine Rollenübersicht verfügbar</span>
+                    <span class="table-empty-copy">Es wurden noch keine Benutzer geladen.</span>
+                  </div>
+                </td>
+              </tr>
             </table>
           </div>
         </mat-tab>

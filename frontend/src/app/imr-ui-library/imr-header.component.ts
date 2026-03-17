@@ -41,10 +41,14 @@ export interface ImrBreadcrumbItem {
   imports: [MatToolbar, RouterLink, MatIconButton, MatIconModule],
   template: `
     <mat-toolbar class="imr-header-toolbar">
-      <img class="imr-header-logo" src="../assets/images/icon.svg" alt="Logo" routerLink="/start" />
-      <span class="title imr-header-title" routerLink="/start">{{ appTitle }}</span>
+      <a class="imr-header-logo-link" routerLink="/start" aria-label="Zur Startseite">
+        <img class="imr-header-logo" src="../assets/images/icon.svg" alt="Blaulicht Cloud Logo" />
+      </a>
+      <a class="title imr-header-title imr-header-title-link" routerLink="/start" aria-label="Zur Startseite">
+        {{ appTitle }}
+      </a>
       <span class="spacer"></span>
-      <button class="imr-header-logout" mat-icon-button (click)="authService.abmelden()">
+      <button class="imr-header-logout" mat-icon-button type="button" aria-label="Abmelden" (click)="authService.abmelden()">
         <mat-icon>logout</mat-icon>
       </button>
     </mat-toolbar>

@@ -98,14 +98,19 @@ a
     &:hover
         color: theme.$imr-primary-dark
 
-button, a, .link-card, .link-card *
+button,
+[role='button'],
+a,
+.link-card
     cursor: pointer
+
+.link-card *
+    cursor: inherit
 
 p
     cursor: default
 
 h1
-    text-align: center
     color: theme.$imr-primary-dark
 
 .footer
@@ -151,6 +156,60 @@ mat-toolbar
 
     mat-icon
         color: white
+
+.imr-header-toolbar
+    padding-inline: .65rem .85rem
+
+.imr-header-logo-link
+    display: inline-flex
+    align-items: center
+    justify-content: center
+    border-radius: .5rem
+    text-decoration: none
+
+    &:focus-visible
+        outline: 2px solid rgba(255, 255, 255, .72)
+        outline-offset: 2px
+
+.imr-header-logo
+    width: 42px
+    height: 42px
+    border-radius: .5rem
+    object-fit: contain
+
+.imr-header-title
+    margin-left: .7rem
+    line-height: 1
+    white-space: nowrap
+
+.imr-header-title-link
+    text-decoration: none
+    color: #fff !important
+
+    &:hover
+        color: #fff !important
+        opacity: .86
+
+    &:focus-visible
+        outline: 2px solid rgba(255, 255, 255, .72)
+        outline-offset: 2px
+        border-radius: .25rem
+
+.imr-header-logout
+    color: white
+    margin-left: .35rem
+    width: 38px
+    height: 38px
+    padding: 0
+
+    mat-icon
+        font-size: 20px
+        width: 20px
+        height: 20px
+
+.imr-header-stepper-wrap
+    padding: .42rem .55rem
+    background: transparent
 
 // ── Buttons ──────────────────────────────────────────────────────────────────
 .mat-mdc-button,
@@ -302,8 +361,9 @@ mat-card
 .mat-mdc-card
     border-radius: var(--imr-card-radius)
     border: 1px solid var(--imr-card-border)
-    background-color: var(--imr-card-bg)
+    background: linear-gradient(180deg, rgba(theme.$imr-surface, .98), var(--imr-card-bg))
     box-shadow: var(--imr-card-shadow)
+    overflow: hidden
 
 .mat-mdc-card-title
     padding-bottom: 12px
@@ -330,9 +390,26 @@ mat-form-field,
     width: 100%
 
 .mat-mdc-form-field
+    .mat-mdc-text-field-wrapper
+        border-radius: .85rem
+        background: linear-gradient(180deg, rgba(theme.$imr-surface, .86), rgba(theme.$imr-surface-variant, .34))
+        transition: background-color .16s ease, box-shadow .16s ease, border-color .16s ease
+
+    &:hover .mat-mdc-text-field-wrapper
+        background: linear-gradient(180deg, rgba(theme.$imr-surface, .96), rgba(theme.$imr-surface-variant, .4))
+
+    &.mat-focused .mat-mdc-text-field-wrapper
+        background: linear-gradient(180deg, rgba(theme.$imr-surface, .98), rgba(theme.$imr-primary-light, .12))
+        box-shadow: 0 0 0 4px rgba(theme.$imr-primary-light, .34)
+
     .mat-mdc-form-field-hint-wrapper,
     .mat-mdc-form-field-error-wrapper
         min-height: 0
+        padding-inline: .25rem
+
+    .mat-mdc-form-field-icon-suffix,
+    .mat-mdc-form-field-icon-prefix
+        color: rgba(theme.$imr-primary-deep, .74)
 
     p
         width: 100%
@@ -371,13 +448,14 @@ mat-select
 
 // ── Tabellen ─────────────────────────────────────────────────────────────────
 .mat-mdc-table
-    background: transparent
-    border: 1px solid var(--imr-table-border)
-    border-radius: .8rem
+    background: rgba(theme.$imr-surface, .5)
+    border: 1px solid rgba(theme.$imr-border, .78)
+    border-radius: .85rem
     overflow: hidden
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .55)
 
     .mat-mdc-header-row
-        background: var(--imr-table-header-bg)
+        background: linear-gradient(90deg, #{theme.$imr-primary-deep}, #{theme.$imr-primary-dark})
         border-bottom: 1px solid rgba(theme.$imr-primary-deep, .95)
 
     .mat-mdc-header-cell
@@ -385,6 +463,11 @@ mat-select
         font-weight: 700
         letter-spacing: .2px
         font-size: .9rem
+        padding: .85rem .9rem
+
+    .mat-mdc-cell
+        padding: .85rem .9rem
+        border-bottom: 1px solid rgba(theme.$imr-border, .52)
 
     .mat-mdc-row
         transition: background-color .14s ease
@@ -394,6 +477,9 @@ mat-select
 
         &:hover
             background-color: var(--imr-table-row-hover-bg)
+
+        &:last-child .mat-mdc-cell
+            border-bottom: 0
 
 // ── Chips ────────────────────────────────────────────────────────────────────
 .mat-mdc-chip-set .mdc-evolution-chip-set__chips
@@ -467,7 +553,8 @@ mat-select
 // ── Paginator ────────────────────────────────────────────────────────────────
 .mat-mdc-paginator
     border-top: 1px solid rgba(theme.$imr-border, .9)
-    background-color: rgba(theme.$imr-surface, .88)
+    background-color: transparent
+    padding-top: .25rem
 
 // ── Snackbar ─────────────────────────────────────────────────────────────────
 .app-snackbar
@@ -590,12 +677,47 @@ mat-list-item span span
     display: flex
     align-items: center
     justify-content: space-between
-    padding: 1rem 1rem 0
+    gap: .75rem
+    padding: 1rem 1rem .85rem
+    margin-bottom: .15rem
+    background: linear-gradient(180deg, rgba(theme.$imr-primary-light, .18), rgba(theme.$imr-surface, 0))
+    border-bottom: 1px solid rgba(theme.$imr-border, .78)
 
-    h2
+    h2,
+    .mat-mdc-card-title
         margin: 0
         color: theme.$imr-primary
         font-size: 1.1rem
+
+    .mat-mdc-card-title
+        padding-bottom: 0
+
+    .mat-mdc-card-header-text
+        margin: 0
+
+.section-head-meta
+    display: inline-flex
+    align-items: center
+    gap: .5rem
+
+.table-status-badge
+    display: inline-flex
+    align-items: center
+    min-height: 1.9rem
+    padding: 0 .7rem
+    border-radius: 999px
+    border: 1px solid rgba(theme.$imr-border, .86)
+    background: rgba(theme.$imr-primary-light, .26)
+    color: rgba(theme.$imr-primary-deep, .88)
+    font-size: .73rem
+    font-weight: 700
+    letter-spacing: .04em
+    text-transform: uppercase
+
+    &.warn
+        background: rgba(theme.$imr-error, .14)
+        border-color: rgba(theme.$imr-error, .42)
+        color: color-mix(in srgb, #{theme.$imr-error} 82%, #000 18%)
 
 .imr-card__content
     padding: var(--imr-card-padding) !important
@@ -603,6 +725,7 @@ mat-list-item span span
 // ── imr-top-actions ──────────────────────────────────────────────────────────
 .imr-top-actions
     display: flex
+    align-items: center
     gap: .6rem
     flex-wrap: wrap
     margin: .25rem 0 .8rem
@@ -620,6 +743,7 @@ mat-list-item span span
 // ── imr-form-actions ─────────────────────────────────────────────────────────
 .imr-form-actions
     display: flex
+    align-items: center
     flex-wrap: wrap
     gap: .6rem
     margin-bottom: .8rem
@@ -641,6 +765,11 @@ mat-list-item span span
 // ── imr-form-grid ────────────────────────────────────────────────────────────
 .imr-form-grid
     margin-top: .2rem
+    padding: .95rem
+    border: 1px solid rgba(theme.$imr-border, .82)
+    border-radius: .95rem
+    background: linear-gradient(180deg, rgba(theme.$imr-surface, .96), rgba(theme.$imr-primary-light, .08))
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .5)
 
 // ── imr-two-col-md ───────────────────────────────────────────────────────────
 .imr-two-col-md
@@ -653,7 +782,68 @@ mat-list-item span span
 // ── imr-table-wrap ───────────────────────────────────────────────────────────
 .imr-table-wrap
     overflow-x: auto
-    margin-top: .5rem
+    margin-top: .7rem
+    padding: .85rem .85rem .4rem
+    border: 1px solid rgba(theme.$imr-border, .86)
+    border-radius: 1rem
+    background: linear-gradient(180deg, rgba(theme.$imr-surface, .96), rgba(theme.$imr-surface-variant, .36))
+    box-shadow: 0 12px 26px rgba(theme.$imr-primary-dark, .06)
+
+    > .mat-mdc-form-field,
+    > mat-form-field,
+    > .filter-field
+        display: block
+        width: min(360px, 100%)
+        margin: 0 0 .7rem
+
+.table-toolbar
+    display: flex
+    align-items: flex-end
+    justify-content: space-between
+    gap: .6rem
+    margin: 0 0 .35rem
+
+    .filter-field,
+    > .mat-mdc-form-field,
+    > mat-form-field
+        width: min(360px, 100%)
+
+.table-actions-head,
+.mat-column-actions
+    width: 9.8rem
+    min-width: 9.8rem
+
+.table-empty-cell
+    padding: 1rem .5rem !important
+
+.table-empty-state
+    display: grid
+    justify-items: center
+    gap: .22rem
+    margin: .2rem 0 .45rem
+    padding: .9rem .75rem
+    border-radius: .85rem
+    border: 1px dashed rgba(theme.$imr-border, .88)
+    background: rgba(theme.$imr-surface, .9)
+    text-align: center
+
+    &.compact
+        margin-top: .6rem
+        padding: .75rem .65rem
+
+.table-empty-icon
+    width: 1.25rem
+    height: 1.25rem
+    font-size: 1.25rem
+    color: rgba(theme.$imr-primary, .75)
+
+.table-empty-title
+    font-weight: 700
+    color: rgba(theme.$imr-primary-deep, .9)
+
+.table-empty-copy
+    font-size: .84rem
+    color: rgba(theme.$imr-text-muted, .95)
 
 // ── imr-action-cell ──────────────────────────────────────────────────────────
 .imr-action-cell
@@ -729,16 +919,50 @@ td.imr-action-cell
 
 // ── imr-breadcrumb ───────────────────────────────────────────────────────────
 .imr-breadcrumb
+    width: min(var(--imr-page-max-width), 100%)
+    margin: 0 auto
     display: flex
-    flex-wrap: wrap
-    padding: .5rem
+    align-items: center
+    gap: .45rem
+    padding: .35rem .1rem
+    overflow-x: auto
+    white-space: nowrap
+    scrollbar-width: none
     background: var(--imr-breadcrumb-bg)
     border-bottom: 1px solid rgba(theme.$imr-border, .7)
 
-    button
-        margin-right: 5px
-        padding: 7px
-        min-width: 0
+    &::-webkit-scrollbar
+        display: none
+
+.breadcrumb-item
+    font-size: .92rem
+    font-weight: 600
+    color: theme.$imr-primary-deep
+
+.breadcrumb-link
+    text-decoration: none
+    transition: opacity .16s ease
+
+    &:hover
+        opacity: .75
+
+    &:focus-visible
+        outline: 2px solid rgba(theme.$imr-primary-deep, .35)
+        outline-offset: 2px
+        border-radius: .25rem
+
+.breadcrumb-home
+    display: inline-flex
+    align-items: center
+
+    mat-icon
+        font-size: 18px
+        width: 18px
+        height: 18px
+
+.breadcrumb-separator
+    color: theme.$imr-text-muted
+    opacity: .8
 
 // ── imr-lending (Leihe/Inventar-Panel) ───────────────────────────────────────
 .imr-lending-panel
@@ -784,36 +1008,49 @@ td.imr-action-cell
     align-items: center
     justify-content: center
     padding: 1rem
-    background: rgba(theme.$imr-primary-dark, .55)
+    background: rgba(theme.$imr-primary-dark, .5)
+    backdrop-filter: blur(6px)
 
 .imr-transaction-dialog
-    width: min(620px, 100%)
+    width: min(680px, 100%)
     max-height: calc(100vh - 2rem)
     overflow: auto
-    background: #fff
-    border-radius: .9rem
-    box-shadow: 0 16px 40px rgba(0, 0, 0, .28)
+    border-radius: 1rem
+    border: 1px solid rgba(theme.$imr-border, .86)
+    background: linear-gradient(180deg, rgba(theme.$imr-surface, .98), #fff)
+    box-shadow: 0 22px 52px rgba(0, 0, 0, .22)
     padding: 1rem
+    animation: imr-dialog-enter .18s ease-out
 
 .imr-transaction-head
     display: flex
     align-items: center
     justify-content: space-between
-    margin-bottom: .5rem
+    margin-bottom: .85rem
+    padding-bottom: .75rem
+    border-bottom: 1px solid rgba(theme.$imr-border, .78)
 
     h3
         margin: 0
         color: theme.$imr-primary
+        font-size: 1.08rem
 
 .imr-transaction-meta
     margin: .2rem 0
-    color: rgba(theme.$imr-primary-dark, .86)
+    padding: .7rem .8rem
+    border-radius: .75rem
+    border: 1px solid rgba(theme.$imr-border, .8)
+    background: rgba(theme.$imr-primary-light, .18)
+    color: rgba(theme.$imr-primary-dark, .9)
 
 .imr-transaction-form
     margin-top: .85rem
 
 .imr-transaction-note
     margin: .2rem 0 .8rem
+    padding: .7rem .8rem
+    border-radius: .75rem
+    background: rgba(theme.$imr-surface-variant, .52)
     font-size: .9rem
     color: rgba(theme.$imr-primary-dark, .84)
 
@@ -821,6 +1058,17 @@ td.imr-action-cell
     display: flex
     justify-content: flex-end
     gap: .6rem
+    margin-top: .9rem
+    padding-top: .85rem
+    border-top: 1px solid rgba(theme.$imr-border, .74)
+
+@keyframes imr-dialog-enter
+    from
+        opacity: 0
+        transform: translateY(10px) scale(.985)
+    to
+        opacity: 1
+        transform: translateY(0) scale(1)
 
 // ── imr-form-section ─────────────────────────────────────────────────────────
 .imr-form-section
@@ -954,6 +1202,9 @@ td.imr-action-cell
 .text-end
     text-align: end
 
+.filter-field
+    width: min(360px, 100%)
+
 .m-0
     margin: 0 !important
 
@@ -1076,6 +1327,22 @@ td.imr-action-cell
         h2
             font-size: 1rem
 
+    .imr-form-grid, .ui-form-grid, .form-grid
+        padding: .75rem
+
+    .table-toolbar
+        flex-direction: column
+        align-items: stretch
+
+        .filter-field,
+        > .mat-mdc-form-field,
+        > mat-form-field
+            width: 100%
+
+    .section-head-meta
+        width: 100%
+        justify-content: flex-start
+
     .imr-top-actions, .imr-form-actions,
     .ui-top-actions, .ui-actions, .top-actions, .form-actions, .actions-row
         button
@@ -1107,8 +1374,34 @@ td.imr-action-cell
         .title
             font-size: 17px
 
-        img
-            width: 48px
+    .imr-header-toolbar
+        padding-inline: .45rem .55rem
+
+    .imr-header-logo
+        width: 36px
+        height: 36px
+
+    .imr-header-title
+        margin-left: .45rem
+        font-size: .98rem
+
+    .imr-header-logout
+        width: 34px
+        height: 34px
+
+        mat-icon
+            font-size: 18px
+            width: 18px
+            height: 18px
+
+    .imr-header-stepper-wrap
+        padding: .35rem .4rem
+
+    .imr-breadcrumb
+        gap: .35rem
+
+    .breadcrumb-item
+        font-size: .86rem
 
     .mat-mdc-card
         border-radius: .85rem
@@ -1123,7 +1416,16 @@ td.imr-action-cell
     .mat-mdc-header-cell, .mat-mdc-cell
         font-size: .86rem
 
-    .imr-breadcrumb, .breadcrumb
+    .imr-breadcrumb
+        padding: .3rem .1rem
+
+    .imr-table-wrap, .ui-table-wrap, .table-wrap
+        padding: .75rem .75rem .35rem
+
+    .table-empty-cell
+        padding: .8rem .3rem !important
+
+    .breadcrumb
         padding: .4rem .35rem
 
         button

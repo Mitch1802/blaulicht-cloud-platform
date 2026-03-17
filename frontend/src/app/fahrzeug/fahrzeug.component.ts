@@ -82,6 +82,7 @@ export class FahrzeugComponent implements OnInit {
   fahrzeuge: IFahrzeugList[] = [];
   dataSource = new MatTableDataSource<IFahrzeugList>([]);
   sichtbareSpalten: string[] = ["name", "bezeichnung", "public_id", "actions"];
+  fahrzeugFilter = '';
   editorOpen = false;
   inventarEditorOpen = false;
   inventarAnsicht: "detail" | "kompakt" = "detail";
@@ -130,8 +131,30 @@ export class FahrzeugComponent implements OnInit {
     sessionStorage.setItem("PageNumber", "2");
     sessionStorage.setItem("Page2", "FZ");
     this.breadcrumb = this.navigationService.ladeBreadcrumb();
+    this.configureFahrzeugFilter();
     this.updateVisibleColumns();
     this.loadList();
+  }
+
+  private configureFahrzeugFilter(): void {
+    this.dataSource.filterPredicate = (row: IFahrzeugList, filter: string) => {
+      const haystack = `${row.name ?? ''} ${row.bezeichnung ?? ''} ${row.public_id ?? ''}`.toLowerCase();
+      return haystack.includes(filter);
+    };
+  }
+
+  private normalizeFilterValue(value: string): string {
+    return String(value ?? '').trim().toLowerCase();
+  }
+
+  applyFahrzeugFilter(value: string): void {
+    this.fahrzeugFilter = value;
+    this.dataSource.filter = this.normalizeFilterValue(value);
+    this.paginator?.firstPage();
+  }
+
+  get filteredFahrzeugCount(): number {
+    return this.dataSource.filteredData.length;
   }
 
   @HostListener("window:resize")
@@ -160,6 +183,7 @@ export class FahrzeugComponent implements OnInit {
       next: (res: unknown) => {
         this.fahrzeuge = (res as IFahrzeugList[]) ?? [];
         this.dataSource.data = this.fahrzeuge;
+        this.dataSource.filter = this.normalizeFilterValue(this.fahrzeugFilter);
 
         queueMicrotask(() => {
           if (this.paginator) this.dataSource.paginator = this.paginator;

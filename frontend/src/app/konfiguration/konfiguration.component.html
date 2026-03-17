@@ -8,6 +8,9 @@
   <mat-card class="settings-card">
     <div class="section-head">
       <h2>{{ title }}</h2>
+      <div class="section-head-meta">
+        <span class="table-status-badge">{{ roleCount }} Rollen</span>
+      </div>
     </div>
 
     <mat-card-content>
@@ -43,6 +46,11 @@
   <mat-card class="settings-card">
     <div class="section-head">
       <h2>{{ title2 }}</h2>
+      <div class="section-head-meta">
+        <span class="table-status-badge" [class.warn]="!hasConfigRecord">
+          {{ hasConfigRecord ? 'Datensatz vorhanden' : 'Noch kein Datensatz' }}
+        </span>
+      </div>
     </div>
 
     <mat-card-content>
@@ -177,6 +185,9 @@
   <mat-card class="settings-card">
     <div class="section-head">
       <h2>{{ title3 }}</h2>
+      <div class="section-head-meta">
+        <span class="table-status-badge">{{ filteredBackups.length }} / {{ backups.length }} Backups</span>
+      </div>
     </div>
 
     <mat-card-content>
@@ -202,15 +213,29 @@
         </button>
       </div>
 
+      @if (backups.length > 0) {
+      <div class="table-toolbar">
+        <mat-form-field class="filter-field" appearance="outline">
+          <mat-label>Backups filtern</mat-label>
+          <input
+            matInput
+            [(ngModel)]="backupFilter"
+            [ngModelOptions]="{ standalone: true }"
+            placeholder="Dateiname durchsuchen"
+          />
+        </mat-form-field>
+        <span class="table-status-badge">{{ filteredBackups.length }} sichtbar</span>
+      </div>
+
       <div class="table-wrap backup-table-wrap">
-        <table mat-table [dataSource]="backups">
+        <table mat-table [dataSource]="filteredBackups">
           <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef>Backup-Datei</th>
             <td mat-cell *matCellDef="let element" class="backup-name">{{ element.name }}</td>
           </ng-container>
 
           <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef>Aktionen</th>
+            <th mat-header-cell *matHeaderCellDef class="table-actions-head">Aktionen</th>
             <td mat-cell *matCellDef="let element" class="ui-action-cell">
               <button
                 mat-flat-button
@@ -249,9 +274,19 @@
           <tr mat-row *matRowDef="let row; columns: backupColumns"></tr>
         </table>
       </div>
-
-      @if (backups.length === 0) {
-        <p class="backup-empty">Keine Backups vorhanden.</p>
+      @if (filteredBackups.length === 0) {
+        <div class="table-empty-state compact">
+          <mat-icon class="table-empty-icon">search_off</mat-icon>
+          <div class="table-empty-title">Keine passenden Backups</div>
+          <div class="table-empty-copy">Passe den Filter an, um wieder Einträge anzuzeigen.</div>
+        </div>
+      }
+      } @else {
+        <div class="table-empty-state compact">
+          <mat-icon class="table-empty-icon">folder_off</mat-icon>
+          <div class="table-empty-title">Keine Backups vorhanden</div>
+          <div class="table-empty-copy">Erstelle ein erstes Backup, um Wiederherstellungen zu ermöglichen.</div>
+        </div>
       }
     </mat-card-content>
   </mat-card>
@@ -259,6 +294,9 @@
   <mat-card class="settings-card">
     <div class="section-head">
       <h2>Datei-Bereinigung</h2>
+      <div class="section-head-meta">
+        <span class="table-status-badge">{{ filteredCleanupFiles.length }} Treffer</span>
+      </div>
     </div>
 
     <mat-card-content>
@@ -317,11 +355,26 @@
         }
 
         @if (cleanupFiles.length > 0) {
+          <div class="table-toolbar">
+            <mat-form-field class="filter-field" appearance="outline">
+              <mat-label>Bereinigung filtern</mat-label>
+              <input
+                matInput
+                [(ngModel)]="cleanupFilter"
+                [ngModelOptions]="{ standalone: true }"
+                placeholder="Bereich oder Dateiname"
+              />
+            </mat-form-field>
+            <span class="table-status-badge">{{ filteredCleanupFiles.length }} sichtbar</span>
+          </div>
+
           <div class="table-wrap cleanup-table-wrap">
-            <table mat-table [dataSource]="cleanupFiles">
+            <table mat-table [dataSource]="filteredCleanupFiles">
               <ng-container matColumnDef="target">
                 <th mat-header-cell *matHeaderCellDef>Bereich</th>
-                <td mat-cell *matCellDef="let element">{{ element.targetLabel }}</td>
+                <td mat-cell *matCellDef="let element">
+                  <span class="table-status-badge">{{ element.targetLabel }}</span>
+                </td>
               </ng-container>
 
               <ng-container matColumnDef="filename">
@@ -333,8 +386,20 @@
               <tr mat-row *matRowDef="let row; columns: cleanupColumns"></tr>
             </table>
           </div>
+
+          @if (filteredCleanupFiles.length === 0) {
+            <div class="table-empty-state compact">
+              <mat-icon class="table-empty-icon">search_off</mat-icon>
+              <div class="table-empty-title">Keine Treffer für den aktuellen Filter</div>
+              <div class="table-empty-copy">Erweitere den Filter, um Dateien wieder einzublenden.</div>
+            </div>
+          }
         } @else if (cleanupSummary) {
-          <p class="cleanup-empty">Keine verwaisten Dateien gefunden.</p>
+          <div class="table-empty-state compact">
+            <mat-icon class="table-empty-icon">check_circle</mat-icon>
+            <div class="table-empty-title">Keine verwaisten Dateien gefunden</div>
+            <div class="table-empty-copy">Der gewählte Bereich ist aktuell sauber.</div>
+          </div>
         }
       </section>
     </mat-card-content>

@@ -28,8 +28,24 @@
         <mat-card class="section-card">
           <mat-card-header>
             <mat-card-title>Fahrzeugliste</mat-card-title>
+            <div class="section-head-meta">
+              <span class="table-status-badge">{{ filteredFahrzeugCount }} / {{ fahrzeuge.length }} sichtbar</span>
+            </div>
           </mat-card-header>
           <mat-card-content>
+            <div class="table-toolbar">
+              <mat-form-field class="filter-field" appearance="outline">
+                <mat-label>Fahrzeuge filtern</mat-label>
+                <input
+                  #fahrzeugFilterInput
+                  matInput
+                  [value]="fahrzeugFilter"
+                  (input)="applyFahrzeugFilter(fahrzeugFilterInput.value)"
+                  placeholder="Name, Bezeichnung oder Public ID"
+                />
+              </mat-form-field>
+            </div>
+
             <div class="table-wrap">
               <table mat-table [dataSource]="dataSource" matSort>
                 <ng-container matColumnDef="name">
@@ -44,11 +60,13 @@
 
                 <ng-container matColumnDef="public_id">
                   <th mat-header-cell *matHeaderCellDef>Public ID</th>
-                  <td mat-cell *matCellDef="let row">{{ row.public_id }}</td>
+                  <td mat-cell *matCellDef="let row">
+                    <span class="table-status-badge">{{ row.public_id || 'Keine ID' }}</span>
+                  </td>
                 </ng-container>
 
                 <ng-container matColumnDef="actions">
-                  <th mat-header-cell *matHeaderCellDef>Aktionen</th>
+                  <th mat-header-cell *matHeaderCellDef class="table-actions-head">Aktionen</th>
                   <td mat-cell *matCellDef="let row" class="ui-action-cell">
                     <div class="list-actions">
                       <button
@@ -57,6 +75,7 @@
                         color="primary"
                         type="button"
                         (click)="editFahrzeug(row)"
+                        [attr.aria-label]="'Fahrzeug bearbeiten: ' + row.name"
                       >
                         <mat-icon>edit</mat-icon>
                       </button>
@@ -67,6 +86,7 @@
                         color="accent"
                         type="button"
                         (click)="openInventarFromList(row)"
+                        [attr.aria-label]="'Inventar öffnen: ' + row.name"
                       >
                         <mat-icon>inventory_2</mat-icon>
                       </button>
@@ -76,6 +96,7 @@
                         class="ui-action-btn"
                         color="primary"
                         [routerLink]="['/fahrzeuge', row.id, 'check']"
+                        [attr.aria-label]="'Checkliste öffnen: ' + row.name"
                       >
                         <mat-icon>checklist</mat-icon>
                       </a>
@@ -85,6 +106,15 @@
 
                 <tr mat-header-row *matHeaderRowDef="sichtbareSpalten"></tr>
                 <tr mat-row *matRowDef="let row; columns: sichtbareSpalten"></tr>
+                <tr class="mat-row" *matNoDataRow>
+                  <td class="mat-cell table-empty-cell" [attr.colspan]="sichtbareSpalten.length">
+                    <div class="table-empty-state compact">
+                      <mat-icon class="table-empty-icon">directions_car</mat-icon>
+                      <div class="table-empty-title">Keine Fahrzeuge gefunden</div>
+                      <div class="table-empty-copy">Passe den Filter an oder lege ein neues Fahrzeug an.</div>
+                    </div>
+                  </td>
+                </tr>
               </table>
             </div>
 

@@ -84,6 +84,32 @@ export class UserComponent implements OnInit {
   private readonly mobileSpaltenBenutzer = ['username', 'rolle', 'actions'];
   sichtbareSpaltenBenutzer: string[] = [...this.desktopSpaltenBenutzer];
 
+  get benutzerCount(): number {
+    return this.benutzer.length;
+  }
+
+  get rollenCount(): number {
+    return this.rollenOhne.length;
+  }
+
+  get filteredBenutzerCount(): number {
+    return this.dataSource.filteredData.length;
+  }
+
+  private normalizeFilterValue(value: string): string {
+    return String(value || '').trim().toLowerCase();
+  }
+
+  private getBenutzerFilterText(user: IBenutzer): string {
+    const mitglied = this.mitglieder.find((m) => m.pkid === user.mitglied_id);
+    const mitgliedLabel = mitglied ? this.getMitgliedLabel(mitglied) : '';
+    const roles = this.normalizeRoleKeys(user?.roles)
+      .map((roleKey) => this.rollen.find((rolle: any) => rolle.key === roleKey)?.verbose_name || roleKey)
+      .join(' ');
+
+    return `${user.username} ${mitgliedLabel} ${roles}`.toLowerCase();
+  }
+
   private normalizeRoleKeys(raw: any): string[] {
     let values: any[] = [];
 
@@ -178,6 +204,12 @@ export class UserComponent implements OnInit {
     sessionStorage.setItem("Page2", "V_B");
     this.breadcrumb = this.navigationService.ladeBreadcrumb();
     this.formModul.disable();
+    this.dataSource.filterPredicate = (data: IBenutzer, filter: string) => {
+      if (!filter) {
+        return true;
+      }
+      return this.getBenutzerFilterText(data).includes(filter);
+    };
     this.observeViewport();
 
     forkJoin({
@@ -381,7 +413,7 @@ export class UserComponent implements OnInit {
   }
 
   applyFilter(value: string): void {
-    this.dataSource.filter = (value || '').trim().toLowerCase();
+    this.dataSource.filter = this.normalizeFilterValue(value);
     this.matPaginator?.firstPage();
   }
 

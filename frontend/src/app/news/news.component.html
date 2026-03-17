@@ -8,6 +8,10 @@
   <mat-card class="settings-card">
     <div class="section-head">
       <h2>News verwalten</h2>
+      <div class="section-head-meta">
+        <span class="table-status-badge">{{ newsArray.length }} News</span>
+        <span class="table-status-badge" [class.warn]="templateArray.length === 0">{{ templateArray.length }} Vorlagen</span>
+      </div>
     </div>
 
     <mat-card-content>
@@ -185,7 +189,7 @@
               </div>
               <div class="app-col-12 app-col-lg-6 mb-3">
                 <div class="upload-btn-wrapper">
-                  <mat-card [ngStyle]="{'background-color':!btnUploadStatus?'#0000001F':'#607d8b', 'color':!btnUploadStatus?'#00000061':'#ffffff'}">
+                  <mat-card class="upload-state-card" [class.is-ready]="btnUploadStatus">
                     <label>{{btnText}}</label>
                   </mat-card>
                   <input #fotoUpload type="file" id="fotoUpload" accept=".jpg,.jpeg,.png" (change)="onFotoSelected($event)" />
@@ -208,16 +212,21 @@
           <p class="empty">Noch keine News vorhanden.</p>
         } @else {
           <section class="news-table-wrap ui-table-wrap">
-            <mat-form-field class="filter-field" appearance="outline">
-              <mat-label>Suche</mat-label>
-              <input
-                matInput
-                type="text"
-                placeholder="Titel oder Typ filtern"
-                (keyup)="applyFilter($any($event.target).value)"
-              />
-              <mat-icon matSuffix>search</mat-icon>
-            </mat-form-field>
+            <div class="table-toolbar">
+              <mat-form-field class="filter-field" appearance="outline">
+                <mat-label>Suche</mat-label>
+                <input
+                  matInput
+                  type="text"
+                  placeholder="Titel oder Typ filtern"
+                  (keyup)="applyFilter($any($event.target).value)"
+                />
+                <mat-icon matSuffix>search</mat-icon>
+              </mat-form-field>
+              <span class="table-status-badge" [class.warn]="filteredNewsCount === 0">
+                Sichtbar {{ filteredNewsCount }} / {{ newsArray.length }}
+              </span>
+            </div>
 
             <table mat-table [dataSource]="newsDataSource" matSort class="news-table">
                 <ng-container matColumnDef="created_at">
@@ -246,7 +255,7 @@
                 </ng-container>
 
                 <ng-container matColumnDef="actions">
-                  <th mat-header-cell *matHeaderCellDef>Aktionen</th>
+                  <th mat-header-cell *matHeaderCellDef class="table-actions-head">Aktionen</th>
                   <td mat-cell *matCellDef="let element" class="ui-action-cell">
                     <button
                       mat-flat-button
@@ -254,6 +263,7 @@
                       color="primary"
                       type="button"
                       (click)="auswahlBearbeiten(element)"
+                      [attr.aria-label]="'News ' + element.title + ' bearbeiten'"
                     >
                       <mat-icon>edit</mat-icon>
                     </button>
@@ -263,6 +273,7 @@
                       color="warn"
                       type="button"
                       (click)="auswahlLoeschen(element.id)"
+                      [attr.aria-label]="'News ' + element.title + ' löschen'"
                     >
                       <mat-icon>delete</mat-icon>
                     </button>
@@ -272,7 +283,13 @@
                 <tr mat-header-row *matHeaderRowDef="sichtbareSpaltenNews"></tr>
                 <tr mat-row *matRowDef="let row; columns: sichtbareSpaltenNews"></tr>
                 <tr class="mat-row" *matNoDataRow>
-                  <td class="mat-cell" colspan="4">Keine News passend zur Suche gefunden.</td>
+                  <td class="mat-cell table-empty-cell" colspan="4">
+                    <div class="table-empty-state compact">
+                      <mat-icon class="table-empty-icon">search_off</mat-icon>
+                      <span class="table-empty-title">Keine News passend zur Suche</span>
+                      <span class="table-empty-copy">Passe den Filter an oder erstelle einen neuen Beitrag.</span>
+                    </div>
+                  </td>
                 </tr>
             </table>
 
@@ -291,8 +308,20 @@
 
 
 <!-- The Modal -->
-<div id="myModal" class="modal">
-  <span class="close" (click)="closeModal()">&times;</span>
-  <img class="modal-content" id="img01" [src]="filePfad">
-  <div id="caption">{{fileName}}</div>
+<div
+  id="myModal"
+  class="modal"
+  [class.is-open]="imageModalOpen"
+  [attr.aria-hidden]="!imageModalOpen"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Bildvorschau"
+  (click)="closeModalIfBackdrop($event)"
+  (keydown.escape)="closeModal()"
+>
+  <div class="modal-shell" cdkTrapFocus [cdkTrapFocusAutoCapture]="imageModalOpen">
+    <button type="button" class="close" (click)="closeModal()" aria-label="Bildvorschau schließen">&times;</button>
+    <img class="modal-content" id="img01" [src]="filePfad" [alt]="fileName || 'News Bildvorschau'">
+    <div id="caption">{{fileName}}</div>
+  </div>
 </div>

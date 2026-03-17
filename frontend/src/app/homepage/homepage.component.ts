@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { A11yModule } from '@angular/cdk/a11y';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButton } from '@angular/material/button';
@@ -87,6 +88,7 @@ const DEFAULT_PLAN_TEMPLATE: ReadonlyArray<HomepageSectionTemplate> = [
 @Component({
   selector: 'app-homepage',
   imports: [
+    A11yModule,
     ImrHeaderComponent,
     ImrPageLayoutComponent,
     ImrSectionCardComponent,
@@ -129,6 +131,7 @@ export class HomepageComponent implements OnInit, OnDestroy {
   private pendingPhotoUploads = new Map<string, File>();
   private pendingPhotoRemovals = new Set<string>();
   private pendingPhotoPreviewUrls = new Map<string, string>();
+  private focusBeforePhotoModal: HTMLElement | null = null;
 
   ngOnInit(): void {
     sessionStorage.setItem('PageNumber', '2');
@@ -544,6 +547,10 @@ export class HomepageComponent implements OnInit, OnDestroy {
       return;
     }
 
+    this.focusBeforePhotoModal =
+      typeof document !== 'undefined' && document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
     this.photoModalUrl = previewUrl;
     this.photoModalOpen = true;
   }
@@ -551,6 +558,12 @@ export class HomepageComponent implements OnInit, OnDestroy {
   closePhotoPreview(): void {
     this.photoModalOpen = false;
     this.photoModalUrl = null;
+
+    const target = this.focusBeforePhotoModal;
+    this.focusBeforePhotoModal = null;
+    if (target && typeof target.focus === 'function') {
+      target.focus();
+    }
   }
 
   getPhotoStatusText(row: HomepageRowDraft): string {

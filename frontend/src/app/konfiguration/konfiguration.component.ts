@@ -51,6 +51,8 @@ export class KonfigurationComponent implements OnInit {
   cleanupRunning = false;
   cleanupSummary = '';
   cleanupFiles: Array<{ target: string; targetLabel: string; filename: string }> = [];
+  backupFilter = '';
+  cleanupFilter = '';
 
   private readonly cleanupTargetLabels: Record<string, string> = {
     all: 'Alle Pfade',
@@ -60,6 +62,41 @@ export class KonfigurationComponent implements OnInit {
     einsatzberichte: 'Einsatzberichte',
     anwesenheitsliste: 'Anwesenheitsliste',
   };
+
+  private normalizeFilterValue(value: string): string {
+    return String(value ?? '').trim().toLowerCase();
+  }
+
+  get roleCount(): number {
+    return Array.isArray(this.rollen) ? this.rollen.length : 0;
+  }
+
+  get hasConfigRecord(): boolean {
+    return Boolean(this.formKonfig.controls['id'].value);
+  }
+
+  get filteredBackups(): Array<{ name: string }> {
+    const query = this.normalizeFilterValue(this.backupFilter);
+    if (!query) {
+      return this.backups;
+    }
+
+    return this.backups.filter((backup: any) =>
+      String(backup?.name ?? '').toLowerCase().includes(query),
+    );
+  }
+
+  get filteredCleanupFiles(): Array<{ target: string; targetLabel: string; filename: string }> {
+    const query = this.normalizeFilterValue(this.cleanupFilter);
+    if (!query) {
+      return this.cleanupFiles;
+    }
+
+    return this.cleanupFiles.filter((item) => {
+      const haystack = `${item.targetLabel} ${item.filename}`.toLowerCase();
+      return haystack.includes(query);
+    });
+  }
 
   formRolle = new FormGroup({
     rolle: new FormControl('')

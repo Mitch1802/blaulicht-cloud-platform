@@ -174,14 +174,7 @@
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
               <div class="upload-btn-wrapper">
-                <mat-card
-                  [ngStyle]="{
-                    'background-color': !btnUploadStatus
-                      ? '#0000001F'
-                      : '#607d8b',
-                    color: !btnUploadStatus ? '#00000061' : '#ffffff'
-                  }"
-                >
+                <mat-card class="upload-state-card" [class.is-ready]="btnUploadStatus">
                   <label>{{ btnText }}</label>
                 </mat-card>
                 <input
@@ -302,9 +295,19 @@
 
 @if (ausborgenModalOffen && ausborgenArtikel) {
 <div class="ui-transaction-backdrop" (click)="closeAusborgenModal()">
-  <section class="ui-transaction-dialog" (click)="$event.stopPropagation()">
+  <section
+    class="ui-transaction-dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="ausborgen-modal-title"
+    cdkTrapFocus
+    [cdkTrapFocusAutoCapture]="true"
+    tabindex="-1"
+    (click)="$event.stopPropagation()"
+    (keydown.escape)="closeAusborgenModal()"
+  >
     <header class="ui-transaction-head">
-      <h3>Inventar ausborgen</h3>
+      <h3 id="ausborgen-modal-title">Inventar ausborgen</h3>
       <button mat-icon-button type="button" (click)="closeAusborgenModal()" aria-label="Modal schließen">
         <mat-icon>close</mat-icon>
       </button>
@@ -351,9 +354,19 @@
 
 @if (rueckgabeModalOffen && rueckgabeArtikel) {
 <div class="ui-transaction-backdrop" (click)="closeRueckgabeModal()">
-  <section class="ui-transaction-dialog" (click)="$event.stopPropagation()">
+  <section
+    class="ui-transaction-dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="rueckgabe-modal-title"
+    cdkTrapFocus
+    [cdkTrapFocusAutoCapture]="true"
+    tabindex="-1"
+    (click)="$event.stopPropagation()"
+    (keydown.escape)="closeRueckgabeModal()"
+  >
     <header class="ui-transaction-head">
-      <h3>Inventar Rueckgabe</h3>
+      <h3 id="rueckgabe-modal-title">Inventar Rueckgabe</h3>
       <button mat-icon-button type="button" (click)="closeRueckgabeModal()" aria-label="Modal schliessen">
         <mat-icon>close</mat-icon>
       </button>
@@ -404,8 +417,18 @@
 }
 
 <!-- The Modal -->
-<div id="myModal" class="modal">
-  <span class="close" (click)="closeModal()">&times;</span>
-  <img class="modal-content" id="img01" [src]="filePfad" />
-  <div id="caption">{{ fileName }}</div>
+<div
+  id="myModal"
+  class="modal"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="inventar-image-title"
+  cdkTrapFocus
+  [cdkTrapFocusAutoCapture]="true"
+  tabindex="-1"
+  (keydown.escape)="closeModal()"
+>
+  <button class="close" type="button" aria-label="Bildvorschau schliessen" (click)="closeModal()">&times;</button>
+  <img class="modal-content" id="img01" [src]="filePfad" alt="Inventarbild Vorschau" />
+  <div id="inventar-image-title" class="modal-caption">{{ fileName }}</div>
 </div>
