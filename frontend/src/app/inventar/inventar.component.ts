@@ -22,20 +22,13 @@ import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
 import { MatButton } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Router } from '@angular/router';
-import { ImrHeaderComponent } from '../imr-ui-library';
+import { IMR_UI_COMPONENTS, ImrPaginatorComponent } from '../imr-ui-library';
 import { FormatService } from '../helpers/format.service';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatIcon } from '@angular/material/icon';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
-import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { DateInputMaskDirective } from '../_directive/date-input-mask.directive';
 
@@ -48,24 +41,15 @@ interface IVerleihungFormEintrag {
 @Component({
   selector: 'app-inventar',
   imports: [
-    ImrHeaderComponent,
     A11yModule,
-    MatCardModule,
     FormsModule,
     ReactiveFormsModule,
-    MatFormField,
-    MatLabel,
+    ...IMR_UI_COMPONENTS,
     MatButton,
     MatInputModule,
-    MatError,
-    MatAutocompleteModule,
-    MatCheckboxModule,
     MatTableModule,
     MatSortModule,
-    MatPaginatorModule,
-    MatSelectModule,
     MatTooltipModule,
-    MatIcon,
     DateInputMaskDirective,
   ],
   templateUrl: './inventar.component.html',
@@ -73,7 +57,7 @@ interface IVerleihungFormEintrag {
 })
 export class InventarComponent implements OnInit, AfterViewInit {
   @ViewChild('fotoUpload', { static: false }) fotoRef!: ElementRef<HTMLInputElement>;
-  @ViewChild(MatPaginator) paginator?: MatPaginator;
+  @ViewChild(ImrPaginatorComponent) paginator?: ImrPaginatorComponent;
   @ViewChild(MatSort) sort?: MatSort;
   private apiHttpService = inject(ApiHttpService);
   private authSessionService = inject(AuthSessionService);
@@ -978,7 +962,7 @@ export class InventarComponent implements OnInit, AfterViewInit {
 
   private bindTableControls(): void {
     if (this.paginator) {
-      this.dataSource.paginator = this.paginator;
+      this.dataSource.paginator = this.paginator.paginator;
     }
     if (this.sort) {
       this.dataSource.sort = this.sort;

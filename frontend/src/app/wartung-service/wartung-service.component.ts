@@ -1,11 +1,9 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { MatCardModule } from '@angular/material/card';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatButton } from '@angular/material/button';
-import { MatIcon } from '@angular/material/icon';
 
-import { ImrHeaderComponent } from '../imr-ui-library';
+import { ImrCardComponent, ImrHeaderComponent, ImrIconComponent } from '../imr-ui-library';
 import { IWartungServiceEintrag, IWartungServiceResponse, IWartungServiceSummary } from '../_interface/wartung_service';
 import { ApiHttpService } from 'src/app/_service/api-http.service';
 import { AuthSessionService } from 'src/app/_service/auth-session.service';
@@ -17,10 +15,10 @@ import { UiMessageService } from 'src/app/_service/ui-message.service';
   selector: 'app-wartung-service',
   imports: [
     ImrHeaderComponent,
-    MatCardModule,
+    ImrCardComponent,
+    ImrIconComponent,
     MatTableModule,
     MatButton,
-    MatIcon,
     RouterLink,
   ],
   templateUrl: './wartung-service.component.html',

@@ -7,41 +7,25 @@ import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
-import { MatSelect } from '@angular/material/select';
 import { A11yModule } from '@angular/cdk/a11y';
-import { MatOption } from '@angular/material/core';
 import { MatButton } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { ImrHeaderComponent } from '../imr-ui-library';
-import { MatIcon } from '@angular/material/icon';
+import { IMR_UI_COMPONENTS, ImrPaginatorComponent } from '../imr-ui-library';
 import { forkJoin } from 'rxjs';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 
 @Component({
   selector: 'app-news',
   imports: [
-    ImrHeaderComponent,
-    MatCardModule,
     FormsModule,
     ReactiveFormsModule,
-    MatFormField,
-    MatLabel,
-    MatSelect,
-    MatOption,
+    ...IMR_UI_COMPONENTS,
     MatButton,
     MatInputModule,
-    MatIcon,
-    MatError,
     A11yModule,
-    MatAutocompleteModule,
     MatTableModule,
-    MatPaginatorModule,
-    MatSortModule
+    MatSortModule,
   ],
   templateUrl: './news.component.html',
   styleUrl: './news.component.sass'
@@ -49,9 +33,9 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 export class NewsComponent implements OnInit {
   @ViewChild('fotoUpload', { static: false }) fotoRef!: ElementRef<HTMLInputElement>;
 
-  @ViewChild(MatPaginator) set matPaginator(p: MatPaginator | undefined) {
+  @ViewChild(ImrPaginatorComponent) set matPaginator(p: ImrPaginatorComponent | undefined) {
     if (p) {
-      this.newsDataSource.paginator = p;
+      this.newsDataSource.paginator = p.paginator;
     }
   }
 

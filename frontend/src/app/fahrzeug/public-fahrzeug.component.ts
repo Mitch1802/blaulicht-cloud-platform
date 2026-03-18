@@ -3,17 +3,11 @@ import { Component, OnInit, inject } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 
-import { MatCardModule } from "@angular/material/card";
 import { MatButtonModule } from "@angular/material/button";
-import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
-import { MatExpansionModule } from "@angular/material/expansion";
-import { MatDividerModule } from "@angular/material/divider";
-import { MatIconModule } from "@angular/material/icon";
-import { MatSelectModule } from "@angular/material/select";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
 
-import { ImrHeaderComponent } from "../imr-ui-library";
+import { IMR_UI_COMPONENTS } from "../imr-ui-library";
 import { ApiHttpService } from 'src/app/_service/api-http.service';
 import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
@@ -26,17 +20,11 @@ import { CheckStatus, CHECK_STATUS_OPTIONS } from "./fahrzeug.constants";
   standalone: true,
   selector: "app-public-fahrzeug",
   imports: [
+    ...IMR_UI_COMPONENTS,
     CommonModule,
-    ImrHeaderComponent,
     ReactiveFormsModule,
-    MatCardModule,
     MatButtonModule,
-    MatFormFieldModule,
     MatInputModule,
-    MatExpansionModule,
-    MatDividerModule,
-    MatIconModule,
-    MatSelectModule,
     MatProgressBarModule,
   ],
   templateUrl: "./public-fahrzeug.component.html",

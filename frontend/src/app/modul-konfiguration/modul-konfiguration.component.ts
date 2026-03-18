@@ -13,15 +13,10 @@ import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
-import { ImrHeaderComponent } from '../imr-ui-library';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
-import { MatSelect } from '@angular/material/select';
-import { MatOption } from '@angular/material/core';
+import { IMR_UI_COMPONENTS } from '../imr-ui-library';
 import { MatButton } from '@angular/material/button';
 import { MatInput } from '@angular/material/input';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatIcon } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { IPdfTemplate } from '../_interface/pdf_template';
 import jugendRegelConfig from '../jugend/config.json';
@@ -30,19 +25,12 @@ import startRegelConfig from '../start/konfig.json';
 @Component({
   selector: 'app-modul-konfiguration',
   imports: [
-    ImrHeaderComponent,
-    MatCardModule,
     FormsModule,
     ReactiveFormsModule,
-    MatFormField,
-    MatLabel,
-    MatSelect,
-    MatOption,
+    ...IMR_UI_COMPONENTS,
     MatButton,
     MatInput,
-    MatError,
     MatTableModule,
-    MatIcon
   ],
   templateUrl: './modul-konfiguration.component.html',
   styleUrls: ['./modul-konfiguration.component.sass']

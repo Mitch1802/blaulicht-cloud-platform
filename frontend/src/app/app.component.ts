@@ -1,20 +1,23 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { RouterOutlet } from '@angular/router';
+import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
+import { ImrProgressBarComponent } from './imr-ui-library/imr-progress-bar.component';
 import { ApiHttpService } from './_service/api-http.service';
-
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
     imports: [
         RouterOutlet,
-        MatProgressBarModule,
+        ImrProgressBarComponent,
         AsyncPipe
     ],
     styleUrls: [
         './app.component.sass'
+    ],
+    providers: [
+        {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {SubscriptSizing: 'dynamic'}}
     ]
 })
 export class AppComponent {

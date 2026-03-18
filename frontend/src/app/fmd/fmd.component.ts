@@ -5,24 +5,16 @@ import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
-import { ImrHeaderComponent } from '../imr-ui-library';
-import { MatCardModule } from '@angular/material/card';
+import { IMR_UI_COMPONENTS, ImrPaginatorComponent } from '../imr-ui-library';
 import { Router } from '@angular/router';
-import { MatTabsModule } from '@angular/material/tabs';
 import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
-
-import { MatError, MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatButton } from '@angular/material/button';
-import { MatOption } from '@angular/material/core';
-import { MatSelect } from '@angular/material/select';
 import { IATSTraeger } from '../_interface/atstraeger';
 import { BaseChartDirective } from 'ng2-charts';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { Chart, ChartData, ChartOptions } from 'chart.js';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatIconModule } from '@angular/material/icon';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { IStammdaten } from '../_interface/stammdaten';
 import { forkJoin } from 'rxjs';
@@ -33,23 +25,14 @@ Chart.register(ChartDataLabels);
 @Component({
   selector: 'app-fmd',
   imports: [
-    ImrHeaderComponent,
-    MatCardModule,
-    MatTabsModule,
     FormsModule,
     ReactiveFormsModule,
-    MatFormField,
-    MatLabel,
-    MatSelect,
-    MatOption,
+    ...IMR_UI_COMPONENTS,
     MatButton,
     MatInput,
-    MatError,
     MatTableModule,
     BaseChartDirective,
-    MatIconModule,
     MatSortModule,
-    MatPaginatorModule,
     DateInputMaskDirective,
   ],
   templateUrl: './fmd.component.html',
@@ -188,12 +171,12 @@ export class FmdComponent implements OnInit, AfterViewInit {
   stammdaten: any = {};
 
   @ViewChildren(BaseChartDirective) charts?: QueryList<BaseChartDirective>;
-  @ViewChild(MatPaginator, { static: false }) paginator?: MatPaginator;
+  @ViewChild(ImrPaginatorComponent, { static: false }) paginator?: ImrPaginatorComponent;
   @ViewChildren(MatSort) sorts?: QueryList<MatSort>;
 
   ngAfterViewInit() {
     if (this.hasTable(this.activeTabIndex) && this.paginator) {
-      this.dataSource.paginator = this.paginator;
+      this.dataSource.paginator = this.paginator.paginator;
     }
     this.setActiveSortForTab(this.activeTabIndex);
     this.updateFilterPredicateFor(this.activeTabIndex);
@@ -698,7 +681,7 @@ export class FmdComponent implements OnInit, AfterViewInit {
     queueMicrotask(() => {
       if (this.hasTable(index)) {
         if (this.paginator) {
-          this.dataSource.paginator = this.paginator;
+          this.dataSource.paginator = this.paginator.paginator;
           this.paginator.firstPage();
         }
         this.setActiveSortForTab(index);

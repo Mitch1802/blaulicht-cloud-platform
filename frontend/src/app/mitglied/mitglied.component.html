@@ -5,12 +5,11 @@
     <h1>{{ title }}</h1>
   </header>
 
-  <mat-card class="imr-card">
+  <imr-card>
     <div class="imr-card__head">
       <h2>Mitglieder verwalten</h2>
     </div>
 
-    <mat-card-content>
       <div class="imr-top-actions">
         @if (formModul.disabled) {
           <button
@@ -111,55 +110,55 @@
 
           <section class="app-grid imr-form-grid">
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <mat-form-field hintLabel="* Pflichtfeld" class="imr-full-width">
-                <mat-label>Vorname</mat-label>
+              <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width">
+                <imr-label>Vorname</imr-label>
                 <input matInput type="text" formControlName="vorname" />
                 @if (formModul.controls["vorname"].hasError("required")) {
-                  <mat-error> Vorname ist erforderlich! </mat-error>
+                  <imr-error> Vorname ist erforderlich! </imr-error>
                 }
-              </mat-form-field>
+              </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <mat-form-field hintLabel="* Pflichtfeld" class="imr-full-width">
-                <mat-label>Nachname</mat-label>
+              <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width">
+                <imr-label>Nachname</imr-label>
                 <input matInput type="text" formControlName="nachname" />
                 @if (formModul.controls["nachname"].hasError("required")) {
-                  <mat-error> Nachname ist erforderlich! </mat-error>
+                  <imr-error> Nachname ist erforderlich! </imr-error>
                 }
-              </mat-form-field>
+              </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3">
-              <mat-form-field hintLabel="* Pflichtfeld" class="imr-full-width">
-                <mat-label>Stbnr</mat-label>
+              <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width">
+                <imr-label>Stbnr</imr-label>
                 <input matInput type="text" formControlName="stbnr" />
                 @if (formModul.controls["stbnr"].hasError("required")) {
-                  <mat-error> Standesbuchnummer ist erforderlich! </mat-error>
+                  <imr-error> Standesbuchnummer ist erforderlich! </imr-error>
                 }
-              </mat-form-field>
+              </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3">
-              <mat-form-field hintLabel="* Pflichtfeld" class="imr-full-width">
-                <mat-label>Status</mat-label>
-                <mat-select formControlName="dienststatus">
-                  <mat-option value="JUGEND">Jugend</mat-option>
-                  <mat-option value="AKTIV">Aktiv</mat-option>
-                  <mat-option value="RESERVE">Reserve</mat-option>
-                  <mat-option value="ABGEMELDET">Abgemeldet</mat-option>
-                </mat-select>
+              <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width">
+                <imr-label>Status</imr-label>
+                <imr-select formControlName="dienststatus">
+                  <imr-option value="JUGEND">Jugend</imr-option>
+                  <imr-option value="AKTIV">Aktiv</imr-option>
+                  <imr-option value="RESERVE">Reserve</imr-option>
+                  <imr-option value="ABGEMELDET">Abgemeldet</imr-option>
+                </imr-select>
                 @if (formModul.controls["dienststatus"].hasError("required")) {
-                  <mat-error>Status ist erforderlich!</mat-error>
+                  <imr-error>Status ist erforderlich!</imr-error>
                 }
-              </mat-form-field>
+              </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3">
-              <mat-form-field class="imr-full-width">
-                <mat-label>Dienstgrad</mat-label>
+              <imr-form-field class="imr-full-width">
+                <imr-label>Dienstgrad</imr-label>
                 <input matInput type="text" formControlName="dienstgrad" />
-              </mat-form-field>
+              </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3">
-              <mat-form-field class="imr-full-width">
-                <mat-label>SVNr</mat-label>
+              <imr-form-field class="imr-full-width">
+                <imr-label>SVNr</imr-label>
                 <input
                   matInput
                   type="text"
@@ -172,16 +171,16 @@
                   formModul.controls["svnr"].hasError("minlength") ||
                   formModul.controls["svnr"].hasError("maxlength")
                 ) {
-                  <mat-error>4 Ziffern erforderlich!</mat-error>
+                  <imr-error>4 Ziffern erforderlich!</imr-error>
                 }
                 @if (formModul.controls["svnr"].hasError("pattern")) {
-                  <mat-error>Nur Ziffern erlaubt!</mat-error>
+                  <imr-error>Nur Ziffern erlaubt!</imr-error>
                 }
-              </mat-form-field>
+              </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3">
-              <mat-form-field hintLabel="* Pflichtfeld" class="imr-full-width">
-                <mat-label>Geburtsdatum</mat-label>
+              <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width">
+                <imr-label>Geburtsdatum</imr-label>
                 <input
                   matInput
                   type="text"
@@ -190,23 +189,23 @@
                   placeholder="TT.MM.YYYY"
                 />
                 @if (formModul.controls["geburtsdatum"].hasError("required")) {
-                  <mat-error>Geburtsdatum ist erforderlich!</mat-error>
+                  <imr-error>Geburtsdatum ist erforderlich!</imr-error>
                 }
                 @if (formModul.controls["geburtsdatum"].hasError("pattern")) {
-                  <mat-error
-                    >Ungültiges Format. Bitte TT.MM.YYYY eingeben.</mat-error
+                  <imr-error
+                    >Ungültiges Format. Bitte TT.MM.YYYY eingeben.</imr-error
                   >
                 }
                 @if (
                   formModul.controls["geburtsdatum"].hasError("dateInvalid")
                 ) {
-                  <mat-error>Kein existierendes Datum!</mat-error>
+                  <imr-error>Kein existierendes Datum!</imr-error>
                 }
-              </mat-form-field>
+              </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <mat-checkbox formControlName="hauptberuflich"
-                >Hauptberuflich</mat-checkbox
+              <imr-checkbox formControlName="hauptberuflich"
+                >Hauptberuflich</imr-checkbox
               >
             </div>
           </section>
@@ -226,19 +225,19 @@
         @if (formModul.disabled) {
           <div class="imr-table-wrap">
             <div class="table-toolbar mitglied-toolbar">
-              <mat-form-field
+              <imr-form-field
                 class="filter-field"
                 appearance="outline"
               >
-                <mat-label>Filter</mat-label>
+                <imr-label>Filter</imr-label>
                 <input
                   matInput
                   #filterInput
                   (input)="applyFilter(filterInput.value)"
                   placeholder="Stbnr, Name oder Dienstgrad"
                 />
-                <mat-icon matSuffix>search</mat-icon>
-              </mat-form-field>
+                <imr-suffix><imr-icon>search</imr-icon></imr-suffix>
+              </imr-form-field>
             </div>
             <table mat-table [dataSource]="dataSource" matSort>
               <ng-container matColumnDef="stbnr">
@@ -279,7 +278,7 @@
                     (click)="auswahlBearbeiten(element)"
                     [attr.aria-label]="'Mitglied ' + element.stbnr + ' ' + element.vorname + ' ' + element.nachname + ' bearbeiten'"
                   >
-                    <mat-icon class="m-0">edit</mat-icon>
+                    <imr-icon class="m-0">edit</imr-icon>
                   </button>
                 </td>
               </ng-container>
@@ -294,21 +293,20 @@
               <tr class="mat-row" *matNoDataRow>
                 <td class="mat-cell table-empty-cell" [attr.colspan]="sichtbareSpaltenMitglieder.length">
                   <div class="table-empty-state compact">
-                    <mat-icon class="table-empty-icon">person_search</mat-icon>
+                    <imr-icon class="table-empty-icon">person_search</imr-icon>
                     <span class="table-empty-title">Keine Mitglieder gefunden</span>
                     <span class="table-empty-copy">Bitte Filter anpassen oder neues Mitglied hinzufügen.</span>
                   </div>
                 </td>
               </tr>
             </table>
-            <mat-paginator
+            <imr-paginator
               [pageSizeOptions]="[10, 50, 100]"
               showFirstLastButtons
               aria-label="Auswahl Anzahl der sichtbaren Elemente"
             >
-            </mat-paginator>
+            </imr-paginator>
           </div>
         }
-    </mat-card-content>
-  </mat-card>
+  </imr-card>
 </section>

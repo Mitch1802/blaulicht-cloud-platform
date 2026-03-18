@@ -4,9 +4,7 @@
 // Zweck dieses Files:
 //   1. IMR-Katalog importieren (enthält alle Komponenten-Tokens und Stile)
 //   2. Basis-Font für :root setzen
-//   3. Backward-compatible --app-* CSS-Variablen bereitstellen
-//      (zeigen auf die --imr-* Variablen aus dem IMR-Katalog)
-//   4. Komponenten-spezifische Overrides, die nicht generisch genug
+//   3. Komponenten-spezifische Overrides, die nicht generisch genug
 //      für den Katalog sind (z. B. Atemschutz-Teilkomponenten)
 // ─────────────────────────────────────────────────────────────────────────────
 @use './theme' as theme
@@ -20,60 +18,29 @@
 :root
     font-family: "Roboto", sans-serif
 
-    // ── Backward-compatible CSS-Variablen (aliassen auf --imr-*) ─────────────
-    --app-primary:             var(--imr-primary)
-    --app-primary-dark:        var(--imr-primary-dark)
-    --app-primary-soft:        var(--imr-primary-soft)
-    --app-accent:              var(--imr-accent)
-    --app-accent-soft:         var(--imr-accent-soft)
-    --app-surface:             var(--imr-surface)
-    --app-surface-variant:     var(--imr-surface-variant)
-    --app-border:              var(--imr-border)
-    --app-text:                var(--imr-text)
-    --app-text-muted:          var(--imr-text-muted)
-    --app-control-radius:      var(--imr-control-radius)
-    --app-control-height:      var(--imr-control-height)
-    --app-control-bg:          var(--imr-control-bg)
-    --app-control-border:      var(--imr-control-border)
-    --app-card-content-padding: var(--imr-card-padding)
-    --app-card-content-padding-mobile: var(--imr-card-padding-mobile)
-    --header-bg:               var(--imr-header-bg)
-    --header-shadow:           var(--imr-header-shadow)
-    --breadcrumb-bg:           var(--imr-breadcrumb-bg)
-
-    // ── Grid-Variablen (Backward-compat) ─────────────────────────────────────
-    --app-grid-columns:        var(--imr-grid-columns)
-    --app-grid-row-gap:        var(--imr-grid-row-gap)
-    --app-grid-col-gap:        var(--imr-grid-col-gap)
-
 
 // ══════════════════════════════════════════════════════════════════════════════
-// 2. Backward-compatible Klassen-Aliases  (→ imr-Klassen)
+// 2. Klassen-Aliases  (bestehende nicht-ui Klassen → imr-Klassen)
 // ══════════════════════════════════════════════════════════════════════════════
 
 // Seiten-Layout
-.ui-page,
 .app-page,
 section[class$='-page'],
 .anwesenheitsliste-page,
 .fmd-page
     @extend .imr-page
 
-.ui-page__head,
 .page-head
     @extend .imr-page__head
 
 // Section-Card
-.ui-card,
 .settings-card,
 .section-card
     @extend .imr-card
 
-.ui-card__head,
 .section-head
     @extend .imr-card__head
 
-.ui-card__content,
 .settings-card > .mat-mdc-card-content,
 .settings-card mat-card-content,
 .section-card > .mat-mdc-card-content,
@@ -85,92 +52,35 @@ section[class$='-page'],
     @extend .imr-card__head
 
 // Actions
-.ui-top-actions,
 .top-actions,
 .actions-row,
 .actions-top
     @extend .imr-top-actions
 
-.ui-actions,
 .form-actions
     @extend .imr-form-actions
 
 // Forms
-.ui-form,
 .edit-form
     @extend .imr-form
 
-.ui-form-grid,
 .form-grid
     @extend .imr-form-grid
 
-.ui-two-col-md
-    @extend .imr-two-col-md
-
-.ui-full-width,
 .full-width
     @extend .imr-full-width
 
 // Tables
-.ui-table-wrap,
 .table-wrap
     @extend .imr-table-wrap
 
-.ui-action-cell
-    @extend .imr-action-cell
-
-.ui-action-btn
-    @extend .imr-action-btn
-
 // Chips
-.ui-chips,
 .role-chips
     @extend .imr-chips
 
 // Breadcrumb
 .breadcrumb
     @extend .imr-breadcrumb
-
-// Lending
-.ui-lending-panel
-    @extend .imr-lending-panel
-
-.ui-lending-panel-head
-    @extend .imr-lending-panel-head
-
-.ui-lending-empty
-    @extend .imr-lending-empty
-
-.ui-lending-row
-    @extend .imr-lending-row
-
-.ui-lending-row-remove
-    @extend .imr-lending-row-remove
-
-.ui-lending-summary
-    @extend .imr-lending-summary
-
-// Transaction
-.ui-transaction-backdrop
-    @extend .imr-transaction-backdrop
-
-.ui-transaction-dialog
-    @extend .imr-transaction-dialog
-
-.ui-transaction-head
-    @extend .imr-transaction-head
-
-.ui-transaction-meta
-    @extend .imr-transaction-meta
-
-.ui-transaction-form
-    @extend .imr-transaction-form
-
-.ui-transaction-note
-    @extend .imr-transaction-note
-
-.ui-transaction-actions
-    @extend .imr-transaction-actions
 
 // Form sections
 .form-section

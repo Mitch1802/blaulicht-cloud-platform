@@ -7,7 +7,7 @@ Diese Datei dokumentiert die Storybook-Integration für das Frontend.
 Storybook dient als zentrale UI-Dokumentation für:
 
 - globale Layout-Patterns
-- wiederverwendbare UI-Bausteine aus der `ui-library`
+- wiederverwendbare UI-Bausteine aus der `imr-ui-library`
 - den App-weiten UI-Katalog (alle in Templates verwendeten Elemente)
 
 Zusätzlich stellt der UI-Katalog-Check sicher, dass nur katalogisierte Elemente/Klassen verwendet werden.
@@ -21,8 +21,8 @@ Wichtige Dateien:
 - `.storybook/main.ts`
 - `.storybook/preview.ts`
 - `.storybook/tsconfig.json`
-- `frontend/src/app/ui-library/*.stories.ts`
-- `frontend/src/app/ui-library/ui-element-catalog.json`
+- `frontend/src/app/imr-ui-library/*.stories.ts`
+- `frontend/src/app/imr-ui-library/imr-element-catalog.json`
 - `frontend/scripts/verify-ui-catalog.mjs`
 
 Storybook Build-Output:
@@ -68,13 +68,13 @@ npm run verify:ui-catalog
 
 Der Katalog liegt in:
 
-- `frontend/src/app/ui-library/ui-element-catalog.json`
+- `frontend/src/app/imr-ui-library/imr-element-catalog.json`
 
 Der Validator (`verify-ui-catalog`) scannt alle `frontend/src/app/**/*.html` und prüft:
 
 1. Verwendete `mat-*` Elemente müssen im Katalog enthalten sein.
 2. Verwendete getrackte UI-/Layout-Klassen müssen im Katalog enthalten sein.
-3. Jede `actions`-Tabellenspalte muss am Zellen-`td` die Klasse `ui-action-cell` haben.
+3. Jede `actions`-Tabellenspalte muss am Zellen-`td` die Klasse `imr-action-cell` haben.
 4. Material-Buttons dürfen keine ad-hoc Spacing-Utility-Klassen wie `ms-*`, `me-*`, `px-*`, `py-*` etc. verwenden.
 5. Buttons in `actions`-Spalten sind auf die Farbvarianten `primary` oder `warn` begrenzt und müssen ein `mat-icon` enthalten.
 6. `mat-icon` in `actions`-Buttons muss in der zentralen Allowlist `actionIcons` im UI-Katalog enthalten sein.
@@ -118,7 +118,7 @@ Beispiele in Storybook:
 ## Wenn neue UI-Elemente dazukommen
 
 1. Neues Element in Story/Pattern dokumentieren.
-2. `frontend/src/app/ui-library/ui-element-catalog.json` erweitern.
+2. `frontend/src/app/imr-ui-library/imr-element-catalog.json` erweitern.
 3. `npm run verify:ui-catalog` lokal ausführen.
 4. Storybook (`npm run storybook` oder `npm run build-storybook`) prüfen.
 

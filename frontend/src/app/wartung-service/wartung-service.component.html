@@ -5,12 +5,11 @@
     <h1>{{ title }}</h1>
   </header>
 
-  <mat-card class="imr-card">
+  <imr-card>
     <div class="imr-card__head">
       <h2>Anstehende Termine {{ jahr }}</h2>
     </div>
 
-    <mat-card-content>
       <div class="actions-top">
         <button mat-flat-button color="primary" type="button" (click)="reload()">Aktualisieren</button>
       </div>
@@ -81,7 +80,7 @@
                   [routerLink]="element.link"
                   aria-label="Eintrag öffnen"
                 >
-                  <mat-icon class="m-0">remove_red_eye</mat-icon>
+                  <imr-icon class="m-0">remove_red_eye</imr-icon>
                 </button>
               </td>
             </ng-container>
@@ -91,6 +90,5 @@
           </table>
         </div>
       }
-    </mat-card-content>
-  </mat-card>
+  </imr-card>
 </section>

@@ -2,25 +2,12 @@ import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
-import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
 import { MatButton } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatOption } from '@angular/material/core';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatIcon } from '@angular/material/icon';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
-
-import {
-  ImrFormActionsComponent,
-  ImrFormGridComponent,
-  ImrHeaderComponent,
-  ImrPageLayoutComponent,
-  ImrSectionCardComponent,
-  ImrTableWrapComponent,
-  ImrTopActionsComponent,
-} from '../imr-ui-library';
+import { MatSelectModule } from '@angular/material/select';
+import { IMR_UI_COMPONENTS, ImrPaginatorComponent } from '../imr-ui-library';
 import { ApiHttpService } from '../_service/api-http.service';
 import { AuthSessionService } from '../_service/auth-session.service';
 import { CollectionUtilsService } from '../_service/collection-utils.service';
@@ -33,33 +20,21 @@ import { DateInputMaskDirective } from '../_directive/date-input-mask.directive'
 @Component({
   selector: 'app-anwesenheitsliste',
   imports: [
-    ImrHeaderComponent,
-    ImrPageLayoutComponent,
-    ImrSectionCardComponent,
-    ImrTopActionsComponent,
-    ImrFormActionsComponent,
-    ImrFormGridComponent,
-    ImrTableWrapComponent,
     FormsModule,
     ReactiveFormsModule,
-    MatFormField,
-    MatLabel,
+    ...IMR_UI_COMPONENTS,
     MatButton,
     MatInputModule,
-    MatSelectModule,
-    MatOption,
-    MatError,
     MatTableModule,
     MatSortModule,
-    MatPaginatorModule,
-    MatIcon,
+    MatSelectModule,
     DateInputMaskDirective,
   ],
   templateUrl: './anwesenheitsliste.component.html',
   styleUrl: './anwesenheitsliste.component.sass',
 })
 export class AnwesenheitslisteComponent implements OnInit {
-  @ViewChild(MatPaginator) paginator?: MatPaginator;
+  @ViewChild(ImrPaginatorComponent) paginator?: ImrPaginatorComponent;
   @ViewChild(MatSort) sort?: MatSort;
 
   private apiHttpService = inject(ApiHttpService);
@@ -267,7 +242,7 @@ export class AnwesenheitslisteComponent implements OnInit {
 
   private bindTableControls(): void {
     if (this.sort) this.dataSource.sort = this.sort;
-    if (this.paginator) this.dataSource.paginator = this.paginator;
+    if (this.paginator) this.dataSource.paginator = this.paginator.paginator;
   }
 
   applyFilter(value: string): void {

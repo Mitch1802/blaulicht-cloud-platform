@@ -4,9 +4,9 @@ import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
-import { ImrHeaderComponent } from '../../imr-ui-library';
-import { MatCardModule } from '@angular/material/card';
-import { MatTabsModule } from '@angular/material/tabs';
+import { IMR_UI_COMPONENTS } from '../../imr-ui-library';
+import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
 import {
   AbstractControl,
   FormControl,
@@ -16,39 +16,22 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import { MatError, MatFormField, MatLabel } from '@angular/material/form-field';
-import { MatButton } from '@angular/material/button';
-import { MatInput } from '@angular/material/input';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
-import { MatPaginatorModule } from '@angular/material/paginator';
 import { IAtemschutzMaske } from 'src/app/_interface/atemschutz_maske';
-import { MatIcon } from '@angular/material/icon';
 import { IAtemschutzMaskeProtokoll } from 'src/app/_interface/atemschutz_maske_protokoll';
-import { MatOption, MatSelect } from '@angular/material/select';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { DateInputMaskDirective } from '../../_directive/date-input-mask.directive';
 
 @Component({
   selector: 'app-atemschutz-masken',
   imports: [
-    ImrHeaderComponent,
-    MatCardModule,
-    MatTabsModule,
+    ...IMR_UI_COMPONENTS,
     FormsModule,
     ReactiveFormsModule,
-    MatFormField,
-    MatLabel,
-    MatSelect,
-    MatOption,
-    MatButton,
-    MatInput,
-    MatError,
+    MatButtonModule,
+    MatInputModule,
     MatTableModule,
     MatSortModule,
-    MatPaginatorModule,
-    MatIcon,
-    MatCheckboxModule,
     DateInputMaskDirective,
   ],
   templateUrl: './atemschutz-masken.component.html',

@@ -94,15 +94,14 @@ Alle Werte sind als CSS-Variable verfügbar:
 --imr-grid-col-gap: 1rem
 ```
 
-### 3. `styles.sass` – Variablen und Backward-Compatibility
+### 3. `styles.sass` – Variablen und Legacy-Klassen
 
 Die globale Styles-Datei:
 - importiert `imr-catalog.sass`
 - setzt die Basis-Font-Family
-- definiert **`--app-*` CSS-Variablen** als Alias auf die `--imr-*` Variablen
-  (Backward-Compatibility für bestehende Feature-Komponenten)
-- enthält `@extend`-Regeln, die alte CSS-Klassen (`ui-*`, `top-actions`, etc.)
-  auf die neuen `imr-*` Klassen mappen
+- enthält nur noch notwendige Alias-Regeln für verbleibende generische Klassen
+  (z. B. `edit-form`, `form-grid`, `full-width`)
+- **Hinweis**: Alle `--app-*` CSS-Variablen wurden entfernt. Bitte verwende nur die `--imr-*` Variablen direkt
 
 ### 4. IMR-Komponenten – Design im UI-Katalog, minimal im Feature-Code
 
@@ -353,6 +352,9 @@ Templates ausschließlich `imr-*` Komponenten und Klassen.
 | `.ui-actions` | `.imr-form-actions` |
 | `.ui-table-wrap` | `.imr-table-wrap` |
 | `.ui-chips` | `.imr-chips` |
+
+Die `ui-*` Klassen werden nicht mehr per Global-Styles mitgemappt und müssen
+vor Nutzung auf die entsprechenden `imr-*` Klassen umgestellt werden.
 | `[uiPageActions]` | `[imrPageActions]` |
 | `[uiCardActions]` | `[imrCardActions]` |
 

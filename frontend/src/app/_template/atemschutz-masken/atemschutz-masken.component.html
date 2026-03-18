@@ -5,11 +5,11 @@
     <h1>Masken verwalten</h1>
   </header>
 
-  <mat-card class="imr-card">
+  <imr-card>
     <div class="imr-card__head">
       <h2>Masken verwalten</h2>
     </div>
-    <mat-card-content>
+    
         @if (sichtbarkeitModul() == "tableListe")
         {
         <div class="imr-top-actions">
@@ -68,43 +68,43 @@
           </div>
           <section class="app-grid imr-form-grid">
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <mat-form-field hintLabel="* Pflichtfeld">
-                <mat-label>Inventar Nummer</mat-label>
+              <imr-form-field hintLabel="* Pflichtfeld">
+                <imr-label>Inventar Nummer</imr-label>
                 <input matInput type="text" formControlName="inv_nr" />
                 @if (formModul.controls['inv_nr'].hasError('required')) {
-                <mat-error> Inventar Nummer ist erforderlich! </mat-error>
+                <imr-error> Inventar Nummer ist erforderlich! </imr-error>
                 }
-              </mat-form-field>
+              </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <mat-form-field>
-                <mat-label>Art</mat-label>
+              <imr-form-field>
+                <imr-label>Art</imr-label>
                 <input matInput type="text" formControlName="art" />
-              </mat-form-field>
+              </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <mat-form-field>
-                <mat-label>Typ</mat-label>
+              <imr-form-field>
+                <imr-label>Typ</imr-label>
                 <input matInput type="text" formControlName="typ" />
-              </mat-form-field>
+              </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <mat-form-field>
-                <mat-label>Eigentümer</mat-label>
+              <imr-form-field>
+                <imr-label>Eigentümer</imr-label>
                 <input matInput type="text" formControlName="eigentuemer" />
-              </mat-form-field>
+              </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <mat-form-field>
-                <mat-label>Barcode</mat-label>
+              <imr-form-field>
+                <imr-label>Barcode</imr-label>
                 <input matInput type="text" formControlName="barcode" />
-              </mat-form-field>
+              </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <mat-form-field>
-                <mat-label>Baujahr</mat-label>
+              <imr-form-field>
+                <imr-label>Baujahr</imr-label>
                 <input matInput type="text" formControlName="baujahr" />
-              </mat-form-field>
+              </imr-form-field>
             </div>
           </section>
 
@@ -147,21 +147,21 @@
           </div>
           <section class="app-grid imr-form-grid">
             <div class="app-col-12 app-col-lg-12 mb-3">
-              <mat-form-field hintLabel="* Pflichtfeld">
-                <mat-label>Maske</mat-label>
-                <mat-select formControlName="maske_id">
+              <imr-form-field hintLabel="* Pflichtfeld">
+                <imr-label>Maske</imr-label>
+                <imr-select formControlName="maske_id">
                   @for (opt of masken; track opt) {
-                  <mat-option [value]="opt.pkid"> {{ opt.inv_nr }} - {{ opt.typ }} </mat-option>
+                  <imr-option [value]="opt.pkid"> {{ opt.inv_nr }} - {{ opt.typ }} </imr-option>
                   }
-                </mat-select>
+                </imr-select>
                 @if (formPruefung.controls['maske_id'].hasError('required')) {
-                <mat-error> Maske ist erforderlich! </mat-error>
+                <imr-error> Maske ist erforderlich! </imr-error>
                 }
-              </mat-form-field>
+              </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3">
-              <mat-form-field hintLabel="* Pflichtfeld">
-                <mat-label>Datum</mat-label>
+              <imr-form-field hintLabel="* Pflichtfeld">
+                <imr-label>Datum</imr-label>
                 <input
                   matInput
                   type="text"
@@ -170,103 +170,103 @@
                   placeholder="TT.MM.YYYY"
                 />
                 @if (formPruefung.controls['datum'].hasError('pattern')) {
-                <mat-error
-                  >Ungültiges Format. Bitte TT.MM.YYYY eingeben.</mat-error
+                <imr-error
+                  >Ungültiges Format. Bitte TT.MM.YYYY eingeben.</imr-error
                 >
                 } @if (formPruefung.controls['datum'].hasError('dateInvalid')) {
-                <mat-error>Kein existierendes Datum!</mat-error>
+                <imr-error>Kein existierendes Datum!</imr-error>
                 }
-              </mat-form-field>
+              </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-8 mb-3">
-              <mat-form-field>
-                <mat-label>Tätigkeit</mat-label>
+              <imr-form-field>
+                <imr-label>Tätigkeit</imr-label>
                 <input matInput type="text" formControlName="taetigkeit" />
-              </mat-form-field>
+              </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <mat-form-field>
-                <mat-label>Verwendung Typ</mat-label>
-                <mat-select formControlName="verwendung_typ">
-                  <mat-option value="Ü">Übung</mat-option>
-                  <mat-option value="E">Einsatz</mat-option>
-                </mat-select>
-              </mat-form-field>
+              <imr-form-field>
+                <imr-label>Verwendung Typ</imr-label>
+                <imr-select formControlName="verwendung_typ">
+                  <imr-option value="Ü">Übung</imr-option>
+                  <imr-option value="E">Einsatz</imr-option>
+                </imr-select>
+              </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <mat-form-field>
-                <mat-label>Verwendung Minuten</mat-label>
+              <imr-form-field>
+                <imr-label>Verwendung Minuten</imr-label>
                 <input
                   matInput
                   type="number"
                   formControlName="verwendung_min"
                 />
-              </mat-form-field>
+              </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3 checkbox-field checkbox-triplet">
-              <mat-checkbox formControlName="wartung_2_punkt"
-                >2 Punkt OK</mat-checkbox
+              <imr-checkbox formControlName="wartung_2_punkt"
+                >2 Punkt OK</imr-checkbox
               >
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3 checkbox-field checkbox-triplet">
-              <mat-checkbox formControlName="wartung_unterdruck"
-                >Unterdruck OK</mat-checkbox
+              <imr-checkbox formControlName="wartung_unterdruck"
+                >Unterdruck OK</imr-checkbox
               >
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3 checkbox-field checkbox-triplet">
-              <mat-checkbox formControlName="wartung_oeffnungsdruck"
-                >Öffnungsdruck OK</mat-checkbox
+              <imr-checkbox formControlName="wartung_oeffnungsdruck"
+                >Öffnungsdruck OK</imr-checkbox
               >
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3 checkbox-field checkbox-triplet">
-              <mat-checkbox formControlName="wartung_scheibe"
-                >Scheibe OK</mat-checkbox
+              <imr-checkbox formControlName="wartung_scheibe"
+                >Scheibe OK</imr-checkbox
               >
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3 checkbox-field checkbox-triplet">
-              <mat-checkbox formControlName="wartung_ventile"
-                >Ventile OK</mat-checkbox
+              <imr-checkbox formControlName="wartung_ventile"
+                >Ventile OK</imr-checkbox
               >
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3 checkbox-field checkbox-triplet">
-              <mat-checkbox formControlName="wartung_maengel"
-                >Mängel OK</mat-checkbox
+              <imr-checkbox formControlName="wartung_maengel"
+                >Mängel OK</imr-checkbox
               >
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3 checkbox-field checkbox-triplet">
-              <mat-checkbox formControlName="ausser_dienst"
-                >Außer Dienst</mat-checkbox
+              <imr-checkbox formControlName="ausser_dienst"
+                >Außer Dienst</imr-checkbox
               >
             </div>
             <div class="app-col-12 app-col-lg-12 mb-3">
-              <mat-form-field hintLabel="* Pflichtfeld">
-                <mat-label>Name Prüfer</mat-label>
+              <imr-form-field hintLabel="* Pflichtfeld">
+                <imr-label>Name Prüfer</imr-label>
                 <input matInput type="text" formControlName="name_pruefer" />
-              </mat-form-field>
+              </imr-form-field>
             </div>
 
             <div class="app-col-12 app-col-lg-4 mb-3 checkbox-field checkbox-triplet">
-              <mat-checkbox formControlName="tausch_sprechmembran"
-                >Tausch Sprechmembran</mat-checkbox
+              <imr-checkbox formControlName="tausch_sprechmembran"
+                >Tausch Sprechmembran</imr-checkbox
               >
             </div>
 
             <div class="app-col-12 app-col-lg-4 mb-3 checkbox-field checkbox-triplet">
-              <mat-checkbox formControlName="tausch_ausatemventil"
-                >Tausch Ausatemventil</mat-checkbox
+              <imr-checkbox formControlName="tausch_ausatemventil"
+                >Tausch Ausatemventil</imr-checkbox
               >
             </div>
 
             <div class="app-col-12 app-col-lg-4 mb-3 checkbox-field checkbox-triplet">
-              <mat-checkbox formControlName="tausch_sichtscheibe"
-                >Tausch Sichtscheibe</mat-checkbox
+              <imr-checkbox formControlName="tausch_sichtscheibe"
+                >Tausch Sichtscheibe</imr-checkbox
               >
             </div>
             <div class="app-col-12 app-col-lg-12 mb-3">
-              <mat-form-field>
-                <mat-label>Notiz</mat-label>
+              <imr-form-field>
+                <imr-label>Notiz</imr-label>
                 <input matInput type="text" formControlName="notiz" />
-              </mat-form-field>
+              </imr-form-field>
             </div>
           </section>
 
@@ -316,7 +316,7 @@
                 color="primary"
                 (click)="auswahlBearbeiten(element)"
               >
-                <mat-icon class="m-0">edit</mat-icon>
+                <imr-icon class="m-0">edit</imr-icon>
               </button>
               <button
                 mat-flat-button
@@ -325,7 +325,7 @@
                 (click)="neuePruefungVonMaske(element)"
                 [hidden]="rolesResolved && !canEditProtocol"
               >
-                <mat-icon class="m-0">checklist</mat-icon>
+                <imr-icon class="m-0">checklist</imr-icon>
               </button>
               <button
                 mat-flat-button
@@ -333,7 +333,7 @@
                 color="primary"
                 (click)="showPruefungen(element)"
               >
-                <mat-icon class="m-0">assignment</mat-icon>
+                <imr-icon class="m-0">assignment</imr-icon>
               </button>
             </td>
           </ng-container>
@@ -383,7 +383,7 @@
                 color="primary"
                 (click)="auswahlBearbeitenProtokoll(element)"
               >
-                <mat-icon class="m-0">remove_red_eye</mat-icon>
+                <imr-icon class="m-0">remove_red_eye</imr-icon>
               </button>
             </td>
           </ng-container>
@@ -395,6 +395,6 @@
         </table>
         }
         <!-- TABELLE MASKEN PRÜFUNGEN ENDE -->
-    </mat-card-content>
-  </mat-card>
+    
+  </imr-card>
 </section>

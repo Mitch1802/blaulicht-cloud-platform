@@ -7,23 +7,18 @@ import { CollectionUtilsService } from 'src/app/_service/collection-utils.servic
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { IKonfiguration } from 'src/app/_interface/konfiguration';
-import { MatCardModule } from '@angular/material/card';
-import { MatButton } from '@angular/material/button';
-import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
-import { MatInput } from '@angular/material/input';
-import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
+import { MatTableModule } from '@angular/material/table';
 import { environment } from "src/environments/environment";
 import { Router } from '@angular/router';
-import { ImrHeaderComponent } from '../imr-ui-library';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatOption, MatSelect } from '@angular/material/select';
-import { MatTableModule } from '@angular/material/table';
+import { IMR_UI_COMPONENTS } from '../imr-ui-library';
 
 @Component({
     selector: 'app-konfiguration',
     templateUrl: './konfiguration.component.html',
     styleUrls: ['./konfiguration.component.sass'],
-    imports: [ImrHeaderComponent, MatCardModule, FormsModule, ReactiveFormsModule, MatButton, MatFormField, MatLabel, MatInput, MatError, MatIconModule, MatChipsModule, MatSelect, MatOption, MatTableModule]
+    imports: [...IMR_UI_COMPONENTS, FormsModule, ReactiveFormsModule, MatButtonModule, MatInputModule, MatTableModule]
 })
 export class KonfigurationComponent implements OnInit {
   private apiHttpService = inject(ApiHttpService);

@@ -1,47 +1,46 @@
 <imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <section class="fahrzeug-check-page">
-  <mat-card class="imr-card">
+  <imr-card>
     <div class="imr-card__head">
       <h2>Fahrzeug Check – {{ fahrzeug?.name }}</h2>
     </div>
 
-    <mat-card-content>
         <form [formGroup]="form" >
-          <mat-form-field>
-            <mat-label>Titel</mat-label>
+          <imr-form-field>
+            <imr-label>Titel</imr-label>
             <input matInput formControlName="title" placeholder="z. B. Tagescheck" />
-          </mat-form-field>
+          </imr-form-field>
 
-          <mat-form-field>
-            <mat-label>Allgemeine Notiz</mat-label>
+          <imr-form-field>
+            <imr-label>Allgemeine Notiz</imr-label>
             <textarea matInput rows="2" formControlName="notiz"></textarea>
-          </mat-form-field>
+          </imr-form-field>
 
-          <mat-divider></mat-divider>
+          <imr-divider></imr-divider>
 
           <div formArrayName="results" >
             @for (raum of raeumeView; track raum.name) {
-              <mat-card class="p-2">
+              <imr-card cardClass="p-2">
                 <h3 class="m-0 mb-2">{{ raum.name }}</h3>
 
                 @for (item of raum.items; track item.index) {
                   <div class="app-grid mb-2" [formGroupName]="item.index">
                     <div class="app-col-12 app-col-md-6">
-                      <mat-checkbox formControlName="checked">
+                      <imr-checkbox formControlName="checked">
                         {{ item.name }} (Soll: {{ item.menge }} {{ item.einheit }})
-                      </mat-checkbox>
+                      </imr-checkbox>
                     </div>
 
                     <div class="app-col-12 app-col-md-6">
-                      <mat-form-field >
-                        <mat-label>Notiz</mat-label>
+                      <imr-form-field >
+                        <imr-label>Notiz</imr-label>
                         <input matInput formControlName="notiz" placeholder="Optional" />
-                      </mat-form-field>
+                      </imr-form-field>
                     </div>
                   </div>
                 }
-              </mat-card>
+              </imr-card>
             }
           </div>
 
@@ -49,6 +48,5 @@
             Checkliste speichern
           </button>
         </form>
-    </mat-card-content>
-  </mat-card>
+  </imr-card>
 </section>

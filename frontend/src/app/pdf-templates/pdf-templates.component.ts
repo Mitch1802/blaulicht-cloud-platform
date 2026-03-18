@@ -15,40 +15,41 @@ import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
 import { MatButton } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { Router } from '@angular/router';
-import { ImrHeaderComponent } from '../imr-ui-library';
+import {
+  ImrCardComponent,
+  ImrErrorComponent,
+  ImrFormFieldComponent,
+  ImrHeaderComponent,
+  ImrIconComponent,
+  ImrLabelComponent,
+  ImrOptionComponent,
+  ImrSelectComponent,
+} from '../imr-ui-library';
 import { FormatService } from '../helpers/format.service';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatIcon } from '@angular/material/icon';
-import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { IPdfTemplate } from '../_interface/pdf_template';
-import { MatOption, MatSelect } from '@angular/material/select';
 
 @Component({
   selector: 'app-pdf-templates',
   imports: [
     ImrHeaderComponent,
-    MatCardModule,
+    ImrCardComponent,
     FormsModule,
     ReactiveFormsModule,
-    MatFormField,
-    MatSelect,
-    MatOption,
-    MatLabel,
+    ImrFormFieldComponent,
+    ImrSelectComponent,
+    ImrOptionComponent,
+    ImrLabelComponent,
     MatButton,
     MatInputModule,
-    MatError,
-    MatAutocompleteModule,
+    ImrErrorComponent,
     MatTableModule,
     MatSortModule,
-    MatPaginatorModule,
-    MatIcon
+    ImrIconComponent,
   ],
   templateUrl: './pdf-templates.component.html',
   styleUrl: './pdf-templates.component.sass'

@@ -1,4 +1,4 @@
-<imr-header [breadcrumb]="breadcrumb"></imr-header>
+﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <imr-page-layout [title]="title" class="homepage-page">
   <imr-section-card title="Dienstpostenplan verwalten">
@@ -16,8 +16,8 @@
         <section class="plan-section">
           <header class="plan-section-head app-grid">
             <div class="app-col-12 app-col-lg-4">
-              <mat-form-field class="imr-full-width" hintLabel="* Pflichtfeld">
-                <mat-label>Sektionstitel</mat-label>
+              <imr-form-field class="imr-full-width" hintLabel="* Pflichtfeld">
+                <imr-label>Sektionstitel</imr-label>
                 <input
                   matInput
                   [(ngModel)]="section.title"
@@ -25,11 +25,11 @@
                   (ngModelChange)="onSectionMetaChanged(section)"
                   placeholder="z. B. Kommando"
                 />
-              </mat-form-field>
+              </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-3">
-              <mat-form-field class="imr-full-width" hintLabel="* Pflichtfeld">
-                <mat-label>Sektions-ID</mat-label>
+              <imr-form-field class="imr-full-width" hintLabel="* Pflichtfeld">
+                <imr-label>Sektions-ID</imr-label>
                 <input
                   matInput
                   [(ngModel)]="section.id"
@@ -37,7 +37,7 @@
                   (ngModelChange)="onSectionMetaChanged(section)"
                   placeholder="kommando"
                 />
-              </mat-form-field>
+              </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-5 section-actions">
               <button mat-flat-button color="accent" type="button" (click)="addPosition(section)" [disabled]="loading">
@@ -53,8 +53,8 @@
             @for (row of section.members; track row.local_id; let rowIndex = $index) {
               <article class="plan-row app-grid">
                 <div class="app-col-12 app-col-lg-3">
-                  <mat-form-field class="imr-full-width" hintLabel="* Pflichtfeld">
-                    <mat-label>Position</mat-label>
+                  <imr-form-field class="imr-full-width" hintLabel="* Pflichtfeld">
+                    <imr-label>Position</imr-label>
                     <input
                       matInput
                       [(ngModel)]="row.position"
@@ -62,12 +62,12 @@
                       (ngModelChange)="onRowChanged(section, row, rowIndex)"
                       placeholder="z. B. Kommandant"
                     />
-                  </mat-form-field>
+                  </imr-form-field>
                 </div>
 
                 <div class="app-col-12 app-col-lg-4">
-                  <mat-form-field class="imr-full-width">
-                    <mat-label>Name auswaehlen</mat-label>
+                  <imr-form-field class="imr-full-width">
+                    <imr-label>Name auswaehlen</imr-label>
                     <input
                       matInput
                       [formControl]="getMitgliedControl(row)"
@@ -76,13 +76,13 @@
                     />
                     <mat-autocomplete #mitgliedAuto="matAutocomplete" (optionSelected)="onMitgliedSelected(row, $event)">
                       @for (mitglied of getFilteredMitglieder(row); track mitglied.pkid) {
-                        <mat-option [value]="mitglied.pkid">{{ getMitgliedLabel(mitglied) }}</mat-option>
+                        <imr-option [value]="mitglied.pkid">{{ getMitgliedLabel(mitglied) }}</imr-option>
                       }
                       @if (getFilteredMitglieder(row).length === 0) {
-                        <mat-option disabled>Keine Mitglieder gefunden.</mat-option>
+                        <imr-option disabled>Keine Mitglieder gefunden.</imr-option>
                       }
                     </mat-autocomplete>
-                  </mat-form-field>
+                  </imr-form-field>
                 </div>
 
                 <div class="app-col-12 app-col-lg-5">

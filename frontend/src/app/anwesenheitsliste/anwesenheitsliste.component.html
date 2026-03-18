@@ -1,4 +1,4 @@
-<imr-header [breadcrumb]="breadcrumb"></imr-header>
+﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <imr-page-layout [title]="title" class="anwesenheitsliste-page">
   <imr-section-card title="Anwesenheitslisten verwalten">
@@ -44,57 +44,57 @@
 
       <imr-form-grid>
         <div class="app-col-12 mb-3">
-          <mat-form-field hintLabel="* Pflichtfeld" class="imr-full-width">
-            <mat-label>Titel</mat-label>
+          <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width">
+            <imr-label>Titel</imr-label>
             <input matInput type="text" formControlName="titel" />
             @if (formModul.controls['titel'].hasError('required')) {
-              <mat-error>Titel ist erforderlich!</mat-error>
+              <imr-error>Titel ist erforderlich!</imr-error>
             }
-          </mat-form-field>
+          </imr-form-field>
         </div>
         <div class="app-col-6 mb-3">
-          <mat-form-field class="imr-full-width">
-            <mat-label>Datum (TT.MM.JJJJ)</mat-label>
+          <imr-form-field class="imr-full-width">
+            <imr-label>Datum (TT.MM.JJJJ)</imr-label>
             <input matInput type="text" formControlName="datum" appDateInputMask="dmy" />
             @if (formModul.controls['datum'].hasError('pattern')) {
-              <mat-error>Ungültiges Datumsformat!</mat-error>
+              <imr-error>Ungültiges Datumsformat!</imr-error>
             }
-          </mat-form-field>
+          </imr-form-field>
         </div>
         <div class="app-col-6 mb-3">
-          <mat-form-field class="imr-full-width">
-            <mat-label>Ort</mat-label>
+          <imr-form-field class="imr-full-width">
+            <imr-label>Ort</imr-label>
             <input matInput type="text" formControlName="ort" />
-          </mat-form-field>
+          </imr-form-field>
         </div>
         <div class="app-col-12 app-col-lg-12 mb-3">
-          <mat-form-field class="imr-full-width">
-            <mat-label>Notiz</mat-label>
+          <imr-form-field class="imr-full-width">
+            <imr-label>Notiz</imr-label>
             <textarea matInput formControlName="notiz" rows="5"></textarea>
-          </mat-form-field>
+          </imr-form-field>
         </div>
         <div class="app-col-12 app-col-lg-12 mb-3">
           <div class="autocomplete-multi">
-            <mat-form-field class="imr-full-width" hintLabel="* Pflichtfeld">
-              <mat-label>Mitglieder</mat-label>
-              <mat-select formControlName="mitglied_ids" multiple>
-                <mat-select-trigger>
+            <imr-form-field class="imr-full-width" hintLabel="* Pflichtfeld">
+              <imr-label>Mitglieder</imr-label>
+              <imr-select formControlName="mitglied_ids" [multiple]="true">
+                <imr-select-trigger>
                   {{ mitgliederAuswahlTriggerText }}
                   @if (mitgliederAuswahlCounter > 1) {
                     <span class="selection-counter">(+{{ mitgliederAuswahlCounter - 1 }})</span>
                   }
-                </mat-select-trigger>
+                </imr-select-trigger>
 
                 @for (mitglied of sortedMitgliedOptionen; track mitglied.pkid) {
-                  <mat-option [value]="mitglied.pkid">
+                  <imr-option [value]="mitglied.pkid">
                     {{ mitglied.stbnr }} - {{ mitglied.vorname }} {{ mitglied.nachname }}
-                  </mat-option>
+                  </imr-option>
                 }
-              </mat-select>
+              </imr-select>
               @if (formModul.controls['mitglied_ids'].value.length === 0) {
-                <mat-error>Mindestens ein Mitglied ist erforderlich!</mat-error>
+                <imr-error>Mindestens ein Mitglied ist erforderlich!</imr-error>
               }
-            </mat-form-field>
+            </imr-form-field>
 
             <p class="selection-description">Ausgewählt: {{ mitgliederAuswahlCounter }}</p>
           </div>
@@ -129,10 +129,10 @@
                     }
                     <div class="preview-meta">
                       <button mat-flat-button class="imr-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(getFilePreviewUrl(file))">
-                        <mat-icon>open_in_new</mat-icon>
+                        <imr-icon>open_in_new</imr-icon>
                       </button>
                       <button mat-flat-button class="imr-action-btn" type="button" color="warn" aria-label="Datei entfernen" (click)="removeSelectedFoto(i)">
-                        <mat-icon>delete</mat-icon>
+                        <imr-icon>delete</imr-icon>
                       </button>
                     </div>
                   </article>
@@ -151,10 +151,10 @@
                     }
                     <div class="preview-meta">
                       <button mat-flat-button class="imr-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(foto.foto_url)">
-                        <mat-icon>open_in_new</mat-icon>
+                        <imr-icon>open_in_new</imr-icon>
                       </button>
                       <button mat-flat-button class="imr-action-btn" type="button" color="warn" aria-label="Datei löschen" (click)="loescheBestehendesFoto(foto)">
-                        <mat-icon>delete</mat-icon>
+                        <imr-icon>delete</imr-icon>
                       </button>
                     </div>
                   </article>
@@ -179,11 +179,11 @@
 
     <imr-table-wrap [hidden]="!formModul.disabled">
       <div class="table-toolbar">
-        <mat-form-field appearance="outline">
-          <mat-label>Suchen</mat-label>
+        <imr-form-field appearance="outline">
+          <imr-label>Suchen</imr-label>
           <input matInput #input (keyup)="applyFilter(input.value)" placeholder="Datum, Titel oder Ort" />
-          <mat-icon matSuffix>search</mat-icon>
-        </mat-form-field>
+          <imr-suffix><imr-icon>search</imr-icon></imr-suffix>
+        </imr-form-field>
       </div>
 
       <table
@@ -220,7 +220,7 @@
               (click)="auswahlBearbeiten(element)"
               [attr.aria-label]="'Anwesenheitsliste ' + element.titel + ' bearbeiten'"
             >
-              <mat-icon class="m-0">edit</mat-icon>
+              <imr-icon class="m-0">edit</imr-icon>
             </button>
           </td>
         </ng-container>
@@ -230,7 +230,7 @@
         <tr class="mat-row" *matNoDataRow>
           <td class="mat-cell table-empty-cell" [attr.colspan]="sichtbareSpalten.length">
             <div class="table-empty-state compact">
-              <mat-icon class="table-empty-icon">event</mat-icon>
+              <imr-icon class="table-empty-icon">event</imr-icon>
               <span class="table-empty-title">Keine Anwesenheitslisten gefunden</span>
               <span class="table-empty-copy">Bitte Filter anpassen oder neue Liste anlegen.</span>
             </div>
@@ -238,12 +238,12 @@
         </tr>
       </table>
 
-      <mat-paginator
+      <imr-paginator
         [pageSizeOptions]="[10, 50, 100]"
         showFirstLastButtons
         aria-label="Auswahl Anzahl der sichtbaren Elemente"
       >
-      </mat-paginator>
+      </imr-paginator>
     </imr-table-wrap>
   </imr-section-card>
 </imr-page-layout>

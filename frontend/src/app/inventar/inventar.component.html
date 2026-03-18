@@ -1,16 +1,14 @@
-<imr-header [breadcrumb]="breadcrumb"></imr-header>
+﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <section class="inventar-page">
   <header class="page-head">
     <h1>{{ title }}</h1>
   </header>
 
-  <mat-card class="imr-card">
+  <imr-card class="imr-card">
     <div class="imr-card__head">
       <h2>Inventar verwalten</h2>
     </div>
-
-    <mat-card-content>
       <div class="imr-top-actions">
         <button
           mat-flat-button
@@ -53,41 +51,41 @@
 
           <section class="app-grid imr-form-grid">
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <mat-form-field hintLabel="* Pflichtfeld" class="imr-full-width">
-                <mat-label>Bezeichnung</mat-label>
+              <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width">
+                <imr-label>Bezeichnung</imr-label>
                 <input matInput type="text" formControlName="bezeichnung" />
                 @if (formModul.controls['bezeichnung'].hasError('required')) {
-                <mat-error> bezeichnung ist erforderlich! </mat-error>
+                <imr-error> bezeichnung ist erforderlich! </imr-error>
                 }
-              </mat-form-field>
+              </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <mat-form-field class="imr-full-width">
-                <mat-label>Anzahl</mat-label>
+              <imr-form-field class="imr-full-width">
+                <imr-label>Anzahl</imr-label>
                 <input matInput type="number" formControlName="anzahl" />
-              </mat-form-field>
+              </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <mat-form-field class="imr-full-width">
-                <mat-label>Lagerort</mat-label>
+              <imr-form-field class="imr-full-width">
+                <imr-label>Lagerort</imr-label>
                 <input matInput type="text" formControlName="lagerort" />
-              </mat-form-field>
+              </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <mat-form-field class="imr-full-width">
-                <mat-label>Wartung zuletzt erledigt</mat-label>
+              <imr-form-field class="imr-full-width">
+                <imr-label>Wartung zuletzt erledigt</imr-label>
                 <input matInput type="date" formControlName="wartung_zuletzt_am" appDateInputMask="iso" />
-              </mat-form-field>
+              </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <mat-form-field class="imr-full-width">
-                <mat-label>Nächste Wartung</mat-label>
+              <imr-form-field class="imr-full-width">
+                <imr-label>Nächste Wartung</imr-label>
                 <input matInput type="date" formControlName="wartung_naechstes_am" appDateInputMask="iso" />
-              </mat-form-field>
+              </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-12 mb-3">
               <div class="leihstatus-checkbox">
-                <mat-checkbox formControlName="ist_verliehen">Aktuell verliehen</mat-checkbox>
+                <imr-checkbox formControlName="ist_verliehen">Aktuell verliehen</imr-checkbox>
               </div>
             </div>
             @if (isVerliehenAktiv()) {
@@ -112,19 +110,19 @@
                 @for (eintrag of verleihungenForm; track $index) {
                 <div class="imr-lending-row app-grid">
                   <div class="app-col-12 app-col-lg-4 mb-2">
-                    <mat-form-field class="imr-full-width">
-                      <mat-label>Entlehner</mat-label>
+                    <imr-form-field class="imr-full-width">
+                      <imr-label>Entlehner</imr-label>
                       <input
                         matInput
                         type="text"
                         [(ngModel)]="eintrag.an"
                         [ngModelOptions]="{ standalone: true }"
                       />
-                    </mat-form-field>
+                    </imr-form-field>
                   </div>
                   <div class="app-col-12 app-col-lg-3 mb-2">
-                    <mat-form-field class="imr-full-width">
-                      <mat-label>Anzahl</mat-label>
+                    <imr-form-field class="imr-full-width">
+                      <imr-label>Anzahl</imr-label>
                       <input
                         matInput
                         type="number"
@@ -132,11 +130,11 @@
                         [(ngModel)]="eintrag.anzahl"
                         [ngModelOptions]="{ standalone: true }"
                       />
-                    </mat-form-field>
+                    </imr-form-field>
                   </div>
                   <div class="app-col-12 app-col-lg-3 mb-2">
-                    <mat-form-field class="imr-full-width">
-                      <mat-label>Verliehen bis</mat-label>
+                    <imr-form-field class="imr-full-width">
+                      <imr-label>Verliehen bis</imr-label>
                       <input
                         matInput
                         type="date"
@@ -144,7 +142,7 @@
                         [(ngModel)]="eintrag.bis"
                         [ngModelOptions]="{ standalone: true }"
                       />
-                    </mat-form-field>
+                    </imr-form-field>
                   </div>
                   <div class="app-col-12 app-col-lg-2 mb-2 imr-lending-row-remove">
                     <button
@@ -167,10 +165,10 @@
             </div>
             }
             <div class="app-col-12 app-col-lg-12 mb-3">
-              <mat-form-field class="imr-full-width">
-                <mat-label>Notiz</mat-label>
+              <imr-form-field class="imr-full-width">
+                <imr-label>Notiz</imr-label>
                 <textarea matInput formControlName="notiz" rows="5"></textarea>
-              </mat-form-field>
+              </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
               <button mat-flat-button type="button" color="primary" class="upload-button" (click)="fotoUpload.click()">{{ btnText }}</button>
@@ -207,10 +205,10 @@
       </form>
 
       <div class="imr-table-wrap" [hidden]="!formModul.disabled">
-        <mat-form-field>
-          <mat-label>Suchen</mat-label>
+        <imr-form-field>
+          <imr-label>Suchen</imr-label>
           <input matInput #input (keyup)="applyFilter(input.value)" />
-        </mat-form-field>
+        </imr-form-field>
 
         <table
           mat-table
@@ -245,7 +243,7 @@
                 [disabled]="getVerfuegbarFuerInventar(element) <= 0"
                 matTooltip="Direkt ausborgen"
               >
-                <mat-icon class="m-0">assignment_returned</mat-icon>
+                <imr-icon class="m-0">assignment_returned</imr-icon>
               </button>
               <button
                 mat-flat-button
@@ -256,7 +254,7 @@
                 [disabled]="getAktiveVerleihungenAnzahl(element) <= 0"
                 matTooltip="Direkt Rueckgabe buchen"
               >
-                <mat-icon class="m-0">assignment_turned_in</mat-icon>
+                <imr-icon class="m-0">assignment_turned_in</imr-icon>
               </button>
               <button
                 mat-flat-button
@@ -265,7 +263,7 @@
                 type="button"
                 (click)="auswahlBearbeiten(element)"
               >
-                <mat-icon class="m-0">edit</mat-icon>
+                <imr-icon class="m-0">edit</imr-icon>
               </button>
             </td>
           </ng-container>
@@ -273,15 +271,14 @@
           <tr mat-row *matRowDef="let row; columns: sichtbareSpalten"></tr>
         </table>
 
-        <mat-paginator
+        <imr-paginator
           [pageSizeOptions]="[10, 50, 100]"
           showFirstLastButtons
           aria-label="Auswahl Anzahl der sichtbaren Elemente"
         >
-        </mat-paginator>
+        </imr-paginator>
       </div>
-    </mat-card-content>
-  </mat-card>
+  </imr-card>
 </section>
 
 @if (ausborgenModalOffen && ausborgenArtikel) {
@@ -300,7 +297,7 @@
     <header class="imr-transaction-head">
       <h3 id="ausborgen-modal-title">Inventar ausborgen</h3>
       <button mat-icon-button type="button" (click)="closeAusborgenModal()" aria-label="Modal schließen">
-        <mat-icon>close</mat-icon>
+        <imr-icon>close</imr-icon>
       </button>
     </header>
 
@@ -312,23 +309,23 @@
     </p>
 
     <form [formGroup]="ausborgenForm" (ngSubmit)="ausborgenSpeichern()" class="imr-transaction-form">
-      <mat-form-field class="imr-full-width">
-        <mat-label>Entlehner</mat-label>
+      <imr-form-field class="imr-full-width">
+        <imr-label>Entlehner</imr-label>
         <input matInput type="text" formControlName="an" />
         @if (ausborgenForm.controls['an'].hasError('required') && ausborgenForm.controls['an'].touched) {
-        <mat-error>Bitte Empfaenger angeben.</mat-error>
+        <imr-error>Bitte Empfaenger angeben.</imr-error>
         }
-      </mat-form-field>
+      </imr-form-field>
 
-      <mat-form-field class="imr-full-width">
-        <mat-label>Anzahl</mat-label>
+      <imr-form-field class="imr-full-width">
+        <imr-label>Anzahl</imr-label>
         <input matInput type="number" min="1" formControlName="anzahl" />
-      </mat-form-field>
+      </imr-form-field>
 
-      <mat-form-field class="imr-full-width">
-        <mat-label>Verliehen bis</mat-label>
+      <imr-form-field class="imr-full-width">
+        <imr-label>Verliehen bis</imr-label>
         <input matInput type="date" formControlName="bis" appDateInputMask="iso" />
-      </mat-form-field>
+      </imr-form-field>
 
       <div class="imr-transaction-actions">
         <button mat-flat-button color="primary" type="button" (click)="closeAusborgenModal()">
@@ -359,7 +356,7 @@
     <header class="imr-transaction-head">
       <h3 id="rueckgabe-modal-title">Inventar Rueckgabe</h3>
       <button mat-icon-button type="button" (click)="closeRueckgabeModal()" aria-label="Modal schliessen">
-        <mat-icon>close</mat-icon>
+        <imr-icon>close</imr-icon>
       </button>
     </header>
 
@@ -371,24 +368,24 @@
     </p>
 
     <form [formGroup]="rueckgabeForm" (ngSubmit)="rueckgabeSpeichern()" class="imr-transaction-form">
-      <mat-form-field class="imr-full-width">
-        <mat-label>Verleihung</mat-label>
-        <mat-select formControlName="eintragIndex" (selectionChange)="onRueckgabeAuswahlChange()">
+      <imr-form-field class="imr-full-width">
+        <imr-label>Verleihung</imr-label>
+        <imr-select formControlName="eintragIndex" (selectionChange)="onRueckgabeAuswahlChange()">
           @for (eintrag of rueckgabeVerleihungen; track $index) {
-          <mat-option [value]="$index">
+          <imr-option [value]="$index">
             {{ eintrag.an }} - {{ eintrag.anzahl }} Stk
             @if (eintrag.bis) {
               (bis {{ formatService.formatDatum(eintrag.bis) }})
             }
-          </mat-option>
+          </imr-option>
           }
-        </mat-select>
-      </mat-form-field>
+        </imr-select>
+      </imr-form-field>
 
-      <mat-form-field class="imr-full-width">
-        <mat-label>Rueckgabe Anzahl</mat-label>
+      <imr-form-field class="imr-full-width">
+        <imr-label>Rueckgabe Anzahl</imr-label>
         <input matInput type="number" min="1" [max]="getRueckgabeMaxMenge()" formControlName="anzahl" />
-      </mat-form-field>
+      </imr-form-field>
 
       <p class="imr-transaction-note">
         Maximal: {{ getRueckgabeMaxMenge() }} | Rest fuer diese Verleihung nach Rueckgabe: {{ getRueckgabeRestNachEingabe() }}

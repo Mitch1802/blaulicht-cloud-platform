@@ -83,7 +83,7 @@ Effekt:
 ### A) Form oben, Tabelle darunter (Standard-Modul)
 
 ```html
-<section class="app-grid ui-form-grid">
+<section class="app-grid imr-form-grid">
   <div class="app-col-12">
     <!-- Formular-Card -->
   </div>

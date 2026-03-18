@@ -4,28 +4,30 @@ import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
-import { ImrHeaderComponent } from '../../imr-ui-library';
-import { MatCardModule } from '@angular/material/card';
+import {
+  ImrCardComponent,
+  ImrFormFieldComponent,
+  ImrHeaderComponent,
+  ImrLabelComponent,
+  ImrPaginatorComponent,
+} from '../../imr-ui-library';
 import { IAtemschutzGeraetProtokoll } from 'src/app/_interface/atemschutz_geraet_protokoll';
 import { IMitglied } from 'src/app/_interface/mitglied';
 import { MatSort, MatSortModule } from '@angular/material/sort';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'app-atemschutz-dienstbuch',
   imports: [
     ImrHeaderComponent,
-    MatCardModule,
+    ImrCardComponent,
+    ImrFormFieldComponent,
+    ImrLabelComponent,
+    ImrPaginatorComponent,
     MatTableModule,
     MatSortModule,
-    MatPaginatorModule,
-    MatFormFieldModule,
     MatInputModule,
-    MatIconModule,
   ],
   templateUrl: './atemschutz-dienstbuch.component.html',
   styleUrl: './atemschutz-dienstbuch.component.sass'
@@ -53,7 +55,7 @@ export class AtemschutzDienstbuchComponent implements OnInit {
   sichtbareSpalten: string[] = ['datum', 'verwendung_typ', 'verwendung_min', 'stbnr', 'vorname', 'nachname'];
   dataSource = new MatTableDataSource<any>(this.list_protokoll_mitglieder);
 
-  @ViewChild(MatPaginator, { static: false }) paginator?: MatPaginator;
+  @ViewChild(ImrPaginatorComponent, { static: false }) paginator?: ImrPaginatorComponent;
   @ViewChildren(MatSort) sorts?: QueryList<MatSort>;
 
   ngOnInit(): void {
@@ -92,7 +94,7 @@ export class AtemschutzDienstbuchComponent implements OnInit {
           });
 
           this.dataSource = new MatTableDataSource(this.list_protokoll_mitglieder);
-          this.dataSource.paginator = this.paginator ?? null;
+          this.dataSource.paginator = this.paginator?.paginator ?? null;
           this.dataSource.sort = this.sorts?.first ?? null;
 
           this.summenBerechnen(this.protokoll);

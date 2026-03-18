@@ -23,32 +23,32 @@
             <div class="module-grid">
               @for (item of category.items; track item) {
                 @if (isPlannedItem(item)) {
-                  <mat-card class="module-card planned" aria-disabled="true">
+                  <imr-card cardClass="module-card planned" [wrapContent]="false" aria-disabled="true">
                     <span class="planned-badge">GEPLANT</span>
                     <div class="module-icon-shell">
-                      <mat-icon class="module-icon material-icons-outlined">{{ item.icon }}</mat-icon>
+                      <imr-icon class="module-icon material-icons-outlined">{{ item.icon }}</imr-icon>
                     </div>
                     <div class="module-card-body">
                       <div class="module-title" [matTooltip]="item.modul" matTooltipPosition="above">{{ item.modul }}</div>
                     </div>
-                  </mat-card>
+                  </imr-card>
                 } @else {
                   <a
                     class="module-card-link"
                     [routerLink]="item.routerlink"
                     [attr.aria-label]="'Modul öffnen: ' + item.modul"
                   >
-                    <mat-card class="module-card" [class.admin-only]="isAdminOnly(item)">
+                    <imr-card [cardClass]="'module-card' + (isAdminOnly(item) ? ' admin-only' : '')" [wrapContent]="false">
                       @if (isAdminOnly(item)) {
                         <span class="admin-badge">ADMIN</span>
                       }
                       <div class="module-icon-shell">
-                        <mat-icon class="module-icon material-icons-outlined">{{ item.icon }}</mat-icon>
+                        <imr-icon class="module-icon material-icons-outlined">{{ item.icon }}</imr-icon>
                       </div>
                       <div class="module-card-body">
                         <div class="module-title" [matTooltip]="item.modul" matTooltipPosition="above">{{ item.modul }}</div>
                       </div>
-                    </mat-card>
+                    </imr-card>
                   </a>
                 }
               }

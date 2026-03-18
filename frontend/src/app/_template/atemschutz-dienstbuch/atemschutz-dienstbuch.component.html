@@ -5,11 +5,10 @@
     <h1>Dienstbuch verwalten</h1>
   </header>
 
-  <mat-card class="imr-card">
+  <imr-card>
     <div class="imr-card__head">
       <h2>Dienstbuch verwalten</h2>
     </div>
-    <mat-card-content>
         <hr>
         <div class="app-grid">
             <h4 class="app-col-6 app-col-lg-2 mb-0">{{ jahrHeuer }}:</h4>
@@ -22,18 +21,18 @@
             </p>
           </div>
         <hr>
-        <mat-form-field
+        <imr-form-field
           appearance="outline"
-          class="mt-2 table-filter-compact"
+          fieldClass="mt-2 table-filter-compact"
         >
-          <mat-label>Filter</mat-label>
+          <imr-label>Filter</imr-label>
           <input
             matInput
             #filterInput
             (input)="applyFilter(filterInput.value)"
             placeholder="Suchen..."
           />
-        </mat-form-field>
+        </imr-form-field>
         <table
           mat-table
           [dataSource]="dataSource"
@@ -77,12 +76,11 @@
           <tr mat-row *matRowDef="let row; columns: sichtbareSpalten"></tr>
         </table>
 
-        <mat-paginator
+        <imr-paginator
           [pageSizeOptions]="pageOptions"
           showFirstLastButtons
           aria-label="Auswahl Anzahl der sichtbaren Elemente"
         >
-        </mat-paginator>
-    </mat-card-content>
-  </mat-card>
+        </imr-paginator>
+  </imr-card>
 </section>

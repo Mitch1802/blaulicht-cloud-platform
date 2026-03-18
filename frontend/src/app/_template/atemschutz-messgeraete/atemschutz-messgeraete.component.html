@@ -5,11 +5,10 @@
     <h1>Messgeräte verwalten</h1>
   </header>
 
-  <mat-card class="imr-card">
+  <imr-card>
     <div class="imr-card__head">
       <h2>Messgeräte verwalten</h2>
     </div>
-    <mat-card-content>
         @if (sichtbarkeitModul() == "tableListe")
         {
         <div class="imr-top-actions">
@@ -68,40 +67,40 @@
           </div>
           <section class="app-grid imr-form-grid">
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <mat-form-field hintLabel="* Pflichtfeld">
-                <mat-label>Inventar Nummer</mat-label>
+              <imr-form-field hintLabel="* Pflichtfeld">
+                <imr-label>Inventar Nummer</imr-label>
                 <input matInput type="text" formControlName="inv_nr" />
                 @if (formModul.controls['inv_nr'].hasError('required')) {
-                <mat-error> Inventar Nummer ist erforderlich! </mat-error>
+                <imr-error> Inventar Nummer ist erforderlich! </imr-error>
                 }
-              </mat-form-field>
+              </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <mat-form-field hintLabel="* Pflichtfeld">
-                <mat-label>Bezeichnung</mat-label>
+              <imr-form-field hintLabel="* Pflichtfeld">
+                <imr-label>Bezeichnung</imr-label>
                 <input matInput type="text" formControlName="bezeichnung" />
                 @if (formModul.controls['bezeichnung'].hasError('required')) {
-                <mat-error> Bezeichnung ist erforderlich! </mat-error>
+                <imr-error> Bezeichnung ist erforderlich! </imr-error>
                 }
-              </mat-form-field>
+              </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <mat-form-field>
-                <mat-label>Eigentümer</mat-label>
+              <imr-form-field>
+                <imr-label>Eigentümer</imr-label>
                 <input matInput type="text" formControlName="eigentuemer" />
-              </mat-form-field>
+              </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <mat-form-field>
-                <mat-label>Barcode</mat-label>
+              <imr-form-field>
+                <imr-label>Barcode</imr-label>
                 <input matInput type="text" formControlName="barcode" />
-              </mat-form-field>
+              </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <mat-form-field>
-                <mat-label>Baujahr</mat-label>
+              <imr-form-field>
+                <imr-label>Baujahr</imr-label>
                 <input matInput type="text" formControlName="baujahr" />
-              </mat-form-field>
+              </imr-form-field>
             </div>
           </section>
 
@@ -144,21 +143,21 @@
           </div>
           <section class="app-grid imr-form-grid">
             <div class="app-col-12 app-col-lg-12 mb-3">
-              <mat-form-field hintLabel="* Pflichtfeld">
-                <mat-label>Messgerät</mat-label>
-                <mat-select formControlName="geraet_id">
+              <imr-form-field hintLabel="* Pflichtfeld">
+                <imr-label>Messgerät</imr-label>
+                <imr-select formControlName="geraet_id">
                   @for (opt of messgeraete; track opt) {
-                  <mat-option [value]="opt.pkid"> {{ opt.inv_nr }} - {{ opt.bezeichnung }} </mat-option>
+                  <imr-option [value]="opt.pkid"> {{ opt.inv_nr }} - {{ opt.bezeichnung }} </imr-option>
                   }
-                </mat-select>
+                </imr-select>
                 @if (formPruefung.controls['geraet_id'].hasError('required')) {
-                <mat-error> Messgerät ist erforderlich! </mat-error>
+                <imr-error> Messgerät ist erforderlich! </imr-error>
                 }
-              </mat-form-field>
+              </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3">
-              <mat-form-field hintLabel="* Pflichtfeld">
-                <mat-label>Datum</mat-label>
+              <imr-form-field hintLabel="* Pflichtfeld">
+                <imr-label>Datum</imr-label>
                 <input
                   matInput
                   type="text"
@@ -167,34 +166,34 @@
                   placeholder="TT.MM.YYYY"
                 />
                 @if (formPruefung.controls['datum'].hasError('pattern')) {
-                <mat-error
-                  >Ungültiges Format. Bitte TT.MM.YYYY eingeben.</mat-error
+                <imr-error
+                  >Ungültiges Format. Bitte TT.MM.YYYY eingeben.</imr-error
                 >
                 } @if (formPruefung.controls['datum'].hasError('dateInvalid')) {
-                <mat-error>Kein existierendes Datum!</mat-error>
+                <imr-error>Kein existierendes Datum!</imr-error>
                 }
-              </mat-form-field>
+              </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3 checkbox-field checkbox-triplet">
-              <mat-checkbox formControlName="kalibrierung"
-                >Kalibrierung</mat-checkbox
+              <imr-checkbox formControlName="kalibrierung"
+                >Kalibrierung</imr-checkbox
               >
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3 checkbox-field checkbox-triplet">
-              <mat-checkbox formControlName="kontrolle_woechentlich"
-                >Kontrolle Wöchentlich</mat-checkbox
+              <imr-checkbox formControlName="kontrolle_woechentlich"
+                >Kontrolle Wöchentlich</imr-checkbox
               >
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3 checkbox-field checkbox-triplet">
-              <mat-checkbox formControlName="wartung_jaehrlich"
-                >Wartung Jährlich</mat-checkbox
+              <imr-checkbox formControlName="wartung_jaehrlich"
+                >Wartung Jährlich</imr-checkbox
               >
             </div>
             <div class="app-col-12 app-col-lg-12 mb-3">
-              <mat-form-field hintLabel="* Pflichtfeld">
-                <mat-label>Name Prüfer</mat-label>
+              <imr-form-field hintLabel="* Pflichtfeld">
+                <imr-label>Name Prüfer</imr-label>
                 <input matInput type="text" formControlName="name_pruefer" />
-              </mat-form-field>
+              </imr-form-field>
             </div>
           </section>
 
@@ -258,7 +257,7 @@
                 color="primary"
                 (click)="auswahlBearbeiten(element)"
               >
-                <mat-icon class="m-0">edit</mat-icon>
+                <imr-icon class="m-0">edit</imr-icon>
               </button>
               <button
                 mat-flat-button
@@ -267,7 +266,7 @@
                 (click)="neuePruefungVonMessgeraet(element)"
                 [hidden]="rolesResolved && !canEditProtocol"
               >
-                <mat-icon class="m-0">checklist</mat-icon>
+                <imr-icon class="m-0">checklist</imr-icon>
               </button>
               <button
                 mat-flat-button
@@ -275,7 +274,7 @@
                 color="primary"
                 (click)="showPruefungen(element)"
               >
-                <mat-icon class="m-0">assignment</mat-icon>
+                <imr-icon class="m-0">assignment</imr-icon>
               </button>
             </td>
           </ng-container>
@@ -314,7 +313,7 @@
                 color="primary"
                 (click)="auswahlBearbeitenProtokoll(element)"
               >
-                <mat-icon class="m-0">remove_red_eye</mat-icon>
+                <imr-icon class="m-0">remove_red_eye</imr-icon>
               </button>
             </td>
           </ng-container>
@@ -326,6 +325,5 @@
         </table>
         }
         <!-- TABELLE MESSGERÄTE PRÜFUNGEN ENDE -->
-    </mat-card-content>
-  </mat-card>
+  </imr-card>
 </section>

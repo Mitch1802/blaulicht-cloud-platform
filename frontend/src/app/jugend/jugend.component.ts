@@ -1,14 +1,10 @@
 import { Component, HostListener, OnInit, inject } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatSelectModule } from '@angular/material/select';
 import { Observable, of } from 'rxjs';
-import { ImrHeaderComponent } from '../imr-ui-library';
+import { IMR_UI_COMPONENTS } from '../imr-ui-library';
 import { ApiHttpService } from 'src/app/_service/api-http.service';
 import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
@@ -96,16 +92,12 @@ type IJugendFertigkeitsDatumKey =
   selector: 'app-jugend',
   standalone: true,
   imports: [
-    ImrHeaderComponent,
+    ...IMR_UI_COMPONENTS,
     FormsModule,
     ReactiveFormsModule,
-    MatCardModule,
     MatTableModule,
     MatButtonModule,
     MatInputModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatSelectModule,
     DateInputMaskDirective,
   ],
   templateUrl: './jugend.component.html',

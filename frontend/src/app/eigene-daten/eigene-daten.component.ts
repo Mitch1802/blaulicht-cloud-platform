@@ -4,16 +4,13 @@ import { ApiHttpService } from 'src/app/_service/api-http.service';
 import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
-
 import { MatButton } from '@angular/material/button';
 import { MatInput } from '@angular/material/input';
-import { ImrHeaderComponent } from '../imr-ui-library';
+import { ImrHeaderComponent, ImrCardComponent, ImrFormFieldComponent, ImrLabelComponent, ImrErrorComponent } from '../imr-ui-library';
 
 @Component({
   selector: 'app-eigene-daten',
-  imports: [ImrHeaderComponent, MatCardModule, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatButton, MatInput, MatError],
+  imports: [ImrHeaderComponent, ImrCardComponent, ImrFormFieldComponent, ImrLabelComponent, ImrErrorComponent, FormsModule, ReactiveFormsModule, MatButton, MatInput],
   templateUrl: './eigene-daten.component.html',
   styleUrl: './eigene-daten.component.sass'
 })

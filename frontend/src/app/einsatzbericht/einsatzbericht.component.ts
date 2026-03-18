@@ -1,25 +1,21 @@
 import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, FormGroupDirective, NgForm, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ImrHeaderComponent } from '../imr-ui-library';
+import { IMR_UI_COMPONENTS } from '../imr-ui-library';
 import { ApiHttpService } from 'src/app/_service/api-http.service';
 import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
-import { MatExpansionModule } from '@angular/material/expansion';
+import { MatSelectModule } from '@angular/material/select';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { ErrorStateMatcher } from '@angular/material/core';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { DateInputMaskDirective } from '../_directive/date-input-mask.directive';
+import { ImrPaginatorComponent } from '../imr-ui-library';
 
 type FahrzeugOption = {
   id: number;
@@ -73,20 +69,15 @@ type EinsatzberichtDto = {
   standalone: true,
   selector: 'app-einsatzbericht',
   imports: [
-    ImrHeaderComponent,
     ReactiveFormsModule,
-    MatCardModule,
-    MatFormFieldModule,
+    ...IMR_UI_COMPONENTS,
     MatInputModule,
-    MatSelectModule,
     MatButtonModule,
-    MatExpansionModule,
+    MatSelectModule,
     MatAutocompleteModule,
-    MatChipsModule,
-    MatIconModule,
     MatTableModule,
-    MatPaginatorModule,
     MatSortModule,
+    MatExpansionModule,
     DateInputMaskDirective,
   ],
   templateUrl: './einsatzbericht.component.html',
@@ -98,8 +89,8 @@ export class EinsatzberichtComponent implements OnInit {
   private collectionUtilsService = inject(CollectionUtilsService);
   private navigationService = inject(NavigationService);
   private uiMessageService = inject(UiMessageService);
-  @ViewChild(MatPaginator) set matPaginator(p: MatPaginator | undefined) {
-    if (p) this.dataSource.paginator = p;
+  @ViewChild(ImrPaginatorComponent) set matPaginator(p: ImrPaginatorComponent | undefined) {
+    if (p) this.dataSource.paginator = p.paginator;
   }
 
   @ViewChild(MatSort) set matSort(s: MatSort | undefined) {

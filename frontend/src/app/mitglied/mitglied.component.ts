@@ -7,17 +7,11 @@ import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
-import { ImrHeaderComponent } from '../imr-ui-library';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
-import { MatButton } from '@angular/material/button';
-import { MatInput } from '@angular/material/input';
-import { MatCheckbox } from '@angular/material/checkbox';
-import { MatOption, MatSelect } from '@angular/material/select';
+import { IMR_UI_COMPONENTS, ImrPaginatorComponent } from '../imr-ui-library';
 import { Router } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatIconModule } from '@angular/material/icon';
 import * as Papa from 'papaparse';
 import { MatSort } from '@angular/material/sort';
 import { DateInputMaskDirective } from '../_directive/date-input-mask.directive';
@@ -46,22 +40,13 @@ type ImportSummary = {
 @Component({
     selector: 'app-mitglied',
     imports: [
-    ImrHeaderComponent,
-    MatCardModule,
+    ...IMR_UI_COMPONENTS,
     FormsModule,
     ReactiveFormsModule,
-    MatFormField,
-    MatLabel,
-    MatButton,
-    MatInput,
-    MatError,
-    MatCheckbox,
-    MatSelect,
-    MatOption,
+    MatButtonModule,
+    MatInputModule,
     MatTableModule,
-    MatPaginatorModule,
     MatSort,
-    MatIconModule,
     DateInputMaskDirective,
 ],
     templateUrl: './mitglied.component.html',
@@ -78,8 +63,8 @@ export class MitgliedComponent implements OnInit {
 
   dataSource = new MatTableDataSource<IMitglied>([]);
 
-  @ViewChild(MatPaginator) set matPaginator(p: MatPaginator | undefined) {
-    if (p) this.dataSource.paginator = p;
+  @ViewChild(ImrPaginatorComponent) set matPaginator(p: ImrPaginatorComponent | undefined) {
+    if (p) this.dataSource.paginator = p.paginator;
   }
 
   @ViewChild(MatSort) set matSort(s: MatSort | undefined) {

@@ -3,10 +3,10 @@ import { ApiHttpService } from '../_service/api-http.service';
 import { AuthSessionService } from '../_service/auth-session.service';
 import { NavigationService } from '../_service/navigation.service';
 import { UiMessageService } from '../_service/ui-message.service';
-import { ImrHeaderComponent } from '../imr-ui-library';
-import { MatCardModule } from '@angular/material/card';
+import { ImrCardComponent } from '../imr-ui-library/imr-card.component';
+import { ImrHeaderComponent } from '../imr-ui-library/imr-header.component';
+import { ImrIconComponent } from '../imr-ui-library/imr-icon.component';
 import { RouterLink } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
@@ -16,9 +16,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   standalone: true,
   imports: [
     ImrHeaderComponent,
-    MatCardModule,
+    ImrCardComponent,
+    ImrIconComponent,
     RouterLink,
-    MatIconModule,
     MatTooltipModule
   ]
 })

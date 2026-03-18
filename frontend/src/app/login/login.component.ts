@@ -1,10 +1,8 @@
 import { Component, HostListener, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormField, MatLabel, MatSuffix, MatError } from '@angular/material/form-field';
+import { IMR_UI_COMPONENTS } from '../imr-ui-library';
 import { MatInput } from '@angular/material/input';
-import { MatIcon } from '@angular/material/icon';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { environment } from 'src/environments/environment';
 import { CommonModule } from '@angular/common';
@@ -26,17 +24,12 @@ type VersionInfo = {
     styleUrls: ['./login.component.sass'],
     imports: [
       CommonModule,
-      MatCardModule,
       FormsModule,
       ReactiveFormsModule,
-      MatFormField,
-      MatLabel,
+      ...IMR_UI_COMPONENTS,
       MatInput,
-      MatError,
-      MatIcon,
-      MatSuffix,
       MatButton,
-      MatIconButton
+      MatIconButton,
     ]
 })
 
