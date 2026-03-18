@@ -23,7 +23,7 @@
         </button>
 
         @if (tableVisible) {
-          <mat-form-field class="status-filter">
+          <mat-form-field class="status-filter" subscriptSizing="dynamic">
             <mat-label>Status</mat-label>
             <mat-select
               [(ngModel)]="statusFilter"
@@ -103,9 +103,14 @@
             </mat-form-field>
           </div>
           <div class="app-col-12 app-col-lg-12 mb-3">
-            <mat-form-field class="full-width">
+            <mat-form-field class="full-width html-source-field" subscriptSizing="dynamic">
               <mat-label>HTML Code</mat-label>
-              <textarea matInput formControlName="source" rows="10"></textarea>
+              <textarea
+                matInput
+                class="html-source-input"
+                formControlName="source"
+                rows="18"
+              ></textarea>
             </mat-form-field>
           </div>
         </section>

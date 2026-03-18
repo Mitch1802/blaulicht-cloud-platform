@@ -1,1 +1,25 @@
 // Intentionally minimal: styles are centralized in frontend/src/imr-catalog.sass
+
+.html-source-field
+	--mat-form-field-container-height: 340px
+
+:host ::ng-deep .html-source-field .mat-mdc-text-field-wrapper
+	min-height: 340px !important
+	height: auto !important
+
+:host ::ng-deep .html-source-field .mat-mdc-form-field-flex
+	min-height: 340px !important
+	height: auto !important
+	align-items: stretch !important
+
+:host ::ng-deep .html-source-field .mat-mdc-form-field-infix
+	min-height: 300px !important
+	height: auto !important
+	padding-top: .5rem !important
+	padding-bottom: .5rem !important
+
+.html-source-input
+	min-height: 300px !important
+	height: auto !important
+	line-height: 1.35
+	resize: vertical

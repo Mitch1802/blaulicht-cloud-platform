@@ -79,6 +79,7 @@
     "delete",
     "edit",
     "get_app",
+    "picture_as_pdf",
     "public",
     "remove_red_eye",
     "settings_backup_restore",
