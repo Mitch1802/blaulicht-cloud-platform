@@ -19,7 +19,7 @@
         <button
           mat-flat-button
           color="accent"
-          [hidden]="!formModul.disabled"
+          [hidden]="isEditMode"
           (click)="neueDetails()"
           type="button"
         >
@@ -27,10 +27,10 @@
         </button>
       </div>
 
+      @if (isEditMode) {
       <form
         [formGroup]="formModul"
         (ngSubmit)="datenSpeichern()"
-        [hidden]="formModul.disabled"
         class="edit-form"
       >
         <input hidden type="text"  formControlName="id" />
@@ -181,8 +181,10 @@
         <button mat-flat-button class="delete-action ui-delete-btn" color="warn" [hidden]="!formModul.controls['id'].value"
         type="button" (click)="datenLoeschen()">Daten löschen</button>
       </form>
+      }
 
-      <section [hidden]="!formModul.disabled" class="news-list-wrap">
+      @if (!isEditMode) {
+      <section class="news-list-wrap">
         @if (newsArray.length === 0) {
           <p class="empty">Noch keine News vorhanden.</p>
         } @else {
@@ -279,6 +281,7 @@
           </section>
         }
       </section>
+      }
     </mat-card-content>
   </mat-card>
 </section>

@@ -15,7 +15,6 @@ import { MatOption } from '@angular/material/core';
 import { MatButton } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { Router } from '@angular/router';
 import { ImrHeaderComponent } from '../imr-ui-library';
 import { MatIcon } from '@angular/material/icon';
 import { forkJoin } from 'rxjs';
@@ -66,7 +65,6 @@ export class NewsComponent implements OnInit {
   private collectionUtilsService = inject(CollectionUtilsService);
   private navigationService = inject(NavigationService);
   private uiMessageService = inject(UiMessageService);
-  router = inject(Router);
 
   title = 'News Verwaltung';
   modul = 'news/intern';
@@ -83,6 +81,7 @@ export class NewsComponent implements OnInit {
   fileFound = false;
   btnUploadStatus = false;
   imageModalOpen = false;
+  isEditMode = false;
   private selectedPreviewUrl = '';
   private focusBeforePhotoModal: HTMLElement | null = null;
 
@@ -115,6 +114,7 @@ export class NewsComponent implements OnInit {
     this.breadcrumb = this.navigationService.ladeBreadcrumb();
 
     this.formModul.disable();
+    this.isEditMode = false;
 
     forkJoin({
       newsResponse: this.apiHttpService.get(this.modul),
@@ -303,6 +303,7 @@ export class NewsComponent implements OnInit {
         try {
           let details: INews = erg;
           this.formModul.enable();
+          this.isEditMode = true;
           this.btnUploadStatus = true;
 
           // UI-Status für bestehendes Bild
@@ -339,11 +340,12 @@ export class NewsComponent implements OnInit {
 
   abbrechen(): void {
     this.uiMessageService.erstelleMessage('info', 'News nicht gespeichert!');
-    this.router.navigate(['/news']);
+    this.resetFormNachAktion();
   }
 
   neueDetails(): void {
     this.formModul.enable();
+    this.isEditMode = true;
     this.btnUploadStatus = true;
     this.btnText = 'Bild auswählen';
     this.fileName = '';
@@ -518,6 +520,7 @@ export class NewsComponent implements OnInit {
   private resetFormNachAktion(): void {
     this.formModul.reset({ id: '', template_id: '', template_name: '', title: '', text: '', typ: '', foto_url: '' });
     this.formModul.disable();
+    this.isEditMode = false;
     this.btnUploadStatus = false;
     this.btnText = 'Bild auswählen';
     this.fileName = '';
