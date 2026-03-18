@@ -20,6 +20,8 @@ import { MatSelect } from '@angular/material/select';
 import { MatOption } from '@angular/material/core';
 import { MatButton } from '@angular/material/button';
 import { MatInput } from '@angular/material/input';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatIcon } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { IPdfTemplate } from '../_interface/pdf_template';
 import jugendRegelConfig from '../jugend/config.json';
@@ -38,7 +40,9 @@ import startRegelConfig from '../start/konfig.json';
     MatOption,
     MatButton,
     MatInput,
-    MatError
+    MatError,
+    MatTableModule,
+    MatIcon
   ],
   templateUrl: './modul-konfiguration.component.html',
   styleUrls: ['./modul-konfiguration.component.sass']
@@ -62,8 +66,10 @@ export class ModulKonfigurationComponent implements OnInit {
     { key: 'pdf', label: 'PDF Templates Zuweisung' },
   ];
 
-  modulListe: any = [];
+  modulListe: any[] = [];
   private modulByKey = new Map<string, any>();
+  dataSource = new MatTableDataSource<any>([]);
+  sichtbareSpalten: string[] = ['modul', 'actions'];
 
   private readonly jugendDefaultKonfiguration = jugendRegelConfig;
   private readonly startDefaultKonfiguration = startRegelConfig;
@@ -127,6 +133,7 @@ export class ModulKonfigurationComponent implements OnInit {
     { key: 'idFmdListe', label: 'FMD: Listen (Tauglichkeit/Leistungstest/Untersuchungen)' },
     { key: 'idVerwaltungTombola', label: 'VERWALTUNG: Tombolabestätigung' },
     { key: 'idVerwaltungRechnung', label: 'VERWALTUNG: Rechnungsaufstellung' },
+    { key: 'idEinsatzberichtPdf', label: 'EINSATZBERICHT: Einsatzbericht PDF' },
   ] as const;
 
   pdfTemplates: IPdfTemplate[] = [];
@@ -137,14 +144,13 @@ export class ModulKonfigurationComponent implements OnInit {
     idFmdListe: new FormControl<string | null>(null, Validators.required),
     idVerwaltungTombola: new FormControl<string | null>(null, Validators.required),
     idVerwaltungRechnung: new FormControl<string | null>(null, Validators.required),
+    idEinsatzberichtPdf: new FormControl<string | null>(null),
   });
 
   ngOnInit(): void {
     sessionStorage.setItem('PageNumber', '2');
     sessionStorage.setItem('Page2', 'V_MK');
     this.breadcrumb = this.navigationService.ladeBreadcrumb();
-    this.formModul.enable();
-    this.formModul.controls['id'].disable();
 
     // Modul-Konfig laden
     this.apiHttpService.get(this.modul).subscribe({
@@ -152,6 +158,7 @@ export class ModulKonfigurationComponent implements OnInit {
         try {
           this.modulListe = erg.main ?? [];
           this.modulByKey = new Map(this.modulListe.map((x: any) => [x.modul, x]));
+          this.dataSource.data = this.modulListe;
         } catch (e: any) {
           this.uiMessageService.erstelleMessage('error', e);
         }
@@ -172,9 +179,7 @@ export class ModulKonfigurationComponent implements OnInit {
     if (!key) return;
 
     const details = this.modulByKey.get(key);
-
-    // Formular ist bereits enabled (wir bleiben immer im selben Formular)
-    this.formModul.enable();
+    this.formModul.controls['id'].disable({ emitEvent: false });
 
     // Neu (noch kein Datensatz)
     if (!details) {
@@ -224,6 +229,7 @@ export class ModulKonfigurationComponent implements OnInit {
         idFmdListe: this.pdfMappingForm.controls['idFmdListe'].value,
         idVerwaltungTombola: this.pdfMappingForm.controls['idVerwaltungTombola'].value,
         idVerwaltungRechnung: this.pdfMappingForm.controls['idVerwaltungRechnung'].value,
+        idEinsatzberichtPdf: this.pdfMappingForm.controls['idEinsatzberichtPdf'].value,
       };
 
       this.formModul.controls['konfiguration'].setValue(
@@ -239,8 +245,9 @@ export class ModulKonfigurationComponent implements OnInit {
         next: (saved: any) => {
           try {
             this.modulByKey.set(saved.modul, saved);
-            this.formModul.reset();
-            this.setzeSelectZurueck();
+            this.modulListe = [...this.modulListe, saved];
+            this.dataSource.data = this.modulListe;
+            this.formModul.disable();
             this.uiMessageService.erstelleMessage('success', 'Konfiguration gespeichert!');
           } catch (e: any) {
             this.uiMessageService.erstelleMessage('error', e);
@@ -253,8 +260,9 @@ export class ModulKonfigurationComponent implements OnInit {
         next: (saved: any) => {
           try {
             this.modulByKey.set(saved.modul, saved);
-            this.formModul.reset();
-            this.setzeSelectZurueck();
+            this.modulListe = this.modulListe.map((m: any) => m.id === saved.id ? saved : m);
+            this.dataSource.data = this.modulListe;
+            this.formModul.disable();
             this.uiMessageService.erstelleMessage('success', 'Konfiguration geändert!');
           } catch (e: any) {
             this.uiMessageService.erstelleMessage('error', e);
@@ -276,10 +284,8 @@ export class ModulKonfigurationComponent implements OnInit {
       next: () => {
         try {
           this.modulListe = this.modulListe.filter((m: any) => m.id !== id);
-
-          this.formModul.reset();
-          this.setzeSelectZurueck();
-
+          this.dataSource.data = this.modulListe;
+          this.formModul.disable();
           this.uiMessageService.erstelleMessage('success', 'Modul Konfiguration erfolgreich gelöscht!');
         } catch (e: any) {
           this.uiMessageService.erstelleMessage('error', e);
@@ -289,8 +295,36 @@ export class ModulKonfigurationComponent implements OnInit {
     });
   }
 
-  setzeSelectZurueck(): void {
-    this.formModul.controls['modul'].setValue('', { emitEvent: false });
+  get tableVisible(): boolean {
+    return this.formModul.disabled && this.dataSource.data.length > 0;
+  }
+
+  neueDetails(): void {
+    this.formModul.enable();
+    this.formModul.controls['id'].disable();
+    this.formModul.patchValue({ id: null, modul: '', konfiguration: '' }, { emitEvent: false });
+  }
+
+  abbrechen(): void {
+    this.formModul.disable();
+  }
+
+  auswahlBearbeiten(element: any): void {
+    this.formModul.enable();
+    this.formModul.controls['id'].disable();
+    this.formModul.patchValue({
+      id: element.id,
+      modul: element.modul,
+      konfiguration: JSON.stringify(element.konfiguration ?? {}, null, 2),
+    }, { emitEvent: false });
+    if (element.modul === 'pdf') {
+      this.loadPdfTemplatesOnce();
+      this.initPdfMappingFromConfigObject(element.konfiguration ?? {});
+    }
+  }
+
+  getModulLabel(key: string): string {
+    return this.verfuegbareModulListe.find((m: any) => m.key === key)?.label ?? key;
   }
 
   // -----------------------
@@ -315,6 +349,7 @@ export class ModulKonfigurationComponent implements OnInit {
       idFmdListe: cfg?.idFmdListe ?? null,
       idVerwaltungTombola: cfg?.idVerwaltungTombola ?? null,
       idVerwaltungRechnung: cfg?.idVerwaltungRechnung ?? null,
+      idEinsatzberichtPdf: cfg?.idEinsatzberichtPdf ?? null,
     }, { emitEvent: false });
 
     this.syncPdfMappingToKonfigurationControl();
