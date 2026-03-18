@@ -37,7 +37,7 @@
 
     // -- Steuerelemente (Buttons, Inputs, Chips) -------------------------------
     --imr-control-radius:     0
-    --imr-control-height:     36px
+    --imr-control-height:     40px
     --imr-control-bg:         #ffffff
     --imr-control-border:     #{rgba(theme.$imr-border, 1)}
     --imr-control-transition: transform .14s ease, box-shadow .14s ease, background-color .14s ease, border-color .14s ease
@@ -78,11 +78,16 @@
     --mdc-shape-large:        0px
     --mdc-text-field-container-shape: 0px
     --mdc-chip-container-shape-radius: 0px
+    --mat-chip-container-shape-radius: 0px
+    --mat-chip-with-avatar-avatar-shape-radius: 0px
     --mat-card-container-shape: 0px
     --mat-menu-container-shape: 0px
     --mdc-dialog-container-shape: 0px
     --mdc-snackbar-container-shape: 0px
     --mat-select-container-elevation-shadow: none
+    --mat-form-field-filled-container-shape: 0px
+    --mat-form-field-outlined-container-shape: 0px
+    --mat-autocomplete-container-shape: 0px
     --mdc-outlined-text-field-container-shape: 0px
     --mdc-filled-text-field-container-shape: 0px
 
@@ -410,10 +415,49 @@ mat-form-field,
     width: 100%
 
 .mat-mdc-form-field
+    --mat-form-field-container-height: var(--imr-control-height)
+    --mat-form-field-container-vertical-padding: .35rem
+    --mat-form-field-filled-container-shape: 0px
+    --mat-form-field-outlined-container-shape: 0px
+
     .mat-mdc-text-field-wrapper
-        border-radius: 0
+        border-radius: 0 !important
         background: #fff
         transition: background-color .16s ease, box-shadow .16s ease, border-color .16s ease
+
+    .mat-mdc-text-field-wrapper:not(.mdc-text-field--textarea)
+        min-height: var(--imr-control-height)
+        height: var(--imr-control-height)
+
+    .mat-mdc-text-field-wrapper:not(.mdc-text-field--textarea) .mat-mdc-form-field-flex
+        min-height: var(--imr-control-height)
+        height: var(--imr-control-height)
+        align-items: center
+
+    .mat-mdc-text-field-wrapper:not(.mdc-text-field--textarea) .mat-mdc-form-field-infix
+        min-height: calc(var(--imr-control-height) - 2px)
+        padding-top: .35rem
+        padding-bottom: .35rem
+
+    .mat-mdc-text-field-wrapper:not(.mdc-text-field--textarea) .mat-mdc-input-element,
+    .mat-mdc-text-field-wrapper:not(.mdc-text-field--textarea) .mat-mdc-select-value-text
+        line-height: 1.2
+
+    .mat-mdc-select-trigger
+        min-height: var(--imr-control-height)
+        height: var(--imr-control-height)
+        align-items: center
+
+    .mat-mdc-select-value
+        min-height: calc(var(--imr-control-height) - 2px)
+        display: flex
+        align-items: center
+
+    .mat-mdc-select-arrow-wrapper
+        align-self: center
+
+    textarea.mat-mdc-form-field-textarea-control
+        min-height: calc(var(--imr-control-height) * 2)
 
     &:hover .mat-mdc-text-field-wrapper
         background: #fff
@@ -442,6 +486,7 @@ mat-form-field,
 .mat-mdc-form-field .mdc-notched-outline__leading,
 .mat-mdc-form-field .mdc-notched-outline__notch,
 .mat-mdc-form-field .mdc-notched-outline__trailing
+    border-radius: 0 !important
     border-color: rgba(theme.$imr-border, .95)
 
 .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
@@ -465,6 +510,16 @@ mat-form-field,
 mat-select
     margin: 0px
     padding: 0px
+
+.mat-mdc-select-panel,
+.mat-mdc-select-panel.mdc-menu-surface
+    border-radius: 0 !important
+
+    .mat-mdc-option
+        min-height: var(--imr-control-height)
+
+.mat-mdc-autocomplete-panel
+    border-radius: 0 !important
 
 // -- Tabellen -----------------------------------------------------------------
 .mat-mdc-table
@@ -520,6 +575,7 @@ mat-select
 .mat-mdc-standard-chip
     --mdc-chip-container-height: var(--imr-control-height)
     --mdc-chip-container-shape-radius: 0px
+    --mat-chip-container-shape-radius: 0px
     border-radius: 0 !important
     height: var(--imr-control-height)
     min-height: var(--imr-control-height)
@@ -530,10 +586,15 @@ mat-select
     transition: var(--imr-control-transition)
 
     .mdc-evolution-chip__cell,
+    .mdc-evolution-chip__action,
     .mdc-evolution-chip__action--primary,
     .mdc-evolution-chip__action--trailing
         height: var(--imr-control-height)
         min-height: var(--imr-control-height)
+        border-radius: 0 !important
+
+    .mdc-evolution-chip__action::before,
+    .mdc-evolution-chip__action::after
         border-radius: 0 !important
 
     .mat-mdc-chip-focus-overlay,
@@ -962,10 +1023,10 @@ td.imr-action-cell
     > [mat-button],
     > [mat-icon-button],
     > .imr-action-btn
-        min-width: 2.25rem
-        width: 2.25rem
-        min-height: 2.25rem
-        height: 2.25rem
+        min-width: var(--imr-control-height)
+        width: var(--imr-control-height)
+        min-height: var(--imr-control-height)
+        height: var(--imr-control-height)
         padding: 0
         box-shadow: none
 
@@ -977,9 +1038,9 @@ td.imr-action-cell
         padding-right: 0 !important
 
 .imr-action-btn
-    min-width: 2.25rem
-    width: 2.25rem
-    height: 2.25rem
+    min-width: var(--imr-control-height)
+    width: var(--imr-control-height)
+    height: var(--imr-control-height)
     padding: 0
 
 // -- imr-chips ----------------------------------------------------------------
@@ -1280,9 +1341,9 @@ td.imr-action-cell
         align-items: center
 
     .ui-action-btn
-        min-width: 36px
-        width: 36px
-        height: 36px
+        min-width: var(--imr-control-height)
+        width: var(--imr-control-height)
+        height: var(--imr-control-height)
         padding: 0
 
         .mat-icon
@@ -2005,7 +2066,7 @@ td.imr-action-cell
         display: inline-flex
         align-items: center
         justify-content: center
-        min-height: 36px
+        min-height: var(--imr-control-height)
         padding: 0 .85rem
         border-radius: 0
         cursor: pointer
@@ -2185,6 +2246,16 @@ td.imr-action-cell
 
 // -- anwesenheitsliste helpers ---------------------------------------------
 .anwesenheitsliste-page
+    .selection-description
+        margin: -.2rem 0 0
+        font-size: .8rem
+        opacity: .72
+
+    .selection-counter
+        font-size: .78rem
+        opacity: .72
+        margin-left: .25rem
+
     .foto-doku-block
         border: 1px solid rgba(theme.$imr-border, .95)
         border-radius: 0
@@ -2246,9 +2317,9 @@ td.imr-action-cell
         border-top: 1px solid rgba(theme.$imr-border, .72)
 
         .ui-action-btn
-            min-width: 36px
-            width: 36px
-            height: 36px
+            min-width: var(--imr-control-height)
+            width: var(--imr-control-height)
+            height: var(--imr-control-height)
             padding: 0
 
             .mat-icon
@@ -2569,52 +2640,336 @@ td.imr-action-cell
 
 // -- news-extern helpers ---------------------------------------------------
 .news-extern-page
-    display: block
     min-height: 100vh
-    padding-bottom: 8.5rem
+    padding: clamp(.8rem, 2vw, 1.5rem)
+    background: radial-gradient(circle at 12% -18%, rgba(theme.$imr-primary-light, .34) 0%, rgba(theme.$imr-surface, .98) 43%, rgba(theme.$imr-surface-variant, .38) 100%)
 
-    .mat-mdc-card
-        background-color: transparent
-        border-color: transparent
-        border-radius: 0
-        box-shadow: none
+    .newsfeed-shell
+        width: min(1280px, 100%)
+        margin: 0 auto
+        display: grid
+        gap: 1rem
 
-        .mat-mdc-card-title
-            font-size: clamp(2.2rem, 6vw, 5rem)
-            color: theme.$imr-primary
+    .newsfeed-head
+        display: grid
+        gap: .45rem
+        padding: 1rem 1.1rem
+        border: 1px solid rgba(theme.$imr-border, .82)
+        background: linear-gradient(130deg, rgba(theme.$imr-primary-light, .36) 0%, rgba(theme.$imr-surface, .98) 54%, rgba(theme.$imr-surface-variant, .46) 100%)
+        box-shadow: 0 14px 30px rgba(theme.$imr-primary-dark, .08)
+
+    .feed-kicker
+        margin: 0
+        font-size: .78rem
+        letter-spacing: .18em
+        text-transform: uppercase
+        font-weight: 700
+        color: rgba(theme.$imr-primary-deep, .68)
+
+    h1
+        margin: 0
+        font-size: clamp(1.9rem, 4vw, 3.25rem)
+        line-height: 1.06
+        color: theme.$imr-primary-deep
+
+    .feed-copy
+        margin: 0
+        max-width: 52rem
+        line-height: 1.55
+        color: rgba(theme.$imr-primary-deep, .78)
+
+    .feed-meta
+        display: flex
+        flex-wrap: wrap
+        gap: .5rem
+
+    .feed-meta-chip
+        display: inline-flex
+        align-items: center
+        min-height: 32px
+        padding: 0 .75rem
+        border: 1px solid rgba(theme.$imr-border, .8)
+        background: rgba(theme.$imr-surface, .95)
+        font-size: .84rem
+        font-weight: 600
+        color: rgba(theme.$imr-primary-deep, .78)
+
+    .newsfeed-stage
+        border: 1px solid rgba(theme.$imr-border, .82)
+        background: rgba(theme.$imr-surface, .98)
+        box-shadow: 0 12px 28px rgba(theme.$imr-primary-dark, .08)
+
+    .newsfeed-stage.mat-mdc-card,
+    .newsfeed-stage.mdc-card
+        border-radius: 0 !important
+
+    .newsfeed-stage > .mat-mdc-card-content
+        padding: 1rem !important
+
+    .newsfeed-feature-stage
+        position: relative
+        overflow: hidden
+
+        &.is-transitioning
+            pointer-events: none
+
+    .newsfeed-feature
+        display: grid
+        grid-template-columns: minmax(320px, .95fr) minmax(0, 1.1fr)
+        gap: 1rem
+        align-items: stretch
+        transition: transform .42s cubic-bezier(.22, .61, .36, 1), opacity .42s ease
+
+    .newsfeed-feature-current
+        position: relative
+        z-index: 2
+
+    .newsfeed-feature-incoming
+        position: absolute
+        inset: 0
+        z-index: 1
+        opacity: 0
+        transform: translate3d(7%, 0, 0)
+
+    .newsfeed-feature-stage.direction-backward
+        .newsfeed-feature-incoming
+            transform: translate3d(-7%, 0, 0)
+
+    .newsfeed-feature-stage.transition-active.direction-forward
+        .newsfeed-feature-current
+            opacity: 0
+            transform: translate3d(-7%, 0, 0)
+
+        .newsfeed-feature-incoming
+            opacity: 1
+            transform: translate3d(0, 0, 0)
+
+    .newsfeed-feature-stage.transition-active.direction-backward
+        .newsfeed-feature-current
+            opacity: 0
+            transform: translate3d(7%, 0, 0)
+
+        .newsfeed-feature-incoming
+            opacity: 1
+            transform: translate3d(0, 0, 0)
+
+    .feature-media
+        margin: 0
+        border: 1px solid rgba(theme.$imr-border, .85)
+        background: rgba(theme.$imr-primary-light, .2)
+        overflow: hidden
+        min-height: 300px
 
         img
             width: 100%
-            border: 1px solid rgba(theme.$imr-border, .95)
-            border-radius: 0
+            height: 100%
+            object-fit: cover
+            display: block
 
-        h1
-            font-size: clamp(1.8rem, 4vw, 3rem)
-            text-align: left
+    .feature-media-placeholder
+        display: grid
+        place-items: center
+        border-style: dashed
+
+        span
+            font-size: clamp(2rem, 5vw, 3.2rem)
+            font-weight: 700
+            letter-spacing: .12em
+            color: rgba(theme.$imr-primary-deep, .48)
+
+    .feature-content
+        display: grid
+        align-content: start
+        gap: .75rem
+
+    .feature-top
+        display: grid
+        gap: .4rem
+
+    .feature-position
+        font-size: .82rem
+        letter-spacing: .08em
+        text-transform: uppercase
+        font-weight: 700
+        color: rgba(theme.$imr-primary-deep, .64)
+
+    .feature-progress
+        height: 6px
+        background: rgba(theme.$imr-border, .6)
+        overflow: hidden
+
+        span
+            display: block
+            height: 100%
+            background: linear-gradient(90deg, theme.$imr-primary 0%, theme.$imr-primary-deep 100%)
+            transition: width .2s ease
+
+    .feature-autoplay
+        display: grid
+        gap: .28rem
+        margin-top: .1rem
+
+    .feature-autoplay-label
+        font-size: .74rem
+        letter-spacing: .08em
+        text-transform: uppercase
+        font-weight: 700
+        color: rgba(theme.$imr-primary-deep, .58)
+
+    .feature-autoplay-track
+        height: 5px
+        background: rgba(theme.$imr-border, .45)
+        overflow: hidden
+
+        span
+            display: block
+            height: 100%
+            background: linear-gradient(90deg, rgba(theme.$imr-primary-light, .85) 0%, theme.$imr-primary 100%)
+            transition: width .12s linear
+
+    .feature-content h2
+        margin: 0
+        font-size: clamp(1.4rem, 3.2vw, 2.5rem)
+        line-height: 1.1
+        color: theme.$imr-primary-deep
+
+    .feature-content p
+        margin: 0
+        font-size: clamp(1rem, 1.8vw, 1.28rem)
+        line-height: 1.6
+        color: rgba(theme.$imr-primary-deep, .82)
+        white-space: pre-wrap
+
+    .feature-nav
+        display: flex
+        flex-wrap: wrap
+        gap: .55rem
+        margin-top: .15rem
+
+        > .mat-mdc-button-base,
+        > button[mat-flat-button],
+        > button[mat-stroked-button]
+            min-height: var(--imr-control-height)
+            height: var(--imr-control-height)
+
+    .empty-feed-state
+        display: grid
+        gap: .35rem
+        padding: 1rem
+        border: 1px dashed rgba(theme.$imr-primary, .38)
+        background: rgba(theme.$imr-primary-light, .12)
+
+        h2,
+        p
+            margin: 0
+
+        h2
+            color: theme.$imr-primary-deep
 
         p
-            font-size: clamp(1.05rem, 2.1vw, 1.5rem)
-            white-space: pre-wrap
+            color: rgba(theme.$imr-primary-deep, .72)
 
-    .termine
-        position: fixed
-        left: 0
-        right: 0
-        bottom: 0
-        width: 100%
-        background-color: rgba(theme.$imr-primary, .12)
-        padding: 10px
-        border-top: 1px solid rgba(theme.$imr-border, .95)
+    .termine-panel
+        position: sticky
+        bottom: .55rem
+        display: grid
+        gap: .7rem
+        padding: .9rem 1rem
+        border: 1px solid rgba(theme.$imr-border, .86)
+        background: rgba(theme.$imr-surface, .95)
+        backdrop-filter: blur(8px)
+        box-shadow: 0 14px 26px rgba(theme.$imr-primary-dark, .1)
 
-        h1
-            text-align: left
-            font-size: clamp(1.4rem, 3vw, 3rem)
-            margin: 5px
-            color: theme.$imr-primary
+    .termine-head
+        display: flex
+        align-items: center
+        justify-content: space-between
+        gap: .6rem
 
-        p
-            font-size: clamp(1rem, 2.4vw, 2rem)
-            margin: 5px
+        h2
+            margin: 0
+            font-size: clamp(1.1rem, 2.4vw, 1.65rem)
+            color: theme.$imr-primary-deep
+
+    .termine-count
+        display: inline-flex
+        align-items: center
+        justify-content: center
+        min-width: 2rem
+        min-height: 2rem
+        padding: 0 .55rem
+        border: 1px solid rgba(theme.$imr-border, .8)
+        background: rgba(theme.$imr-primary-light, .22)
+        font-weight: 700
+        color: theme.$imr-primary-deep
+
+    .termine-grid
+        display: grid
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr))
+        gap: .55rem
+
+    .termin-item
+        display: grid
+        gap: .18rem
+        padding: .65rem .7rem
+        border: 1px solid rgba(theme.$imr-border, .75)
+        background: rgba(theme.$imr-surface, .98)
+
+    .termin-date,
+    .termin-title
+        margin: 0
+
+    .termin-date
+        font-size: .82rem
+        font-weight: 700
+        letter-spacing: .04em
+        text-transform: uppercase
+        color: rgba(theme.$imr-primary-deep, .64)
+
+    .termin-title
+        font-size: .98rem
+        color: rgba(theme.$imr-primary-deep, .84)
+
+    .termine-empty
+        margin: 0
+        color: rgba(theme.$imr-primary-deep, .72)
+
+@media (max-width: 960px)
+    .news-extern-page
+        .newsfeed-feature
+            grid-template-columns: 1fr
+
+        .feature-media
+            min-height: 220px
+
+@media only screen and (max-width: 700px)
+    .news-extern-page
+        padding: .65rem
+
+        .newsfeed-head,
+        .newsfeed-stage > .mat-mdc-card-content,
+        .termine-panel
+            padding: .75rem
+
+        .feed-meta
+            flex-direction: column
+            align-items: stretch
+
+        .feature-content h2
+            font-size: 1.4rem
+
+        .feature-content p
+            font-size: 1rem
+
+        .feature-nav
+            button
+                width: 100%
+
+        .termine-grid
+            grid-template-columns: 1fr
+
+        .termine-panel
+            position: static
 
 // -- pdf helpers -----------------------------------------------------------
 .pdf-page
@@ -2723,9 +3078,9 @@ td.imr-action-cell
             border-bottom: 1px solid rgba(theme.$imr-border, .9)
 
         .ui-action-btn
-            min-width: 36px
-            width: 36px
-            height: 36px
+            min-width: var(--imr-control-height)
+            width: var(--imr-control-height)
+            height: var(--imr-control-height)
             padding: 0
 
             .mat-icon
@@ -2882,36 +3237,127 @@ td.imr-action-cell
 
 // -- news helpers -----------------------------------------------------------
 .news-page
+    .page-head
+        margin: 0 0 1.2rem
+
+        h1
+            margin: 0
+            color: theme.$imr-primary
+            font-size: clamp(1.5rem, 2.4vw, 2.1rem)
+            line-height: 1.2
+
+    .settings-card
+        border: 1px solid rgba(theme.$imr-border, .9)
+        border-radius: 0 !important
+        background: rgba(theme.$imr-surface, .96)
+        box-shadow: none
+
+    .settings-card.mat-mdc-card,
+    .settings-card.mdc-card
+        border-radius: 0 !important
+
+    .settings-card > .mat-mdc-card-content
+        padding: 1rem !important
+
     .top-actions
+        display: flex
+        align-items: center
+        flex-wrap: wrap
         gap: .6rem
-        margin: .2rem 0 .75rem
+        margin: .2rem 0 .8rem
+
+    .edit-form
+        display: grid
+        gap: .85rem
+        margin-top: .2rem
+
+    .form-actions
+        display: flex
+        flex-wrap: wrap
+        gap: .6rem
 
     .template-block,
     .news-block
         border: 1px solid rgba(theme.$imr-border, .9)
         border-radius: 0
         background: rgba(theme.$imr-surface, .94)
-        padding: .8rem .85rem .5rem
+        padding: .85rem
 
     .news-block
-        margin-top: .75rem
+        margin-top: .2rem
 
     .block-title
-        margin: 0 0 .45rem
+        margin: 0 0 .55rem
         color: theme.$imr-primary-deep
-        font-size: .95rem
+        font-size: 1rem
         font-weight: 600
 
     .template-grid,
     .news-grid
-        margin-top: .22rem
+        margin-top: .2rem
 
-    .news-grid
-        margin-top: .38rem
+    .upload-stage
+        display: grid
+        grid-template-columns: minmax(0, 1fr) auto
+        gap: .75rem 1rem
+        align-items: center
+        padding: .85rem
+        border: 1px solid rgba(theme.$imr-border, .78)
+        background: rgba(theme.$imr-surface, .98)
 
-    .delete-action
-        margin-top: .9rem
-        margin-bottom: .2rem
+        &.has-preview
+            border-color: rgba(theme.$imr-primary, .35)
+
+    .upload-stage-copy
+        display: grid
+        gap: .35rem
+
+    .upload-stage-label
+        font-size: .76rem
+        letter-spacing: .14em
+        text-transform: uppercase
+        font-weight: 700
+        color: rgba(theme.$imr-primary-deep, .65)
+
+    .upload-stage-file
+        font-weight: 600
+        color: theme.$imr-primary-deep
+
+        &.is-placeholder
+            font-weight: 500
+            opacity: .68
+
+    .upload-stage-actions
+        display: flex
+        align-items: center
+        justify-content: flex-end
+        gap: .55rem
+        flex-wrap: wrap
+
+    .preview-open-btn
+        min-height: var(--imr-control-height)
+        height: var(--imr-control-height)
+
+    .image-preview-tile
+        grid-column: 2
+        width: 176px
+        height: 112px
+        padding: .25rem
+        border: 1px solid rgba(theme.$imr-border, .82)
+        background: rgba(theme.$imr-surface, .98)
+        cursor: pointer
+        transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease
+
+        &:hover
+            transform: translateY(-1px)
+            border-color: rgba(theme.$imr-primary, .38)
+            box-shadow: 0 12px 24px rgba(theme.$imr-primary-dark, .12)
+
+        img
+            width: 100%
+            height: 100%
+            object-fit: cover
+            display: block
 
     .template-actions
         display: flex
@@ -2931,51 +3377,86 @@ td.imr-action-cell
         margin-top: 0
         margin-bottom: .3rem
 
+    .delete-action
+        margin-top: .1rem
+        margin-bottom: 0
+
     .news-list-wrap
-        margin-top: .65rem
+        margin-top: .55rem
 
     .news-table-wrap
         display: grid
-        gap: .55rem
+        gap: .65rem
+        padding: .8rem
+        border: 1px solid rgba(theme.$imr-border, .82)
+        background: rgba(theme.$imr-surface, .98)
 
         .table-toolbar
-            .table-status-badge
-                flex-shrink: 0
+            display: flex
+            justify-content: space-between
+            gap: .75rem
 
     .filter-field
+        width: min(360px, 100%)
         max-width: 360px
 
     .news-table
         width: 100%
 
     .mat-column-created_at
-        width: 170px
-        min-width: 170px
+        width: 206px
+        min-width: 206px
 
     .mat-column-typ
-        width: 72px
-        min-width: 72px
+        width: 126px
+        min-width: 126px
 
     .mat-column-actions
         width: 130px
         min-width: 130px
 
+    .news-date-cell,
+    .news-title-cell
+        display: grid
+        gap: .14rem
+
+    .news-date-primary,
+    .news-row-title
+        font-weight: 600
+        color: theme.$imr-primary-deep
+
+    .news-date-secondary,
+    .news-row-copy
+        font-size: .82rem
+        line-height: 1.45
+        color: rgba(theme.$imr-primary-deep, .68)
+
     .type-cell
         white-space: nowrap
-        text-align: center
+        text-align: left
 
-    .type-indicator
+    .type-pill
         display: inline-flex
         align-items: center
-        justify-content: center
-        line-height: 1.1
+        gap: .35rem
+        min-height: 32px
+        padding: 0 .7rem
+        border: 1px solid rgba(theme.$imr-border, .78)
+        background: rgba(theme.$imr-primary-light, .16)
+        font-size: .82rem
+        font-weight: 600
+        color: theme.$imr-primary-deep
+
+        &.is-extern
+            background: rgba(theme.$imr-primary-deep, .1)
+            border-color: rgba(theme.$imr-primary-deep, .2)
 
         .mat-icon
             margin: 0
-            font-size: 20px
-            width: 20px
-            height: 20px
-            line-height: 20px
+            font-size: 18px
+            width: 18px
+            height: 18px
+            line-height: 18px
 
     .empty
         opacity: .75
@@ -3024,6 +3505,9 @@ td.imr-action-cell
 
 @media only screen and (max-width: 700px)
     .news-page
+        .settings-card > .mat-mdc-card-content
+            padding: .75rem !important
+
         .top-actions,
         .form-actions
             button
@@ -3034,47 +3518,51 @@ td.imr-action-cell
                 width: 100%
 
         .template-block,
-        .news-block
-            padding: .75rem .7rem .35rem
+        .news-block,
+        .news-table-wrap
+            padding: .75rem .7rem .55rem
 
-        .news-block
-            margin-top: .55rem
+        .upload-stage
+            grid-template-columns: 1fr
+            padding: .8rem
+
+        .upload-stage-actions
+            justify-content: stretch
+
+            button
+                width: 100%
+
+        .image-preview-tile
+            grid-column: auto
+            width: 100%
+            height: 180px
 
         .block-title
-            margin-bottom: .2rem
             font-size: .9rem
 
-        .template-grid,
-        .news-grid
-            margin-top: .15rem
-
-        .news-grid
-            margin-top: .22rem
-
-        .delete-action
-            margin-top: .6rem
-            margin-bottom: .1rem
+        .news-table-wrap
+            .table-toolbar
+                flex-direction: column
+                align-items: stretch
 
         .mat-column-created_at
-            width: 130px
-            min-width: 130px
+            width: 148px
+            min-width: 148px
 
         .mat-column-title
-            min-width: 180px
+            min-width: 220px
 
         .mat-column-typ
-            width: 72px
-            min-width: 72px
+            width: 108px
+            min-width: 108px
 
         .mat-column-actions
             width: 116px
             min-width: 116px
 
-        .news-table-wrap
-            .table-toolbar
-                .table-status-badge
-                    width: 100%
-                    justify-content: center
+        .filter-field
+            width: 100%
+            max-width: none
 
     .news-modal
         padding: .65rem
@@ -3521,13 +4009,22 @@ td.imr-action-cell
         align-items: center
 
     .upload-row
+        display: flex
+        align-items: center
+        flex-wrap: wrap
         margin-top: .7rem
+        column-gap: 1rem
+        row-gap: .6rem
         padding: 0
+
+        .preview-grid
+            flex-basis: 100%
+            width: 100%
 
     .upload-label
         font-weight: 600
         display: inline-block
-        margin-bottom: .35rem
+        margin-bottom: 0
         color: theme.$imr-primary
 
     .file-input-hidden
@@ -3580,9 +4077,9 @@ td.imr-action-cell
         border-top: 1px solid rgba(theme.$imr-border, .72)
 
         .ui-action-btn
-            min-width: 36px
-            width: 36px
-            height: 36px
+            min-width: var(--imr-control-height)
+            width: var(--imr-control-height)
+            height: var(--imr-control-height)
             padding: 0
 
             .mat-icon
@@ -3731,9 +4228,9 @@ td.imr-action-cell
         align-items: center
 
         .ui-action-btn
-            min-width: 36px
-            width: 36px
-            height: 36px
+            min-width: var(--imr-control-height)
+            width: var(--imr-control-height)
+            height: var(--imr-control-height)
             padding: 0
 
     .status-badge

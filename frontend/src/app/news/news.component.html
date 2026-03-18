@@ -6,10 +6,6 @@
   </header>
 
   <mat-card class="settings-card">
-    <div class="section-head">
-      <h2>News verwalten</h2>
-    </div>
-
     <mat-card-content>
       <div class="top-actions">
         <button
@@ -20,37 +16,6 @@
         >
           Newsfeed anzeigen
         </button>
-        <!-- <form
-          [formGroup]="formAuswahl"
-          (ngSubmit)="auswahlBearbeiten()"
-          [hidden]="!formModul.disabled"
-        >
-          <section class="app-grid mt-3 mb-3">
-            <div class="app-col-12 app-col-lg-9">
-              <mat-form-field>
-                <mat-label>News auswählen</mat-label>
-                <mat-select formControlName="news">
-                  @for (opt of newsArray; track opt) {
-                    <mat-option [value]="opt.id">{{opt.created_at}} - {{opt.title}}</mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
-            </div>
-            <div
-            class="app-col-12 app-col-lg-3 m-0 app-grid auswahl-button"
-          >
-            <button
-              type="submit"
-              mat-flat-button
-              color="primary"
-              class="app-col-auto"
-              [disabled]="!formAuswahl.controls['news'].value"
-            >
-              Auswahl bearbeiten
-            </button>
-          </div>
-          </section>
-        </form> -->
         <button
           mat-flat-button
           color="accent"
@@ -68,31 +33,32 @@
         [hidden]="formModul.disabled"
         class="edit-form"
       >
-          <input hidden type="text"  formControlName="id" />
+        <input hidden type="text"  formControlName="id" />
 
-          <div class="form-actions">
-            <button
-            mat-flat-button
-            color="accent"
-            [hidden]="!formModul.valid"
-            type="submit"
-            >
-            Daten speichern
-            </button>
-            <button
-            mat-flat-button
-            color="primary"
-            [hidden]="formModul.disabled"
-            type="button"
-            (click)="abbrechen()"
-            >
-            Abbrechen
-            </button>
-          </div>
+        <div class="form-actions">
+          <button
+          mat-flat-button
+          color="accent"
+          [hidden]="!formModul.valid"
+          type="submit"
+          >
+          Daten speichern
+          </button>
+          <button
+          mat-flat-button
+          color="primary"
+          [hidden]="formModul.disabled"
+          type="button"
+          (click)="abbrechen()"
+          >
+          Abbrechen
+          </button>
+        </div>
 
-          <section class="template-block">
-            <h3 class="block-title">Vorlagenverwaltung</h3>
-            <section class="app-grid form-grid template-grid">
+        <section class="template-block">
+          <h3 class="block-title">Vorlagenverwaltung</h3>
+
+          <section class="app-grid form-grid template-grid">
               <div class="app-col-12 app-col-lg-6 mb-3">
                 <mat-form-field class="full-width" subscriptSizing="dynamic">
                   <mat-label>Vorlage auswählen</mat-label>
@@ -141,15 +107,16 @@
                   {{ formModul.controls['template_id'].value ? 'Vorlage aktualisieren' : 'Als Vorlage speichern' }}
                 </button>
               </div>
-              @if (templateArray.length === 0) {
-                <div class="app-col-12 template-hint">Noch keine Vorlagen vorhanden.</div>
-              }
-            </section>
+            @if (templateArray.length === 0) {
+              <div class="app-col-12 template-hint">Noch keine Vorlagen vorhanden.</div>
+            }
           </section>
+        </section>
 
-          <section class="news-block">
-            <h3 class="block-title">Newsbeitrag</h3>
-            <section class="app-grid form-grid news-grid">
+        <section class="news-block">
+          <h3 class="block-title">Newsbeitrag</h3>
+
+          <section class="app-grid form-grid news-grid">
               <div class="app-col-12 app-col-lg-6 mb-3">
                 <mat-form-field hintLabel="* Pflichtfeld" class="full-width">
                   <mat-label>Titel</mat-label>
@@ -183,20 +150,36 @@
                   }
                 </mat-form-field>
               </div>
-              <div class="app-col-12 app-col-lg-6 mb-3">
-                <button mat-flat-button type="button" color="primary" class="upload-button" (click)="fotoUpload.click()">{{btnText}}</button>
-                <input hidden #fotoUpload type="file" id="fotoUpload" accept=".jpg,.jpeg,.png" (change)="onFotoSelected($event)" />
-                <div >
+
+            <div class="app-col-12 mb-3">
+              <div class="upload-stage" [class.has-preview]="fileFound">
+                <div class="upload-stage-copy">
+                  <span class="upload-stage-label">Titelbild</span>
+                  <span class="upload-stage-file" [class.is-placeholder]="!fileFound">
+                    {{ fileFound ? fileName : 'Noch kein Bild ausgewählt.' }}
+                  </span>
+                </div>
+
+                <div class="upload-stage-actions">
+                  <button mat-flat-button type="button" color="primary" class="upload-button" (click)="fotoUpload.click()">{{btnText}}</button>
+                  <input hidden #fotoUpload type="file" id="fotoUpload" accept=".jpg,.jpeg,.png" (change)="onFotoSelected($event)" />
                   @if (fileFound==true) {
-                    <button mat-flat-button color="primary" type="button" (click)="openModal()">Bild öffnen</button>
+                    <button mat-flat-button color="primary" type="button" class="preview-open-btn" (click)="openModal()">Bild öffnen</button>
                   }
                 </div>
-              </div>
-            </section>
-          </section>
 
-            <button mat-flat-button class="delete-action ui-delete-btn" color="warn" [hidden]="!formModul.controls['id'].value"
-            type="button" (click)="datenLoeschen()">Daten löschen</button>
+                @if (fileFound==true) {
+                  <button type="button" class="image-preview-tile" (click)="openModal()" aria-label="Bildvorschau öffnen">
+                    <img [src]="filePfad" [alt]="fileName || 'News Bildvorschau'" />
+                  </button>
+                }
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <button mat-flat-button class="delete-action ui-delete-btn" color="warn" [hidden]="!formModul.controls['id'].value"
+        type="button" (click)="datenLoeschen()">Daten löschen</button>
       </form>
 
       <section [hidden]="!formModul.disabled" class="news-list-wrap">
@@ -220,26 +203,31 @@
             <table mat-table [dataSource]="newsDataSource" matSort class="news-table">
                 <ng-container matColumnDef="created_at">
                   <th mat-header-cell *matHeaderCellDef mat-sort-header>Datum</th>
-                  <td mat-cell *matCellDef="let element">{{ element.created_at }}</td>
+                  <td mat-cell *matCellDef="let element">
+                    <div class="news-date-cell">
+                      <span class="news-date-primary">{{ element.created_at }}</span>
+                      <span class="news-date-secondary">Update {{ element.updated_at }}</span>
+                    </div>
+                  </td>
                 </ng-container>
 
                 <ng-container matColumnDef="title">
                   <th mat-header-cell *matHeaderCellDef mat-sort-header>Titel</th>
-                  <td mat-cell *matCellDef="let element">{{ element.title }}</td>
+                  <td mat-cell *matCellDef="let element">
+                    <div class="news-title-cell">
+                      <span class="news-row-title">{{ element.title }}</span>
+                      <span class="news-row-copy">{{ getNewsExcerpt(element.text) }}</span>
+                    </div>
+                  </td>
                 </ng-container>
 
                 <ng-container matColumnDef="typ">
                   <th mat-header-cell *matHeaderCellDef mat-sort-header>Typ</th>
                   <td mat-cell *matCellDef="let element" class="type-cell">
-                    @if (element.typ == 'extern') {
-                      <span class="type-indicator" aria-label="Extern">
-                        <mat-icon>public</mat-icon>
-                      </span>
-                    } @else {
-                      <span class="type-indicator" aria-label="Intern">
-                        <mat-icon>home</mat-icon>
-                      </span>
-                    }
+                    <span class="type-pill" [class.is-extern]="element.typ == 'extern'" [attr.aria-label]="element.typ == 'extern' ? 'Extern' : 'Intern'">
+                      <mat-icon>{{ element.typ == 'extern' ? 'public' : 'home' }}</mat-icon>
+                      {{ element.typ == 'extern' ? 'Extern' : 'Intern' }}
+                    </span>
                   </td>
                 </ng-container>
 

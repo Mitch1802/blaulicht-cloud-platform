@@ -5,9 +5,8 @@ import { forkJoin } from 'rxjs';
 import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
 import { MatButton } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatOption } from '@angular/material/core';
-import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatIcon } from '@angular/material/icon';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
@@ -36,9 +35,8 @@ import { DateInputMaskDirective } from '../_directive/date-input-mask.directive'
     MatLabel,
     MatButton,
     MatInputModule,
+    MatSelectModule,
     MatOption,
-    MatAutocompleteModule,
-    MatChipsModule,
     MatError,
     MatTableModule,
     MatSortModule,
@@ -66,7 +64,6 @@ export class AnwesenheitslisteComponent implements OnInit {
   eintraege: IAnwesenheitsliste[] = [];
   mitglieder: IMitglied[] = [];
   private mitgliederMap = new Map<number, IMitglied>();
-  mitgliedSuche = new FormControl<string>('', { nonNullable: true });
   breadcrumb: any = [];
   dataSource = new MatTableDataSource<IAnwesenheitsliste>(this.eintraege);
   sichtbareSpalten: string[] = ['datum', 'titel', 'ort', 'mitglieder', 'actions'];
@@ -271,63 +268,41 @@ export class AnwesenheitslisteComponent implements OnInit {
     return this.collectionUtilsService.arraySortByKey(this.mitglieder, 'stbnr');
   }
 
-  get filteredMitgliedOptionen(): IMitglied[] {
-    const selectedIds = this.formModul.controls['mitglied_ids'].value;
-    const search = this.mitgliedSuche.value.trim().toLowerCase();
-    const idToMitglied = new Map(this.dropdownMitglieder.map((m) => [m.pkid, m]));
-
-    // Ausgewählte Mitglieder in der Reihenfolge des selectedIds arrays
-    const selectedMembers = selectedIds
-      .map((id) => idToMitglied.get(id))
-      .filter((m): m is IMitglied => m !== undefined)
-      .filter((mitglied) => {
-        if (!search) {
-          return true;
-        }
-        const label = `${mitglied.stbnr ?? ''} ${mitglied.vorname ?? ''} ${mitglied.nachname ?? ''}`.toLowerCase();
-        return label.includes(search);
-      });
-
-    // Nicht ausgewählte Mitglieder
-    const selectedSet = new Set(selectedIds);
-    const unselectedMembers = this.dropdownMitglieder
-      .filter((mitglied) => !selectedSet.has(mitglied.pkid))
-      .filter((mitglied) => {
-        if (!search) {
-          return true;
-        }
-        const label = `${mitglied.stbnr ?? ''} ${mitglied.vorname ?? ''} ${mitglied.nachname ?? ''}`.toLowerCase();
-        return label.includes(search);
-      });
-
-    return [...selectedMembers, ...unselectedMembers];
-  }
-
   get selectedMitgliedOptionen(): IMitglied[] {
     const selectedIds = this.formModul.controls['mitglied_ids'].value;
-    return selectedIds
-      .map((id) => this.mitglieder.find((mitglied) => mitglied.pkid === id))
-      .filter((mitglied): mitglied is IMitglied => Boolean(mitglied));
+    const idToMitglied = new Map(this.dropdownMitglieder.map((mitglied) => [mitglied.pkid, mitglied]));
+    return selectedIds.map((id) => idToMitglied.get(id)).filter((mitglied): mitglied is IMitglied => Boolean(mitglied));
   }
 
-  onMitgliedSelected(event: MatAutocompleteSelectedEvent): void {
-    const id = Number(event.option.value);
-    const current = this.formModul.controls['mitglied_ids'].value;
-    if (!current.includes(id)) {
-      this.formModul.controls['mitglied_ids'].setValue([...current, id]);
+  get mitgliederAuswahlCounter(): number {
+    return this.formModul.controls['mitglied_ids'].value.length;
+  }
+
+  get mitgliederAuswahlTriggerText(): string {
+    const first = this.selectedMitgliedOptionen[0];
+    if (!first) {
+      return 'Keine Mitglieder ausgewählt';
     }
-    this.mitgliedSuche.setValue('');
+    return `${first.stbnr} - ${first.vorname} ${first.nachname}`;
   }
 
-  removeMitglied(id: number): void {
-    const next = this.formModul.controls['mitglied_ids'].value.filter((x) => x !== id);
-    this.formModul.controls['mitglied_ids'].setValue(next);
+  get sortedMitgliedOptionen(): IMitglied[] {
+    const selectedIds = this.formModul.controls['mitglied_ids'].value;
+    const idToMitglied = new Map(this.dropdownMitglieder.map((mitglied) => [mitglied.pkid, mitglied]));
+
+    const selectedMembers = selectedIds
+      .map((id) => idToMitglied.get(id))
+      .filter((mitglied): mitglied is IMitglied => mitglied !== undefined);
+
+    const selectedSet = new Set(selectedIds);
+    const unselectedMembers = this.dropdownMitglieder.filter((mitglied) => !selectedSet.has(mitglied.pkid));
+
+    return [...selectedMembers, ...unselectedMembers];
   }
 
   neueDetails(): void {
     this.formModul.enable();
     this.formModul.patchValue({ id: '', mitglied_ids: [], titel: '', datum: '', ort: '', notiz: '' });
-    this.mitgliedSuche.setValue('');
     this.bestehendeFotos = [];
     this.resetFotoUploads();
   }
@@ -353,7 +328,6 @@ export class AnwesenheitslisteComponent implements OnInit {
           });
           this.bestehendeFotos = details.fotos || [];
           this.resetFotoUploads();
-          this.mitgliedSuche.setValue('');
         } catch (e: any) {
           this.uiMessageService.erstelleMessage('error', String(e));
         }
@@ -431,7 +405,6 @@ export class AnwesenheitslisteComponent implements OnInit {
     this.formModul.reset({ id: '', mitglied_ids: [], titel: '', datum: '', ort: '', notiz: '' });
     this.bestehendeFotos = [];
     this.resetFotoUploads();
-    this.mitgliedSuche.setValue('');
   }
 
   private buildFormDataPayload(selectedMitgliedIds: number[]): FormData {

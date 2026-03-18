@@ -86,8 +86,8 @@ export class NewsComponent implements OnInit {
   private selectedPreviewUrl = '';
   private focusBeforePhotoModal: HTMLElement | null = null;
 
-  get filteredNewsCount(): number {
-    return this.newsDataSource.filteredData.length;
+  get uploadLimitMb(): number {
+    return Math.round((this.apiHttpService.MaxUploadSize / 1024) * 10) / 10;
   }
 
   private normalizeFilterValue(value: string): string {
@@ -255,6 +255,14 @@ export class NewsComponent implements OnInit {
   private normalizeNewsItem(item: any): INews {
     const normalized = this.convertNewsDate([item])[0];
     return normalized as INews;
+  }
+
+  getNewsExcerpt(text: string | undefined): string {
+    const normalized = String(text || '').replace(/\s+/g, ' ').trim();
+    if (normalized.length <= 110) {
+      return normalized;
+    }
+    return `${normalized.slice(0, 107)}...`;
   }
 
   setzeSelectZurueck(): void {

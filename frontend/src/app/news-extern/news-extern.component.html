@@ -1,45 +1,119 @@
 <section class="news-extern-page">
-  <div class="app-grid m-0 pt-3">
-    <div class="app-col-12">
-      <mat-card>
-        <mat-card-header>
-          <mat-card-title>{{ title }}</mat-card-title>
-        </mat-card-header>
+  <div class="newsfeed-shell">
+    <header class="newsfeed-head">
+      <p class="feed-kicker">Live-Newsfeed</p>
+      <h1>{{ title }}</h1>
+      <p class="feed-copy">Öffentliche Meldungen der Feuerwehr Schwadorf mit automatischer Rotation und aktueller Terminübersicht.</p>
 
-        <mat-card-content>
-          <div class="app-grid">
-            @if (currentItem) {
+      <div class="feed-meta">
+        <span class="feed-meta-chip">{{ daten.length }} Beiträge</span>
+        <span class="feed-meta-chip">Wechsel alle {{ dauer_artikel_in_sek }} Sekunden</span>
+      </div>
+    </header>
+
+    <mat-card class="newsfeed-stage">
+      <mat-card-content>
+        @if (currentItem) {
+          <div
+            class="newsfeed-feature-stage"
+            [class.is-transitioning]="transitionInProgress"
+            [class.transition-active]="transitionActive"
+            [class.direction-backward]="transitionDirection === 'backward'"
+            [class.direction-forward]="transitionDirection === 'forward'"
+          >
+            <article class="newsfeed-feature newsfeed-feature-current">
               @if (currentItem.foto_url) {
-                <div class="app-col-4">
-                  <img [src]="currentItem.foto_url" alt="{{ currentItem.title }}" />
-                </div>
-                <div class="app-col-8">
-                  <h1 class="mb-2">{{ currentItem.title }}</h1>
-                  <p class="mb-0">{{ currentItem.text }}</p>
-                </div>
-              }
-              @else if (currentItem.title && currentItem.text){
-                <div class="app-col-12">
-                  <h1 class="mb-2">{{ currentItem.title }}</h1>
-                  <p class="mb-0">{{ currentItem.text }}</p>
+                <figure class="feature-media">
+                  <img [src]="currentItem.foto_url" [alt]="currentItem.title" />
+                </figure>
+              } @else {
+                <div class="feature-media feature-media-placeholder" aria-hidden="true">
+                  <span>FF</span>
                 </div>
               }
-            }
-            @else {
-              <div class="app-col-12 text-center">
-                <p>Aktuell sind keine Informationen verfügbar!</p>
+
+              <div class="feature-content">
+                <div class="feature-top">
+                  <span class="feature-position">{{ currentNewsPosition }}</span>
+                  <div class="feature-progress" [attr.aria-label]="currentNewsPosition">
+                    <span [style.width.%]="currentNewsProgressPercent"></span>
+                  </div>
+
+                  @if (hasMultipleNews) {
+                    <div class="feature-autoplay" aria-label="Fortschritt bis zum nächsten automatischen Wechsel">
+                      <span class="feature-autoplay-label">Auto-Wechsel</span>
+                      <div class="feature-autoplay-track" aria-hidden="true">
+                        <span [style.width.%]="autoplayProgressPercent"></span>
+                      </div>
+                    </div>
+                  }
+                </div>
+
+                <h2>{{ currentItem.title }}</h2>
+                <p>{{ currentItem.text }}</p>
+
+                @if (hasMultipleNews) {
+                  <div class="feature-nav">
+                    <button mat-stroked-button type="button" (click)="showPrevious()">Vorheriger Beitrag</button>
+                    <button mat-flat-button color="primary" type="button" (click)="showNext()">Nächster Beitrag</button>
+                  </div>
+                }
               </div>
+            </article>
+
+            @if (incomingItem) {
+              <article class="newsfeed-feature newsfeed-feature-incoming" aria-hidden="true">
+                @if (incomingItem.foto_url) {
+                  <figure class="feature-media">
+                    <img [src]="incomingItem.foto_url" [alt]="incomingItem.title" />
+                  </figure>
+                } @else {
+                  <div class="feature-media feature-media-placeholder" aria-hidden="true">
+                    <span>FF</span>
+                  </div>
+                }
+
+                <div class="feature-content">
+                  <div class="feature-top">
+                    <span class="feature-position">{{ currentNewsPosition }}</span>
+                    <div class="feature-progress" [attr.aria-label]="currentNewsPosition">
+                      <span [style.width.%]="currentNewsProgressPercent"></span>
+                    </div>
+                  </div>
+
+                  <h2>{{ incomingItem.title }}</h2>
+                  <p>{{ incomingItem.text }}</p>
+                </div>
+              </article>
             }
           </div>
-        </mat-card-content>
-      </mat-card>
-    </div>
-  </div>
+        } @else {
+          <section class="empty-feed-state">
+            <h2>Aktuell sind keine Informationen verfügbar.</h2>
+            <p>Sobald neue Beiträge veröffentlicht sind, erscheinen sie hier automatisch.</p>
+          </section>
+        }
+      </mat-card-content>
+    </mat-card>
 
-  <div class="termine">
-    <h1>Nächsten Termine:</h1>
-    @for (event of termine; track event){
-      <p>{{ event.start }} - {{ event.summary }}</p>
-    }
+    <section class="termine-panel">
+      <div class="termine-head">
+        <h2>Nächste Termine</h2>
+        <span class="termine-count">{{ termineCount }}</span>
+      </div>
+
+      @if (termineCount > 0) {
+        <div class="termine-grid">
+          @for (event of termine; track event) {
+            <article class="termin-item">
+              <p class="termin-date">{{ event.start }}</p>
+              <p class="termin-title">{{ event.summary }}</p>
+            </article>
+          }
+        </div>
+      } @else {
+        <p class="termine-empty">Aktuell keine Termine verfügbar.</p>
+      }
+    </section>
   </div>
 </section>

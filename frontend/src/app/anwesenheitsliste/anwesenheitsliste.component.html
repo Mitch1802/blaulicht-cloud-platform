@@ -74,37 +74,30 @@
             </mat-form-field>
           </div>
           <div class="app-col-12 app-col-lg-12 mb-3">
-            <mat-form-field class="ui-full-width" hintLabel="* Pflichtfeld">
-              <mat-label>Mitglied hinzufügen</mat-label>
-              <input
-                matInput
-                [formControl]="mitgliedSuche"
-                [matAutocomplete]="mitgliedAuto"
-                placeholder="Name oder StbNr"
-              />
-              <mat-autocomplete #mitgliedAuto="matAutocomplete" (optionSelected)="onMitgliedSelected($event)">
-                @for (mitglied of filteredMitgliedOptionen; track mitglied.pkid) {
-                  <mat-option [value]="mitglied.pkid">
-                    {{ mitglied.stbnr }} - {{ mitglied.vorname }} {{ mitglied.nachname }}
-                  </mat-option>
-                }
-                @if (filteredMitgliedOptionen.length === 0) {
-                  <mat-option disabled>Keine Mitglieder gefunden.</mat-option>
-                }
-              </mat-autocomplete>
-              @if (formModul.controls['mitglied_ids'].value.length === 0) {
-                <mat-error>Mindestens ein Mitglied ist erforderlich!</mat-error>
-              }
-            </mat-form-field>
+            <div class="autocomplete-multi">
+              <mat-form-field class="ui-full-width" hintLabel="* Pflichtfeld">
+                <mat-label>Mitglieder</mat-label>
+                <mat-select formControlName="mitglied_ids" multiple>
+                  <mat-select-trigger>
+                    {{ mitgliederAuswahlTriggerText }}
+                    @if (mitgliederAuswahlCounter > 1) {
+                      <span class="selection-counter">(+{{ mitgliederAuswahlCounter - 1 }})</span>
+                    }
+                  </mat-select-trigger>
 
-            <mat-chip-set class="ui-chips">
-              @for (mitglied of selectedMitgliedOptionen; track mitglied.pkid) {
-                <mat-chip [removable]="true" (removed)="removeMitglied(mitglied.pkid)">
-                  {{ mitglied.stbnr }} - {{ mitglied.vorname }} {{ mitglied.nachname }}
-                  <mat-icon matChipRemove>cancel</mat-icon>
-                </mat-chip>
-              }
-            </mat-chip-set>
+                  @for (mitglied of sortedMitgliedOptionen; track mitglied.pkid) {
+                    <mat-option [value]="mitglied.pkid">
+                      {{ mitglied.stbnr }} - {{ mitglied.vorname }} {{ mitglied.nachname }}
+                    </mat-option>
+                  }
+                </mat-select>
+                @if (formModul.controls['mitglied_ids'].value.length === 0) {
+                  <mat-error>Mindestens ein Mitglied ist erforderlich!</mat-error>
+                }
+              </mat-form-field>
+
+              <p class="selection-description">Ausgewählt: {{ mitgliederAuswahlCounter }}</p>
+            </div>
           </div>
 
           <div class="app-col-12 app-col-lg-12 mb-3">
