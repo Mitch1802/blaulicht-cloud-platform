@@ -1,6 +1,6 @@
 <imr-header [breadcrumb]="breadcrumb"></imr-header>
 
-<imr-page-layout [title]="title">
+<imr-page-layout [title]="title" class="homepage-page">
   <imr-section-card title="Dienstpostenplan verwalten">
     <div class="ui-top-actions">
       <button mat-flat-button color="primary" type="button" (click)="addSection()" [disabled]="loading">
@@ -137,9 +137,13 @@
 </imr-page-layout>
 
 @if (photoModalOpen && photoModalUrl) {
-  <div class="photo-modal-backdrop" (click)="closePhotoPreview()" (keydown.escape)="closePhotoPreview()">
+  <div
+    class="photo-modal-backdrop homepage-photo-modal-backdrop"
+    (click)="closePhotoPreview()"
+    (keydown.escape)="closePhotoPreview()"
+  >
     <section
-      class="photo-modal"
+      class="photo-modal homepage-photo-modal"
       role="dialog"
       aria-modal="true"
       aria-labelledby="photo-modal-title"
@@ -149,12 +153,12 @@
       (click)="$event.stopPropagation()"
       (keydown.escape)="closePhotoPreview()"
     >
-      <header class="photo-modal-head">
+      <header class="photo-modal-head homepage-photo-modal-head">
         <h3 id="photo-modal-title">Bildvorschau</h3>
         <button mat-flat-button color="primary" type="button" (click)="closePhotoPreview()">Schliessen</button>
       </header>
 
-      <img [src]="photoModalUrl" alt="Bildvorschau" class="photo-modal-image" />
+      <img [src]="photoModalUrl" alt="Bildvorschau" class="photo-modal-image homepage-photo-modal-image" />
     </section>
   </div>
 }

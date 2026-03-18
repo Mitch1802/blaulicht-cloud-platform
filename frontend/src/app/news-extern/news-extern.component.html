@@ -1,43 +1,45 @@
-<div class="app-grid m-0 pt-3">
-  <div class="app-col-12">
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>{{ title }}</mat-card-title>
-      </mat-card-header>
+<section class="news-extern-page">
+  <div class="app-grid m-0 pt-3">
+    <div class="app-col-12">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>{{ title }}</mat-card-title>
+        </mat-card-header>
 
-      <mat-card-content>
-        <div class="app-grid">
-          @if (currentItem) {
-            @if (currentItem.foto_url) {
-              <div class="app-col-4">
-                <img [src]="currentItem.foto_url" alt="{{ currentItem.title }}" />
-              </div>
-              <div class="app-col-8">
-                <h1 class="mb-2">{{ currentItem.title }}</h1>
-                <p class="mb-0">{{ currentItem.text }}</p>
+        <mat-card-content>
+          <div class="app-grid">
+            @if (currentItem) {
+              @if (currentItem.foto_url) {
+                <div class="app-col-4">
+                  <img [src]="currentItem.foto_url" alt="{{ currentItem.title }}" />
+                </div>
+                <div class="app-col-8">
+                  <h1 class="mb-2">{{ currentItem.title }}</h1>
+                  <p class="mb-0">{{ currentItem.text }}</p>
+                </div>
+              }
+              @else if (currentItem.title && currentItem.text){
+                <div class="app-col-12">
+                  <h1 class="mb-2">{{ currentItem.title }}</h1>
+                  <p class="mb-0">{{ currentItem.text }}</p>
+                </div>
+              }
+            }
+            @else {
+              <div class="app-col-12 text-center">
+                <p>Aktuell sind keine Informationen verfügbar!</p>
               </div>
             }
-            @else if (currentItem.title && currentItem.text){
-              <div class="app-col-12">
-                <h1 class="mb-2">{{ currentItem.title }}</h1>
-                <p class="mb-0">{{ currentItem.text }}</p>
-              </div>
-            }
-          }
-          @else {
-            <div class="app-col-12 text-center">
-              <p>Aktuell sind keine Informationen verfügbar!</p>
-            </div>
-          }
-        </div>
-      </mat-card-content>
-    </mat-card>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
   </div>
-</div>
 
-<div class="termine">
-  <h1>Nächsten Termine:</h1>
-  @for (event of termine; track event){
-    <p>{{ event.start }} - {{ event.summary }}</p>
-  }
-</div>
+  <div class="termine">
+    <h1>Nächsten Termine:</h1>
+    @for (event of termine; track event){
+      <p>{{ event.start }} - {{ event.summary }}</p>
+    }
+  </div>
+</section>

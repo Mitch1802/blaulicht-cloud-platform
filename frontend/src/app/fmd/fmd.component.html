@@ -13,8 +13,7 @@
     <mat-card-content>
         @if (hasTable(activeTabIndex)) {
         <mat-form-field
-          class="mb-2"
-          style="max-width: 320px"
+          class="mb-2 filter-field-compact"
         >
           <mat-label>Filter</mat-label>
           <input
@@ -448,7 +447,7 @@
             </table>
           </mat-tab>
           <mat-tab label="Export">
-            <div class="app-container ps-3" style="width: 90%">
+            <div class="app-container ps-3 export-wrap">
               <div class="app-grid m-0">
                 <div class="app-col-7">Offene Untersuchungen:</div>
                 <div class="app-col-auto">

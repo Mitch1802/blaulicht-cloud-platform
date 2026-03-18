@@ -519,7 +519,8 @@ mat-select
 .mat-mdc-chip,
 .mat-mdc-standard-chip
     --mdc-chip-container-height: var(--imr-control-height)
-    border-radius: var(--imr-control-radius)
+    --mdc-chip-container-shape-radius: 0px
+    border-radius: 0 !important
     height: var(--imr-control-height)
     min-height: var(--imr-control-height)
     border: 1px solid var(--imr-control-border)
@@ -533,6 +534,20 @@ mat-select
     .mdc-evolution-chip__action--trailing
         height: var(--imr-control-height)
         min-height: var(--imr-control-height)
+        border-radius: 0 !important
+
+    .mat-mdc-chip-focus-overlay,
+    .mat-mdc-chip-ripple,
+    .mat-mdc-chip-touch-target
+        border-radius: 0 !important
+
+    .mat-mdc-chip-remove,
+    [matChipRemove],
+    .mat-mdc-icon-button
+        border: 0 !important
+        box-shadow: none !important
+        background: transparent !important
+        border-radius: 0 !important
 
     .mdc-evolution-chip__text-label,
     .mat-mdc-chip-action-label
@@ -612,7 +627,13 @@ mat-select
 .mat-mdc-paginator
     border-top: 1px solid rgba(theme.$imr-border, .9)
     background-color: transparent
-    padding-top: .25rem
+    padding-top: 0
+    margin-top: 0
+
+.imr-table-wrap > .mat-mdc-paginator,
+.ui-table-wrap > .mat-mdc-paginator,
+.table-wrap > .mat-mdc-paginator
+    margin-top: 0 !important
 
 // -- Snackbar -----------------------------------------------------------------
 .app-snackbar
@@ -971,7 +992,7 @@ td.imr-action-cell
     .mat-mdc-chip
         min-height: var(--imr-control-height)
         height: var(--imr-control-height)
-        border-radius: var(--imr-control-radius)
+        border-radius: 0 !important
         border: 1px solid var(--imr-control-border)
         background: var(--imr-control-bg)
         color: theme.$imr-primary-deep
@@ -982,7 +1003,10 @@ td.imr-action-cell
 
     .mat-mdc-chip .mat-mdc-chip-remove,
     .mat-mdc-chip [matChipRemove]
-        border-radius: var(--imr-control-radius)
+        border-radius: 0 !important
+        border: 0 !important
+        box-shadow: none !important
+        background: transparent !important
 
 // -- imr-breadcrumb -----------------------------------------------------------
 .imr-breadcrumb
@@ -1163,6 +1187,3114 @@ td.imr-action-cell
 
 .imr-form-section-body
     padding-top: .35rem
+
+// -- modul-konfiguration helpers --------------------------------------------
+.modul-form
+    @extend .imr-form
+
+.pdf-mapping
+    display: grid
+    grid-template-columns: 1fr
+    gap: .5rem
+
+.jugend-hilfe-box
+    margin-top: .75rem
+    padding: .85rem 1rem
+    border: 1px solid rgba(theme.$imr-primary, .25)
+    border-radius: 0
+    background: rgba(theme.$imr-primary, .05)
+
+    h3
+        margin: 0 0 .45rem
+        font-size: 1rem
+        color: theme.$imr-primary
+
+    h4
+        margin: .65rem 0 .35rem
+        font-size: .92rem
+
+    p
+        margin: 0 0 .45rem
+
+    ul
+        margin: 0
+        padding-left: 1.1rem
+
+    pre
+        margin: .45rem 0 0
+        padding: .65rem
+        border-radius: 0
+        background: #fff
+        overflow: auto
+        font-size: .82rem
+
+.hilfe-grid
+    display: grid
+    grid-template-columns: repeat(2, minmax(0, 1fr))
+    gap: .65rem
+
+.token-grid
+    display: grid
+    grid-template-columns: repeat(2, minmax(0, 1fr))
+    gap: .35rem .85rem
+
+.token-item
+    font-size: .84rem
+
+@media (max-width: 768px)
+    .hilfe-grid,
+    .token-grid
+        grid-template-columns: 1fr
+
+// -- fahrzeug helpers -------------------------------------------------------
+.fahrzeug-page
+    max-width: 1380px
+
+    .toolbar,
+    .top-actions
+        justify-content: flex-end
+        gap: 10px
+        flex-wrap: wrap
+
+    .section-card
+        height: 100%
+
+    .click-row
+        cursor: pointer
+
+    .selected-row
+        background: rgba(theme.$imr-primary-light, .5)
+
+    .form-grid
+        display: grid
+        grid-template-columns: repeat(2, minmax(0, 1fr))
+        gap: 12px
+
+        .full-width
+            grid-column: 1 / -1
+
+    .actions-row
+        display: flex
+        flex-wrap: wrap
+        gap: 10px
+        align-items: center
+
+    .ui-action-btn
+        min-width: 36px
+        width: 36px
+        height: 36px
+        padding: 0
+
+        .mat-icon
+            margin: 0
+
+    .list-actions
+        display: flex
+        gap: 8px
+        flex-wrap: wrap
+
+    .section-title
+        margin: 0 0 12px 0
+
+    .inventar-toolbar
+        display: flex
+        gap: 10px
+        flex-wrap: wrap
+        justify-content: flex-start
+
+    .inventar-toggle-btn
+        border-color: rgba(theme.$imr-border, .95)
+
+        &.is-compact
+            border-color: rgba(theme.$imr-primary, .45)
+            background: rgba(theme.$imr-primary-light, .3)
+
+    .inventar-subheadline
+        margin: 0 0 .8rem 0
+        color: theme.$imr-primary
+        opacity: .88
+
+    .inventar-overview
+        display: flex
+        justify-content: space-between
+        align-items: end
+        gap: 14px
+        padding: .9rem
+        border-radius: 0
+        border: 1px solid rgba(theme.$imr-border, .9)
+        background: rgba(theme.$imr-primary-light, .18)
+
+    .inventar-overview-main
+        display: grid
+        gap: 4px
+
+    .inventar-kicker
+        margin: 0
+        font-size: .78rem
+        font-weight: 700
+        letter-spacing: .04em
+        text-transform: uppercase
+        color: theme.$imr-primary
+
+    .inventar-title
+        margin: 0
+        font-size: clamp(1.05rem, 2.1vw, 1.35rem)
+        line-height: 1.2
+        color: theme.$imr-primary
+
+    .inventar-subtitle
+        margin: 0
+        opacity: .8
+
+    .inventar-stats
+        display: grid
+        grid-template-columns: repeat(2, minmax(95px, 1fr))
+        gap: 10px
+
+    .stat-card
+        display: grid
+        gap: 2px
+        padding: .55rem .7rem
+        border-radius: 0
+        border: 1px solid rgba(theme.$imr-border, .88)
+        background: rgba(theme.$imr-surface, .95)
+        text-align: right
+
+        strong
+            font-size: 1.1rem
+            color: theme.$imr-primary
+
+    .stat-label
+        font-size: .74rem
+        font-weight: 700
+        letter-spacing: .03em
+        text-transform: uppercase
+        opacity: .7
+
+    .raum-create-card
+        padding: .85rem
+        border-radius: 0
+        border: 1px solid rgba(theme.$imr-border, .9)
+        background: rgba(theme.$imr-primary-light, .1)
+
+    .raum-create-head
+        margin-bottom: .65rem
+
+        h4
+            margin: 0 0 .2rem 0
+            color: theme.$imr-primary
+
+        p
+            margin: 0
+            opacity: .78
+
+    .inventar-empty
+        padding: .9rem
+        border-radius: 0
+        border: 1px dashed rgba(theme.$imr-border, .9)
+        background: rgba(theme.$imr-surface, .8)
+        opacity: .86
+
+    .inventar-accordion
+        display: grid
+        gap: 10px
+
+    .room-panel
+        border-radius: 0
+        overflow: hidden
+
+    .items-head
+        display: flex
+        justify-content: space-between
+        align-items: center
+        gap: 10px
+        margin-bottom: 10px
+
+    .item-count
+        font-size: .82rem
+        padding: .2rem .55rem
+        border-radius: 0
+        border: 1px solid rgba(theme.$imr-border, .9)
+        background: rgba(theme.$imr-surface, .95)
+        opacity: .85
+
+    .item-new-card
+        padding: .75rem
+        border-radius: 0
+        border: 1px solid rgba(theme.$imr-border, .9)
+        background: rgba(theme.$imr-primary-light, .08)
+
+    .item-compact-list
+        display: grid
+        gap: .5rem
+        margin-bottom: .65rem
+
+    .item-compact-row
+        display: flex
+        align-items: center
+        justify-content: space-between
+        gap: .8rem
+        padding: .55rem .7rem
+        border-radius: 0
+        border: 1px solid rgba(theme.$imr-border, .86)
+        background: rgba(theme.$imr-surface, .94)
+
+    .item-compact-main
+        display: grid
+        gap: 2px
+
+    .item-compact-name
+        margin: 0
+        font-weight: 600
+        color: theme.$imr-primary
+
+    .item-compact-meta
+        margin: 0
+        font-size: .84rem
+        opacity: .8
+
+    .item-compact-right
+        display: flex
+        align-items: center
+
+    .item-compact-chip
+        font-size: .78rem
+        padding: .18rem .52rem
+        border-radius: 0
+        border: 1px solid rgba(theme.$imr-border, .9)
+        background: rgba(theme.$imr-primary-light, .24)
+
+    .item-compact-chip-muted
+        background: rgba(theme.$imr-surface, .95)
+        opacity: .82
+
+    .compact-hint
+        display: inline-flex
+        align-items: center
+        gap: .45rem
+        padding: .45rem .55rem
+        border-radius: 0
+        background: rgba(theme.$imr-primary-light, .18)
+        opacity: .88
+
+    .photo-block
+        display: grid
+        gap: 8px
+        padding: .75rem
+        border: 1px solid rgba(theme.$imr-border, .9)
+        border-radius: 0
+        background: rgba(theme.$imr-primary-light, .13)
+
+    .photo-label
+        margin: 0
+        font-weight: 600
+        color: theme.$imr-primary
+
+    .photo-preview,
+    .room-photo-preview
+        width: 100%
+        max-width: 340px
+        max-height: 200px
+        object-fit: cover
+        border-radius: 0
+        border: 1px solid rgba(theme.$imr-border, .9)
+
+    .upload-row
+        display: flex
+        align-items: center
+        gap: .7rem
+        flex-wrap: wrap
+
+    .upload-label
+        font-weight: 600
+        color: theme.$imr-primary
+
+    .file-input-hidden
+        position: absolute
+        width: 1px
+        height: 1px
+        padding: 0
+        margin: -1px
+        overflow: hidden
+        clip: rect(0, 0, 0, 0)
+        border: 0
+
+    .file-name
+        font-size: .88rem
+        opacity: .85
+
+    .raum-create-form
+        display: grid
+        grid-template-columns: minmax(220px, 1fr) 170px minmax(220px, 1fr) auto
+        gap: 12px
+        align-items: center
+
+    .raum-edit-form
+        display: grid
+        grid-template-columns: minmax(220px, 1fr) 170px minmax(240px, 1fr)
+        gap: 12px
+        align-items: start
+        padding: .7rem
+        border-radius: 0
+        border: 1px solid rgba(theme.$imr-border, .9)
+        background: rgba(theme.$imr-primary-light, .12)
+
+    .room-photo-wrap
+        display: grid
+        gap: 8px
+
+    .raum-actions
+        grid-column: 1 / -1
+        display: flex
+        gap: 10px
+        flex-wrap: wrap
+
+    .items-area
+        margin-top: 10px
+
+    .items-title
+        margin: 0 0 10px 0
+        color: theme.$imr-primary
+        font-size: 1rem
+
+    .item-edit-form,
+    .item-add-form
+        display: grid
+        grid-template-columns: repeat(12, minmax(0, 1fr))
+        gap: 12px
+        align-items: start
+        padding: .7rem
+        border-radius: 0
+        border: 1px solid rgba(theme.$imr-border, .9)
+
+    .item-field-name
+        grid-column: span 8
+
+    .item-field-menge
+        grid-column: span 2
+
+    .item-field-einheit
+        grid-column: span 2
+
+    .item-field-wartung-zuletzt
+        grid-column: span 6
+
+    .item-field-wartung-naechstes
+        grid-column: span 6
+
+    .item-field-reihenfolge
+        grid-column: span 2
+
+    .item-field-notiz
+        grid-column: span 10
+
+    .item-actions
+        grid-column: 1 / -1
+        display: flex
+        flex-wrap: wrap
+        gap: 10px
+
+    .empty-hint
+        opacity: .75
+
+@media (max-width: 1320px)
+    .fahrzeug-page
+        .item-edit-form,
+        .item-add-form
+            grid-template-columns: repeat(6, minmax(0, 1fr))
+
+        .item-field-name,
+        .item-field-wartung-zuletzt,
+        .item-field-wartung-naechstes,
+        .item-field-notiz
+            grid-column: span 6
+
+        .item-field-menge,
+        .item-field-einheit,
+        .item-field-reihenfolge
+            grid-column: span 2
+
+@media (max-width: 1120px)
+    .fahrzeug-page
+        .inventar-overview
+            flex-direction: column
+            align-items: stretch
+
+        .inventar-stats
+            grid-template-columns: repeat(2, minmax(120px, 1fr))
+
+        .raum-create-form
+            grid-template-columns: 1fr 170px
+
+        .raum-edit-form
+            grid-template-columns: 1fr 170px
+
+        .room-photo-wrap
+            grid-column: 1 / -1
+
+@media (max-width: 992px)
+    .fahrzeug-page
+        .form-grid,
+        .raum-create-form,
+        .raum-edit-form,
+        .item-edit-form,
+        .item-add-form
+            grid-template-columns: 1fr
+
+        .item-field-name,
+        .item-field-menge,
+        .item-field-einheit,
+        .item-field-wartung-zuletzt,
+        .item-field-wartung-naechstes,
+        .item-field-reihenfolge,
+        .item-field-notiz
+            grid-column: 1 / -1
+
+        .photo-preview,
+        .room-photo-preview
+            max-width: 100%
+
+@media (max-width: 600px)
+    .fahrzeug-page
+        .inventar-toolbar
+            button,
+            a[mat-flat-button]
+                width: 100%
+
+        .item-compact-row
+            flex-direction: column
+            align-items: flex-start
+
+        .item-compact-right
+            width: 100%
+
+        .items-head
+            flex-direction: column
+            align-items: flex-start
+
+        .upload-button
+            width: 100%
+
+        .actions-row,
+        .raum-actions,
+        .item-actions
+            button,
+            a[mat-flat-button]
+                width: 100%
+
+// -- public-fahrzeug helpers ----------------------------------------------
+.public-fahrzeug-page
+    max-width: 1100px
+    margin: 0 auto
+    padding: 1rem 1rem 2rem
+
+    .page-head
+        margin: 0 0 1.3rem
+
+        h1
+            margin: 0
+            color: theme.$imr-primary
+            font-size: clamp(1.45rem, 2.2vw, 2rem)
+            line-height: 1.2
+
+    .settings-card
+        border-radius: 0
+
+    .intro-block
+        padding: .85rem
+        border-radius: 0
+        border: 1px solid rgba(theme.$imr-border, .9)
+        background: rgba(theme.$imr-primary-light, .1)
+
+        h3
+            margin: 0 0 .45rem
+            color: theme.$imr-primary
+            font-size: 1.02rem
+
+    .intro-text
+        margin: 0 0 .75rem
+        opacity: .82
+
+    .pin-form
+        display: grid
+        gap: 12px
+
+    .selection-form
+        display: flex
+        gap: 12px
+        align-items: flex-end
+        flex-wrap: wrap
+
+    .pin-field
+        width: 100%
+
+    .pin-action
+        button,
+        a[mat-flat-button]
+            width: 100%
+
+    .selection-field
+        min-width: 280px
+        flex: 1 1 280px
+
+    .check-head
+        display: flex
+        justify-content: space-between
+        align-items: center
+        gap: .8rem
+        flex-wrap: wrap
+
+    .check-title
+        margin: 0
+        color: theme.$imr-primary
+        font-size: 1.2rem
+
+    .check-subtitle
+        margin: .2rem 0 0
+        opacity: .8
+
+    .local-hint
+        margin: 0 0 .75rem
+        opacity: .76
+
+    .check-accordion
+        display: grid
+        gap: 10px
+
+    .check-item
+        display: grid
+        grid-template-columns: minmax(0, 1fr)
+        gap: 10px
+        padding: .75rem 0
+        border-bottom: 1px solid rgba(theme.$imr-border, .82)
+
+        &:last-child
+            border-bottom: none
+
+    .item-head
+        display: grid
+        gap: 2px
+
+    .item-name
+        margin: 0
+        font-weight: 700
+        color: theme.$imr-primary
+
+    .item-meta
+        margin: 0
+        font-size: .9rem
+        opacity: .8
+
+    .item-controls
+        display: grid
+        grid-template-columns: 180px 140px
+        gap: 10px
+
+    .status-field,
+    .ist-field,
+    .note-field
+        width: 100%
+
+    .empty-hint
+        margin: .65rem 0 0
+        opacity: .75
+
+@media (max-width: 900px)
+    .public-fahrzeug-page
+        padding: .75rem .75rem 1.5rem
+
+        .page-head
+            margin-bottom: 1rem
+
+            h1
+                font-size: 1.35rem
+
+@media (max-width: 700px)
+    .public-fahrzeug-page
+        .selection-form
+            button,
+            a[mat-flat-button]
+                width: 100%
+
+        .pin-field,
+        .selection-field
+            width: 100%
+            min-width: 0
+
+        .item-controls
+            grid-template-columns: 1fr
+
+        .check-head
+            button,
+            a[mat-flat-button]
+                width: 100%
+
+// -- atemschutz helpers ----------------------------------------------------
+.atemschutz-page
+    max-width: theme.$imr-page-max-width
+    margin: 0 auto
+    padding: 1rem 1rem 2rem
+
+    .page-head
+        margin: 0 0 1.5rem
+
+        h1
+            margin: 0
+            color: theme.$imr-primary
+            font-size: clamp(1.5rem, 2.4vw, 2.1rem)
+            line-height: 1.2
+
+    .category-block
+        margin-bottom: .7rem
+        padding: .7rem
+        border-radius: 0
+        border: 1px solid rgba(theme.$imr-border, .86)
+        background: rgba(theme.$imr-surface, .96)
+        box-shadow: none
+
+    .category-head
+        display: flex
+        align-items: center
+        justify-content: space-between
+        gap: .75rem
+        margin-bottom: .55rem
+
+    .category-title
+        margin: 0
+        font-size: .96rem
+        font-weight: 700
+        color: theme.$imr-primary-deep
+
+    .module-grid
+        display: grid
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr))
+        gap: .65rem
+
+    .module-card-link
+        display: block
+        text-decoration: none
+        color: inherit
+
+        &:focus-visible
+            outline: none
+
+            .module-card
+                outline: 2px solid rgba(theme.$imr-primary, .55)
+                outline-offset: 2px
+
+    .module-card
+        min-height: 148px
+        padding: .85rem .75rem .78rem
+        display: flex
+        align-items: center
+        justify-content: flex-start
+        flex-direction: column
+        text-align: center
+        position: relative
+        color: theme.$imr-primary-deep
+        overflow: hidden
+        border-radius: 0
+        border: 1px solid rgba(theme.$imr-border, .92)
+        background: rgba(theme.$imr-surface, 1)
+        box-shadow: none
+        transition: background-color .15s ease, border-color .15s ease
+
+        &::after
+            content: ''
+            position: absolute
+            inset: 0 0 auto 0
+            height: 3px
+            background: theme.$imr-primary
+            opacity: .9
+
+        &:hover
+            transform: none
+            background: #fcfdff
+            border-color: rgba(theme.$imr-primary, .3)
+            box-shadow: none
+
+    .module-icon-shell
+        display: inline-flex
+        align-items: center
+        justify-content: center
+        width: 4.3rem
+        height: 4.3rem
+        margin-bottom: .65rem
+
+    .module-card-body
+        display: grid
+        gap: .25rem
+        width: 100%
+        justify-items: center
+
+    .module-icon
+        width: 3.15rem
+        height: 3.15rem
+        font-size: 3.15rem
+        line-height: 3.15rem
+        margin-bottom: 0
+
+    .module-title
+        font-size: .95rem
+        font-weight: 700
+        line-height: 1.3
+        max-width: 100%
+        min-height: 2.4em
+        display: flex
+        align-items: center
+        justify-content: center
+        text-align: center
+        overflow-wrap: anywhere
+
+@media (max-width: 768px)
+    .atemschutz-page
+        padding: .75rem .75rem 1.5rem
+
+        .page-head
+            margin-bottom: 1rem
+
+            h1
+                font-size: 1.4rem
+
+// -- homepage helpers ------------------------------------------------------
+.homepage-page
+    .sections-wrap
+        display: grid
+        gap: 1rem
+
+    .plan-section
+        border: 1px solid rgba(theme.$imr-border, .95)
+        border-radius: 0
+        padding: .8rem
+        background: rgba(theme.$imr-surface, .9)
+
+    .plan-section-head
+        align-items: flex-start
+        border-bottom: 1px solid rgba(theme.$imr-border, .7)
+        margin-bottom: .65rem
+        padding-bottom: .25rem
+
+    .section-actions
+        display: flex
+        align-items: flex-start
+        justify-content: flex-end
+        gap: .55rem
+        flex-wrap: wrap
+
+    .plan-rows
+        display: grid
+        gap: .55rem
+
+    .plan-row
+        border: 1px solid rgba(theme.$imr-border, .9)
+        border-radius: 0
+        padding: .55rem .55rem .3rem
+        background: rgba(theme.$imr-surface-variant, .46)
+
+    .photo-upload-box
+        display: grid
+        gap: .45rem
+
+    .photo-upload-actions
+        display: flex
+        flex-wrap: wrap
+        align-items: center
+        gap: .4rem
+
+    .photo-upload-label
+        display: inline-flex
+        align-items: center
+        justify-content: center
+        min-height: 36px
+        padding: 0 .85rem
+        border-radius: 0
+        cursor: pointer
+        font-weight: 600
+        font-size: .84rem
+        color: #fff
+        background: theme.$imr-primary
+
+        input
+            display: none
+
+        &.disabled
+            opacity: .5
+            pointer-events: none
+
+    .photo-upload-box small
+        font-size: .75rem
+        color: theme.$imr-text-muted
+
+.homepage-photo-modal-backdrop
+    position: fixed
+    inset: 0
+    z-index: 1200
+    display: flex
+    align-items: center
+    justify-content: center
+    padding: 1rem
+    background: rgba(theme.$imr-primary-deep, .46)
+    backdrop-filter: blur(6px)
+
+.homepage-photo-modal
+    width: min(920px, 100%)
+    max-height: calc(100vh - 2rem)
+    border-radius: 0
+    border: 1px solid rgba(theme.$imr-border, .95)
+    background: theme.$imr-surface
+    box-shadow: 0 24px 50px rgba(0, 0, 0, .22)
+    padding: .9rem
+    display: grid
+    gap: .7rem
+
+.homepage-photo-modal-head
+    display: flex
+    align-items: center
+    justify-content: space-between
+    gap: .5rem
+    padding-bottom: .75rem
+    border-bottom: 1px solid rgba(theme.$imr-border, .74)
+
+    h3
+        margin: 0
+        font-size: 1.05rem
+        color: theme.$imr-primary-deep
+
+.homepage-photo-modal-image
+    width: 100%
+    max-height: calc(100vh - 9rem)
+    object-fit: contain
+    border-radius: 0
+    border: 1px solid rgba(theme.$imr-border, .72)
+    background: rgba(theme.$imr-surface-variant, .45)
+
+@media (max-width: 1100px)
+    .homepage-photo-modal
+        padding: .6rem
+
+    .homepage-photo-modal-image
+        max-height: calc(100vh - 8.5rem)
+
+@media (max-width: 900px)
+    .homepage-page
+        .section-actions
+            justify-content: flex-start
+
+// -- wartung-service helpers -----------------------------------------------
+.wartung-service-page
+    max-width: theme.$imr-page-max-width
+    margin: 0 auto
+    padding: 1rem 1rem 2rem
+
+    .page-head
+        margin: 0 0 1.5rem
+
+        h1
+            margin: 0
+            color: theme.$imr-primary
+            font-size: clamp(1.5rem, 2.4vw, 2.1rem)
+            line-height: 1.2
+
+    .settings-card
+        border-radius: 0
+
+    .summary-grid
+        display: grid
+        grid-template-columns: repeat(4, minmax(0, 1fr))
+        gap: .7rem
+        margin: .4rem 0 1rem
+
+    .summary-card
+        border: 1px solid theme.$imr-primary-light
+        border-radius: 0
+        background: rgba(theme.$imr-primary-light, .35)
+        padding: .7rem .75rem
+
+        h3
+            margin: 0
+            font-size: .88rem
+            color: theme.$imr-primary-dark
+
+        p
+            margin: .3rem 0 0
+            font-size: 1.35rem
+            font-weight: 700
+
+    .summary-card--warn
+        border-color: #f0b7b7
+        background: #fff5f5
+
+    .summary-card--today
+        border-color: #f4df9d
+        background: #fff8e1
+
+    .summary-card--ok
+        border-color: #b6dfb6
+        background: #f2fff2
+
+    .table-wrap
+        overflow-x: auto
+
+        table
+            width: 100%
+
+    .status-pill
+        display: inline-flex
+        align-items: center
+        padding: .18rem .52rem
+        border-radius: 0
+        font-size: .78rem
+        line-height: 1.1
+        border: 1px solid transparent
+
+    .status-pill--ueberfaellig
+        background: #fce8e8
+        border-color: #e6a6a6
+        color: #8f1f1f
+
+    .status-pill--heute
+        background: #fff4d6
+        border-color: #e4c473
+        color: #7f5a00
+
+    .status-pill--anstehend
+        background: #e8f6ea
+        border-color: #93c79b
+        color: #1c6930
+
+    .empty
+        margin: .4rem 0
+
+@media (max-width: 900px)
+    .wartung-service-page
+        .summary-grid
+            grid-template-columns: repeat(2, minmax(0, 1fr))
+
+@media (max-width: 640px)
+    .wartung-service-page
+        padding: .75rem .75rem 1.5rem
+
+        .page-head
+            margin-bottom: 1rem
+
+            h1
+                font-size: 1.4rem
+
+        .summary-grid
+            grid-template-columns: minmax(0, 1fr)
+
+// -- anwesenheitsliste helpers ---------------------------------------------
+.anwesenheitsliste-page
+    .foto-doku-block
+        border: 1px solid rgba(theme.$imr-border, .95)
+        border-radius: 0
+        padding: .8rem
+        background: rgba(theme.$imr-surface, .9)
+
+    .upload-row
+        display: flex
+        align-items: center
+        gap: .6rem
+        flex-wrap: wrap
+
+    .upload-label
+        font-weight: 600
+        color: theme.$imr-primary
+
+    .file-input-hidden
+        position: absolute
+        width: 1px
+        height: 1px
+        padding: 0
+        margin: -1px
+        overflow: hidden
+        clip: rect(0, 0, 0, 0)
+        border: 0
+
+    .preview-grid
+        display: grid
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr))
+        gap: .6rem
+        margin-top: .6rem
+
+    .preview-card
+        border: 1px solid rgba(theme.$imr-border, .95)
+        border-radius: 0
+        background: rgba(theme.$imr-surface, .94)
+        overflow: hidden
+
+    .preview-image
+        width: 100%
+        height: 120px
+        object-fit: cover
+        display: block
+
+    .preview-file
+        height: 120px
+        display: flex
+        align-items: center
+        justify-content: center
+        font-weight: 600
+        color: theme.$imr-primary
+
+    .preview-meta
+        display: flex
+        align-items: center
+        justify-content: flex-end
+        gap: .2rem
+        padding: .45rem
+        border-top: 1px solid rgba(theme.$imr-border, .72)
+
+        .ui-action-btn
+            min-width: 36px
+            width: 36px
+            height: 36px
+            padding: 0
+
+            .mat-icon
+                margin: 0
+
+    .existing-previews
+        margin-top: .4rem
+
+@media (max-width: 768px)
+    .anwesenheitsliste-page
+        .foto-doku-block
+            padding: .65rem
+
+        .upload-button
+            width: 100%
+
+        .ui-table-wrap
+            .table-toolbar
+                flex-direction: column
+                align-items: stretch
+                gap: .5rem
+
+                mat-form-field
+                    width: 100%
+
+                .table-status-badge
+                    width: 100%
+                    justify-content: center
+
+// -- template-header helpers -----------------------------------------------
+.app-header-toolbar
+    --mat-toolbar-container-background-color: #{theme.$imr-primary}
+    --mat-toolbar-container-text-color: #fff
+    background: theme.$imr-primary
+    box-shadow: none
+    border-bottom: 1px solid rgba(0, 0, 0, .1)
+    padding-inline: .5rem .7rem
+
+.app-header-logo
+    width: 36px
+    height: 36px
+    border-radius: 0
+    object-fit: contain
+    cursor: pointer
+
+.app-header-title
+    margin-left: .55rem
+    line-height: 1
+    white-space: nowrap
+    cursor: pointer
+    font-size: 1rem
+    font-weight: 500
+
+.app-header-logout
+    color: white
+    margin-left: .2rem
+    width: 34px
+    height: 34px
+    padding: 0
+
+    mat-icon
+        font-size: 18px
+        width: 18px
+        height: 18px
+
+.app-header-stepper-wrap
+    padding: .3rem .65rem .25rem
+    background: theme.$imr-background
+    border-bottom: 1px solid rgba(theme.$imr-border, .9)
+
+.app-header-breadcrumb
+    width: min(#{theme.$imr-page-max-width}, 100%)
+    margin: 0 auto
+    display: flex
+    align-items: center
+    gap: .45rem
+    padding: .2rem .05rem
+    overflow-x: auto
+    white-space: nowrap
+    scrollbar-width: none
+
+    &::-webkit-scrollbar
+        display: none
+
+.breadcrumb-item
+    font-size: .82rem
+    font-weight: 500
+    color: theme.$imr-text-muted
+
+.breadcrumb-link
+    text-decoration: none
+    cursor: pointer
+    transition: opacity .16s ease
+
+    &:hover
+        opacity: .75
+
+    &:focus-visible
+        outline: 2px solid rgba(theme.$imr-primary, .35)
+        outline-offset: 2px
+        border-radius: 0
+
+.breadcrumb-home
+    display: inline-flex
+    align-items: center
+
+    mat-icon
+        font-size: 16px
+        width: 16px
+        height: 16px
+
+.breadcrumb-separator
+    color: theme.$imr-text-muted
+    opacity: .65
+
+@media (max-width: 768px)
+    .app-header-toolbar
+        padding-inline: .4rem .5rem
+
+    .app-header-logo
+        width: 32px
+        height: 32px
+
+    .app-header-title
+        margin-left: .4rem
+        font-size: .92rem
+
+    .app-header-logout
+        width: 30px
+        height: 30px
+
+        mat-icon
+            font-size: 16px
+            width: 16px
+            height: 16px
+
+    .app-header-stepper-wrap
+        padding: .25rem .35rem .2rem
+
+    .app-header-breadcrumb
+        gap: .35rem
+
+    .breadcrumb-item
+        font-size: .78rem
+
+// -- atemschutz-template helpers -------------------------------------------
+.atemschutz-geraete-page,
+.atemschutz-masken-page,
+.atemschutz-messgeraete-page
+    .form-grid
+        > [class*='app-col-']
+            margin-bottom: .55rem !important
+
+        > div > mat-checkbox
+            width: 100%
+            box-sizing: border-box
+            min-height: var(--imr-control-height)
+            padding: .35rem .65rem
+            border: 1px solid var(--imr-control-border)
+            border-radius: var(--imr-control-radius)
+            background: var(--imr-control-bg)
+            display: flex
+            align-items: center
+
+    .checkbox-divider
+        grid-column: 1 / -1
+        width: 100%
+        margin: .45rem 0
+        border: 0
+        border-top: 1px solid var(--imr-control-border)
+
+    .checkbox-triplet
+        margin-bottom: 0 !important
+
+    .pruefung-overview
+        display: flex
+        flex-direction: column
+        gap: .15rem
+        line-height: 1.2
+
+        span
+            white-space: nowrap
+
+@media (max-width: 768px)
+    .atemschutz-geraete-page,
+    .atemschutz-masken-page,
+    .atemschutz-messgeraete-page
+        .form-grid
+            > div > mat-checkbox
+                padding: .45rem .6rem
+
+.atemschutz-dienstbuch-page
+    .table-filter-compact
+        max-width: 320px
+
+// -- app-root helpers ------------------------------------------------------
+.app-global-loader
+    position: fixed
+    top: 0
+    left: 0
+    right: 0
+    z-index: 2000
+
+// -- eigene-daten helpers --------------------------------------------------
+.eigene-daten-page
+    max-width: theme.$imr-page-max-width
+    margin: 0 auto
+    padding: 1rem 1rem 2rem
+
+    .settings-card
+        border-radius: 0
+
+    .full-width
+        width: 100%
+
+@media (max-width: 768px)
+    .eigene-daten-page
+        padding: .75rem .75rem 1.5rem
+
+// -- fmd helpers -----------------------------------------------------------
+.fmd-page
+    max-width: theme.$imr-page-max-width
+    margin: 0 auto
+    padding: 1rem 1rem 2rem
+
+    .page-head
+        margin: 0 0 1.5rem
+
+        h1
+            margin: 0
+            color: theme.$imr-primary
+            font-size: clamp(1.5rem, 2.4vw, 2.1rem)
+            line-height: 1.2
+
+    .settings-card
+        border-radius: 0
+
+    mat-form-field
+        width: 100%
+
+    .filter-field-compact
+        max-width: 320px
+
+    .export-wrap
+        width: 90%
+
+    table
+        width: 100%
+
+    .red-cell
+        background-color: rgba(theme.$imr-error, .16)
+        color: theme.$imr-error
+
+    .green-cell
+        background-color: rgba(theme.$imr-success, .16)
+        color: theme.$imr-success
+
+    .mat-mdc-header-row
+        font-weight: 600
+
+@media (max-width: 768px)
+    .fmd-page
+        padding: .75rem .75rem 1.5rem
+
+        .page-head
+            margin-bottom: 1rem
+
+            h1
+                font-size: 1.4rem
+
+// -- login helpers ---------------------------------------------------------
+.login-page
+    display: block
+    padding-top: 50px
+
+    .login-card
+        text-align: center
+        display: flex
+        justify-content: center
+        align-items: center
+        margin: 0 auto
+
+    .login-logo
+        padding: 10px
+        max-width: 70vw
+        width: 350px
+
+    .login-card-content
+        display: flex
+        justify-content: center
+        text-align: center
+        width: 90%
+
+    .login-card-content > form
+        width: 100%
+
+    .login-button-row
+        display: flex
+        justify-content: center
+        margin: 20px
+
+    .form-hint
+        margin: 0 0 8px
+        font-size: .9rem
+
+    .login-footer
+        margin-top: .6rem
+        text-align: center
+        line-height: 1.35
+        opacity: .85
+
+    .login-resolution
+        margin-top: .15rem
+
+    input[type=password]::-ms-reveal,
+    input[type=password]::-ms-clear
+        display: none
+
+// -- news-extern helpers ---------------------------------------------------
+.news-extern-page
+    display: block
+    min-height: 100vh
+    padding-bottom: 8.5rem
+
+    .mat-mdc-card
+        background-color: transparent
+        border-color: transparent
+        border-radius: 0
+        box-shadow: none
+
+        .mat-mdc-card-title
+            font-size: clamp(2.2rem, 6vw, 5rem)
+            color: theme.$imr-primary
+
+        img
+            width: 100%
+            border: 1px solid rgba(theme.$imr-border, .95)
+            border-radius: 0
+
+        h1
+            font-size: clamp(1.8rem, 4vw, 3rem)
+            text-align: left
+
+        p
+            font-size: clamp(1.05rem, 2.1vw, 1.5rem)
+            white-space: pre-wrap
+
+    .termine
+        position: fixed
+        left: 0
+        right: 0
+        bottom: 0
+        width: 100%
+        background-color: rgba(theme.$imr-primary, .12)
+        padding: 10px
+        border-top: 1px solid rgba(theme.$imr-border, .95)
+
+        h1
+            text-align: left
+            font-size: clamp(1.4rem, 3vw, 3rem)
+            margin: 5px
+            color: theme.$imr-primary
+
+        p
+            font-size: clamp(1rem, 2.4vw, 2rem)
+            margin: 5px
+
+// -- pdf helpers -----------------------------------------------------------
+.pdf-page
+    max-width: theme.$imr-page-max-width
+    margin: 0 auto
+    padding: 1rem 1rem 2rem
+
+    .page-head
+        margin: 0 0 1.5rem
+
+        h1
+            margin: 0
+            color: theme.$imr-primary
+            font-size: clamp(1.5rem, 2.4vw, 2.1rem)
+            line-height: 1.2
+
+    .settings-card
+        border-radius: 0
+
+    .top-actions
+        display: flex
+        gap: .8rem
+        align-items: center
+        flex-wrap: wrap
+        margin: .25rem 0 .8rem
+
+    .status-filter
+        width: 220px
+
+    .edit-form
+        margin-top: .2rem
+
+    .form-actions
+        display: flex
+        flex-wrap: wrap
+        gap: .6rem
+        margin-bottom: .8rem
+
+    .form-grid
+        margin-top: .2rem
+
+    .full-width
+        width: 100%
+
+    .table-wrap
+        overflow-x: auto
+        margin-top: .35rem
+
+        table
+            width: 100%
+
+@media (max-width: 768px)
+    .pdf-page
+        padding: .75rem .75rem 1.5rem
+
+        .page-head
+            margin-bottom: 1rem
+
+            h1
+                font-size: 1.4rem
+
+        .top-actions
+            button
+                width: 100%
+
+        .status-filter
+            width: 100%
+
+        .form-actions
+            button
+                width: 100%
+
+// -- verwaltung helpers ----------------------------------------------------
+.verwaltung-page
+    max-width: theme.$imr-page-max-width
+    margin: 0 auto
+    padding: 1rem 1rem 2rem
+
+    .page-head
+        margin: 0 0 1.5rem
+
+        h1
+            margin: 0
+            color: theme.$imr-primary
+            font-size: clamp(1.5rem, 2.4vw, 2.1rem)
+            line-height: 1.2
+
+    .settings-card
+        border-radius: 0
+
+    .invoice-tabs
+        margin-top: .2rem
+
+        h3
+            margin: .8rem 0 .6rem
+            color: theme.$imr-primary
+            font-size: 1.05rem
+
+        mat-form-field
+            width: 100%
+
+        button
+            margin: .35rem .45rem .35rem 0
+
+        mat-list-item
+            border-bottom: 1px solid rgba(theme.$imr-border, .9)
+
+        .ui-action-btn
+            min-width: 36px
+            width: 36px
+            height: 36px
+            padding: 0
+
+            .mat-icon
+                margin: 0
+
+@media (max-width: 768px)
+    .verwaltung-page
+        padding: .75rem .75rem 1.5rem
+
+        .page-head
+            margin-bottom: 1rem
+
+            h1
+                font-size: 1.4rem
+
+        .invoice-tabs
+            button
+                width: 100%
+                margin-right: 0
+
+// -- inventar helpers -------------------------------------------------------
+.inventar-page
+    .top-actions
+        gap: .6rem
+        margin: .25rem 0 .8rem
+
+    .leihstatus-checkbox
+        display: flex
+        align-items: center
+        min-height: 56px
+
+.inventar-image-modal
+    display: none
+    position: fixed
+    z-index: 1300
+    padding: 2rem 1rem 1rem
+    left: 0
+    top: 0
+    width: 100%
+    height: 100%
+    overflow: auto
+    background-color: rgba(theme.$imr-primary-dark, .76)
+    backdrop-filter: blur(6px)
+
+    .modal-content
+        margin: auto
+        display: block
+        width: min(900px, 100%)
+        max-width: 900px
+        max-height: calc(100vh - 10rem)
+        object-fit: contain
+        border-radius: 0
+        border: 1px solid rgba(theme.$imr-border, .75)
+        background: rgba(theme.$imr-surface, .98)
+        box-shadow: 0 24px 50px rgba(0, 0, 0, .24)
+
+    .modal-caption
+        margin: auto
+        display: block
+        width: min(900px, 100%)
+        max-width: 900px
+        text-align: center
+        color: #fff
+        padding: .85rem 0 0
+        min-height: 0
+        font-weight: 600
+
+    .close
+        position: absolute
+        top: 1rem
+        right: 1rem
+        border: 0
+        width: 2.75rem
+        height: 2.75rem
+        border-radius: 0
+        background: rgba(theme.$imr-surface, .16)
+        color: #fff
+        font-size: 2rem
+        font-weight: 600
+        line-height: 1
+        transition: background-color .16s ease, transform .16s ease
+
+    .close:hover,
+    .close:focus
+        background: rgba(theme.$imr-surface, .28)
+        transform: translateY(-1px)
+
+@media only screen and (max-width: 700px)
+    .inventar-page
+        .top-actions,
+        .form-actions
+            button
+                width: 100%
+
+    .inventar-image-modal
+        .modal-content
+            width: 100%
+
+// -- mitglied helpers -------------------------------------------------------
+.mitglied-page
+    .top-actions
+        gap: .6rem
+        margin: .25rem 0 .8rem
+
+    .import-preview
+        margin: .5rem 0 1rem
+
+        h3
+            margin: 0 0 .3rem
+            color: theme.$imr-primary
+            font-size: 1rem
+
+        p
+            margin: 0 0 .6rem
+
+    .filter-field
+        max-width: 320px
+
+    .file-input-hidden
+        position: absolute
+        width: 1px
+        height: 1px
+        padding: 0
+        margin: -1px
+        overflow: hidden
+        clip: rect(0, 0, 0, 0)
+        border: 0
+
+    .mat-mdc-header-row
+        font-weight: 600 !important
+
+@media (max-width: 768px)
+    .mitglied-page
+        .top-actions,
+        .form-actions
+            button
+                width: 100%
+
+        .table-wrap
+            .table-toolbar
+                flex-direction: column
+                align-items: stretch
+                gap: .5rem
+
+                .filter-field
+                    width: 100%
+
+                .table-status-badge
+                    width: 100%
+                    justify-content: center
+
+                mat-form-field
+                    width: 100%
+
+// -- news helpers -----------------------------------------------------------
+.news-page
+    .top-actions
+        gap: .6rem
+        margin: .2rem 0 .75rem
+
+    .template-block,
+    .news-block
+        border: 1px solid rgba(theme.$imr-border, .9)
+        border-radius: 0
+        background: rgba(theme.$imr-surface, .94)
+        padding: .8rem .85rem .5rem
+
+    .news-block
+        margin-top: .75rem
+
+    .block-title
+        margin: 0 0 .45rem
+        color: theme.$imr-primary-deep
+        font-size: .95rem
+        font-weight: 600
+
+    .template-grid,
+    .news-grid
+        margin-top: .22rem
+
+    .news-grid
+        margin-top: .38rem
+
+    .delete-action
+        margin-top: .9rem
+        margin-bottom: .2rem
+
+    .template-actions
+        display: flex
+        align-items: center
+        gap: .55rem
+        flex-wrap: wrap
+        min-height: var(--imr-control-height)
+        margin-top: .05rem
+
+        > .mat-mdc-button-base,
+        > button[mat-flat-button]
+            min-height: var(--imr-control-height)
+            height: var(--imr-control-height)
+
+    .template-hint
+        opacity: .75
+        margin-top: 0
+        margin-bottom: .3rem
+
+    .news-list-wrap
+        margin-top: .65rem
+
+    .news-table-wrap
+        display: grid
+        gap: .55rem
+
+        .table-toolbar
+            .table-status-badge
+                flex-shrink: 0
+
+    .filter-field
+        max-width: 360px
+
+    .news-table
+        width: 100%
+
+    .mat-column-created_at
+        width: 170px
+        min-width: 170px
+
+    .mat-column-typ
+        width: 72px
+        min-width: 72px
+
+    .mat-column-actions
+        width: 130px
+        min-width: 130px
+
+    .type-cell
+        white-space: nowrap
+        text-align: center
+
+    .type-indicator
+        display: inline-flex
+        align-items: center
+        justify-content: center
+        line-height: 1.1
+
+        .mat-icon
+            margin: 0
+            font-size: 20px
+            width: 20px
+            height: 20px
+            line-height: 20px
+
+    .empty
+        opacity: .75
+
+.news-modal
+    position: fixed
+    z-index: 1000
+    left: 0
+    top: 0
+    width: 100%
+    height: 100%
+    padding: 2rem 1rem
+    background-color: rgba(theme.$imr-primary-dark, .7)
+    backdrop-filter: blur(6px)
+    display: flex
+    align-items: center
+    justify-content: center
+    opacity: 0
+    pointer-events: none
+    transition: opacity .2s ease
+
+    &.is-open
+        opacity: 1
+        pointer-events: auto
+
+    .modal-shell
+        position: relative
+        width: min(900px, 100%)
+        max-height: calc(100vh - 4rem)
+        padding: 2.4rem 1.2rem 1rem
+        border-radius: 0
+        border: 1px solid rgba(theme.$imr-border, .6)
+        background: rgba(theme.$imr-surface, .98)
+        box-shadow: 0 20px 48px rgba(theme.$imr-primary-dark, .28)
+        overflow: auto
+
+    .modal-content
+        margin: auto
+        display: block
+        width: min(100%, 760px)
+        max-width: 100%
+        border-radius: 0
+
+    #caption
+        outline: none
+
+@media only screen and (max-width: 700px)
+    .news-page
+        .top-actions,
+        .form-actions
+            button
+                width: 100%
+
+        .template-actions
+            button
+                width: 100%
+
+        .template-block,
+        .news-block
+            padding: .75rem .7rem .35rem
+
+        .news-block
+            margin-top: .55rem
+
+        .block-title
+            margin-bottom: .2rem
+            font-size: .9rem
+
+        .template-grid,
+        .news-grid
+            margin-top: .15rem
+
+        .news-grid
+            margin-top: .22rem
+
+        .delete-action
+            margin-top: .6rem
+            margin-bottom: .1rem
+
+        .mat-column-created_at
+            width: 130px
+            min-width: 130px
+
+        .mat-column-title
+            min-width: 180px
+
+        .mat-column-typ
+            width: 72px
+            min-width: 72px
+
+        .mat-column-actions
+            width: 116px
+            min-width: 116px
+
+        .news-table-wrap
+            .table-toolbar
+                .table-status-badge
+                    width: 100%
+                    justify-content: center
+
+    .news-modal
+        padding: .65rem
+
+        .modal-shell
+            max-height: calc(100vh - 1.3rem)
+            padding: 2.2rem .8rem .8rem
+
+// -- konfiguration helpers --------------------------------------------------
+.config-page
+    .settings-card
+        margin-bottom: 1.1rem
+        border-radius: 0 !important
+        border: 1px solid rgba(theme.$imr-border, .9)
+        background-color: rgba(theme.$imr-surface, .92)
+        overflow: hidden
+
+    .settings-card.mat-mdc-card,
+    .settings-card.mdc-card
+        border-radius: 0 !important
+
+    .role-form
+        display: grid
+        grid-template-columns: 1fr auto
+        gap: .8rem
+        align-items: start
+
+    .role-chips
+        grid-column: 1 / -1
+        margin-top: .1rem
+
+    .mat-mdc-chip
+        min-height: var(--imr-control-height)
+        height: var(--imr-control-height)
+        border-radius: 0 !important
+        border: 1px solid var(--imr-control-border)
+        background: var(--imr-control-bg)
+        color: theme.$imr-primary-deep
+
+    .mat-mdc-chip .mat-mdc-chip-action,
+    .mat-mdc-chip .mdc-evolution-chip__action
+        min-height: var(--imr-control-height)
+
+    .mat-mdc-chip .mat-mdc-chip-remove,
+    .mat-mdc-chip [matChipRemove]
+        border-radius: 0 !important
+
+    .mat-mdc-form-field .mat-mdc-text-field-wrapper
+        min-height: var(--imr-control-height)
+        height: var(--imr-control-height)
+
+    .mat-mdc-form-field .mat-mdc-form-field-flex
+        min-height: var(--imr-control-height)
+        align-items: center
+
+    .mat-mdc-form-field .mat-mdc-form-field-infix
+        min-height: calc(var(--imr-control-height) - 2px)
+        padding-top: .35rem
+        padding-bottom: .35rem
+
+    .actions-top
+        margin: .3rem 0 .95rem
+
+    .backup-warning
+        display: inline-flex
+        align-items: center
+        gap: .4rem
+        margin: .2rem 0 .7rem
+        color: theme.$imr-error
+
+    .backup-legend
+        display: flex
+        flex-wrap: wrap
+        gap: .8rem 1.2rem
+        margin-bottom: .85rem
+
+        span
+            display: inline-flex
+            align-items: center
+            gap: .3rem
+            opacity: .85
+
+    .table-wrap
+        margin-top: .4rem
+
+    .backup-table-wrap
+        margin-top: .25rem
+
+        .mat-column-actions
+            width: 150px
+            min-width: 150px
+
+        .mat-column-name
+            width: auto
+
+    .backup-name
+        white-space: nowrap
+        overflow: hidden
+        text-overflow: ellipsis
+
+    .backup-empty
+        margin: .7rem 0 .15rem
+        opacity: .75
+
+    .cleanup-legend
+        margin: .1rem 0 .55rem
+
+    .cleanup-section
+        padding: 0
+
+    .cleanup-intro
+        margin: .2rem 0 .7rem
+        color: theme.$imr-text-muted
+        line-height: 1.35
+
+    .cleanup-actions
+        display: flex
+        flex-wrap: wrap
+        gap: .6rem
+        margin-top: .3rem
+
+        button
+            min-width: 172px
+
+    .cleanup-summary
+        margin: .7rem 0 .45rem
+        line-height: 1.35
+
+    .cleanup-empty
+        margin: .6rem 0 .25rem
+        color: theme.$imr-text-muted
+        opacity: .9
+
+    .cleanup-table-wrap
+        margin-top: .2rem
+
+        .mat-column-target
+            width: 130px
+            min-width: 130px
+
+        .mat-column-filename
+            width: auto
+
+    .cleanup-filename
+        white-space: nowrap
+        overflow: hidden
+        text-overflow: ellipsis
+
+@media (max-width: 768px)
+    .config-page
+        .role-form
+            grid-template-columns: 1fr
+
+            button[type="submit"]
+                width: 100%
+
+        .actions-top
+            button
+                width: 100%
+
+        .backup-legend
+            gap: .55rem .9rem
+            margin-bottom: .7rem
+
+        .backup-table-wrap,
+        .cleanup-table-wrap
+            table
+                th.mat-mdc-header-cell
+                    font-size: .78rem
+
+                td.mat-mdc-cell
+                    font-size: .83rem
+
+                th.mat-mdc-header-cell,
+                td.mat-mdc-cell
+                    padding-left: .45rem
+                    padding-right: .45rem
+
+        .cleanup-actions
+            gap: .45rem
+
+            button
+                width: 100%
+                min-height: var(--imr-control-height)
+                height: var(--imr-control-height)
+
+        .cleanup-intro
+            margin: .15rem 0 .6rem
+
+        .cleanup-summary
+            margin: .6rem 0 .35rem
+
+        .cleanup-empty
+            margin: .5rem 0 .2rem
+
+// -- user helpers -----------------------------------------------------------
+.user-page
+    .top-actions
+        gap: .6rem
+        margin: .2rem 0 .75rem
+
+    .filter-field
+        max-width: 320px
+
+    .table-wrap
+        margin-top: .5rem
+
+        .mat-column-rolle
+            width: 116px
+            min-width: 116px
+
+        .table-toolbar
+            .table-status-badge
+                flex-shrink: 0
+
+    .role-cell
+        white-space: nowrap
+
+    .role-badge
+        display: inline-flex
+        align-items: center
+        justify-content: center
+        font-size: .65rem
+        font-weight: 700
+        letter-spacing: .04em
+        padding: .15rem .45rem
+        border-radius: 0
+
+    .admin-badge
+        background: rgba(theme.$imr-warning, .9)
+        color: theme.$imr-primary-deep
+
+    .mitglied-badge
+        background: rgba(theme.$imr-border, .9)
+        color: theme.$imr-text
+
+    .role-row
+        margin-top: .2rem
+        display: grid
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr))
+        gap: .55rem .75rem
+
+    .role-option
+        margin-bottom: 0
+        min-height: var(--imr-control-height)
+        padding: .35rem .65rem
+        border: 1px solid var(--imr-control-border)
+        border-radius: var(--imr-control-radius)
+        background: var(--imr-control-bg)
+        display: flex
+        align-items: center
+
+    .role-checkbox
+        width: 100%
+
+    .password-note
+        p
+            margin: 0 0 .6rem
+            opacity: .85
+
+    .password-action
+        display: flex
+        align-items: center
+
+    .user-tabs
+        margin-top: .2rem
+
+        ::ng-deep .mat-mdc-tab-body-content
+            padding-top: .75rem
+
+    .rollen-matrix-actions
+        margin-bottom: .75rem
+
+    .rollen-matrix-wrap
+        overflow-x: auto
+
+        .rollen-matrix-table
+            width: 100%
+            min-width: 480px
+
+    .rollen-matrix-user-cell
+        font-weight: 500
+        white-space: nowrap
+        padding-right: 1.5rem
+
+    .rollen-matrix-role-header
+        text-align: center
+        white-space: nowrap
+
+    .rollen-matrix-role-cell
+        text-align: center
+        padding: .3rem .5rem
+
+@media (max-width: 768px)
+    .user-page
+        .password-action
+            button
+                width: 100%
+
+        .role-row
+            grid-template-columns: 1fr
+            gap: .45rem
+
+        .role-option
+            padding: .45rem .6rem
+
+        .table-wrap
+            margin-top: .35rem
+
+            .table-toolbar
+                .table-status-badge
+                    width: 100%
+                    justify-content: center
+
+            .mat-column-rolle
+                width: 94px
+                min-width: 94px
+
+            .mat-column-username
+                overflow-wrap: anywhere
+
+            .mat-column-actions
+                width: 72px
+                min-width: 72px
+
+        .top-actions,
+        .form-actions
+            button
+                width: 100%
+
+// -- einsatzbericht helpers -------------------------------------------------
+.bericht-page
+    .settings-card
+        margin-bottom: 1rem
+        border-radius: 0
+        border: 1px solid rgba(theme.$imr-border, .95)
+
+    .bericht-form
+        margin-top: .2rem
+
+    .bericht-accordion
+        display: grid
+        gap: .75rem
+        margin-bottom: .9rem
+
+    .form-section
+        border: 1px solid rgba(theme.$imr-border, .95)
+        border-radius: 0
+        background: rgba(theme.$imr-surface, .92)
+        box-shadow: none
+        overflow: hidden
+
+        &:hover
+            border-color: rgba(theme.$imr-primary, .3)
+
+        &.has-error
+            border-color: rgba(theme.$imr-error, .75)
+
+            .mat-expansion-panel-header
+                background: rgba(theme.$imr-error, .07)
+
+                &:hover
+                    background: rgba(theme.$imr-error, .12)
+
+        .mat-expansion-panel-header
+            background: rgba(theme.$imr-surface-variant, .62)
+
+            &:hover
+                background: rgba(theme.$imr-surface-variant, .78)
+
+    .form-section-title
+        color: theme.$imr-primary
+        font-weight: 600
+        display: inline-flex
+        align-items: center
+        gap: .3rem
+
+    .section-error-icon
+        color: theme.$imr-error
+        font-size: 1.1rem
+        width: 1.1rem
+        height: 1.1rem
+        vertical-align: middle
+
+    .form-section-subtitle
+        opacity: .72
+        font-size: .84rem
+
+    .form-section-body
+        margin-top: .35rem
+        padding-top: .2rem
+
+    .grid
+        display: grid
+        gap: .75rem
+        margin-bottom: .75rem
+
+    .one-col
+        grid-template-columns: 1fr
+
+    .two-col
+        grid-template-columns: repeat(2, minmax(0, 1fr))
+        align-items: start
+
+    .three-col
+        grid-template-columns: repeat(3, minmax(0, 1fr))
+
+    .conditional-block
+        border: 1px solid rgba(theme.$imr-border, .95)
+        border-radius: 0
+        padding: .8rem
+        margin-bottom: .85rem
+        background: rgba(theme.$imr-surface, .9)
+
+        h3
+            margin: 0 0 .65rem
+            color: theme.$imr-primary
+            font-size: 1rem
+
+    .selection-description
+        margin: -.2rem 0 0
+        font-size: .8rem
+        opacity: .72
+
+    .selection-counter
+        font-size: .78rem
+        opacity: .72
+        margin-left: .25rem
+
+    .option-title
+        font-weight: 600
+        line-height: 1.2
+
+    .option-description
+        font-size: .78rem
+        opacity: .72
+        margin-top: .1rem
+        white-space: normal
+
+    .prefill-row
+        display: grid
+        grid-template-columns: 1fr auto
+        gap: .6rem
+        align-items: center
+
+    .upload-row
+        margin-top: .7rem
+        padding: 0
+
+    .upload-label
+        font-weight: 600
+        display: inline-block
+        margin-bottom: .35rem
+        color: theme.$imr-primary
+
+    .file-input-hidden
+        position: absolute
+        width: 1px
+        height: 1px
+        padding: 0
+        margin: -1px
+        overflow: hidden
+        clip: rect(0, 0, 0, 0)
+        border: 0
+
+    .file-list
+        margin: .45rem 0 0
+        padding-left: 1rem
+
+    .preview-grid
+        display: grid
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr))
+        gap: .6rem
+        margin-top: .6rem
+
+    .preview-card
+        border: 1px solid rgba(theme.$imr-border, .95)
+        border-radius: 0
+        background: rgba(theme.$imr-surface, .94)
+        overflow: hidden
+        box-shadow: 0 3px 12px rgba(theme.$imr-primary-dark, .08)
+
+    .preview-image
+        width: 100%
+        height: 120px
+        object-fit: cover
+        display: block
+
+    .preview-file
+        height: 120px
+        display: flex
+        align-items: center
+        justify-content: center
+        font-weight: 600
+        color: theme.$imr-primary
+
+    .preview-meta
+        display: flex
+        align-items: center
+        justify-content: flex-end
+        gap: .2rem
+        padding: .45rem
+        border-top: 1px solid rgba(theme.$imr-border, .72)
+
+        .ui-action-btn
+            min-width: 36px
+            width: 36px
+            height: 36px
+            padding: 0
+
+            .mat-icon
+                margin: 0
+
+        a,
+        span
+            font-size: .8rem
+            overflow: hidden
+            text-overflow: ellipsis
+            white-space: nowrap
+
+    .documentation-block
+        border: 0
+
+        .upload-button,
+        .preview-card
+            border: 0
+
+        .preview-card
+            box-shadow: none
+
+        .preview-meta
+            border-top: 0
+
+    .existing-previews
+        margin-top: .4rem
+
+    .searchable-select
+        display: grid
+        gap: .45rem
+
+    .autocomplete-multi
+        display: grid
+        gap: .3rem
+        align-content: start
+
+    .role-chips
+        min-height: 2rem
+        align-self: start
+
+    .table-wrap
+        margin-top: .5rem
+
+    .actions-row
+        display: flex
+        flex-wrap: wrap
+        gap: .6rem
+        margin: .25rem 0 .8rem
+        justify-content: flex-start
+
+    .permission-inline-note
+        display: inline-flex
+        align-items: center
+        min-height: 40px
+        padding: .35rem .65rem
+        border-radius: 0
+        background: rgba(theme.$imr-surface-variant, .75)
+        color: theme.$imr-primary-deep
+        font-size: .84rem
+
+    .permission-hints
+        display: flex
+        flex-wrap: wrap
+        gap: .35rem .75rem
+        margin: .1rem 0 .85rem
+        padding: .5rem .65rem
+        border-radius: 0
+        border: 1px solid rgba(theme.$imr-border, .85)
+        background: rgba(theme.$imr-surface-variant, .55)
+
+        span
+            font-size: .82rem
+            color: theme.$imr-primary-deep
+
+    .form-hints
+        margin-top: .1rem
+
+    .form-actions
+        button
+            min-width: 210px
+
+    .top-actions
+        button
+            min-width: 190px
+
+    .drafts-section
+        margin-top: 1.2rem
+
+        h3
+            margin: 0 0 .6rem
+            color: theme.$imr-primary
+            font-size: 1rem
+
+        &.list-only
+            margin-top: .2rem
+
+    .list-title
+        display: inline-flex
+        align-items: center
+        gap: .45rem
+
+        &::before
+            content: ''
+            width: .5rem
+            height: .5rem
+            border-radius: 0
+            background: theme.$imr-primary
+
+    .draft-list
+        display: grid
+        gap: .5rem
+
+    .draft-item
+        border: 1px solid rgba(theme.$imr-border, .95)
+        border-radius: 0
+        padding: .6rem
+        display: flex
+        justify-content: space-between
+        gap: .8rem
+        align-items: center
+        background: rgba(theme.$imr-surface, .92)
+        transition: border-color .15s ease, box-shadow .15s ease
+
+        &:hover
+            border-color: rgba(theme.$imr-primary, .3)
+            box-shadow: 0 6px 18px rgba(theme.$imr-primary-dark, .11)
+
+    .draft-main
+        display: grid
+        gap: .2rem
+
+        strong
+            color: theme.$imr-primary
+
+        span
+            opacity: .85
+
+        small
+            opacity: .65
+
+    .draft-actions
+        display: flex
+        gap: .45rem
+        flex-wrap: wrap
+        align-items: center
+
+        .ui-action-btn
+            min-width: 36px
+            width: 36px
+            height: 36px
+            padding: 0
+
+    .status-badge
+        border-radius: 0
+        padding: .15rem .55rem
+        background: rgba(theme.$imr-warning, .22)
+        color: theme.$imr-primary-deep
+        font-weight: 600
+        font-size: .78rem
+
+        &.done
+            background: rgba(theme.$imr-success, .16)
+            color: theme.$imr-success
+
+    .empty
+        opacity: .75
+
+@media (max-width: 992px)
+    .bericht-page
+        .two-col,
+        .three-col,
+        .prefill-row
+            grid-template-columns: 1fr
+
+@media (max-width: 768px)
+    .bericht-page
+        .form-section
+            border-radius: 0
+
+        .form-section-subtitle
+            display: none
+
+        .actions-row
+            button
+                width: 100%
+
+        .permission-hints
+            flex-direction: column
+
+        .form-actions,
+        .top-actions
+            button
+                width: 100%
+                min-width: 0
+
+        .upload-row
+            padding: .55rem .55rem .5rem
+
+        .draft-item
+            flex-direction: column
+            align-items: flex-start
+
+        .draft-actions
+            width: 100%
+
+            button
+                width: 100%
+
+// -- start helpers ----------------------------------------------------------
+.start-page
+    .welcome
+        position: relative
+        overflow: hidden
+        margin: 0 0 .75rem
+        padding: .95rem 1.05rem
+        border-radius: 0
+        border: 1px solid rgba(theme.$imr-border, .9)
+        background: rgba(theme.$imr-surface, .98)
+        box-shadow: none
+
+        &::after
+            display: none
+
+    .welcome-main
+        position: relative
+        z-index: 1
+        display: flex
+        align-items: center
+        justify-content: flex-start
+        gap: .8rem
+
+        h1
+            margin: 0
+            color: theme.$imr-primary-deep
+            font-size: clamp(1.45rem, 2.4vw, 2.05rem)
+            line-height: 1.05
+
+    .dashboard-shell
+        display: block
+
+    .module-section
+        background: transparent
+        border: 0
+        border-radius: 0
+        padding: 0
+        margin-bottom: .55rem
+
+    .module-grid
+        display: grid
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr))
+        gap: .65rem
+
+    .category-block
+        margin-bottom: .7rem
+        padding: .7rem
+        border-radius: 0
+        border: 1px solid rgba(theme.$imr-border, .86)
+        background: rgba(theme.$imr-surface, .96)
+        box-shadow: none
+        scroll-margin-top: calc(var(--imr-header-height, 52px) + 1.25rem)
+
+        &:last-child
+            margin-bottom: 0
+
+    .category-head
+        display: flex
+        align-items: center
+        justify-content: space-between
+        gap: .75rem
+        margin-bottom: .55rem
+
+    .category-title
+        margin: 0
+        font-size: .96rem
+        font-weight: 700
+        color: theme.$imr-primary-deep
+
+    .module-card-link
+        display: block
+        text-decoration: none
+        color: inherit
+
+        &:focus-visible
+            outline: none
+
+            .module-card
+                outline: 2px solid rgba(theme.$imr-primary, .55)
+                outline-offset: 2px
+
+    .module-card
+        min-height: 148px
+        padding: .85rem .75rem .78rem
+        display: flex
+        align-items: center
+        justify-content: flex-start
+        flex-direction: column
+        text-align: center
+        position: relative
+        color: theme.$imr-primary-deep
+        overflow: hidden
+        border-radius: 0
+        border: 1px solid rgba(theme.$imr-border, .92)
+        background: rgba(theme.$imr-surface, 1)
+        box-shadow: none
+        transition: background-color .15s ease, border-color .15s ease
+
+        &::after
+            content: ''
+            position: absolute
+            inset: 0 0 auto 0
+            height: 3px
+            background: theme.$imr-primary
+            opacity: .9
+
+        &:hover
+            transform: none
+            background: #fcfdff
+            border-color: rgba(theme.$imr-primary, .3)
+            box-shadow: none
+
+        &:focus-visible
+            outline: 2px solid rgba(theme.$imr-primary, .55)
+            outline-offset: 2px
+
+    .module-card.admin-only
+        background: rgba(theme.$imr-warning, .07)
+        border-color: rgba(theme.$imr-warning, .75)
+        color: theme.$imr-primary-deep
+
+        &:hover
+            box-shadow: none
+
+    .admin-badge
+        position: absolute
+        top: .35rem
+        right: .35rem
+        font-size: .58rem
+        font-weight: 700
+        letter-spacing: .04em
+        padding: .12rem .38rem
+        border-radius: 0
+        background: rgba(theme.$imr-warning, .9)
+        color: theme.$imr-primary-deep
+
+    .module-card.planned
+        cursor: not-allowed
+        pointer-events: none
+        background: rgba(theme.$imr-surface-variant, .6)
+        border: 2px dashed rgba(theme.$imr-border, .95)
+        color: theme.$imr-text-muted
+        box-shadow: none
+
+        &::after
+            background: rgba(theme.$imr-border, .8)
+
+        &:hover
+            transform: none
+            box-shadow: none
+
+    .planned-badge
+        position: absolute
+        top: .35rem
+        right: .35rem
+        font-size: .58rem
+        font-weight: 700
+        letter-spacing: .04em
+        padding: .12rem .38rem
+        border-radius: 0
+        background: rgba(theme.$imr-border, .9)
+        color: theme.$imr-text
+
+    .module-icon-shell
+        display: inline-flex
+        align-items: center
+        justify-content: center
+        width: 4.3rem
+        height: 4.3rem
+        margin-bottom: .65rem
+
+    .module-card.admin-only .module-icon-shell
+        color: theme.$imr-warning
+
+    .module-card-body
+        display: grid
+        gap: .25rem
+        width: 100%
+        justify-items: center
+
+    .module-icon
+        width: 3.15rem
+        height: 3.15rem
+        font-size: 3.15rem
+        line-height: 3.15rem
+        margin-bottom: 0
+
+    .module-title
+        font-size: .95rem
+        font-weight: 700
+        line-height: 1.3
+        max-width: 100%
+        min-height: 2.4em
+        display: flex
+        align-items: center
+        justify-content: center
+        text-align: center
+        overflow-wrap: anywhere
+
+    .empty
+        margin: 0
+        opacity: .75
+
+@media (max-width: 768px)
+    .start-page
+        .welcome
+            padding: .85rem
+
+        .welcome-main
+            flex-direction: column
+            align-items: stretch
+
+        .category-block
+            padding: .6rem
+
+        .category-head
+            align-items: flex-start
+
+        .module-grid
+            grid-template-columns: repeat(2, minmax(0, 1fr))
+            gap: .4rem
+
+        .module-card
+            min-height: 78px
+            padding: .52rem .48rem .52rem .48rem
+            flex-direction: row
+            justify-content: flex-start
+            text-align: left
+            gap: .4rem
+
+            &::after
+                inset: 0 auto 0 0
+                width: 4px
+                height: auto
+
+        .module-icon-shell
+            width: 2.25rem
+            height: 2.25rem
+            margin-bottom: 0
+            flex: 0 0 auto
+
+        .module-card-body
+            min-width: 0
+            justify-items: start
+
+        .module-icon
+            width: 1.3rem
+            height: 1.3rem
+            font-size: 1.3rem
+            line-height: 1.3rem
+            margin-top: .05rem
+            flex: 0 0 auto
+
+        .module-title
+            min-height: 0
+            font-size: .9rem
+            min-height: auto
+            max-height: none
+            max-width: 100%
+            min-width: 0
+            justify-content: flex-start
+            text-align: left
+            overflow: hidden
+            text-overflow: ellipsis
+            white-space: normal
+            display: -webkit-box
+            -webkit-line-clamp: 2
+            -webkit-box-orient: vertical
+            line-clamp: 2
+
+        .admin-badge,
+        .planned-badge
+            top: .35rem
+            right: .35rem
+            font-size: .55rem
+            letter-spacing: .03em
+            padding: .1rem .35rem
+
+@media (max-width: 560px)
+    .start-page
+        .module-grid
+            grid-template-columns: 1fr
+
+        .category-head
+            flex-direction: column
+            align-items: flex-start
+
+// -- jugend helpers ---------------------------------------------------------
+.jugend-page
+    .mitglied-edit-form
+        display: flex
+        flex-direction: column
+        gap: .85rem
+
+    .mitglied-summary
+        margin: 0
+        padding: .9rem 1rem
+        border: 1px solid rgba(theme.$imr-primary, .22)
+        border-radius: 0
+        background: rgba(theme.$imr-primary, .07)
+
+    .summary-title
+        display: flex
+        flex-direction: column
+        gap: .2rem
+        margin-bottom: .6rem
+
+        h3
+            margin: 0
+            color: theme.$imr-primary
+            font-size: 1.1rem
+
+        p
+            margin: 0
+            font-size: .92rem
+            color: rgba(#000, .68)
+
+    .summary-badges
+        display: flex
+        flex-wrap: wrap
+        gap: .45rem
+
+    .summary-badge
+        display: inline-flex
+        align-items: center
+        padding: .28rem .55rem
+        border-radius: 0
+        border: 1px solid rgba(theme.$imr-primary, .16)
+        background: rgba(#fff, .86)
+        font-size: .8rem
+        line-height: 1.2
+
+    .edit-group
+        padding: .85rem .9rem .35rem
+        border: 1px solid rgba(theme.$imr-primary, .16)
+        border-radius: 0
+        background: #fff
+
+        h3
+            margin: 0 0 .55rem
+            color: theme.$imr-primary
+            font-size: .98rem
+
+    .form-grid-tight
+        margin-top: 0
+
+    .inline-hinweis
+        display: flex
+        align-items: center
+        min-height: 56px
+        padding: .35rem .75rem
+        border-radius: 0
+        border: 1px solid rgba(theme.$imr-primary, .16)
+        background: rgba(theme.$imr-primary, .04)
+        font-size: .9rem
+
+    .level-edit-list
+        display: flex
+        flex-direction: column
+        gap: .5rem
+
+    .level-edit-panel
+        border: 1px solid rgba(theme.$imr-primary, .15)
+        border-radius: 0
+        background: rgba(theme.$imr-primary, .03)
+        overflow: hidden
+
+    .level-edit-panel-header
+        list-style: none
+        display: flex
+        align-items: center
+        justify-content: space-between
+        gap: .75rem
+        cursor: pointer
+        padding: .55rem .7rem
+
+        &::-webkit-details-marker
+            display: none
+
+        &::after
+            content: '>'
+            font-size: .85rem
+            color: theme.$imr-primary
+            transition: transform .16s ease
+
+    .level-edit-panel[open] .level-edit-panel-header::after
+        transform: rotate(90deg)
+
+    .level-edit-panel-content
+        padding: .6rem .7rem .05rem
+        border-top: 1px dashed rgba(theme.$imr-primary, .18)
+
+        .form-grid-tight
+            margin-top: .2rem
+
+    .level-edit-label
+        display: flex
+        flex-direction: column
+
+        strong
+            font-size: .92rem
+            line-height: 1.2
+
+        span
+            margin-top: .1rem
+            font-size: .78rem
+            color: rgba(#000, .6)
+
+    .level-edit-meta
+        display: flex
+        flex-wrap: wrap
+        justify-content: flex-end
+        gap: .3rem
+
+    .level-edit-chip
+        display: inline-flex
+        align-items: center
+        padding: .2rem .45rem
+        border-radius: 0
+        font-size: .74rem
+        line-height: 1.15
+        border: 1px solid rgba(theme.$imr-primary, .16)
+        background: rgba(#fff, .92)
+
+    .level-edit-field
+        margin-bottom: -1.25em
+
+    .teilnehmer-level-card
+        border: 1px solid rgba(theme.$imr-primary, .15)
+        border-radius: 0
+        padding: .75rem
+        background: rgba(theme.$imr-primary, .04)
+
+        h3
+            margin: 0 0 .6rem
+            color: theme.$imr-primary
+            font-size: 1rem
+
+    .teilnehmer-level-row
+        display: grid
+        grid-template-columns: 1fr minmax(180px, 220px)
+        gap: .75rem
+        align-items: center
+
+        & + &
+            margin-top: .45rem
+
+    .teilnehmer-name
+        font-size: .95rem
+
+    .teilnehmer-level-field
+        width: 100%
+
+    .teilnehmer-level-hinweis
+        grid-column: 2
+        margin-top: -.35rem
+        font-size: .78rem
+        color: #b45a00
+
+    .table-wrap
+        margin-top: .5rem
+
+    .mat-mdc-header-row
+        font-weight: 600 !important
+
+@media (max-width: 768px)
+    .jugend-page
+        .form-actions
+            button
+                width: 100%
+
+        .mitglied-summary
+            padding: .8rem .75rem
+
+        .summary-badges
+            gap: .35rem
+
+        .summary-badge
+            width: 100%
+            border-radius: 0
+
+        .edit-group
+            padding: .75rem .7rem .25rem
+
+        .inline-hinweis
+            min-height: auto
+
+        .teilnehmer-level-row
+            grid-template-columns: 1fr
+
+        .teilnehmer-level-hinweis
+            grid-column: auto
+            margin-top: -.75rem
+
+        .level-edit-field
+            margin-bottom: -1.25em
+
+        .level-edit-panel-header
+            align-items: flex-start
+
+        .level-edit-meta
+            width: 100%
+            justify-content: flex-start
 
 
 // ------------------------------------------------------------------------------
