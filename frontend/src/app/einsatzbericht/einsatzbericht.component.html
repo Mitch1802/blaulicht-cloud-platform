@@ -71,6 +71,11 @@
                         <mat-icon class="m-0">check</mat-icon>
                       </button>
                     }
+                    @if (canPrintBericht) {
+                      <button mat-flat-button class="ui-action-btn" color="primary" type="button" (click)="druckeBericht(element)" aria-label="Bericht drucken">
+                        <mat-icon class="m-0">picture_as_pdf</mat-icon>
+                      </button>
+                    }
                     @if (canDeleteBerichte) {
                       <button mat-flat-button class="ui-action-btn" color="warn" type="button" (click)="berichtLoeschen(element)">
                         <mat-icon class="m-0">delete</mat-icon>

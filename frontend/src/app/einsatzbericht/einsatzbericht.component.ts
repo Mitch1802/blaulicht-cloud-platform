@@ -169,6 +169,10 @@ export class EinsatzberichtComponent implements OnInit {
   canEditBerichte = false;
   canDeleteBerichte = false;
   canManageStatus = false;
+  canPrintBericht = false;
+
+  private stammdaten: any = {};
+  private pdf_konfig: any = {};
 
   statusOptionen = [
     { key: 'ENTWURF', label: 'Entwurf' },
@@ -610,6 +614,10 @@ export class EinsatzberichtComponent implements OnInit {
           id: Number(item.pkid),
           label: item.name ?? `Stelle ${item.pkid}`,
         }));
+
+        const pdfKonfig = (context?.modul_konfig ?? []).find((m: any) => m.modul === 'pdf');
+        this.pdf_konfig = pdfKonfig?.konfiguration ?? {};
+        this.stammdaten = context?.konfig?.[0] ?? {};
       },
       error: (error: any) => this.authSessionService.errorAnzeigen(error),
     });
@@ -621,6 +629,7 @@ export class EinsatzberichtComponent implements OnInit {
         this.canEditBerichte = isSuperuser || roles.includes('ADMIN') || roles.includes('BERICHT');
         this.canDeleteBerichte = isSuperuser || roles.includes('ADMIN') || roles.includes('VERWALTUNG');
         this.canManageStatus = isSuperuser || roles.includes('ADMIN') || roles.includes('VERWALTUNG');
+        this.canPrintBericht = isSuperuser || roles.includes('ADMIN') || roles.includes('VERWALTUNG');
         if (this.canManageStatus) {
           this.formBericht.controls.status.enable({ emitEvent: false });
         } else {
@@ -1508,5 +1517,79 @@ export class EinsatzberichtComponent implements OnInit {
 
   private resolveMitalarmiertSelectValue(value: unknown): number[] {
     return Array.from(new Set(this.normalizeMitalarmiertValues(value)));
+  }
+
+  druckeBericht(element: EinsatzberichtDto): void {
+    if (!this.canPrintBericht) {
+      this.uiMessageService.erstelleMessage('error', 'Druck ist nur für Rollen ADMIN und VERWALTUNG verfügbar.');
+      return;
+    }
+
+    const templateId = this.pdf_konfig['idEinsatzberichtPdf'];
+    if (!templateId) {
+      this.uiMessageService.erstelleMessage('error', 'Kein PDF-Template konfiguriert. Bitte unter modul_konfiguration den Schlüssel "idEinsatzberichtPdf" eintragen.');
+      return;
+    }
+
+    const abfrageUrl = `pdf/templates/${templateId}/render`;
+    let heute = new Date().toLocaleString('de-DE').split(',')[0];
+
+    const fahrzeugNamen = (element.fahrzeuge ?? [])
+      .map((id) => this.fahrzeugOptionen.find((f) => f.id === id)?.label ?? String(id))
+      .join(', ');
+
+    const mitgliederNamen = (element.mitglieder ?? [])
+      .map((id) => this.mitgliedOptionen.find((m) => m.id === id)?.label ?? String(id))
+      .join(', ');
+
+    const mitalarmiertNamen = (element.mitalarmiert ?? [])
+      .map((id) => this.mitalarmiertOptionen.find((o) => o.id === id)?.label ?? String(id))
+      .join(', ');
+
+    const payload = {
+      druck_datum: heute,
+      fw_name: this.stammdaten.fw_name ?? '',
+      fw_nummer: this.stammdaten.fw_nummer ?? '',
+      fw_street: this.stammdaten.fw_street ?? '',
+      fw_plz: this.stammdaten.fw_plz ?? '',
+      fw_ort: this.stammdaten.fw_ort ?? '',
+      fw_email: this.stammdaten.fw_email ?? '',
+      fw_telefon: this.stammdaten.fw_telefon ?? '',
+      status: element.status ?? '',
+      einsatz_datum: this.formatListDateTime(element.einsatz_datum) || element.einsatz_datum || '',
+      alarmstichwort: element.alarmstichwort ?? '',
+      einsatzart: element.einsatzart ?? '',
+      einsatzadresse: element.einsatzadresse ?? '',
+      alarmierende_stelle: element.alarmierende_stelle ?? '',
+      einsatzleiter: element.einsatzleiter ?? '',
+      ausgerueckt: element.ausgerueckt ?? '',
+      eingerueckt: element.eingerueckt ?? '',
+      lage_beim_eintreffen: element.lage_beim_eintreffen ?? '',
+      gesetzte_massnahmen: element.gesetzte_massnahmen ?? '',
+      einsatzart_ist_brand: element.einsatzart === 'Brandeinsatz',
+      brand_kategorie: element.brand_kategorie ?? '',
+      brand_aus: element.brand_aus ?? '',
+      einsatzart_ist_technisch: element.einsatzart === 'Technischer Einsatz',
+      technisch_kategorie: element.technisch_kategorie ?? '',
+      bma_meldergruppe: element.bma_meldergruppe ?? '',
+      bma_melder: element.bma_melder ?? '',
+      bma_fehl_tauschungsalarm: element.bma_fehl_tauschungsalarm ?? '',
+      fahrzeuge_namen: fahrzeugNamen,
+      mitglieder_namen: mitgliederNamen,
+      mitalarmiert_namen: mitalarmiertNamen,
+      blaulichtsms_einsatz_id: element.blaulichtsms_einsatz_id ?? '',
+    };
+
+    this.apiHttpService.postBlob(abfrageUrl, payload).subscribe({
+      next: (blob: Blob) => {
+        if (blob.size === 0) {
+          this.uiMessageService.erstelleMessage('error', 'PDF ist leer (0 Bytes).');
+          return;
+        }
+        const url = URL.createObjectURL(blob);
+        window.open(url, '_blank');
+      },
+      error: (error: any) => this.authSessionService.errorAnzeigen(error),
+    });
   }
 }

@@ -1,0 +1,318 @@
+<!--PDF:CSS-->
+<style>
+	/* Hinweis: Header und Footer nur Inline-CSS! */
+	body {
+		margin: 0;
+		font-family: Arial, sans-serif;
+		font-size: 11px;
+		color: #1a1a1a;
+	}
+
+	main {
+		margin-top: 110px;
+		margin-left: 40px;
+		margin-right: 40px;
+		margin-bottom: 60px;
+	}
+
+	/* ---- Titel-Block ---- */
+	.report-title {
+		text-align: center;
+		margin-bottom: 18px;
+	}
+
+	.report-title h1 {
+		font-size: 22px;
+		font-weight: 700;
+		margin: 0 0 4px;
+		letter-spacing: 0.5px;
+	}
+
+	.report-title .subtitle {
+		font-size: 12px;
+		color: #555;
+	}
+
+	hr.divider {
+		border: none;
+		border-top: 2px solid #cc0000;
+		margin: 8px 0 16px;
+	}
+
+	/* ---- Section Blocks ---- */
+	.section {
+		margin-bottom: 14px;
+		page-break-inside: avoid;
+	}
+
+	.section-title {
+		font-size: 12px;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.6px;
+		background: #f0f0f0;
+		border-left: 4px solid #cc0000;
+		padding: 4px 8px;
+		margin-bottom: 6px;
+		color: #1a1a1a;
+	}
+
+	/* ---- Data Table ---- */
+	table.data {
+		width: 100%;
+		border-collapse: collapse;
+	}
+
+	table.data tr td {
+		padding: 4px 6px;
+		vertical-align: top;
+		border-bottom: 1px solid #ebebeb;
+	}
+
+	table.data tr td.label {
+		width: 175px;
+		font-weight: 700;
+		color: #444;
+		white-space: nowrap;
+	}
+
+	table.data tr td.value {
+		color: #1a1a1a;
+	}
+
+	/* ---- Status Badge ---- */
+	.status-badge {
+		display: inline-block;
+		padding: 2px 8px;
+		font-weight: 700;
+		font-size: 10px;
+		letter-spacing: 0.4px;
+		text-transform: uppercase;
+		border: 1.5px solid #888;
+		background: #f5f5f5;
+	}
+
+	.status-badge.done {
+		border-color: #2e7d32;
+		background: #e8f5e9;
+		color: #2e7d32;
+	}
+
+	/* ---- Long-text fields (lage, massnahmen) ---- */
+	.text-block {
+		padding: 6px 8px;
+		border: 1px solid #ddd;
+		background: #fafafa;
+		white-space: pre-wrap;
+		line-height: 1.5;
+		min-height: 32px;
+	}
+
+	/* ---- Footer note ---- */
+	.print-note {
+		margin-top: 24px;
+		font-size: 9px;
+		color: #aaa;
+		text-align: right;
+	}
+</style>
+
+<!--PDF:HEADER-->
+<header style="width: 100%; padding: 0 25px; font-family: Arial; font-size: 10px">
+	<div style="
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			border-bottom: 2px solid #cc0000;
+			padding-bottom: 6px;
+		">
+		<div style="display: flex; align-items: center; gap: 12px; width: 100%">
+			{% if logo_base64 %}
+			<img src="data:image/png;base64,{{ logo_base64 }}" style="height: 18mm; max-height: 18mm" />
+			{% endif %}
+			<div style="width: 100%">
+				<div style="font-size: 14pt; font-weight: 700; line-height: 18pt">{{ payload.fw_name }}</div>
+				<div style="font-size: 8pt; font-weight: 700">
+					{{ payload.fw_street }} | {{ payload.fw_plz }} {{ payload.fw_ort }}
+				</div>
+				<div style="font-size: 8pt">
+					E-Mail: {{ payload.fw_email }} | Tel: {{ payload.fw_telefon }}
+				</div>
+			</div>
+			<div style="text-align: right; white-space: nowrap; font-size: 8pt; color: #666">
+				Druck: {{ payload.druck_datum }}
+			</div>
+		</div>
+	</div>
+</header>
+
+<!--PDF:FOOTER-->
+<footer style="width: 100%; padding: 0 25px; font-size: 9px; color: #888">
+	<div style="border-top: 1px solid #ddd; margin-bottom: 4px"></div>
+	<div style="display: flex; justify-content: space-between">
+		<span>Einsatzbericht – {{ payload.fw_name }}</span>
+		<span>Seite <span class="pageNumber"></span> / <span class="totalPages"></span></span>
+	</div>
+</footer>
+
+<!--PDF:BODY-->
+<main>
+	<!-- Titel -->
+	<div class="report-title">
+		<h1>Einsatzbericht</h1>
+		<div class="subtitle">
+			{{ payload.alarmstichwort }}{% if payload.einsatz_datum %} &nbsp;|&nbsp; {{ payload.einsatz_datum }}{% endif %}
+		</div>
+	</div>
+	<hr class="divider" />
+
+	<!-- Allgemeine Daten -->
+	<div class="section">
+		<div class="section-title">Allgemeine Informationen</div>
+		<table class="data">
+			<tr>
+				<td class="label">Status</td>
+				<td class="value">
+					<span class="status-badge {% if payload.status == 'ABGESCHLOSSEN' %}done{% endif %}">
+						{% if payload.status == 'ABGESCHLOSSEN' %}Abgeschlossen{% else %}{{ payload.status }}{% endif %}
+					</span>
+				</td>
+			</tr>
+			<tr>
+				<td class="label">Einsatzdatum / -zeit</td>
+				<td class="value">{{ payload.einsatz_datum }}</td>
+			</tr>
+			<tr>
+				<td class="label">Alarmstichwort</td>
+				<td class="value">{{ payload.alarmstichwort }}</td>
+			</tr>
+			<tr>
+				<td class="label">Einsatzart</td>
+				<td class="value">{{ payload.einsatzart }}</td>
+			</tr>
+			<tr>
+				<td class="label">Einsatzadresse</td>
+				<td class="value">{{ payload.einsatzadresse }}</td>
+			</tr>
+			<tr>
+				<td class="label">Alarmierende Stelle</td>
+				<td class="value">{{ payload.alarmierende_stelle }}</td>
+			</tr>
+			<tr>
+				<td class="label">Einsatzleiter</td>
+				<td class="value">{{ payload.einsatzleiter }}</td>
+			</tr>
+			<tr>
+				<td class="label">Ausgerückt</td>
+				<td class="value">{{ payload.ausgerueckt }}</td>
+			</tr>
+			<tr>
+				<td class="label">Eingerückt</td>
+				<td class="value">{{ payload.eingerueckt }}</td>
+			</tr>
+			{% if payload.blaulichtsms_einsatz_id %}
+			<tr>
+				<td class="label">BlaulichtSMS-ID</td>
+				<td class="value">{{ payload.blaulichtsms_einsatz_id }}</td>
+			</tr>
+			{% endif %}
+		</table>
+	</div>
+
+	<!-- Lage und Maßnahmen -->
+	<div class="section">
+		<div class="section-title">Einsatztaktik</div>
+		<table class="data">
+			<tr>
+				<td class="label">Lage beim Eintreffen</td>
+				<td class="value">
+					<div class="text-block">{{ payload.lage_beim_eintreffen }}</div>
+				</td>
+			</tr>
+			<tr>
+				<td class="label">Gesetzte Maßnahmen</td>
+				<td class="value">
+					<div class="text-block">{{ payload.gesetzte_massnahmen }}</div>
+				</td>
+			</tr>
+		</table>
+	</div>
+
+	<!-- Brandeinsatz-Details (nur wenn Brandeinsatz) -->
+	{% if payload.einsatzart_ist_brand %}
+	<div class="section">
+		<div class="section-title">Brandeinsatz – Details</div>
+		<table class="data">
+			<tr>
+				<td class="label">Brandkategorie</td>
+				<td class="value">{{ payload.brand_kategorie }}</td>
+			</tr>
+			<tr>
+				<td class="label">Brand aus</td>
+				<td class="value">{{ payload.brand_aus }}</td>
+			</tr>
+		</table>
+	</div>
+	{% endif %}
+
+	<!-- Technischer Einsatz-Details -->
+	{% if payload.einsatzart_ist_technisch %}
+	<div class="section">
+		<div class="section-title">Technischer Einsatz – Details</div>
+		<table class="data">
+			<tr>
+				<td class="label">Kategorie</td>
+				<td class="value">{{ payload.technisch_kategorie }}</td>
+			</tr>
+		</table>
+	</div>
+	{% endif %}
+
+	<!-- BMA-Details (wenn Alarmstichwort BMA enthält) -->
+	{% if payload.bma_meldergruppe or payload.bma_melder or payload.bma_fehl_tauschungsalarm %}
+	<div class="section">
+		<div class="section-title">BMA – Details</div>
+		<table class="data">
+			{% if payload.bma_meldergruppe %}
+			<tr>
+				<td class="label">Meldergruppe</td>
+				<td class="value">{{ payload.bma_meldergruppe }}</td>
+			</tr>
+			{% endif %}
+			{% if payload.bma_melder %}
+			<tr>
+				<td class="label">Melder</td>
+				<td class="value">{{ payload.bma_melder }}</td>
+			</tr>
+			{% endif %}
+			{% if payload.bma_fehl_tauschungsalarm %}
+			<tr>
+				<td class="label">Fehl-/Täuschungsalarm</td>
+				<td class="value">{{ payload.bma_fehl_tauschungsalarm }}</td>
+			</tr>
+			{% endif %}
+		</table>
+	</div>
+	{% endif %}
+
+	<!-- Kräfte und Fahrzeuge -->
+	<div class="section">
+		<div class="section-title">Eingesetzte Kräfte & Fahrzeuge</div>
+		<table class="data">
+			<tr>
+				<td class="label">Fahrzeuge</td>
+				<td class="value">{% if payload.fahrzeuge_namen %}{{ payload.fahrzeuge_namen }}{% else %}–{% endif %}</td>
+			</tr>
+			<tr>
+				<td class="label">Mitglieder</td>
+				<td class="value">{% if payload.mitglieder_namen %}{{ payload.mitglieder_namen }}{% else %}–{% endif %}</td>
+			</tr>
+			<tr>
+				<td class="label">Mitalarmierte Stellen</td>
+				<td class="value">{% if payload.mitalarmiert_namen %}{{ payload.mitalarmiert_namen }}{% else %}–{% endif %}</td>
+			</tr>
+		</table>
+	</div>
+
+	<div class="print-note">Erstellt am {{ payload.druck_datum }} – {{ payload.fw_name }}</div>
+</main>

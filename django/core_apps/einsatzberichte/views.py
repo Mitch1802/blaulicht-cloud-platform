@@ -13,7 +13,11 @@ from rest_framework.viewsets import ModelViewSet
 from core_apps.common.logging_utils import log_event, log_exception
 from core_apps.common.permissions import HasAnyRolePermission
 from core_apps.fahrzeuge.models import Fahrzeug
+from core_apps.konfiguration.models import Konfiguration
+from core_apps.konfiguration.serializers import KonfigurationSerializer
 from core_apps.mitglieder.models import Mitglied
+from core_apps.modul_konfiguration.models import ModulKonfiguration
+from core_apps.modul_konfiguration.serializers import ModulKonfigurationSerializer
 
 from .models import Einsatzbericht, EinsatzberichtFoto, MitalarmierteStelle
 from .serializers import EinsatzberichtSerializer
@@ -155,10 +159,15 @@ class EinsatzberichtViewSet(ModelViewSet):
             for stelle in MitalarmierteStelle.objects.all().order_by("name")
         ]
 
+        modul_konfig = ModulKonfigurationSerializer(ModulKonfiguration.objects.all(), many=True).data
+        konfig = KonfigurationSerializer(Konfiguration.objects.all(), many=True).data
+
         return Response({
             "fahrzeuge": fahrzeuge,
             "mitglieder": mitglieder,
             "mitalarmiert_stellen": mitalarmiert_stellen,
+            "modul_konfig": modul_konfig,
+            "konfig": konfig,
         })
 
     @action(detail=False, methods=["get"], url_path="blaulichtsms/letzter")
