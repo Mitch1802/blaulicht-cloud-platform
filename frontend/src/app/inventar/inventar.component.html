@@ -173,18 +173,8 @@
               </mat-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <div class="upload-btn-wrapper">
-                <mat-card class="upload-state-card" [class.is-ready]="btnUploadStatus">
-                  <label>{{ btnText }}</label>
-                </mat-card>
-                <input
-                  #fotoUpload
-                  type="file"
-                  id="fotoUpload"
-                  accept=".jpg,.jpeg,.png"
-                  (change)="onFotoSelected($event)"
-                />
-              </div>
+              <button mat-flat-button type="button" color="primary" class="upload-button" (click)="fotoUpload.click()">{{ btnText }}</button>
+              <input hidden #fotoUpload type="file" id="fotoUpload" accept=".jpg,.jpeg,.png" (change)="onFotoSelected($event)" />
               <div >
                 @if (fileFound==true) {
                 <div>
@@ -207,6 +197,7 @@
           <button
             mat-flat-button
             color="warn"
+            class="ui-delete-btn"
             [hidden]="!formModul.controls['id'].value"
             type="button"
             (click)="datenLoeschen()"

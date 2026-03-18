@@ -109,6 +109,7 @@
             <button
               mat-flat-button
               color="warn"
+              class="ui-delete-btn"
               [hidden]="!formModul.controls['id'].value"
               type="button"
               (click)="datenLoeschen()"
@@ -201,6 +202,7 @@
             <button
               mat-flat-button
               color="warn"
+              class="ui-delete-btn"
               [hidden]="!formPruefung.controls['id'].value || !canEditProtocol"
               type="button"
               (click)="datenProtokollLoeschen()"

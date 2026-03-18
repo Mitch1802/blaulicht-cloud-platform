@@ -10,34 +10,22 @@
 
 	h1
 		margin: 0
-		color: theme.$app-primary
+		color: theme.$imr-primary
 		font-size: clamp(1.45rem, 2.2vw, 2rem)
 		line-height: 1.2
 
 .settings-card
-	border-radius: .9rem
-
-.section-head
-	display: flex
-	align-items: center
-	justify-content: space-between
-	gap: .8rem
-	padding: 1rem 1rem 0
-
-	h2
-		margin: 0
-		color: theme.$app-primary
-		font-size: 1.1rem
+	border-radius: 0
 
 .intro-block
 	padding: .85rem
-	border-radius: .7rem
-	border: 1px solid rgba(theme.$app-border, .9)
-	background: rgba(theme.$app-primary-light, .1)
+	border-radius: 0
+	border: 1px solid rgba(theme.$imr-border, .9)
+	background: rgba(theme.$imr-primary-light, .1)
 
 	h3
 		margin: 0 0 .45rem
-		color: theme.$app-primary
+		color: theme.$imr-primary
 		font-size: 1.02rem
 
 .intro-text
@@ -76,7 +64,7 @@
 
 .check-title
 	margin: 0
-	color: theme.$app-primary
+	color: theme.$imr-primary
 	font-size: 1.2rem
 
 .check-subtitle
@@ -96,7 +84,7 @@
 	grid-template-columns: minmax(0, 1fr)
 	gap: 10px
 	padding: .75rem 0
-	border-bottom: 1px solid rgba(theme.$app-border, .82)
+	border-bottom: 1px solid rgba(theme.$imr-border, .82)
 
 	&:last-child
 		border-bottom: none
@@ -108,7 +96,7 @@
 .item-name
 	margin: 0
 	font-weight: 700
-	color: theme.$app-primary
+	color: theme.$imr-primary
 
 .item-meta
 	margin: 0
@@ -139,12 +127,6 @@
 		h1
 			font-size: 1.35rem
 
-	.section-head
-		padding: .85rem .85rem 0
-
-		h2
-			font-size: 1rem
-
 @media (max-width: 700px)
 	.selection-form
 		button,
@@ -158,10 +140,6 @@
 
 	.item-controls
 		grid-template-columns: 1fr
-
-	.section-head
-		flex-direction: column
-		align-items: flex-start
 
 	.check-head
 		button,

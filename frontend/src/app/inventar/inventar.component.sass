@@ -1,7 +1,7 @@
 @use '../../theme' as theme
 
 .inventar-page
-    max-width: theme.$app-page-max-width
+    max-width: theme.$imr-page-max-width
     margin: 0 auto
     padding: 1rem 1rem 2rem
 
@@ -10,23 +10,12 @@
 
     h1
         margin: 0
-        color: theme.$app-primary
+        color: theme.$imr-primary
         font-size: clamp(1.5rem, 2.4vw, 2.1rem)
         line-height: 1.2
 
 .settings-card
-    border-radius: .9rem
-
-.section-head
-    display: flex
-    align-items: center
-    justify-content: space-between
-    padding: 1rem 1rem 0
-
-    h2
-        margin: 0
-        color: theme.$app-primary
-        font-size: 1.1rem
+    border-radius: 0
 
 .top-actions
     display: flex
@@ -61,37 +50,6 @@
     table
         width: 100%
 
-.upload-btn-wrapper
-    position: relative
-    overflow: hidden
-    display: inline-block
-
-    input[type=file]
-        font-size: 100px
-        position: absolute
-        left: 0
-        top: 0
-        opacity: 0
-
-.upload-state-card
-    background: rgba(theme.$app-border, .35)
-    color: rgba(theme.$app-text, .52)
-    border-radius: .8rem
-    border: 1px solid rgba(theme.$app-border, .95)
-    background-image: linear-gradient(180deg, rgba(theme.$app-surface, .92), rgba(theme.$app-surface-variant, .46))
-    box-shadow: 0 10px 22px rgba(theme.$app-primary-dark, .05)
-    padding: .7rem .85rem
-
-    label
-        display: block
-        font-weight: 600
-
-    &.is-ready
-        background: linear-gradient(180deg, theme.$app-primary-dark, color-mix(in srgb, #{theme.$app-primary-dark} 82%, #fff 18%))
-        color: #fff
-        border-color: rgba(theme.$app-primary-dark, .9)
-        box-shadow: 0 14px 26px rgba(theme.$app-primary-dark, .18)
-
 .modal
     display: none
     position: fixed
@@ -102,7 +60,7 @@
     width: 100%
     height: 100%
     overflow: auto
-    background-color: rgba(theme.$app-primary-dark, .76)
+    background-color: rgba(theme.$imr-primary-dark, .76)
     backdrop-filter: blur(6px)
 
 .modal-content
@@ -112,9 +70,9 @@
     max-width: 900px
     max-height: calc(100vh - 10rem)
     object-fit: contain
-    border-radius: .95rem
-    border: 1px solid rgba(theme.$app-border, .75)
-    background: linear-gradient(180deg, rgba(theme.$app-surface-variant, .42), rgba(theme.$app-surface, .92))
+    border-radius: 0
+    border: 1px solid rgba(theme.$imr-border, .75)
+    background: rgba(theme.$imr-surface, .98)
     box-shadow: 0 24px 50px rgba(0, 0, 0, .24)
 
 .modal-caption
@@ -135,8 +93,8 @@
     border: 0
     width: 2.75rem
     height: 2.75rem
-    border-radius: 999px
-    background: rgba(theme.$app-surface, .16)
+    border-radius: 0
+    background: rgba(theme.$imr-surface, .16)
     color: #fff
     font-size: 2rem
     font-weight: 600
@@ -145,7 +103,7 @@
 
 .close:hover,
 .close:focus
-    background: rgba(theme.$app-surface, .28)
+    background: rgba(theme.$imr-surface, .28)
     transform: translateY(-1px)
 
 @media only screen and (max-width: 700px)
@@ -157,12 +115,6 @@
 
         h1
             font-size: 1.4rem
-
-    .section-head
-        padding: .85rem .85rem 0
-
-        h2
-            font-size: 1rem
 
     .top-actions,
     .form-actions

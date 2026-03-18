@@ -5,14 +5,14 @@
   gap: 1rem
 
 .plan-section
-  border: 1px solid rgba(theme.$app-border, .95)
-  border-radius: .8rem
+  border: 1px solid rgba(theme.$imr-border, .95)
+  border-radius: 0
   padding: .8rem
-  background: rgba(theme.$app-surface, .9)
+  background: rgba(theme.$imr-surface, .9)
 
 .plan-section-head
   align-items: flex-start
-  border-bottom: 1px solid rgba(theme.$app-border, .7)
+  border-bottom: 1px solid rgba(theme.$imr-border, .7)
   margin-bottom: .65rem
   padding-bottom: .25rem
 
@@ -28,10 +28,10 @@
   gap: .55rem
 
 .plan-row
-  border: 1px solid rgba(theme.$app-border, .9)
-  border-radius: .65rem
+  border: 1px solid rgba(theme.$imr-border, .9)
+  border-radius: 0
   padding: .55rem .55rem .3rem
-  background: rgba(theme.$app-surface-variant, .46)
+  background: rgba(theme.$imr-surface-variant, .46)
 
 .photo-upload-box
   display: grid
@@ -49,12 +49,12 @@
   justify-content: center
   min-height: 36px
   padding: 0 .85rem
-  border-radius: .45rem
+  border-radius: 0
   cursor: pointer
   font-weight: 600
   font-size: .84rem
   color: #fff
-  background: theme.$app-primary
+  background: theme.$imr-primary
 
   input
     display: none
@@ -65,7 +65,7 @@
 
 .photo-upload-box small
   font-size: .75rem
-  color: theme.$app-text-muted
+  color: theme.$imr-text-muted
 
 .photo-modal-backdrop
   position: fixed
@@ -75,15 +75,15 @@
   align-items: center
   justify-content: center
   padding: 1rem
-  background: rgba(theme.$app-primary-deep, .46)
+  background: rgba(theme.$imr-primary-deep, .46)
   backdrop-filter: blur(6px)
 
 .photo-modal
   width: min(920px, 100%)
   max-height: calc(100vh - 2rem)
-  border-radius: 1rem
-  border: 1px solid rgba(theme.$app-border, .95)
-  background: linear-gradient(180deg, rgba(theme.$app-surface, .98), #fff)
+  border-radius: 0
+  border: 1px solid rgba(theme.$imr-border, .95)
+  background: theme.$imr-surface
   box-shadow: 0 24px 50px rgba(0, 0, 0, .22)
   padding: .9rem
   display: grid
@@ -95,20 +95,20 @@
   justify-content: space-between
   gap: .5rem
   padding-bottom: .75rem
-  border-bottom: 1px solid rgba(theme.$app-border, .74)
+  border-bottom: 1px solid rgba(theme.$imr-border, .74)
 
   h3
     margin: 0
     font-size: 1.05rem
-    color: theme.$app-primary-deep
+    color: theme.$imr-primary-deep
 
 .photo-modal-image
   width: 100%
   max-height: calc(100vh - 9rem)
   object-fit: contain
-  border-radius: .8rem
-  border: 1px solid rgba(theme.$app-border, .72)
-  background: linear-gradient(180deg, rgba(theme.$app-surface-variant, .56), rgba(theme.$app-surface, .92))
+  border-radius: 0
+  border: 1px solid rgba(theme.$imr-border, .72)
+  background: rgba(theme.$imr-surface-variant, .45)
 
 @media (max-width: 1100px)
   .photo-modal

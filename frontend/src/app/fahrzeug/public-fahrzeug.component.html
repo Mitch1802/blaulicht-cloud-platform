@@ -8,16 +8,17 @@
   <mat-card class="settings-card">
     <div class="section-head">
       <h2>Checkliste ohne Speichern</h2>
-
-      @if (verified) {
-        <button mat-flat-button color="primary" type="button" (click)="logoutPublic()">
-          <mat-icon>logout</mat-icon>
-          PIN vergessen
-        </button>
-      }
     </div>
 
     <mat-card-content>
+      @if (verified) {
+        <div class="actions-top">
+          <button mat-flat-button color="primary" type="button" (click)="logoutPublic()">
+            <mat-icon>logout</mat-icon>
+            PIN vergessen
+          </button>
+        </div>
+      }
       @if (loading) {
         <mat-progress-bar mode="indeterminate" class="mb-3"></mat-progress-bar>
       }

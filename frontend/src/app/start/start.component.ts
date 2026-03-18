@@ -35,9 +35,6 @@ export class StartComponent implements OnInit {
   username = '';
   display_name = '';
   meine_rollen: string[] = [];
-  isAdminViewer = false;
-  countsLoaded = false;
-  private freigeschaltetCountByItemKey = new Map<string, number>();
 
   categorizedItems: { name: string; items: any[] }[] = [];
 
@@ -88,18 +85,12 @@ export class StartComponent implements OnInit {
               ? konfigs.konfiguration
               : this.defaultKonfig) ?? [];
 
-          this.isAdminViewer = this.meine_rollen.includes(this.adminRoleKey);
-
           // 1️⃣ Zugriff strikt prüfen
           const allowed = this.start_konfig.filter(item =>
             this.userHasAccess(item) && !this.isHiddenItem(item)
           );
 
           this.categorizedItems = this.buildCategories(allowed);
-
-          if (this.isAdminViewer) {
-            this.loadFreigeschaltetCounts(allowed);
-          }
 
         } catch (e: any) {
           this.uiMessageService.erstelleMessage('error', String(e));
@@ -140,68 +131,6 @@ export class StartComponent implements OnInit {
     return itemRoles.some(role => userRoles.includes(role));
   }
 
-  private normalizeUserRoles(user: any): string[] {
-    const roles = this.normalizeRoles(user?.roles);
-    if ((user?.is_superuser === true || user?.admin === true) && !roles.includes(this.adminRoleKey)) {
-      roles.push(this.adminRoleKey);
-    }
-    return roles;
-  }
-
-  private itemKey(item: any): string {
-    const modul = String(item?.modul ?? '').trim().toLowerCase();
-    const routerLink = String(item?.routerlink ?? '').trim().toLowerCase();
-    return `${routerLink}|${modul}`;
-  }
-
-  private loadFreigeschaltetCounts(items: any[]): void {
-    this.countsLoaded = false;
-
-    this.apiHttpService.get('users').subscribe({
-      next: (response: any) => {
-        const rawUsers = Array.isArray(response)
-          ? response
-          : Array.isArray(response?.data)
-            ? response.data
-            : Array.isArray(response?.data?.results)
-              ? response.data.results
-              : Array.isArray(response?.main)
-                ? response.main
-                : Array.isArray(response?.results)
-                  ? response.results
-            : [];
-
-        const activeUsers = rawUsers.filter((user: any) => user?.is_active !== false);
-        const counts = new Map<string, number>();
-
-        for (const item of items) {
-          const itemRoles = this.normalizeRoles(item?.rolle);
-          const count = activeUsers.reduce((sum: number, user: any) => {
-            const userRoles = this.normalizeUserRoles(user);
-            return this.hasAccessByRoles(itemRoles, userRoles) ? sum + 1 : sum;
-          }, 0);
-
-          counts.set(this.itemKey(item), count);
-        }
-
-        this.freigeschaltetCountByItemKey = counts;
-        this.countsLoaded = true;
-      },
-      error: () => {
-        this.freigeschaltetCountByItemKey.clear();
-        this.countsLoaded = true;
-      },
-    });
-  }
-
-  showFreigeschaltetBadge(item: any): boolean {
-    return this.isAdminViewer && this.countsLoaded && this.freigeschaltetCountByItemKey.has(this.itemKey(item));
-  }
-
-  getFreigeschaltetCount(item: any): number {
-    return this.freigeschaltetCountByItemKey.get(this.itemKey(item)) ?? 0;
-  }
-
   private isHiddenItem(item: any): boolean {
     const modul = String(item?.modul ?? '').trim().toLowerCase();
     const routerlink = String(item?.routerlink ?? '').trim().toLowerCase();
@@ -211,7 +140,7 @@ export class StartComponent implements OnInit {
 
   private isPureAdminItem(item: any): boolean {
     const roles = this.normalizeRoles(item?.rolle);
-    return roles.length === 1 && roles[0] === 'ADMIN';
+    return roles.length === 1 && roles[0] === this.adminRoleKey;
   }
 
   isAdminOnly(item: any): boolean {
@@ -268,7 +197,13 @@ export class StartComponent implements OnInit {
     return raw || 'Allgemein';
   }
 
-  getVisibleModuleCount(): number {
-    return this.categorizedItems.reduce((sum, category) => sum + category.items.length, 0);
+  getCategoryAnchorId(name: string): string {
+    const normalized = String(name)
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+
+    return `category-${normalized || 'allgemein'}`;
   }
 }

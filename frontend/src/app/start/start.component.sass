@@ -1,130 +1,72 @@
 @use '../../theme' as theme
 
 .start-page
-    max-width: theme.$app-page-max-width
+    max-width: theme.$imr-page-max-width
     margin: 0 auto
-    padding: 1rem 1rem 2rem
+    padding: .85rem .9rem 1.6rem
 
 .welcome
     position: relative
     overflow: hidden
-    margin: 0 0 1.5rem
-    padding: 1.2rem 1.25rem
-    border-radius: 1rem
-    border: 1px solid rgba(theme.$app-border, .92)
-    background: linear-gradient(135deg, rgba(theme.$app-primary-light, .26), rgba(theme.$app-surface, .96) 60%, rgba(theme.$app-secondary-light, .24))
-    box-shadow: 0 14px 34px rgba(theme.$app-primary-dark, .08)
+    margin: 0 0 .75rem
+    padding: .95rem 1.05rem
+    border-radius: 0
+    border: 1px solid rgba(theme.$imr-border, .9)
+    background: rgba(theme.$imr-surface, .98)
+    box-shadow: none
 
     &::after
-        content: ''
-        position: absolute
-        inset: auto -4rem -4rem auto
-        width: 14rem
-        height: 14rem
-        border-radius: 999px
-        background: radial-gradient(circle, rgba(theme.$app-primary, .16) 0%, rgba(theme.$app-primary, 0) 72%)
-        pointer-events: none
-
-.welcome-kicker
-    position: relative
-    z-index: 1
-    margin-bottom: .65rem
-    font-size: .75rem
-    font-weight: 800
-    letter-spacing: .08em
-    text-transform: uppercase
-    color: rgba(theme.$app-primary-dark, .82)
+        display: none
 
 .welcome-main
     position: relative
     z-index: 1
     display: flex
-    align-items: end
-    justify-content: space-between
-    gap: 1rem
+    align-items: center
+    justify-content: flex-start
+    gap: .8rem
 
     h1
         margin: 0
-        color: theme.$app-primary
-        font-size: clamp(1.7rem, 2.8vw, 2.5rem)
-        line-height: 1.1
+        color: theme.$imr-primary-deep
+        font-size: clamp(1.45rem, 2.4vw, 2.05rem)
+        line-height: 1.05
 
-.welcome-copy
-    max-width: 56ch
-    margin: .5rem 0 0
-    color: rgba(theme.$app-primary-deep, .78)
-    font-size: .98rem
-    line-height: 1.45
-
-.welcome-stats
-    display: grid
-    grid-template-columns: repeat(2, minmax(108px, 1fr))
-    gap: .7rem
-
-.welcome-stat-card
-    display: grid
-    gap: .15rem
-    min-width: 0
-    padding: .8rem .9rem
-    border-radius: .85rem
-    border: 1px solid rgba(theme.$app-border, .9)
-    background: rgba(theme.$app-surface, .9)
-    box-shadow: 0 8px 18px rgba(theme.$app-primary-dark, .06)
-
-    strong
-        color: theme.$app-primary
-        font-size: 1.3rem
-        line-height: 1
-
-.welcome-stat-label
-    font-size: .72rem
-    font-weight: 800
-    letter-spacing: .06em
-    text-transform: uppercase
-    color: rgba(theme.$app-text-muted, .95)
+.dashboard-shell
+    display: block
 
 .module-section
     background: transparent
     border: 0
     border-radius: 0
     padding: 0
-    margin-bottom: 1rem
-
-.section-head
-    display: flex
-    align-items: center
-    justify-content: space-between
-    margin-bottom: .9rem
-
-    h2
-        margin: 0
-        color: theme.$app-primary
-        font-size: 1.1rem
+    margin-bottom: .55rem
 
 .count
     min-width: 2rem
     height: 2rem
     padding: 0 .45rem
-    border-radius: 999px
+    border-radius: 0
     display: inline-flex
     align-items: center
     justify-content: center
     font-weight: 600
     color: #fff
-    background: theme.$app-primary
+    background: theme.$imr-primary
 
 .module-grid
     display: grid
-    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr))
-    gap: 1rem
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr))
+    gap: .65rem
 
 .category-block
-    margin-bottom: 1rem
-    padding: .9rem
-    border-radius: .95rem
-    border: 1px solid rgba(theme.$app-border, .82)
-    background: rgba(theme.$app-surface, .82)
-    box-shadow: 0 10px 24px rgba(theme.$app-primary-dark, .05)
+    margin-bottom: .7rem
+    padding: .7rem
+    border-radius: 0
+    border: 1px solid rgba(theme.$imr-border, .86)
+    background: rgba(theme.$imr-surface, .96)
+    box-shadow: none
+    scroll-margin-top: calc(var(--imr-header-height, 52px) + 1.25rem)
 
     &:last-child
         margin-bottom: 0
@@ -134,27 +76,13 @@
     align-items: center
     justify-content: space-between
     gap: .75rem
-    margin-bottom: .75rem
+    margin-bottom: .55rem
 
 .category-title
     margin: 0
-    font-size: .98rem
+    font-size: .96rem
     font-weight: 700
-    color: theme.$app-primary
-
-.category-count
-    display: inline-flex
-    align-items: center
-    min-height: 1.8rem
-    padding: 0 .65rem
-    border-radius: 999px
-    border: 1px solid rgba(theme.$app-border, .9)
-    background: rgba(theme.$app-primary-light, .26)
-    color: rgba(theme.$app-primary-deep, .82)
-    font-size: .72rem
-    font-weight: 700
-    letter-spacing: .04em
-    text-transform: uppercase
+    color: theme.$imr-primary-deep
 
 .module-card-link
     display: block
@@ -165,84 +93,73 @@
         outline: none
 
         .module-card
-            outline: 2px solid rgba(theme.$app-primary, .55)
+            outline: 2px solid rgba(theme.$imr-primary, .55)
             outline-offset: 2px
 
 .module-card
-    min-height: 164px
-    padding: 1rem .85rem .9rem
+    min-height: 148px
+    padding: .85rem .75rem .78rem
     display: flex
     align-items: center
-    justify-content: center
+    justify-content: flex-start
     flex-direction: column
     text-align: center
     position: relative
-    color: theme.$app-primary
+    color: theme.$imr-primary-deep
     overflow: hidden
-    border: 1px solid rgba(theme.$app-border, .88)
-    background: linear-gradient(180deg, rgba(theme.$app-surface, .98), rgba(theme.$app-primary-light, .12))
-    box-shadow: 0 10px 24px rgba(theme.$app-primary-dark, .06)
-    transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease
+    border-radius: 0
+    border: 1px solid rgba(theme.$imr-border, .92)
+    background: rgba(theme.$imr-surface, 1)
+    box-shadow: none
+    transition: background-color .15s ease, border-color .15s ease
 
     &::after
         content: ''
         position: absolute
         inset: 0 0 auto 0
-        height: 4px
-        background: linear-gradient(90deg, rgba(theme.$app-primary, .92), rgba(theme.$app-secondary, .88))
-        opacity: .86
+        height: 3px
+        background: theme.$imr-primary
+        opacity: .9
 
     &:hover
-        transform: translateY(-3px)
-        border-color: rgba(theme.$app-primary, .34)
-        box-shadow: 0 14px 28px rgba(theme.$app-primary-dark, .14)
+        transform: none
+        background: #fcfdff
+        border-color: rgba(theme.$imr-primary, .3)
+        box-shadow: none
 
     &:focus-visible
-        outline: 2px solid rgba(theme.$app-primary, .55)
+        outline: 2px solid rgba(theme.$imr-primary, .55)
         outline-offset: 2px
 
 .module-card.admin-only
-    background: linear-gradient(180deg, rgba(theme.$app-warning, .18), rgba(theme.$app-surface, .96))
-    border-color: rgba(theme.$app-warning, .75)
-    color: theme.$app-primary-deep
+    background: rgba(theme.$imr-warning, .07)
+    border-color: rgba(theme.$imr-warning, .75)
+    color: theme.$imr-primary-deep
 
     &:hover
-        box-shadow: 0 14px 28px rgba(theme.$app-warning, .28)
+        box-shadow: none
 
 .admin-badge
     position: absolute
-    top: .45rem
-    right: .45rem
-    font-size: .65rem
+    top: .35rem
+    right: .35rem
+    font-size: .58rem
     font-weight: 700
     letter-spacing: .04em
-    padding: .15rem .45rem
-    border-radius: 999px
-    background: rgba(theme.$app-warning, .9)
-    color: theme.$app-primary-deep
-
-.user-count-badge
-    position: absolute
-    top: .45rem
-    left: .45rem
-    padding: .15rem .45rem
-    border-radius: 999px
-    font-size: .65rem
-    font-weight: 700
-    letter-spacing: .04em
-    background: rgba(theme.$app-warning, .9)
-    color: theme.$app-primary-deep
-
+    padding: .12rem .38rem
+    border-radius: 0
+    background: rgba(theme.$imr-warning, .9)
+    color: theme.$imr-primary-deep
 .module-card.planned
     cursor: not-allowed
     pointer-events: none
-    background: linear-gradient(180deg, rgba(theme.$app-surface-variant, .66), rgba(theme.$app-surface, .9))
-    border: 2px dashed rgba(theme.$app-border, .95)
-    color: theme.$app-text-muted
+    background: rgba(theme.$imr-surface-variant, .6)
+    border: 2px dashed rgba(theme.$imr-border, .95)
+    color: theme.$imr-text-muted
     box-shadow: none
 
     &::after
-        background: rgba(theme.$app-border, .8)
+        background: rgba(theme.$imr-border, .8)
 
     &:hover
         transform: none
@@ -250,96 +167,84 @@
 
 .planned-badge
     position: absolute
-    top: .45rem
-    right: .45rem
-    font-size: .65rem
+    top: .35rem
+    right: .35rem
+    font-size: .58rem
     font-weight: 700
     letter-spacing: .04em
-    padding: .15rem .45rem
-    border-radius: 999px
-    background: rgba(theme.$app-border, .9)
-    color: theme.$app-text
+    padding: .12rem .38rem
+    border-radius: 0
+    background: rgba(theme.$imr-border, .9)
+    color: theme.$imr-text
 
 .module-icon-shell
     display: inline-flex
     align-items: center
     justify-content: center
-    width: 4.4rem
-    height: 4.4rem
-    margin-bottom: .8rem
-    border-radius: 1.1rem
-    background: linear-gradient(180deg, rgba(theme.$app-primary-light, .46), rgba(theme.$app-surface, .95))
-    border: 1px solid rgba(theme.$app-border, .78)
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .65)
+    width: 4.3rem
+    height: 4.3rem
+    margin-bottom: .65rem
 
 .module-card.admin-only .module-icon-shell
-    background: linear-gradient(180deg, rgba(theme.$app-warning, .22), rgba(theme.$app-surface, .95))
+    color: theme.$imr-warning
 
 .module-card-body
     display: grid
-    gap: .3rem
+    gap: .25rem
+    width: 100%
     justify-items: center
 
 .module-icon
-    width: 3.2rem
-    height: 3.2rem
-    font-size: 3.2rem
-    line-height: 3.2rem
+    width: 3.15rem
+    height: 3.15rem
+    font-size: 3.15rem
+    line-height: 3.15rem
     margin-bottom: 0
 
 .module-title
-    font-size: 1rem
-    font-weight: 600
+    font-size: .95rem
+    font-weight: 700
     line-height: 1.3
-    max-width: 18ch
-    min-height: 2.6em
+    max-width: 100%
+    min-height: 2.4em
     display: flex
     align-items: center
     justify-content: center
+    text-align: center
     overflow-wrap: anywhere
-
-.module-meta
-    min-height: 1.2rem
-    font-size: .78rem
-    font-weight: 600
-    letter-spacing: .02em
-    color: rgba(theme.$app-text-muted, .94)
 
 .empty
     margin: 0
     opacity: .75
 
 .admin-section .count
-    background: theme.$app-warning
+    background: theme.$imr-warning
 
 @media (max-width: 768px)
     .welcome
-        padding: 1rem
+        padding: .85rem
 
     .welcome-main
         flex-direction: column
         align-items: stretch
 
-    .welcome-stats
-        grid-template-columns: repeat(2, minmax(0, 1fr))
-
     .category-block
-        padding: .75rem
+        padding: .6rem
 
     .category-head
         align-items: flex-start
 
     .module-grid
         grid-template-columns: repeat(2, minmax(0, 1fr))
-        gap: .5rem
+        gap: .4rem
 
     .module-card
-        min-height: 66px
-        padding: .45rem 2.3rem .45rem .5rem
+        min-height: 78px
+        padding: .52rem .48rem .52rem .48rem
         flex-direction: row
         justify-content: flex-start
         text-align: left
-        gap: .45rem
+        gap: .4rem
 
         &::after
             inset: 0 auto 0 0
@@ -347,10 +252,9 @@
             height: auto
 
     .module-icon-shell
-        width: 2rem
-        height: 2rem
+        width: 2.25rem
+        height: 2.25rem
         margin-bottom: 0
-        border-radius: .6rem
         flex: 0 0 auto
 
     .module-card-body
@@ -358,15 +262,18 @@
         justify-items: start
 
     .module-icon
-        width: 1.1rem
-        height: 1.1rem
-        font-size: 1.1rem
-        line-height: 1.1rem
+        width: 1.3rem
+        height: 1.3rem
+        font-size: 1.3rem
+        line-height: 1.3rem
         margin-top: .05rem
         flex: 0 0 auto
 
     .module-title
-        font-size: .95rem
+        min-height: 0
+
+    .module-title
+        font-size: .9rem
         min-height: auto
         max-height: none
         max-width: 100%
@@ -381,22 +288,13 @@
         -webkit-box-orient: vertical
         line-clamp: 2
 
-    .module-meta
-        font-size: .68rem
-        min-height: auto
-
     .admin-badge,
-    .planned-badge,
-    .user-count-badge
+    .planned-badge
         top: .35rem
         right: .35rem
         font-size: .55rem
         letter-spacing: .03em
         padding: .1rem .35rem
-
-    .user-count-badge
-        left: .35rem
-        right: auto
 
 @media (max-width: 560px)
     .module-grid
@@ -406,5 +304,3 @@
         flex-direction: column
         align-items: flex-start
 
-    .welcome-stats
-        grid-template-columns: 1fr

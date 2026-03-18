@@ -1,23 +1,23 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// imr-catalog.sass  ·  IMR UI-Katalog – Design-Token & Komponenten-Stile
+// -----------------------------------------------------------------------------
+// imr-catalog.sass  �  IMR UI-Katalog � Design-Token & Komponenten-Stile
 //
 // Dieses File ist die zentrale Styling-Quelle der IMR UI Library.
 // Es wird von styles.sass importiert und definiert:
-//   • CSS Custom Properties (Design-Tokens) für alle IMR-Komponenten
-//   • Material Design 3-Overrides für Angular-Material-Elemente
-//   • Layout-Hilfssysteme (Grid, Utility-Klassen)
+//   � CSS Custom Properties (Design-Tokens) f�r alle IMR-Komponenten
+//   � Material Design 3-Overrides f�r Angular-Material-Elemente
+//   � Layout-Hilfssysteme (Grid, Utility-Klassen)
 //
-// Eigene Komponenten (imr-*) müssen ihre Stile nur noch via CSS-Variablen
-// anpassen und benötigen keine eigene Farblogik.
-// ─────────────────────────────────────────────────────────────────────────────
+// Eigene Komponenten (imr-*) m�ssen ihre Stile nur noch via CSS-Variablen
+// anpassen und ben�tigen keine eigene Farblogik.
+// -----------------------------------------------------------------------------
 @use './theme' as theme
 
-// ══════════════════════════════════════════════════════════════════════════════
-// 1. IMR Design-Tokens – CSS Custom Properties
-// ══════════════════════════════════════════════════════════════════════════════
+// ------------------------------------------------------------------------------
+// 1. IMR Design-Tokens � CSS Custom Properties
+// ------------------------------------------------------------------------------
 
 :root
-    // ── Farben ──────────────────────────────────────────────────────────────
+    // -- Farben --------------------------------------------------------------
     --imr-primary:            #{theme.$imr-primary}
     --imr-primary-dark:       #{theme.$imr-primary-dark}
     --imr-primary-deep:       #{theme.$imr-primary-deep}
@@ -28,60 +28,74 @@
     --imr-success:            #{theme.$imr-success}
     --imr-warning:            #{theme.$imr-warning}
 
-    // ── Oberflächen ──────────────────────────────────────────────────────────
+    // -- Oberfl�chen ----------------------------------------------------------
     --imr-surface:            #{theme.$imr-surface}
     --imr-surface-variant:    #{theme.$imr-surface-variant}
     --imr-border:             #{theme.$imr-border}
     --imr-text:               #{theme.$imr-text}
     --imr-text-muted:         #{theme.$imr-text-muted}
 
-    // ── Steuerelemente (Buttons, Inputs, Chips) ───────────────────────────────
-    --imr-control-radius:     10px
-    --imr-control-height:     40px
-    --imr-control-bg:         #{rgba(theme.$imr-primary-light, .35)}
-    --imr-control-border:     #{rgba(theme.$imr-border, .95)}
+    // -- Steuerelemente (Buttons, Inputs, Chips) -------------------------------
+    --imr-control-radius:     0
+    --imr-control-height:     36px
+    --imr-control-bg:         #ffffff
+    --imr-control-border:     #{rgba(theme.$imr-border, 1)}
     --imr-control-transition: transform .14s ease, box-shadow .14s ease, background-color .14s ease, border-color .14s ease
 
-    // ── Cards ────────────────────────────────────────────────────────────────
-    --imr-card-radius:        1rem
+    // -- Cards ----------------------------------------------------------------
+    --imr-card-radius:        0
     --imr-card-border:        #{rgba(theme.$imr-border, .9)}
-    --imr-card-bg:            #{rgba(theme.$imr-surface, .92)}
-    --imr-card-shadow:        0 8px 28px #{rgba(theme.$imr-primary-dark, .08)}
-    --imr-card-padding:       .6rem .75rem .55rem
-    --imr-card-padding-mobile: .4rem .45rem .35rem
+    --imr-card-bg:            #ffffff
+    --imr-card-shadow:        0 1px 4px rgba(0, 0, 0, .1)
+    --imr-card-padding:       .5rem .65rem .45rem
+    --imr-card-padding-mobile: .35rem .4rem .3rem
 
-    // ── Seiten-Layout ────────────────────────────────────────────────────────
-    --imr-page-max-width:     #{theme.$app-page-max-width}
-    --imr-page-padding:       1rem 1rem 2rem
-    --imr-page-padding-mobile: .75rem .75rem 1.5rem
+    // -- Seiten-Layout --------------------------------------------------------
+    --imr-page-max-width:     #{theme.$imr-page-max-width}
+    --imr-page-padding:       .75rem .85rem 1.35rem
+    --imr-page-padding-mobile: .6rem .65rem 1.1rem
 
-    // ── Header / Navigation ──────────────────────────────────────────────────
-    --imr-header-height:      56px
-    --imr-header-bg:          #{theme.$imr-primary-deep}
-    --imr-header-shadow:      #{rgba(theme.$imr-primary-deep, .3)}
-    --imr-breadcrumb-bg:      #{rgba(theme.$imr-primary-dark, .14)}
+    // -- Header / Navigation --------------------------------------------------
+    --imr-header-height:      52px
+    --imr-header-bg:          #{theme.$imr-primary}
+    --imr-header-shadow:      rgba(0, 0, 0, .08)
+    --imr-breadcrumb-bg:      #{theme.$imr-background}
 
-    // ── Tabellen ─────────────────────────────────────────────────────────────
-    --imr-table-header-bg:    #{theme.$imr-primary-deep}
-    --imr-table-row-even-bg:  #{rgba(theme.$imr-primary-light, .15)}
-    --imr-table-row-hover-bg: #{rgba(theme.$imr-primary-light, .4)}
-    --imr-table-border:       #{rgba(theme.$imr-border, .95)}
+    // -- Tabellen -------------------------------------------------------------
+    --imr-table-header-bg:    #f7f7f7
+    --imr-table-row-even-bg:  #fcfcfc
+    --imr-table-row-hover-bg: #f5f7fb
+    --imr-table-border:       #d9d9d9
 
-    // ── Grid ─────────────────────────────────────────────────────────────────
+    // -- Grid -----------------------------------------------------------------
     --imr-grid-columns:       12
     --imr-grid-row-gap:       .75rem
     --imr-grid-col-gap:       1rem
 
+    // -- Material MDC Shape-Overrides (keine Abrundungen) ---------------------
+    --mdc-shape-small:        0px
+    --mdc-shape-medium:       0px
+    --mdc-shape-large:        0px
+    --mdc-text-field-container-shape: 0px
+    --mdc-chip-container-shape-radius: 0px
+    --mat-card-container-shape: 0px
+    --mat-menu-container-shape: 0px
+    --mdc-dialog-container-shape: 0px
+    --mdc-snackbar-container-shape: 0px
+    --mat-select-container-elevation-shadow: none
+    --mdc-outlined-text-field-container-shape: 0px
+    --mdc-filled-text-field-container-shape: 0px
+
 // Header-Variante hell
 body.header-variant-light
     --imr-header-bg:          #{theme.$imr-primary}
-    --imr-header-shadow:      #{rgba(theme.$imr-primary-dark, .12)}
-    --imr-breadcrumb-bg:      #{rgba(theme.$imr-primary-light, .32)}
+    --imr-header-shadow:      rgba(0, 0, 0, .08)
+    --imr-breadcrumb-bg:      #{theme.$imr-background}
 
 
-// ══════════════════════════════════════════════════════════════════════════════
+// ------------------------------------------------------------------------------
 // 2. Globale Basis-Stile
-// ══════════════════════════════════════════════════════════════════════════════
+// ------------------------------------------------------------------------------
 
 html, body
     background: theme.$imr-background
@@ -130,17 +144,18 @@ h1
     content: "\A"
     white-space: pre-wrap
 
-// ══════════════════════════════════════════════════════════════════════════════
-// 3. Material Design 3 – Angular Material Overrides
-// ══════════════════════════════════════════════════════════════════════════════
+// ------------------------------------------------------------------------------
+// 3. Material Design 3 � Angular Material Overrides
+// ------------------------------------------------------------------------------
 
-// ── Toolbar (imr-header intern) ──────────────────────────────────────────────
+// -- Toolbar (imr-header intern) ----------------------------------------------
 mat-toolbar
     height: var(--imr-header-height)
     display: flex
     flex-wrap: wrap
-    background: var(--imr-header-bg)
-    box-shadow: 0 6px 16px var(--imr-header-shadow)
+    background: var(--imr-header-bg) !important
+    box-shadow: none
+    border-bottom: 1px solid rgba(0, 0, 0, .1)
     position: sticky
     top: 0
     z-index: 500
@@ -149,22 +164,25 @@ mat-toolbar
         flex: 1 1 auto
 
     .title
-        font-size: 20px
-        font-weight: 600
+        font-size: 18px
+        font-weight: 500
         color: white
-        letter-spacing: .2px
+        letter-spacing: .1px
 
     mat-icon
         color: white
 
 .imr-header-toolbar
-    padding-inline: .65rem .85rem
+    padding-inline: .5rem .7rem
+    background: var(--imr-header-bg) !important
+    box-shadow: none
+    transition: background .16s ease, box-shadow .16s ease
 
 .imr-header-logo-link
     display: inline-flex
     align-items: center
     justify-content: center
-    border-radius: .5rem
+    border-radius: 0
     text-decoration: none
 
     &:focus-visible
@@ -172,13 +190,13 @@ mat-toolbar
         outline-offset: 2px
 
 .imr-header-logo
-    width: 42px
-    height: 42px
-    border-radius: .5rem
+    width: 36px
+    height: 36px
+    border-radius: 0
     object-fit: contain
 
 .imr-header-title
-    margin-left: .7rem
+    margin-left: .55rem
     line-height: 1
     white-space: nowrap
 
@@ -193,25 +211,27 @@ mat-toolbar
     &:focus-visible
         outline: 2px solid rgba(255, 255, 255, .72)
         outline-offset: 2px
-        border-radius: .25rem
+        border-radius: 0
 
 .imr-header-logout
     color: white
-    margin-left: .35rem
-    width: 38px
-    height: 38px
+    margin-left: .2rem
+    width: 34px
+    height: 34px
     padding: 0
 
     mat-icon
-        font-size: 20px
-        width: 20px
-        height: 20px
+        font-size: 18px
+        width: 18px
+        height: 18px
 
 .imr-header-stepper-wrap
-    padding: .42rem .55rem
-    background: transparent
+    padding: .35rem .65rem .25rem
+    background: var(--imr-breadcrumb-bg)
+    border-bottom: 1px solid rgba(theme.$imr-border, .85)
+    transition: background .16s ease
 
-// ── Buttons ──────────────────────────────────────────────────────────────────
+// -- Buttons ------------------------------------------------------------------
 .mat-mdc-button,
 .mat-mdc-outlined-button,
 .mat-mdc-unelevated-button,
@@ -220,19 +240,19 @@ mat-toolbar
     border-radius: var(--imr-control-radius)
     min-height: var(--imr-control-height)
     height: var(--imr-control-height)
-    font-weight: 600
-    letter-spacing: .2px
+    font-weight: 500
+    letter-spacing: .1px
     border: 1px solid var(--imr-control-border)
     background: var(--imr-control-bg)
-    color: theme.$imr-primary-deep
-    box-shadow: 0 4px 10px rgba(theme.$imr-primary-deep, .12)
+    color: theme.$imr-text
+    box-shadow: none
     transition: var(--imr-control-transition)
 
     &:hover:not(:disabled)
-        transform: translateY(-1px)
-        background: rgba(theme.$imr-primary-light, .5)
-        border-color: rgba(theme.$imr-primary, .35)
-        box-shadow: 0 6px 14px rgba(theme.$imr-primary-deep, .18)
+        transform: none
+        background: #f7f7f7
+        border-color: rgba(theme.$imr-primary, .45)
+        color: theme.$imr-primary-deep
 
     &:active:not(:disabled)
         transform: translateY(0)
@@ -245,7 +265,7 @@ mat-toolbar
 .mat-mdc-outlined-button,
 .mat-mdc-unelevated-button,
 .mat-mdc-raised-button
-    padding-inline: 1rem
+    padding-inline: .85rem
 
 .mat-mdc-icon-button
     width: var(--imr-control-height)
@@ -266,19 +286,19 @@ mat-toolbar
 
 .mat-mdc-unelevated-button.mat-primary,
 .mat-mdc-raised-button.mat-primary
-    background: theme.$imr-primary-deep !important
-    border-color: rgba(theme.$imr-primary-deep, .84) !important
-    box-shadow: 0 6px 14px rgba(theme.$imr-primary-deep, .24)
+    background: theme.$imr-primary !important
+    border-color: rgba(theme.$imr-primary, .92) !important
+    box-shadow: none
 
     &:hover:not(:disabled)
         background: theme.$imr-primary-dark !important
-        border-color: rgba(theme.$imr-primary-deep, .9) !important
+        border-color: rgba(theme.$imr-primary-dark, .95) !important
 
 .mat-mdc-unelevated-button.mat-accent,
 .mat-mdc-raised-button.mat-accent
     background: theme.$imr-secondary !important
     border-color: rgba(theme.$imr-secondary, .86) !important
-    box-shadow: 0 6px 14px rgba(theme.$imr-secondary, .24)
+    box-shadow: none
 
     &:hover:not(:disabled)
         background: color-mix(in srgb, #{theme.$imr-secondary} 86%, #000 14%) !important
@@ -288,7 +308,7 @@ mat-toolbar
 .mat-mdc-raised-button.mat-warn
     background: theme.$imr-error !important
     border-color: rgba(theme.$imr-error, .88) !important
-    box-shadow: 0 6px 14px rgba(theme.$imr-error, .24)
+    box-shadow: none
 
     &:hover:not(:disabled)
         background: color-mix(in srgb, #{theme.$imr-error} 86%, #000 14%) !important
@@ -344,7 +364,7 @@ mat-toolbar
 .mat-mdc-chip
     border-radius: var(--imr-control-radius) !important
 
-// ── Disabled-Cursor ──────────────────────────────────────────────────────────
+// -- Disabled-Cursor ----------------------------------------------------------
 .mat-form-field-disabled,
 .mat-form-field-disabled input,
 .mat-form-field-disabled textarea,
@@ -354,14 +374,14 @@ mat-toolbar
 div:has(> .mat-mdc-button-disabled)
     cursor: not-allowed
 
-// ── Cards ────────────────────────────────────────────────────────────────────
+// -- Cards --------------------------------------------------------------------
 mat-card
     padding: 10px
 
 .mat-mdc-card
     border-radius: var(--imr-card-radius)
     border: 1px solid var(--imr-card-border)
-    background: linear-gradient(180deg, rgba(theme.$imr-surface, .98), var(--imr-card-bg))
+    background: var(--imr-card-bg)
     box-shadow: var(--imr-card-shadow)
     overflow: hidden
 
@@ -384,23 +404,23 @@ mat-card
             font-size: 112px
             line-height: 1
 
-// ── Formfelder ───────────────────────────────────────────────────────────────
+// -- Formfelder ---------------------------------------------------------------
 mat-form-field,
 .mat-mdc-form-field
     width: 100%
 
 .mat-mdc-form-field
     .mat-mdc-text-field-wrapper
-        border-radius: .85rem
-        background: linear-gradient(180deg, rgba(theme.$imr-surface, .86), rgba(theme.$imr-surface-variant, .34))
+        border-radius: 0
+        background: #fff
         transition: background-color .16s ease, box-shadow .16s ease, border-color .16s ease
 
     &:hover .mat-mdc-text-field-wrapper
-        background: linear-gradient(180deg, rgba(theme.$imr-surface, .96), rgba(theme.$imr-surface-variant, .4))
+        background: #fff
 
     &.mat-focused .mat-mdc-text-field-wrapper
-        background: linear-gradient(180deg, rgba(theme.$imr-surface, .98), rgba(theme.$imr-primary-light, .12))
-        box-shadow: 0 0 0 4px rgba(theme.$imr-primary-light, .34)
+        background: #fff
+        box-shadow: none
 
     .mat-mdc-form-field-hint-wrapper,
     .mat-mdc-form-field-error-wrapper
@@ -446,31 +466,42 @@ mat-select
     margin: 0px
     padding: 0px
 
-// ── Tabellen ─────────────────────────────────────────────────────────────────
+// -- Tabellen -----------------------------------------------------------------
 .mat-mdc-table
-    background: rgba(theme.$imr-surface, .5)
-    border: 1px solid rgba(theme.$imr-border, .78)
-    border-radius: .85rem
+    background: #fff
+    border: 1px solid var(--imr-table-border)
+    border-radius: 0
     overflow: hidden
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .55)
+    box-shadow: none
 
     .mat-mdc-header-row
-        background: linear-gradient(90deg, #{theme.$imr-primary-deep}, #{theme.$imr-primary-dark})
-        border-bottom: 1px solid rgba(theme.$imr-primary-deep, .95)
+        background: theme.$imr-primary
+        border-bottom: 1px solid rgba(theme.$imr-primary-dark, .9)
 
     .mat-mdc-header-cell
         color: #fff
-        font-weight: 700
-        letter-spacing: .2px
-        font-size: .9rem
-        padding: .85rem .9rem
+        font-weight: 600
+        letter-spacing: .02em
+        font-size: .74rem
+        line-height: 1.2
+        padding: .68rem .8rem
+
+    .mat-sort-header-arrow
+        color: rgba(#fff, .8)
 
     .mat-mdc-cell
-        padding: .85rem .9rem
-        border-bottom: 1px solid rgba(theme.$imr-border, .52)
+        color: theme.$imr-text
+        font-size: .88rem
+        line-height: 1.35
+        padding: .72rem .8rem
+        border-bottom: 1px solid rgba(theme.$imr-border, .65)
 
     .mat-mdc-row
+        min-height: 44px
         transition: background-color .14s ease
+
+    .mat-mdc-header-row
+        min-height: 42px
 
         &:nth-child(even)
             background-color: var(--imr-table-row-even-bg)
@@ -481,7 +512,7 @@ mat-select
         &:last-child .mat-mdc-cell
             border-bottom: 0
 
-// ── Chips ────────────────────────────────────────────────────────────────────
+// -- Chips --------------------------------------------------------------------
 .mat-mdc-chip-set .mdc-evolution-chip-set__chips
     gap: .42rem
 
@@ -494,7 +525,7 @@ mat-select
     border: 1px solid var(--imr-control-border)
     background: var(--imr-control-bg)
     color: theme.$imr-primary-deep
-    box-shadow: 0 4px 10px rgba(theme.$imr-primary-deep, .12)
+    box-shadow: none
     transition: var(--imr-control-transition)
 
     .mdc-evolution-chip__cell,
@@ -510,18 +541,18 @@ mat-select
         letter-spacing: .2px
 
     &:hover
-        transform: translateY(-1px)
-        background: rgba(theme.$imr-primary-light, .5)
-        border-color: rgba(theme.$imr-primary, .35)
-        box-shadow: 0 6px 14px rgba(theme.$imr-primary-deep, .18)
+        transform: none
+        background: #f7f7f7
+        border-color: rgba(theme.$imr-primary, .4)
+        box-shadow: none
 
     &:focus-within
         outline: 2px solid rgba(theme.$imr-primary, .55)
         outline-offset: 2px
 
 .mat-mdc-standard-chip.mdc-evolution-chip--selected
-    background: theme.$imr-primary-deep
-    border-color: rgba(theme.$imr-primary-deep, .85)
+    background: theme.$imr-primary
+    border-color: rgba(theme.$imr-primary, .88)
     color: #fff
 
     .mdc-evolution-chip__text-label,
@@ -529,40 +560,67 @@ mat-select
     .mat-icon
         color: #fff
 
-// ── Tabs ─────────────────────────────────────────────────────────────────────
+// -- Tabs ---------------------------------------------------------------------
 .mat-mdc-tab-group
-    --mdc-secondary-navigation-tab-container-height: 46px
+    --mdc-secondary-navigation-tab-container-height: 42px
+
+    .mat-mdc-tab-header
+        background: #fff
+        border-bottom: 1px solid rgba(theme.$imr-border, .9)
 
     .mdc-tab
-        border-radius: .55rem .55rem 0 0
+        border-radius: 0
+        min-width: 108px
+        padding-inline: .25rem
+        background: transparent
+        border-right: 0
+
+    .mat-mdc-tab
+        border-radius: 0
+
+    .mdc-tab__ripple,
+    .mdc-tab__ripple::before,
+    .mdc-tab__ripple::after
+        border-radius: 0
+
+    .mdc-tab__text-label
+        color: rgba(theme.$imr-text-muted, .95)
+        font-size: .85rem
+        letter-spacing: .01em
+        font-weight: 500
 
     .mdc-tab--active .mdc-tab__text-label
-        color: theme.$imr-primary-dark
-        font-weight: 700
+        color: theme.$imr-primary
+        font-weight: 600
+
+    .mdc-tab-indicator__content--underline
+        border-color: theme.$imr-primary !important
+        border-top-width: 3px
+        border-radius: 0
 
     .mdc-tab:focus-visible
         outline: 2px solid rgba(theme.$imr-primary, .5)
         outline-offset: -2px
 
-// ── Expansion Panel ──────────────────────────────────────────────────────────
+// -- Expansion Panel ----------------------------------------------------------
 .mat-expansion-panel
     border: 1px solid rgba(theme.$imr-border, .9)
-    border-radius: .7rem
+    border-radius: 0
     overflow: hidden
 
-// ── Paginator ────────────────────────────────────────────────────────────────
+// -- Paginator ----------------------------------------------------------------
 .mat-mdc-paginator
     border-top: 1px solid rgba(theme.$imr-border, .9)
     background-color: transparent
     padding-top: .25rem
 
-// ── Snackbar ─────────────────────────────────────────────────────────────────
+// -- Snackbar -----------------------------------------------------------------
 .app-snackbar
     --mdc-snackbar-supporting-text-size: 1rem
     --mdc-snackbar-supporting-text-line-height: 1.35rem
     --mdc-snackbar-supporting-text-color: #fff
     --mat-snack-bar-button-color: #fff
-    border-radius: .75rem
+    border-radius: 0
     white-space: pre-line
     word-break: break-word
     box-shadow: 0 10px 24px rgba(0, 0, 0, .28)
@@ -576,7 +634,7 @@ mat-select
     --mat-snack-bar-button-color: #fff
 
     .mdc-snackbar__surface
-        border-radius: .75rem
+        border-radius: 0
         box-shadow: 0 10px 24px rgba(0, 0, 0, .28)
         opacity: .96
         white-space: pre-line
@@ -604,7 +662,7 @@ mat-select
     @extend .app-snackbar
     @extend .app-snackbar--error
 
-// ── Listen ───────────────────────────────────────────────────────────────────
+// -- Listen -------------------------------------------------------------------
 mat-list
     padding-top: 0
     padding-bottom: 0
@@ -641,7 +699,7 @@ mat-list-item span span
     color: theme.$imr-primary
     cursor: pointer
 
-// ── Error-Banner ─────────────────────────────────────────────────────────────
+// -- Error-Banner -------------------------------------------------------------
 .error-top
     color: white
     background-color: theme.$imr-error
@@ -650,18 +708,18 @@ mat-list-item span span
     font-size: 1.2rem
 
 
-// ══════════════════════════════════════════════════════════════════════════════
-// 4. IMR-Komponenten-Stile (für imr-* Komponenten via Host oder Wrapper-Klassen)
-// ══════════════════════════════════════════════════════════════════════════════
+// ------------------------------------------------------------------------------
+// 4. IMR-Komponenten-Stile (f�r imr-* Komponenten via Host oder Wrapper-Klassen)
+// ------------------------------------------------------------------------------
 
-// ── imr-page-layout ──────────────────────────────────────────────────────────
+// -- imr-page-layout ----------------------------------------------------------
 .imr-page
     max-width: var(--imr-page-max-width)
     margin: 0 auto
     padding: var(--imr-page-padding)
 
 .imr-page__head
-    margin: 0 0 1.5rem
+    margin: 0 0 1rem
 
     h1
         margin: 0
@@ -669,7 +727,7 @@ mat-list-item span span
         font-size: clamp(1.5rem, 2.4vw, 2.1rem)
         line-height: 1.2
 
-// ── imr-section-card ─────────────────────────────────────────────────────────
+// -- imr-section-card ---------------------------------------------------------
 .imr-card
     border-radius: var(--imr-card-radius) !important
 
@@ -678,16 +736,18 @@ mat-list-item span span
     align-items: center
     justify-content: space-between
     gap: .75rem
-    padding: 1rem 1rem .85rem
-    margin-bottom: .15rem
-    background: linear-gradient(180deg, rgba(theme.$imr-primary-light, .18), rgba(theme.$imr-surface, 0))
-    border-bottom: 1px solid rgba(theme.$imr-border, .78)
+    padding: .72rem .85rem
+    margin-bottom: 0
+    background: theme.$imr-primary
+    border-bottom: 1px solid rgba(theme.$imr-primary-dark, .95)
 
     h2,
     .mat-mdc-card-title
         margin: 0
-        color: theme.$imr-primary
-        font-size: 1.1rem
+        color: #fff
+        font-size: .96rem
+        font-weight: 700
+        line-height: 1.2
 
     .mat-mdc-card-title
         padding-bottom: 0
@@ -703,13 +763,13 @@ mat-list-item span span
 .table-status-badge
     display: inline-flex
     align-items: center
-    min-height: 1.9rem
-    padding: 0 .7rem
-    border-radius: 999px
+    min-height: 1.6rem
+    padding: 0 .55rem
+    border-radius: 0
     border: 1px solid rgba(theme.$imr-border, .86)
-    background: rgba(theme.$imr-primary-light, .26)
-    color: rgba(theme.$imr-primary-deep, .88)
-    font-size: .73rem
+    background: #f4f4f4
+    color: rgba(theme.$imr-text, .92)
+    font-size: .68rem
     font-weight: 700
     letter-spacing: .04em
     text-transform: uppercase
@@ -722,13 +782,13 @@ mat-list-item span span
 .imr-card__content
     padding: var(--imr-card-padding) !important
 
-// ── imr-top-actions ──────────────────────────────────────────────────────────
+// -- imr-top-actions ----------------------------------------------------------
 .imr-top-actions
     display: flex
     align-items: center
-    gap: .6rem
+    gap: .45rem
     flex-wrap: wrap
-    margin: .25rem 0 .8rem
+    margin: .15rem 0 .55rem
 
     > .mat-mdc-button-base,
     > a.mat-mdc-button-base,
@@ -740,13 +800,13 @@ mat-list-item span span
         min-height: var(--imr-control-height)
         height: var(--imr-control-height)
 
-// ── imr-form-actions ─────────────────────────────────────────────────────────
+// -- imr-form-actions ---------------------------------------------------------
 .imr-form-actions
     display: flex
     align-items: center
     flex-wrap: wrap
-    gap: .6rem
-    margin-bottom: .8rem
+    gap: .45rem
+    margin-bottom: .65rem
 
     > .mat-mdc-button-base,
     > a.mat-mdc-button-base,
@@ -758,49 +818,56 @@ mat-list-item span span
         min-height: var(--imr-control-height)
         height: var(--imr-control-height)
 
-// ── imr-form ─────────────────────────────────────────────────────────────────
+// -- imr-form -----------------------------------------------------------------
 .imr-form
     margin-top: .2rem
 
-// ── imr-form-grid ────────────────────────────────────────────────────────────
+.upload-button[mat-flat-button]
+    min-height: var(--imr-control-height)
+    height: var(--imr-control-height)
+
+form > button.ui-delete-btn[mat-flat-button],
+mat-card-content > button.ui-delete-btn[mat-flat-button]
+    margin-top: .8rem
+
+// -- imr-form-grid ------------------------------------------------------------
 .imr-form-grid
     margin-top: .2rem
-    padding: .95rem
+    padding: .75rem
     border: 1px solid rgba(theme.$imr-border, .82)
-    border-radius: .95rem
-    background: linear-gradient(180deg, rgba(theme.$imr-surface, .96), rgba(theme.$imr-primary-light, .08))
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .5)
+    border-radius: 0
+    background: #fff
 
-// ── imr-two-col-md ───────────────────────────────────────────────────────────
+// -- imr-two-col-md -----------------------------------------------------------
 .imr-two-col-md
     grid-column: span 12
 
-// ── imr-full-width ───────────────────────────────────────────────────────────
+// -- imr-full-width -----------------------------------------------------------
 .imr-full-width
     width: 100%
 
-// ── imr-table-wrap ───────────────────────────────────────────────────────────
+// -- imr-table-wrap -----------------------------------------------------------
 .imr-table-wrap
     overflow-x: auto
-    margin-top: .7rem
-    padding: .85rem .85rem .4rem
+    margin-top: .5rem
+    padding: .55rem .55rem .2rem
     border: 1px solid rgba(theme.$imr-border, .86)
-    border-radius: 1rem
-    background: linear-gradient(180deg, rgba(theme.$imr-surface, .96), rgba(theme.$imr-surface-variant, .36))
-    box-shadow: 0 12px 26px rgba(theme.$imr-primary-dark, .06)
+    border-radius: 0
+    background: #fff
+    box-shadow: none
 
     > .mat-mdc-form-field,
     > mat-form-field,
     > .filter-field
         display: block
         width: min(360px, 100%)
-        margin: 0 0 .7rem
+        margin: 0 0 .5rem
 
 .table-toolbar
     display: flex
-    align-items: flex-end
+    align-items: center
     justify-content: space-between
-    gap: .6rem
+    gap: .45rem
     margin: 0 0 .35rem
 
     .filter-field,
@@ -810,8 +877,8 @@ mat-list-item span span
 
 .table-actions-head,
 .mat-column-actions
-    width: 9.8rem
-    min-width: 9.8rem
+    width: 8.6rem
+    min-width: 8.6rem
 
 .table-empty-cell
     padding: 1rem .5rem !important
@@ -821,10 +888,10 @@ mat-list-item span span
     justify-items: center
     gap: .22rem
     margin: .2rem 0 .45rem
-    padding: .9rem .75rem
-    border-radius: .85rem
+    padding: .7rem .65rem
+    border-radius: 0
     border: 1px dashed rgba(theme.$imr-border, .88)
-    background: rgba(theme.$imr-surface, .9)
+    background: rgba(theme.$imr-surface, .98)
     text-align: center
 
     &.compact
@@ -845,7 +912,7 @@ mat-list-item span span
     font-size: .84rem
     color: rgba(theme.$imr-text-muted, .95)
 
-// ── imr-action-cell ──────────────────────────────────────────────────────────
+// -- imr-action-cell ----------------------------------------------------------
 .imr-action-cell
     display: flex
     gap: .35rem
@@ -894,7 +961,7 @@ td.imr-action-cell
     height: 2.25rem
     padding: 0
 
-// ── imr-chips ────────────────────────────────────────────────────────────────
+// -- imr-chips ----------------------------------------------------------------
 .imr-chips
     margin-top: .3rem
     display: flex
@@ -917,57 +984,68 @@ td.imr-action-cell
     .mat-mdc-chip [matChipRemove]
         border-radius: var(--imr-control-radius)
 
-// ── imr-breadcrumb ───────────────────────────────────────────────────────────
+// -- imr-breadcrumb -----------------------------------------------------------
 .imr-breadcrumb
     width: min(var(--imr-page-max-width), 100%)
     margin: 0 auto
     display: flex
     align-items: center
     gap: .45rem
-    padding: .35rem .1rem
+    padding: .3rem .65rem
     overflow-x: auto
     white-space: nowrap
     scrollbar-width: none
-    background: var(--imr-breadcrumb-bg)
-    border-bottom: 1px solid rgba(theme.$imr-border, .7)
+    background: transparent
+    border-bottom: none
+    box-shadow: none
+    transition: background .16s ease
 
     &::-webkit-scrollbar
         display: none
 
 .breadcrumb-item
-    font-size: .92rem
-    font-weight: 600
-    color: theme.$imr-primary-deep
+    font-size: .82rem
+    font-weight: 500
+    color: theme.$imr-text-muted
+    opacity: 1
 
 .breadcrumb-link
     text-decoration: none
-    transition: opacity .16s ease
+    transition: opacity .16s ease, color .16s ease
+    color: theme.$imr-text-muted
 
     &:hover
         opacity: .75
+        color: theme.$imr-text
 
     &:focus-visible
-        outline: 2px solid rgba(theme.$imr-primary-deep, .35)
+        outline: 2px solid rgba(theme.$imr-primary, .5)
         outline-offset: 2px
-        border-radius: .25rem
+        border-radius: 0
 
 .breadcrumb-home
     display: inline-flex
     align-items: center
+    opacity: 1
+    transition: opacity .16s ease
+
+    &:hover
+        opacity: .7
 
     mat-icon
-        font-size: 18px
-        width: 18px
-        height: 18px
+        font-size: 16px
+        width: 16px
+        height: 16px
+        color: theme.$imr-text-muted
 
 .breadcrumb-separator
-    color: theme.$imr-text-muted
-    opacity: .8
+    color: rgba(theme.$imr-primary, .3)
+    opacity: .55
 
-// ── imr-lending (Leihe/Inventar-Panel) ───────────────────────────────────────
+// -- imr-lending (Leihe/Inventar-Panel) ---------------------------------------
 .imr-lending-panel
     border: 1px solid rgba(theme.$imr-primary, .16)
-    border-radius: .75rem
+    border-radius: 0
     padding: .8rem
     background: rgba(theme.$imr-primary-light, .18)
 
@@ -984,7 +1062,7 @@ td.imr-action-cell
 
 .imr-lending-row
     border: 1px solid rgba(theme.$imr-primary, .14)
-    border-radius: .65rem
+    border-radius: 0
     padding: .65rem .65rem .15rem
     margin-bottom: .6rem
     background: #fff
@@ -999,7 +1077,7 @@ td.imr-action-cell
     font-size: .92rem
     color: rgba(theme.$imr-primary-dark, .84)
 
-// ── imr-transaction (Buchungs-Dialog) ────────────────────────────────────────
+// -- imr-transaction (Buchungs-Dialog) ----------------------------------------
 .imr-transaction-backdrop
     position: fixed
     inset: 0
@@ -1015,10 +1093,10 @@ td.imr-action-cell
     width: min(680px, 100%)
     max-height: calc(100vh - 2rem)
     overflow: auto
-    border-radius: 1rem
+    border-radius: 0
     border: 1px solid rgba(theme.$imr-border, .86)
-    background: linear-gradient(180deg, rgba(theme.$imr-surface, .98), #fff)
-    box-shadow: 0 22px 52px rgba(0, 0, 0, .22)
+    background: theme.$imr-surface
+    box-shadow: 0 14px 34px rgba(0, 0, 0, .18)
     padding: 1rem
     animation: imr-dialog-enter .18s ease-out
 
@@ -1038,9 +1116,9 @@ td.imr-action-cell
 .imr-transaction-meta
     margin: .2rem 0
     padding: .7rem .8rem
-    border-radius: .75rem
+    border-radius: 0
     border: 1px solid rgba(theme.$imr-border, .8)
-    background: rgba(theme.$imr-primary-light, .18)
+    background: rgba(theme.$imr-primary-light, .14)
     color: rgba(theme.$imr-primary-dark, .9)
 
 .imr-transaction-form
@@ -1049,8 +1127,8 @@ td.imr-action-cell
 .imr-transaction-note
     margin: .2rem 0 .8rem
     padding: .7rem .8rem
-    border-radius: .75rem
-    background: rgba(theme.$imr-surface-variant, .52)
+    border-radius: 0
+    background: rgba(theme.$imr-surface-variant, .4)
     font-size: .9rem
     color: rgba(theme.$imr-primary-dark, .84)
 
@@ -1070,9 +1148,9 @@ td.imr-action-cell
         opacity: 1
         transform: translateY(0) scale(1)
 
-// ── imr-form-section ─────────────────────────────────────────────────────────
+// -- imr-form-section ---------------------------------------------------------
 .imr-form-section
-    border-radius: .75rem !important
+    border-radius: 0
     border: 1px solid rgba(theme.$imr-border, .9)
     background: rgba(theme.$imr-surface, .94)
 
@@ -1087,9 +1165,9 @@ td.imr-action-cell
     padding-top: .35rem
 
 
-// ══════════════════════════════════════════════════════════════════════════════
+// ------------------------------------------------------------------------------
 // 5. Grid-System
-// ══════════════════════════════════════════════════════════════════════════════
+// ------------------------------------------------------------------------------
 
 .container, .app-container
     width: min(1280px, 100%)
@@ -1192,9 +1270,9 @@ td.imr-action-cell
         grid-column: span 12
 
 
-// ══════════════════════════════════════════════════════════════════════════════
+// ------------------------------------------------------------------------------
 // 6. Utility-Klassen
-// ══════════════════════════════════════════════════════════════════════════════
+// ------------------------------------------------------------------------------
 
 .text-center
     text-align: center
@@ -1297,9 +1375,9 @@ td.imr-action-cell
     white-space: nowrap
 
 
-// ══════════════════════════════════════════════════════════════════════════════
+// ------------------------------------------------------------------------------
 // 7. Responsive Overrides
-// ══════════════════════════════════════════════════════════════════════════════
+// ------------------------------------------------------------------------------
 
 @media only screen and (min-width: 768px)
     .imr-two-col-md, .ui-two-col-md
@@ -1322,10 +1400,10 @@ td.imr-action-cell
             font-size: 1.4rem
 
     .imr-card__head, .ui-card__head, .section-head
-        padding: .85rem .85rem 0
+        padding: .72rem .85rem
 
         h2
-            font-size: 1rem
+            font-size: .9rem
 
     .imr-form-grid, .ui-form-grid, .form-grid
         padding: .75rem
@@ -1395,7 +1473,7 @@ td.imr-action-cell
             height: 18px
 
     .imr-header-stepper-wrap
-        padding: .35rem .4rem
+        padding: .4rem .55rem .25rem
 
     .imr-breadcrumb
         gap: .35rem
@@ -1404,7 +1482,7 @@ td.imr-action-cell
         font-size: .86rem
 
     .mat-mdc-card
-        border-radius: .85rem
+        border-radius: 0
 
     .settings-card > .mat-mdc-card-content,
     .settings-card mat-card-content

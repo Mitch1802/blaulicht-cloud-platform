@@ -18,20 +18,42 @@ class NoReuseStrategy implements RouteReuseStrategy {
 }
 
 
-function registerInstallableServiceWorker(): void {
+function cleanupInstalledServiceWorkers(): void {
   if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
     return;
   }
 
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch((error) => {
-      console.error('Service worker registration failed:', error);
-    });
+    navigator.serviceWorker.getRegistrations()
+      .then(async (registrations) => {
+        if (registrations.length === 0) {
+          return false;
+        }
+
+        const results = await Promise.all(registrations.map((registration) => registration.unregister()));
+        return results.some(Boolean);
+      })
+      .then((didUnregister) => {
+        if (!didUnregister) {
+          return;
+        }
+
+        if (sessionStorage.getItem('sw-cleanup-reloaded') === '1') {
+          sessionStorage.removeItem('sw-cleanup-reloaded');
+          return;
+        }
+
+        sessionStorage.setItem('sw-cleanup-reloaded', '1');
+        window.location.reload();
+      })
+      .catch((error) => {
+        console.error('Service worker cleanup failed:', error);
+      });
   });
 }
 
 
-registerInstallableServiceWorker();
+cleanupInstalledServiceWorkers();
 
 
 bootstrapApplication(AppComponent, {

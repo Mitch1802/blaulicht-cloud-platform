@@ -318,10 +318,12 @@
   <mat-card class="settings-card mt-3">
     <div class="section-head">
       <h2>Jugend-Events</h2>
-      <button mat-flat-button color="accent" type="button" (click)="neuesEvent()">Neues Event</button>
     </div>
 
     <mat-card-content>
+      <div class="actions-top">
+        <button mat-flat-button color="accent" type="button" (click)="neuesEvent()">Neues Event</button>
+      </div>
       @if (showEventForm) {
         <form [formGroup]="formEvent" (ngSubmit)="speichernEvent()" class="edit-form">
           <div class="form-actions">

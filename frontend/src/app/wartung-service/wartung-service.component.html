@@ -8,10 +8,12 @@
   <mat-card class="settings-card">
     <div class="section-head">
       <h2>Anstehende Termine {{ jahr }}</h2>
-      <button mat-flat-button color="primary" type="button" (click)="reload()">Aktualisieren</button>
     </div>
 
     <mat-card-content>
+      <div class="actions-top">
+        <button mat-flat-button color="primary" type="button" (click)="reload()">Aktualisieren</button>
+      </div>
       <div class="summary-grid">
         <article class="summary-card">
           <h3>Gesamt</h3>

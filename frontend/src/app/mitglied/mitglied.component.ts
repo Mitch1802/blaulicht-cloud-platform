@@ -123,11 +123,33 @@ export class MitgliedComponent implements OnInit {
 
   sichtbareSpaltenMitglieder: string[] = ['stbnr', 'vorname', 'nachname', 'dienstgrad', 'dienststatus', 'actions'];
 
+  get mitgliederCount(): number {
+    return this.mitglieder.length;
+  }
+
+  get filteredMitgliederCount(): number {
+    return this.dataSource.filteredData.length;
+  }
+
+  private normalizeFilterValue(value: string): string {
+    return String(value || '').trim().toLowerCase();
+  }
+
+  private getMitgliedFilterText(mitglied: IMitglied): string {
+    return `${mitglied.stbnr} ${mitglied.vorname} ${mitglied.nachname} ${mitglied.dienstgrad || ''} ${mitglied.dienststatus || ''}`.toLowerCase();
+  }
+
   ngOnInit(): void {
     sessionStorage.setItem("PageNumber", "2");
     sessionStorage.setItem("Page2", "V_M");
     this.breadcrumb = this.navigationService.ladeBreadcrumb();
     this.formModul.disable();
+    this.dataSource.filterPredicate = (data: IMitglied, filter: string) => {
+      if (!filter) {
+        return true;
+      }
+      return this.getMitgliedFilterText(data).includes(filter);
+    };
 
     this.apiHttpService.get(this.modul).subscribe({
       next: (erg: any) => {
@@ -186,8 +208,8 @@ export class MitgliedComponent implements OnInit {
   }
 
   applyFilter(value: string): void {
-    this.dataSource.filter = (value || '').trim().toLowerCase();
-    this.matPaginator?.firstPage();
+    this.dataSource.filter = this.normalizeFilterValue(value);
+    this.dataSource.paginator?.firstPage();
   }
 
   previewImport(entries: any[]): void {

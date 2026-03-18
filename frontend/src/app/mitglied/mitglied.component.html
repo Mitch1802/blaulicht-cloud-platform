@@ -8,6 +8,9 @@
   <mat-card class="settings-card">
     <div class="section-head">
       <h2>Mitglieder verwalten</h2>
+      <div class="section-head-meta">
+        <span class="table-status-badge">{{ mitgliederCount }} Mitglieder</span>
+      </div>
     </div>
 
     <mat-card-content>
@@ -225,6 +228,7 @@
           <button
             mat-flat-button
             color="warn"
+            class="ui-delete-btn"
             [hidden]="!formModul.controls['id'].value"
             type="button"
             (click)="datenLoeschen()"
@@ -235,6 +239,24 @@
 
         @if (formModul.disabled) {
           <div class="table-wrap">
+            <div class="table-toolbar">
+              <mat-form-field
+                class="filter-field"
+                appearance="outline"
+              >
+                <mat-label>Filter</mat-label>
+                <input
+                  matInput
+                  #filterInput
+                  (input)="applyFilter(filterInput.value)"
+                  placeholder="Stbnr, Name oder Dienstgrad"
+                />
+                <mat-icon matSuffix>search</mat-icon>
+              </mat-form-field>
+              <span class="table-status-badge" [class.warn]="filteredMitgliederCount === 0">
+                Sichtbar {{ filteredMitgliederCount }} / {{ mitgliederCount }}
+              </span>
+            </div>
             <table mat-table [dataSource]="dataSource" matSort>
               <ng-container matColumnDef="stbnr">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Stbnr.</th>
@@ -265,13 +287,14 @@
                 </td>
               </ng-container>
               <ng-container matColumnDef="actions">
-                <th mat-header-cell *matHeaderCellDef>Aktionen</th>
+                <th mat-header-cell *matHeaderCellDef class="table-actions-head">Aktionen</th>
                 <td mat-cell *matCellDef="let element" class="ui-action-cell">
                   <button
                     mat-flat-button
                     class="ui-action-btn"
                     color="primary"
                     (click)="auswahlBearbeiten(element)"
+                    [attr.aria-label]="'Mitglied ' + element.stbnr + ' ' + element.vorname + ' ' + element.nachname + ' bearbeiten'"
                   >
                     <mat-icon class="m-0">edit</mat-icon>
                   </button>
@@ -285,6 +308,15 @@
                 mat-row
                 *matRowDef="let row; columns: sichtbareSpaltenMitglieder"
               ></tr>
+              <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell table-empty-cell" [attr.colspan]="sichtbareSpaltenMitglieder.length">
+                  <div class="table-empty-state compact">
+                    <mat-icon class="table-empty-icon">person_search</mat-icon>
+                    <span class="table-empty-title">Keine Mitglieder gefunden</span>
+                    <span class="table-empty-copy">Bitte Filter anpassen oder neues Mitglied hinzufügen.</span>
+                  </div>
+                </td>
+              </tr>
             </table>
             <mat-paginator
               [pageSizeOptions]="[10, 50, 100]"

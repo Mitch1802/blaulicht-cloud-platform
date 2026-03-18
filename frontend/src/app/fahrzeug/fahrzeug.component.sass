@@ -10,23 +10,12 @@
 
 	h1
 		margin: 0
-		color: theme.$app-primary
+		color: theme.$imr-primary
 		font-size: clamp(1.5rem, 2.4vw, 2.1rem)
 		line-height: 1.2
 
 .settings-card
-	border-radius: .9rem
-
-.section-head
-	display: flex
-	align-items: center
-	justify-content: space-between
-	padding: 1rem 1rem 0
-
-	h2
-		margin: 0
-		color: theme.$app-primary
-		font-size: 1.1rem
+	border-radius: 0
 
 .toolbar,
 .top-actions
@@ -45,7 +34,7 @@
 	cursor: pointer
 
 .selected-row
-	background: rgba(theme.$app-primary-light, .5)
+	background: rgba(theme.$imr-primary-light, .5)
 
 .form-grid
 	display: grid
@@ -85,15 +74,15 @@
 	justify-content: flex-start
 
 .inventar-toggle-btn
-	border-color: rgba(theme.$app-border, .95)
+	border-color: rgba(theme.$imr-border, .95)
 
 	&.is-compact
-		border-color: rgba(theme.$app-primary, .45)
-		background: rgba(theme.$app-primary-light, .3)
+		border-color: rgba(theme.$imr-primary, .45)
+		background: rgba(theme.$imr-primary-light, .3)
 
 .inventar-subheadline
 	margin: 0 0 .8rem 0
-	color: theme.$app-primary
+	color: theme.$imr-primary
 	opacity: .88
 
 .inventar-overview
@@ -102,9 +91,9 @@
 	align-items: end
 	gap: 14px
 	padding: .9rem
-	border-radius: .7rem
-	border: 1px solid rgba(theme.$app-border, .9)
-	background: linear-gradient(135deg, rgba(theme.$app-primary-light, .22), rgba(theme.$app-surface, .92))
+	border-radius: 0
+	border: 1px solid rgba(theme.$imr-border, .9)
+	background: rgba(theme.$imr-primary-light, .18)
 
 .inventar-overview-main
 	display: grid
@@ -116,13 +105,13 @@
 	font-weight: 700
 	letter-spacing: .04em
 	text-transform: uppercase
-	color: theme.$app-primary
+	color: theme.$imr-primary
 
 .inventar-title
 	margin: 0
 	font-size: clamp(1.05rem, 2.1vw, 1.35rem)
 	line-height: 1.2
-	color: theme.$app-primary
+	color: theme.$imr-primary
 
 .inventar-subtitle
 	margin: 0
@@ -137,14 +126,14 @@
 	display: grid
 	gap: 2px
 	padding: .55rem .7rem
-	border-radius: .55rem
-	border: 1px solid rgba(theme.$app-border, .88)
-	background: rgba(theme.$app-surface, .95)
+	border-radius: 0
+	border: 1px solid rgba(theme.$imr-border, .88)
+	background: rgba(theme.$imr-surface, .95)
 	text-align: right
 
 	strong
 		font-size: 1.1rem
-		color: theme.$app-primary
+		color: theme.$imr-primary
 
 .stat-label
 	font-size: .74rem
@@ -155,16 +144,16 @@
 
 .raum-create-card
 	padding: .85rem
-	border-radius: .7rem
-	border: 1px solid rgba(theme.$app-border, .9)
-	background: rgba(theme.$app-primary-light, .1)
+	border-radius: 0
+	border: 1px solid rgba(theme.$imr-border, .9)
+	background: rgba(theme.$imr-primary-light, .1)
 
 .raum-create-head
 	margin-bottom: .65rem
 
 	h4
 		margin: 0 0 .2rem 0
-		color: theme.$app-primary
+		color: theme.$imr-primary
 
 	p
 		margin: 0
@@ -172,9 +161,9 @@
 
 .inventar-empty
 	padding: .9rem
-	border-radius: .65rem
-	border: 1px dashed rgba(theme.$app-border, .9)
-	background: rgba(theme.$app-surface, .8)
+	border-radius: 0
+	border: 1px dashed rgba(theme.$imr-border, .9)
+	background: rgba(theme.$imr-surface, .8)
 	opacity: .86
 
 .inventar-accordion
@@ -182,7 +171,7 @@
 	gap: 10px
 
 .room-panel
-	border-radius: .65rem
+	border-radius: 0
 	overflow: hidden
 
 .items-head
@@ -195,16 +184,16 @@
 .item-count
 	font-size: .82rem
 	padding: .2rem .55rem
-	border-radius: 999px
-	border: 1px solid rgba(theme.$app-border, .9)
-	background: rgba(theme.$app-surface, .95)
+	border-radius: 0
+	border: 1px solid rgba(theme.$imr-border, .9)
+	background: rgba(theme.$imr-surface, .95)
 	opacity: .85
 
 .item-new-card
 	padding: .75rem
-	border-radius: .6rem
-	border: 1px solid rgba(theme.$app-border, .9)
-	background: rgba(theme.$app-primary-light, .08)
+	border-radius: 0
+	border: 1px solid rgba(theme.$imr-border, .9)
+	background: rgba(theme.$imr-primary-light, .08)
 
 .item-compact-list
 	display: grid
@@ -217,9 +206,9 @@
 	justify-content: space-between
 	gap: .8rem
 	padding: .55rem .7rem
-	border-radius: .55rem
-	border: 1px solid rgba(theme.$app-border, .86)
-	background: rgba(theme.$app-surface, .94)
+	border-radius: 0
+	border: 1px solid rgba(theme.$imr-border, .86)
+	background: rgba(theme.$imr-surface, .94)
 
 .item-compact-main
 	display: grid
@@ -228,7 +217,7 @@
 .item-compact-name
 	margin: 0
 	font-weight: 600
-	color: theme.$app-primary
+	color: theme.$imr-primary
 
 .item-compact-meta
 	margin: 0
@@ -242,12 +231,12 @@
 .item-compact-chip
 	font-size: .78rem
 	padding: .18rem .52rem
-	border-radius: 999px
-	border: 1px solid rgba(theme.$app-border, .9)
-	background: rgba(theme.$app-primary-light, .24)
+	border-radius: 0
+	border: 1px solid rgba(theme.$imr-border, .9)
+	background: rgba(theme.$imr-primary-light, .24)
 
 .item-compact-chip-muted
-	background: rgba(theme.$app-surface, .95)
+	background: rgba(theme.$imr-surface, .95)
 	opacity: .82
 
 .compact-hint
@@ -255,22 +244,22 @@
 	align-items: center
 	gap: .45rem
 	padding: .45rem .55rem
-	border-radius: .5rem
-	background: rgba(theme.$app-primary-light, .18)
+	border-radius: 0
+	background: rgba(theme.$imr-primary-light, .18)
 	opacity: .88
 
 .photo-block
 	display: grid
 	gap: 8px
 	padding: .75rem
-	border: 1px solid rgba(theme.$app-border, .9)
-	border-radius: .6rem
-	background: rgba(theme.$app-primary-light, .13)
+	border: 1px solid rgba(theme.$imr-border, .9)
+	border-radius: 0
+	background: rgba(theme.$imr-primary-light, .13)
 
 .photo-label
 	margin: 0
 	font-weight: 600
-	color: theme.$app-primary
+	color: theme.$imr-primary
 
 .photo-preview,
 .room-photo-preview
@@ -278,8 +267,8 @@
 	max-width: 340px
 	max-height: 200px
 	object-fit: cover
-	border-radius: .5rem
-	border: 1px solid rgba(theme.$app-border, .9)
+	border-radius: 0
+	border: 1px solid rgba(theme.$imr-border, .9)
 
 
 .upload-row
@@ -290,7 +279,7 @@
 
 .upload-label
 	font-weight: 600
-	color: theme.$app-primary
+	color: theme.$imr-primary
 
 .file-input-hidden
 	position: absolute
@@ -301,9 +290,6 @@
 	overflow: hidden
 	clip: rect(0, 0, 0, 0)
 	border: 0
-
-.upload-button
-	border: 1px solid rgba(theme.$app-border, .95)
 
 .file-name
 	font-size: .88rem
@@ -321,9 +307,9 @@
 	gap: 12px
 	align-items: start
 	padding: .7rem
-	border-radius: .6rem
-	border: 1px solid rgba(theme.$app-border, .9)
-	background: rgba(theme.$app-primary-light, .12)
+	border-radius: 0
+	border: 1px solid rgba(theme.$imr-border, .9)
+	background: rgba(theme.$imr-primary-light, .12)
 
 .room-photo-wrap
 	display: grid
@@ -340,7 +326,7 @@
 
 .items-title
 	margin: 0 0 10px 0
-	color: theme.$app-primary
+	color: theme.$imr-primary
 	font-size: 1rem
 
 .item-edit-form,
@@ -350,8 +336,8 @@
 	gap: 12px
 	align-items: start
 	padding: .7rem
-	border-radius: .6rem
-	border: 1px solid rgba(theme.$app-border, .9)
+	border-radius: 0
+	border: 1px solid rgba(theme.$imr-border, .9)
 
 .item-field-name
 	grid-column: span 8
@@ -425,12 +411,6 @@
 
 		h1
 			font-size: 1.4rem
-
-	.section-head
-		padding: .85rem .85rem 0
-
-		h2
-			font-size: 1rem
 
 	.form-grid,
 	.raum-create-form,

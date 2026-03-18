@@ -1,10 +1,10 @@
 @use '../../theme' as theme
 
 .foto-doku-block
-  border: 1px solid rgba(theme.$app-border, .95)
-  border-radius: .7rem
+  border: 1px solid rgba(theme.$imr-border, .95)
+  border-radius: 0
   padding: .8rem
-  background: rgba(theme.$app-surface, .9)
+  background: rgba(theme.$imr-surface, .9)
 
 .upload-row
   display: flex
@@ -14,7 +14,7 @@
 
 .upload-label
   font-weight: 600
-  color: theme.$app-primary
+  color: theme.$imr-primary
 
 .file-input-hidden
   position: absolute
@@ -26,9 +26,6 @@
   clip: rect(0, 0, 0, 0)
   border: 0
 
-.upload-button
-  border: 1px solid rgba(theme.$app-border, .95)
-
 .preview-grid
   display: grid
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr))
@@ -36,9 +33,9 @@
   margin-top: .6rem
 
 .preview-card
-  border: 1px solid rgba(theme.$app-border, .95)
-  border-radius: .55rem
-  background: rgba(theme.$app-surface, .94)
+  border: 1px solid rgba(theme.$imr-border, .95)
+  border-radius: 0
+  background: rgba(theme.$imr-surface, .94)
   overflow: hidden
 
 .preview-image
@@ -53,7 +50,7 @@
   align-items: center
   justify-content: center
   font-weight: 600
-  color: theme.$app-primary
+  color: theme.$imr-primary
 
 .preview-meta
   display: flex
@@ -61,7 +58,7 @@
   justify-content: flex-end
   gap: .2rem
   padding: .45rem
-  border-top: 1px solid rgba(theme.$app-border, .72)
+  border-top: 1px solid rgba(theme.$imr-border, .72)
 
   .ui-action-btn
     min-width: 36px
@@ -81,3 +78,16 @@
 
   .upload-button
     width: 100%
+
+  .ui-table-wrap
+    .table-toolbar
+      flex-direction: column
+      align-items: stretch
+      gap: .5rem
+
+      mat-form-field
+        width: 100%
+
+      .table-status-badge
+        width: 100%
+        justify-content: center

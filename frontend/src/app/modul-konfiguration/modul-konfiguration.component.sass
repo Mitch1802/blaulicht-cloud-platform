@@ -1,7 +1,7 @@
 @use '../../theme' as theme
 
 .modul-page
-	max-width: theme.$app-page-max-width
+	max-width: theme.$imr-page-max-width
 	margin: 0 auto
 	padding: 1rem 1rem 2rem
 
@@ -10,23 +10,12 @@
 
 	h1
 		margin: 0
-		color: theme.$app-primary
+		color: theme.$imr-primary
 		font-size: clamp(1.5rem, 2.4vw, 2.1rem)
 		line-height: 1.2
 
 .settings-card
-	border-radius: .9rem
-
-.section-head
-	display: flex
-	align-items: center
-	justify-content: space-between
-	padding: 1rem 1rem 0
-
-	h2
-		margin: 0
-		color: theme.$app-primary
-		font-size: 1.1rem
+	border-radius: 0
 
 .modul-form
 	margin-top: .2rem
@@ -51,14 +40,14 @@
 .jugend-hilfe-box
 	margin-top: .75rem
 	padding: .85rem 1rem
-	border: 1px solid rgba(theme.$app-primary, .25)
-	border-radius: .75rem
-	background: rgba(theme.$app-primary, .05)
+	border: 1px solid rgba(theme.$imr-primary, .25)
+	border-radius: 0
+	background: rgba(theme.$imr-primary, .05)
 
 	h3
 		margin: 0 0 .45rem
 		font-size: 1rem
-		color: theme.$app-primary
+		color: theme.$imr-primary
 
 	h4
 		margin: .65rem 0 .35rem
@@ -74,7 +63,7 @@
 	pre
 		margin: .45rem 0 0
 		padding: .65rem
-		border-radius: .5rem
+		border-radius: 0
 		background: #fff
 		overflow: auto
 		font-size: .82rem
@@ -101,12 +90,6 @@
 
 		h1
 			font-size: 1.4rem
-
-	.section-head
-		padding: .85rem .85rem 0
-
-		h2
-			font-size: 1rem
 
 	.form-actions
 		button

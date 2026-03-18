@@ -34,9 +34,9 @@ export class KonfigurationComponent implements OnInit {
   router = inject(Router);
   breadcrumb: any = [];
 
-  title = "Aktive Rollen";
-  title2 = "Stammdaten";
-  title3 = "Backup & Wiederherstellen";
+  title = "Rollenverwaltung";
+  title2 = "Feuerwehr-Stammdaten";
+  title3 = "Backups und Wiederherstellung";
   modul = "users/rolle";
   modul2 = "konfiguration";
 

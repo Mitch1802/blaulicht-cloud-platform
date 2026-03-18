@@ -8,9 +8,6 @@
   <mat-card class="settings-card">
     <div class="section-head">
       <h2>{{ title }}</h2>
-      <div class="section-head-meta">
-        <span class="table-status-badge">{{ roleCount }} Rollen</span>
-      </div>
     </div>
 
     <mat-card-content>
@@ -46,11 +43,6 @@
   <mat-card class="settings-card">
     <div class="section-head">
       <h2>{{ title2 }}</h2>
-      <div class="section-head-meta">
-        <span class="table-status-badge" [class.warn]="!hasConfigRecord">
-          {{ hasConfigRecord ? 'Datensatz vorhanden' : 'Noch kein Datensatz' }}
-        </span>
-      </div>
     </div>
 
     <mat-card-content>
@@ -185,9 +177,6 @@
   <mat-card class="settings-card">
     <div class="section-head">
       <h2>{{ title3 }}</h2>
-      <div class="section-head-meta">
-        <span class="table-status-badge">{{ filteredBackups.length }} / {{ backups.length }} Backups</span>
-      </div>
     </div>
 
     <mat-card-content>
@@ -293,10 +282,7 @@
 
   <mat-card class="settings-card">
     <div class="section-head">
-      <h2>Datei-Bereinigung</h2>
-      <div class="section-head-meta">
-        <span class="table-status-badge">{{ filteredCleanupFiles.length }} Treffer</span>
-      </div>
+      <h2>Dateibereinigung</h2>
     </div>
 
     <mat-card-content>

@@ -175,6 +175,7 @@
         <button
           mat-flat-button
           color="warn"
+          class="delete-entry-btn ui-delete-btn"
           [hidden]="!formModul.controls['id'].value"
           type="button"
           (click)="datenLoeschen()"
@@ -184,10 +185,13 @@
       </form>
 
       <div class="ui-table-wrap" [hidden]="!formModul.disabled">
-        <mat-form-field>
-          <mat-label>Suchen</mat-label>
-          <input matInput #input (keyup)="applyFilter(input.value)" />
-        </mat-form-field>
+        <div class="table-toolbar">
+          <mat-form-field appearance="outline">
+            <mat-label>Suchen</mat-label>
+            <input matInput #input (keyup)="applyFilter(input.value)" placeholder="Datum, Titel oder Ort" />
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+        </div>
 
         <table
           mat-table
@@ -214,13 +218,14 @@
             <td mat-cell *matCellDef="let element">{{ element.mitglieder_anzahl || 0 }}</td>
           </ng-container>
           <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef>Aktionen</th>
+            <th mat-header-cell *matHeaderCellDef class="table-actions-head">Aktionen</th>
             <td mat-cell *matCellDef="let element" class="ui-action-cell">
               <button
                 mat-flat-button
                 class="ui-action-btn"
                 color="primary"
                 (click)="auswahlBearbeiten(element)"
+                [attr.aria-label]="'Anwesenheitsliste ' + element.titel + ' bearbeiten'"
               >
                 <mat-icon class="m-0">edit</mat-icon>
               </button>
@@ -229,6 +234,15 @@
 
           <tr mat-header-row *matHeaderRowDef="sichtbareSpalten"></tr>
           <tr mat-row *matRowDef="let row; columns: sichtbareSpalten"></tr>
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell table-empty-cell" [attr.colspan]="sichtbareSpalten.length">
+              <div class="table-empty-state compact">
+                <mat-icon class="table-empty-icon">event</mat-icon>
+                <span class="table-empty-title">Keine Anwesenheitslisten gefunden</span>
+                <span class="table-empty-copy">Bitte Filter anpassen oder neue Liste anlegen.</span>
+              </div>
+            </td>
+          </tr>
         </table>
 
         <mat-paginator

@@ -1,7 +1,7 @@
 @use '../../theme' as theme
 
 .config-page
-    max-width: theme.$app-page-max-width
+    max-width: theme.$imr-page-max-width
     margin: 0 auto
     padding: 1rem 1rem 2rem
 
@@ -10,27 +10,20 @@
 
     h1
         margin: 0
-        color: theme.$app-primary
+        color: theme.$imr-primary
         font-size: clamp(1.5rem, 2.4vw, 2.1rem)
         line-height: 1.2
 
 .settings-card
     margin-bottom: 1.1rem
-    border-radius: .9rem
-    border: 1px solid rgba(theme.$app-border, .9)
-    background-color: rgba(theme.$app-surface, .92)
+    border-radius: 0 !important
+    border: 1px solid rgba(theme.$imr-border, .9)
+    background-color: rgba(theme.$imr-surface, .92)
+    overflow: hidden
 
-.section-head
-    display: flex
-    align-items: center
-    justify-content: space-between
-    padding: 1rem 1rem 0
-
-    h2
-        margin: 0
-        color: theme.$app-primary
-        font-size: 1.1rem
-        line-height: 1.25
+.settings-card.mat-mdc-card,
+.settings-card.mdc-card
+    border-radius: 0 !important
 
 .full-width
     width: 100%
@@ -46,20 +39,33 @@
     margin-top: .1rem
 
 .config-page .mat-mdc-chip
-    min-height: var(--app-control-height)
-    height: var(--app-control-height)
-    border-radius: var(--app-control-radius)
-    border: 1px solid var(--app-control-border)
-    background: var(--app-control-bg)
-    color: theme.$app-primary-deep
+    min-height: var(--imr-control-height)
+    height: var(--imr-control-height)
+    border-radius: var(--imr-control-radius)
+    border: 1px solid var(--imr-control-border)
+    background: var(--imr-control-bg)
+    color: theme.$imr-primary-deep
 
 .config-page .mat-mdc-chip .mat-mdc-chip-action,
 .config-page .mat-mdc-chip .mdc-evolution-chip__action
-    min-height: var(--app-control-height)
+    min-height: var(--imr-control-height)
 
 .config-page .mat-mdc-chip .mat-mdc-chip-remove,
 .config-page .mat-mdc-chip [matChipRemove]
-    border-radius: var(--app-control-radius)
+    border-radius: var(--imr-control-radius)
+
+.config-page .mat-mdc-form-field .mat-mdc-text-field-wrapper
+    min-height: var(--imr-control-height)
+    height: var(--imr-control-height)
+
+.config-page .mat-mdc-form-field .mat-mdc-form-field-flex
+    min-height: var(--imr-control-height)
+    align-items: center
+
+.config-page .mat-mdc-form-field .mat-mdc-form-field-infix
+    min-height: calc(var(--imr-control-height) - 2px)
+    padding-top: .35rem
+    padding-bottom: .35rem
 
 .actions-top
     margin: .3rem 0 .95rem
@@ -72,7 +78,7 @@
     align-items: center
     gap: .4rem
     margin: .2rem 0 .7rem
-    color: theme.$app-error
+    color: theme.$imr-error
 
 .backup-legend
     display: flex
@@ -120,7 +126,7 @@
 
 .cleanup-intro
     margin: .2rem 0 .7rem
-    color: theme.$app-text-muted
+    color: theme.$imr-text-muted
     line-height: 1.35
 
 .cleanup-actions
@@ -138,7 +144,7 @@
 
 .cleanup-empty
     margin: .6rem 0 .25rem
-    color: theme.$app-text-muted
+    color: theme.$imr-text-muted
     opacity: .9
 
 .cleanup-table-wrap
@@ -165,12 +171,6 @@
 
         h1
             font-size: 1.4rem
-
-    .section-head
-        padding: .85rem .85rem 0
-
-        h2
-            font-size: 1rem
 
     .role-form
         grid-template-columns: 1fr
@@ -205,8 +205,8 @@
 
         button
             width: 100%
-            min-height: var(--app-control-height)
-            height: var(--app-control-height)
+            min-height: var(--imr-control-height)
+            height: var(--imr-control-height)
 
     .cleanup-intro
         margin: .15rem 0 .6rem

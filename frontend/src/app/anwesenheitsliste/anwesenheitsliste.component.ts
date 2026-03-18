@@ -70,6 +70,22 @@ export class AnwesenheitslisteComponent implements OnInit {
   breadcrumb: any = [];
   dataSource = new MatTableDataSource<IAnwesenheitsliste>(this.eintraege);
   sichtbareSpalten: string[] = ['datum', 'titel', 'ort', 'mitglieder', 'actions'];
+
+  get eintragCount(): number {
+    return this.eintraege.length;
+  }
+
+  get filteredEintragCount(): number {
+    return this.dataSource.filteredData.length;
+  }
+
+  private normalizeFilterValue(value: string): string {
+    return String(value || '').trim().toLowerCase();
+  }
+
+  private getEintragFilterText(eintrag: IAnwesenheitsliste): string {
+    return `${eintrag.datum} ${eintrag.titel} ${eintrag.ort} ${eintrag.mitglieder_anzeige || ''}`.toLowerCase();
+  }
   bestehendeFotos: IAnwesenheitsliste['fotos'] = [];
   fotoDokuDateien: string[] = [];
   fotoDokuFiles: File[] = [];
@@ -211,6 +227,12 @@ export class AnwesenheitslisteComponent implements OnInit {
     this.breadcrumb = this.navigationService.ladeBreadcrumb();
 
     this.formModul.disable();
+    this.dataSource.filterPredicate = (data: IAnwesenheitsliste, filter: string) => {
+      if (!filter) {
+        return true;
+      }
+      return this.getEintragFilterText(data).includes(filter);
+    };
 
     forkJoin({
       main: this.apiHttpService.get<any[]>(this.modul),
@@ -241,7 +263,7 @@ export class AnwesenheitslisteComponent implements OnInit {
   }
 
   applyFilter(value: string): void {
-    this.dataSource.filter = (value || '').trim().toLowerCase();
+    this.dataSource.filter = this.normalizeFilterValue(value);
     this.paginator?.firstPage();
   }
 
