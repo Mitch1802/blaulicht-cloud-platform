@@ -123,14 +123,6 @@ export class MitgliedComponent implements OnInit {
 
   sichtbareSpaltenMitglieder: string[] = ['stbnr', 'vorname', 'nachname', 'dienstgrad', 'dienststatus', 'actions'];
 
-  get mitgliederCount(): number {
-    return this.mitglieder.length;
-  }
-
-  get filteredMitgliederCount(): number {
-    return this.dataSource.filteredData.length;
-  }
-
   private normalizeFilterValue(value: string): string {
     return String(value || '').trim().toLowerCase();
   }

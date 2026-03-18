@@ -84,18 +84,6 @@ export class UserComponent implements OnInit {
   private readonly mobileSpaltenBenutzer = ['username', 'rolle', 'actions'];
   sichtbareSpaltenBenutzer: string[] = [...this.desktopSpaltenBenutzer];
 
-  get benutzerCount(): number {
-    return this.benutzer.length;
-  }
-
-  get rollenCount(): number {
-    return this.rollenOhne.length;
-  }
-
-  get filteredBenutzerCount(): number {
-    return this.dataSource.filteredData.length;
-  }
-
   private normalizeFilterValue(value: string): string {
     return String(value || '').trim().toLowerCase();
   }

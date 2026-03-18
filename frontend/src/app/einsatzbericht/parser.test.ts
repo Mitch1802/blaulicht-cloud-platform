@@ -26,8 +26,8 @@ function cleanupAlarmSegment(value: string): string {
   const withoutCoords = removeCoordinates(withoutUrls);
   return withoutCoords
     .replace(/\s+/g, ' ')
-    .replace(/^[,;|:\-]+/, '')
-    .replace(/[,;|:\-]+$/, '')
+    .replace(/^[,;|:-]+/, '')
+    .replace(/[,;|:-]+$/, '')
     .replace(/\(\s*\)/g, '') // leere Klammern entfernen
     .trim();
 }
@@ -49,7 +49,7 @@ function removeLeadingTimeAndToken(value: string, alarmToken: string): string {
     const escapedToken = String(alarmToken).replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/([A-Za-z]+)(\d+)/, '$1\\s*$2');
     normalized = normalized.replace(new RegExp(`^${escapedToken}\\b\\s*[-|,:]?\\s*`, 'i'), '');
   }
-  normalized = normalized.replace(/^(alarmierung|alarm|meldung)\s*[:\-]\s*/i, '');
+  normalized = normalized.replace(/^(alarmierung|alarm|meldung)\s*[:-]\s*/i, '');
   return normalized.trim();
 }
 
@@ -99,7 +99,7 @@ function looksLikeAddress(value: string): boolean {
     return true;
   }
 
-  if (/\b[A-Za-z][A-Za-z.'\- ]+\s+\d{1,4}[A-Za-z0-9\/-]*\b/i.test(normalized)) {
+  if (/\b[A-Za-z][A-Za-z.'\- ]+\s+\d{1,4}[A-Za-z0-9/-]*\b/i.test(normalized)) {
     return true;
   }
 

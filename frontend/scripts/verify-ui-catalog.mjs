@@ -3,7 +3,7 @@ import path from 'node:path';
 
 const root = path.resolve(process.cwd());
 const appRoot = path.join(root, 'src', 'app');
-const catalogPath = path.join(appRoot, 'ui-library', 'ui-element-catalog.json');
+const catalogPath = path.join(appRoot, 'imr-ui-library', 'imr-element-catalog.json');
 
 const catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
 const allowedMat = new Set(catalog.matElements || []);
@@ -51,7 +51,7 @@ for (const file of htmlFiles) {
       .filter(Boolean);
 
     for (const cls of classes) {
-      if (cls.startsWith('ui-') || allowedClasses.has(cls)) {
+      if (cls.startsWith('ui-') || cls.startsWith('imr-') || allowedClasses.has(cls)) {
         foundTrackedClasses.add(cls);
       }
     }
@@ -69,7 +69,7 @@ for (const file of htmlFiles) {
     }
 
     const tdTag = tdTagMatch[0];
-    const hasStandardActionClass = /class\s*=\s*"[^"]*\bui-action-cell\b[^"]*"/i.test(tdTag);
+    const hasStandardActionClass = /class\s*=\s*"[^"]*\bimr-action-cell\b[^"]*"/i.test(tdTag);
 
     if (!hasStandardActionClass) {
       actionColumnViolations.push(path.relative(root, file));
@@ -165,7 +165,7 @@ if (
     for (const item of unknownTrackedClasses) console.error(` - ${item}`);
   }
   if (actionColumnViolations.length) {
-    console.error('\nActions-Spalten ohne standardisierte ui-action-cell Klasse:');
+    console.error('\nActions-Spalten ohne standardisierte imr-action-cell Klasse:');
     for (const file of actionColumnViolations) console.error(` - ${file}`);
   }
   if (materialButtonSpacingViolations.length) {
@@ -187,7 +187,7 @@ if (
     }
   }
   if (actionIconAllowlistViolations.length) {
-    console.error('\nActions-Buttons mit nicht erlaubtem Icon (Allowlist aus ui-element-catalog.json > actionIcons):');
+    console.error('\nActions-Buttons mit nicht erlaubtem Icon (Allowlist aus imr-element-catalog.json > actionIcons):');
     for (const violation of actionIconAllowlistViolations) {
       console.error(` - ${violation.file}: icon="${violation.icon}" | ${violation.snippet}`);
     }

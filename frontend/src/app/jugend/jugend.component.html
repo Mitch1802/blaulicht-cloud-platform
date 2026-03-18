@@ -5,15 +5,15 @@
     <h1>{{ title }}</h1>
   </header>
 
-  <mat-card class="settings-card">
-    <div class="section-head">
+  <mat-card class="imr-card">
+    <div class="imr-card__head">
       <h2>Jugend-Mitglieder</h2>
     </div>
 
     <mat-card-content>
       @if (showMitgliedForm) {
         <form [formGroup]="formMitglied" (ngSubmit)="speichernMitglied()" class="edit-form mitglied-edit-form">
-          <div class="form-actions">
+          <div class="imr-form-actions">
             <button mat-flat-button color="accent" type="submit">Daten speichern</button>
             <button mat-flat-button color="primary" type="button" (click)="mitgliedFormAbbrechen()">Abbrechen</button>
           </div>
@@ -40,9 +40,9 @@
           <section class="edit-group">
             <h3>Grunddaten</h3>
 
-            <section class="app-grid form-grid form-grid-tight">
+            <section class="app-grid imr-form-grid form-grid-tight">
               <div class="app-col-12 app-col-lg-4 mb-3">
-                <mat-form-field class="full-width">
+                <mat-form-field class="imr-full-width">
                   <mat-label>Status</mat-label>
                   <mat-select formControlName="dienststatus">
                     <mat-option value="JUGEND">Jugend</mat-option>
@@ -79,9 +79,9 @@
                 </summary>
 
                 <div class="level-edit-panel-content">
-                  <section class="app-grid form-grid form-grid-tight">
+                  <section class="app-grid imr-form-grid form-grid-tight">
                     <div class="app-col-12 app-col-lg-6 mb-3">
-                      <mat-form-field class="full-width level-edit-field">
+                      <mat-form-field class="imr-full-width level-edit-field">
                         <mat-label>Level</mat-label>
                         <mat-select formControlName="erprobung_level">
                           @for (level of getErprobungLevelOptionen(); track level) {
@@ -92,7 +92,7 @@
                     </div>
 
                     <div class="app-col-12 app-col-lg-6 mb-3">
-                      <mat-form-field class="full-width level-edit-field">
+                      <mat-form-field class="imr-full-width level-edit-field">
                         <mat-label>Datum</mat-label>
                         <input matInput type="date" formControlName="erprobung_datum" appDateInputMask="iso" />
                       </mat-form-field>
@@ -116,9 +116,9 @@
                 </summary>
 
                 <div class="level-edit-panel-content">
-                  <section class="app-grid form-grid form-grid-tight">
+                  <section class="app-grid imr-form-grid form-grid-tight">
                     <div class="app-col-12 app-col-lg-6 mb-3">
-                      <mat-form-field class="full-width level-edit-field">
+                      <mat-form-field class="imr-full-width level-edit-field">
                         <mat-label>Level</mat-label>
                         <mat-select formControlName="wissentest_level">
                           @for (level of getWissentestLevelOptionen(); track level) {
@@ -129,7 +129,7 @@
                     </div>
 
                     <div class="app-col-12 app-col-lg-6 mb-3">
-                      <mat-form-field class="full-width level-edit-field">
+                      <mat-form-field class="imr-full-width level-edit-field">
                         <mat-label>Datum</mat-label>
                         <input matInput type="date" formControlName="wissentest_datum" appDateInputMask="iso" />
                       </mat-form-field>
@@ -159,9 +159,9 @@
                 </summary>
 
                 <div class="level-edit-panel-content">
-                  <section class="app-grid form-grid form-grid-tight">
+                  <section class="app-grid imr-form-grid form-grid-tight">
                     <div class="app-col-12 app-col-lg-6 mb-3">
-                      <mat-form-field class="full-width level-edit-field">
+                      <mat-form-field class="imr-full-width level-edit-field">
                         <mat-label>Level</mat-label>
                         <mat-select formControlName="fertigkeit_melder_level">
                           @for (level of getFertigkeitsabzeichenLevelOptionen(); track level) {
@@ -172,7 +172,7 @@
                     </div>
 
                     <div class="app-col-12 app-col-lg-6 mb-3">
-                      <mat-form-field class="full-width level-edit-field">
+                      <mat-form-field class="imr-full-width level-edit-field">
                         <mat-label>Datum</mat-label>
                         <input matInput type="date" formControlName="fertigkeit_melder_datum" appDateInputMask="iso" />
                       </mat-form-field>
@@ -196,9 +196,9 @@
                 </summary>
 
                 <div class="level-edit-panel-content">
-                  <section class="app-grid form-grid form-grid-tight">
+                  <section class="app-grid imr-form-grid form-grid-tight">
                     <div class="app-col-12 app-col-lg-6 mb-3">
-                      <mat-form-field class="full-width level-edit-field">
+                      <mat-form-field class="imr-full-width level-edit-field">
                         <mat-label>Level</mat-label>
                         <mat-select formControlName="fertigkeit_fwtechnik_level">
                           @for (level of getFertigkeitsabzeichenLevelOptionen(); track level) {
@@ -209,7 +209,7 @@
                     </div>
 
                     <div class="app-col-12 app-col-lg-6 mb-3">
-                      <mat-form-field class="full-width level-edit-field">
+                      <mat-form-field class="imr-full-width level-edit-field">
                         <mat-label>Datum</mat-label>
                         <input matInput type="date" formControlName="fertigkeit_fwtechnik_datum" appDateInputMask="iso" />
                       </mat-form-field>
@@ -233,9 +233,9 @@
                 </summary>
 
                 <div class="level-edit-panel-content">
-                  <section class="app-grid form-grid form-grid-tight">
+                  <section class="app-grid imr-form-grid form-grid-tight">
                     <div class="app-col-12 app-col-lg-6 mb-3">
-                      <mat-form-field class="full-width level-edit-field">
+                      <mat-form-field class="imr-full-width level-edit-field">
                         <mat-label>Level</mat-label>
                         <mat-select formControlName="fertigkeit_sicher_zu_wasser_level">
                           @for (level of getFertigkeitsabzeichenLevelOptionen(); track level) {
@@ -246,7 +246,7 @@
                     </div>
 
                     <div class="app-col-12 app-col-lg-6 mb-3">
-                      <mat-form-field class="full-width level-edit-field">
+                      <mat-form-field class="imr-full-width level-edit-field">
                         <mat-label>Datum</mat-label>
                         <input matInput type="date" formControlName="fertigkeit_sicher_zu_wasser_datum" appDateInputMask="iso" />
                       </mat-form-field>
@@ -260,7 +260,7 @@
       }
 
       @if (!showMitgliedForm) {
-      <div class="table-wrap">
+      <div class="imr-table-wrap">
         <table mat-table [dataSource]="dataSourceJugend">
           <ng-container matColumnDef="stbnr">
             <th mat-header-cell *matHeaderCellDef>Stbnr.</th>
@@ -299,8 +299,8 @@
 
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef>Aktionen</th>
-            <td mat-cell *matCellDef="let element" class="ui-action-cell">
-              <button mat-flat-button class="ui-action-btn" color="primary" (click)="editMitglied(element)">
+            <td mat-cell *matCellDef="let element" class="imr-action-cell">
+              <button mat-flat-button class="imr-action-btn" color="primary" (click)="editMitglied(element)">
                 <mat-icon class="m-0">edit</mat-icon>
               </button>
             </td>
@@ -315,8 +315,8 @@
   </mat-card>
 
   @if (!showMitgliedForm) {
-  <mat-card class="settings-card mt-3">
-    <div class="section-head">
+  <mat-card class="imr-card mt-3">
+    <div class="imr-card__head">
       <h2>Jugend-Events</h2>
     </div>
 
@@ -326,22 +326,22 @@
       </div>
       @if (showEventForm) {
         <form [formGroup]="formEvent" (ngSubmit)="speichernEvent()" class="edit-form">
-          <div class="form-actions">
+          <div class="imr-form-actions">
             <button mat-flat-button color="accent" type="submit">Event speichern</button>
             <button mat-flat-button color="warn" type="button" [hidden]="!formEvent.controls['id'].value" (click)="eventLoeschen()">Löschen</button>
             <button mat-flat-button color="primary" type="button" (click)="eventFormAbbrechen()">Abbrechen</button>
           </div>
 
-          <section class="app-grid form-grid">
+          <section class="app-grid imr-form-grid">
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <mat-form-field class="full-width" hintLabel="* Pflichtfeld">
+              <mat-form-field class="imr-full-width" hintLabel="* Pflichtfeld">
                 <mat-label>Datum</mat-label>
                 <input matInput formControlName="datum" appDateInputMask="dmy" placeholder="TT.MM.YYYY" />
               </mat-form-field>
             </div>
 
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <mat-form-field class="full-width" hintLabel="* Pflichtfeld">
+              <mat-form-field class="imr-full-width" hintLabel="* Pflichtfeld">
                 <mat-label>Art</mat-label>
                 <mat-select formControlName="kategorie" (selectionChange)="onEventKategorieGeaendert()">
                   @for (option of eventKategorien; track option.value) {
@@ -352,7 +352,7 @@
             </div>
 
             <div class="app-col-12 app-col-lg-12 mb-3">
-              <mat-form-field class="full-width">
+              <mat-form-field class="imr-full-width">
                 <mat-label>Teilnehmer</mat-label>
                 <mat-select formControlName="teilnehmer_ids" multiple (selectionChange)="onEventTeilnehmerAuswahlGeaendert()">
                   @for (member of sortedJugendMitglieder; track member.pkid) {
@@ -394,7 +394,7 @@
             }
 
             <div class="app-col-12 app-col-lg-12 mb-3">
-              <mat-form-field class="full-width">
+              <mat-form-field class="imr-full-width">
                 <mat-label>Ort</mat-label>
                 <input matInput formControlName="ort" />
               </mat-form-field>
@@ -404,7 +404,7 @@
       }
 
       @if (!showEventForm) {
-      <div class="table-wrap">
+      <div class="imr-table-wrap">
         <table mat-table [dataSource]="dataSourceEvents">
           <ng-container matColumnDef="datum">
             <th mat-header-cell *matHeaderCellDef>Datum</th>
@@ -423,8 +423,8 @@
 
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef>Aktionen</th>
-            <td mat-cell *matCellDef="let element" class="ui-action-cell">
-              <button mat-flat-button class="ui-action-btn" color="primary" (click)="editEvent(element)">
+            <td mat-cell *matCellDef="let element" class="imr-action-cell">
+              <button mat-flat-button class="imr-action-btn" color="primary" (click)="editEvent(element)">
                 <mat-icon class="m-0">edit</mat-icon>
               </button>
             </td>

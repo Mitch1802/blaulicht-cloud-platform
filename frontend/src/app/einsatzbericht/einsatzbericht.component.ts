@@ -965,7 +965,7 @@ export class EinsatzberichtComponent implements OnInit {
   }
 
   private extractLabeledAddress(segment: string): { alarmstichwort: string; einsatzadresse: string } | null {
-    const match = segment.match(/^(.*?)(?:\b(einsatzort|einsatzadresse|adresse|ort|objekt)\b)\s*[:\-]\s*(.+)$/i);
+    const match = segment.match(/^(.*?)(?:\b(einsatzort|einsatzadresse|adresse|ort|objekt)\b)\s*[:-]\s*(.+)$/i);
     if (!match) {
       return null;
     }
@@ -1040,7 +1040,7 @@ export class EinsatzberichtComponent implements OnInit {
       return this.cleanupAlarmSegment(postalCodeMatch[0]);
     }
 
-    const streetMatch = normalized.match(/\b[^,;|]{3,}\s(?:strasse|str\.|gasse|weg|platz|allee|ring|kai|hof|zeile)\s+\d+[A-Za-z0-9\/-]*/i);
+    const streetMatch = normalized.match(/\b[^,;|]{3,}\s(?:strasse|str\.|gasse|weg|platz|allee|ring|kai|hof|zeile)\s+\d+[A-Za-z0-9/-]*/i);
     if (streetMatch) {
       return this.cleanupAlarmSegment(streetMatch[0]);
     }
@@ -1077,7 +1077,7 @@ export class EinsatzberichtComponent implements OnInit {
       normalized = normalized.replace(new RegExp(`^${escapedToken}\\b\\s*[-|,:]?\\s*`, 'i'), '');
     }
 
-    normalized = normalized.replace(/^(alarmierung|alarm|meldung)\s*[:\-]\s*/i, '');
+    normalized = normalized.replace(/^(alarmierung|alarm|meldung)\s*[:-]\s*/i, '');
     return normalized.trim();
   }
 
@@ -1090,8 +1090,8 @@ export class EinsatzberichtComponent implements OnInit {
     const withoutCoords = this.removeCoordinates(withoutUrls);
     return withoutCoords
       .replace(/\s+/g, ' ')
-      .replace(/^[,;|:\-]+/, '')
-      .replace(/[,;|:\-]+$/, '')
+      .replace(/^[,;|:-]+/, '')
+      .replace(/[,;|:-]+$/, '')
       .replace(/\(\s*\)/g, '') // leere Klammern entfernen
       .trim();
   }
@@ -1178,7 +1178,7 @@ export class EinsatzberichtComponent implements OnInit {
     }
 
     // Strasse mit Hausnummer Pattern ("Weinbergstrasse 21") - hohe Konfidenz
-    if (/\b[A-Za-z][A-Za-z.'\- ]+\s+\d{1,4}[A-Za-z0-9\/-]*\b/i.test(normalized)) {
+    if (/\b[A-Za-z][A-Za-z.'\- ]+\s+\d{1,4}[A-Za-z0-9/-]*\b/i.test(normalized)) {
       return true;
     }
 

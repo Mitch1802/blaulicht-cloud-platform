@@ -1,1 +1,27 @@
 // Intentionally minimal: styles are centralized in frontend/src/imr-catalog.sass
+
+:host .user-page .imr-top-actions
+	margin-bottom: .75rem
+
+:host .user-page .user-toolbar
+	margin-bottom: .75rem
+
+:host .user-page .user-toolbar .filter-field
+	width: min(100%, 28rem)
+
+:host .user-page .edit-form
+	margin-top: .5rem
+
+:host .user-page .role-row
+	margin: .5rem 0 1rem
+	display: flex
+	flex-wrap: wrap
+	gap: .5rem .75rem
+
+:host .user-page .password-action
+	display: flex
+	align-items: flex-end
+
+@media (max-width: 768px)
+	:host .user-page .user-toolbar .filter-field
+		width: 100%

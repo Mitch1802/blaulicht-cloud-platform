@@ -5,8 +5,8 @@
     <h1>{{ title }}</h1>
   </header>
 
-  <mat-card class="settings-card">
-    <div class="section-head">
+  <mat-card class="imr-card">
+    <div class="imr-card__head">
       <h2>Atemschutz Verwaltung</h2>
     </div>
 
@@ -211,7 +211,7 @@
               <button
                 mat-flat-button
                 color="warn"
-                class="ui-delete-btn"
+                class="imr-delete-btn"
                 [hidden]="!formModul.controls['id'].value"
                 type="button"
                 (click)="datenLoeschen()"
@@ -249,10 +249,10 @@
               </ng-container>
               <ng-container matColumnDef="actions">
                 <th mat-header-cell *matHeaderCellDef>Aktionen</th>
-                <td mat-cell *matCellDef="let element" class="ui-action-cell">
+                <td mat-cell *matCellDef="let element" class="imr-action-cell">
                   <button
                     mat-flat-button
-                    class="ui-action-btn"
+                    class="imr-action-btn"
                     color="primary"
                     (click)="auswahlBearbeiten(element)"
                   >
@@ -260,7 +260,7 @@
                   </button>
                   <button
                     mat-flat-button
-                    class="ui-action-btn"
+                    class="imr-action-btn"
                     color="primary"
                     (click)="printChecklist(element)"
                   >

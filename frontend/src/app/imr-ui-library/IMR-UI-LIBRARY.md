@@ -110,21 +110,7 @@ Alle Styles einer Komponente befinden sich im **IMR-Katalog**, nicht im Feature-
 Feature-Komponenten müssen nur noch die IMR-Komponenten verwenden:
 
 ```html
-<!-- Vorher (alt) -->
-<app-header [breadcrumb]="breadcrumb"></app-header>
-<section class="ui-page">
-  <header class="page-head">
-    <h1>Meine Seite</h1>
-  </header>
-  <mat-card class="settings-card">
-    <div class="section-head"><h2>Daten</h2></div>
-    <mat-card-content>
-      <!-- ... -->
-    </mat-card-content>
-  </mat-card>
-</section>
-
-<!-- Nachher (IMR) -->
+<!-- Empfohlen (IMR) -->
 <imr-header [breadcrumb]="breadcrumb"></imr-header>
 <imr-page-layout title="Meine Seite">
   <imr-section-card title="Daten">
@@ -323,6 +309,7 @@ Für Fälle, in denen kein Komponenten-Wrapper benötigt wird:
 | `imr-table-wrap` | Tabellen-Container (scrollbar) |
 | `imr-action-cell` | Aktionszelle in Tabellen |
 | `imr-action-btn` | Kleiner Aktions-Button in Tabellen |
+| `imr-delete-btn` | Löschaktion im Formular- oder Card-Footer |
 | `imr-chips` | Chip-Container |
 | `imr-breadcrumb` | Breadcrumb-Navigation |
 | `imr-lending-panel` | Leihe-Panel (Inventar) |
@@ -351,16 +338,15 @@ import { IMR_UI_COMPONENTS } from '../imr-ui-library';
 
 ---
 
-## Backward-Compatibility
+## Migration von ui-* auf imr-*
 
-Alle alten `ui-*` Komponenten und CSS-Klassen sind weiterhin verfügbar und
-leiten intern an die entsprechenden IMR-Komponenten/-Klassen weiter:
+Die alte `ui-library` wurde entfernt. Verwende in neuen und bestehenden
+Templates ausschließlich `imr-*` Komponenten und Klassen.
 
-| Alt (deprecated) | Neu (IMR) |
-|-----------------|-----------|
+| Alt | Neu (IMR) |
+|-----|-----------|
 | `<ui-page-layout>` | `<imr-page-layout>` |
 | `<ui-section-card>` | `<imr-section-card>` |
-| `<app-header>` | `<imr-header>` |
 | `.ui-page` | `.imr-page` |
 | `.ui-card` | `.imr-card` |
 | `.ui-top-actions` | `.imr-top-actions` |

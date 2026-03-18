@@ -2,248 +2,248 @@
 
 <imr-page-layout [title]="title" class="anwesenheitsliste-page">
   <imr-section-card title="Anwesenheitslisten verwalten">
-      <div class="ui-top-actions">
+    <imr-top-actions>
+      <button
+        mat-flat-button
+        color="accent"
+        [hidden]="!formModul.disabled"
+        (click)="neueDetails()"
+        type="button"
+      >
+        Hinzufügen
+      </button>
+    </imr-top-actions>
+
+    <form
+      [formGroup]="formModul"
+      (ngSubmit)="datenSpeichern()"
+      [hidden]="formModul.disabled"
+      class="imr-form"
+    >
+      <input hidden type="text" formControlName="id" />
+
+      <imr-form-actions>
         <button
           mat-flat-button
           color="accent"
-          [hidden]="!formModul.disabled"
-          (click)="neueDetails()"
-          type="button"
+          [hidden]="!formModul.valid"
+          type="submit"
         >
-          Hinzufügen
+          Daten speichern
         </button>
-      </div>
-
-      <form
-        [formGroup]="formModul"
-        (ngSubmit)="datenSpeichern()"
-        [hidden]="formModul.disabled"
-        class="ui-form"
-      >
-        <input hidden type="text"  formControlName="id" />
-
-        <div class="ui-actions">
-          <button
-            mat-flat-button
-            color="accent"
-            [hidden]="!formModul.valid"
-            type="submit"
-          >
-            Daten speichern
-          </button>
-          <button
-            mat-flat-button
-            color="primary"
-            [hidden]="formModul.disabled"
-            type="button"
-            (click)="abbrechen()"
-          >
-            Abbrechen
-          </button>
-        </div>
-
-        <section class="app-grid ui-form-grid">
-          <div class="app-col-12 mb-3">
-            <mat-form-field hintLabel="* Pflichtfeld" class="ui-full-width">
-              <mat-label>Titel</mat-label>
-              <input matInput type="text" formControlName="titel" />
-              @if (formModul.controls['titel'].hasError('required')) {
-                <mat-error>Titel ist erforderlich!</mat-error>
-              }
-            </mat-form-field>
-          </div>
-          <div class="app-col-6 mb-3">
-            <mat-form-field class="ui-full-width">
-              <mat-label>Datum (TT.MM.JJJJ)</mat-label>
-              <input matInput type="text" formControlName="datum" appDateInputMask="dmy" />
-              @if (formModul.controls['datum'].hasError('pattern')) {
-                <mat-error>Ungültiges Datumsformat!</mat-error>
-              }
-            </mat-form-field>
-          </div>
-          <div class="app-col-6 mb-3">
-            <mat-form-field class="ui-full-width">
-              <mat-label>Ort</mat-label>
-              <input matInput type="text" formControlName="ort" />
-            </mat-form-field>
-          </div>
-          <div class="app-col-12 app-col-lg-12 mb-3">
-            <mat-form-field class="ui-full-width">
-              <mat-label>Notiz</mat-label>
-              <textarea matInput formControlName="notiz" rows="5"></textarea>
-            </mat-form-field>
-          </div>
-          <div class="app-col-12 app-col-lg-12 mb-3">
-            <div class="autocomplete-multi">
-              <mat-form-field class="ui-full-width" hintLabel="* Pflichtfeld">
-                <mat-label>Mitglieder</mat-label>
-                <mat-select formControlName="mitglied_ids" multiple>
-                  <mat-select-trigger>
-                    {{ mitgliederAuswahlTriggerText }}
-                    @if (mitgliederAuswahlCounter > 1) {
-                      <span class="selection-counter">(+{{ mitgliederAuswahlCounter - 1 }})</span>
-                    }
-                  </mat-select-trigger>
-
-                  @for (mitglied of sortedMitgliedOptionen; track mitglied.pkid) {
-                    <mat-option [value]="mitglied.pkid">
-                      {{ mitglied.stbnr }} - {{ mitglied.vorname }} {{ mitglied.nachname }}
-                    </mat-option>
-                  }
-                </mat-select>
-                @if (formModul.controls['mitglied_ids'].value.length === 0) {
-                  <mat-error>Mindestens ein Mitglied ist erforderlich!</mat-error>
-                }
-              </mat-form-field>
-
-              <p class="selection-description">Ausgewählt: {{ mitgliederAuswahlCounter }}</p>
-            </div>
-          </div>
-
-          <div class="app-col-12 app-col-lg-12 mb-3">
-            <div class="foto-doku-block">
-              <div class="upload-row">
-                <label class="upload-label" for="fotoDokuDateien">Foto Doku Dateien</label>
-                <input
-                  #fotoDokuDateienInput
-                  id="fotoDokuDateien"
-                  class="file-input-hidden"
-                  type="file"
-                  multiple
-                  accept=".jpg,.jpeg,.png,.pdf"
-                  (change)="onFotoDokuSelected($event)"
-                />
-                <button mat-flat-button type="button" color="primary" class="upload-button" (click)="fotoDokuDateienInput.click()">
-                  Dateien auswählen
-                </button>
-              </div>
-
-              @if (fotoDokuFiles.length > 0) {
-                <div class="preview-grid">
-                  @for (file of fotoDokuFiles; track file; let i = $index) {
-                    <article class="preview-card">
-                      @if (file.type.startsWith('image/')) {
-                        <img class="preview-image" [src]="getFilePreviewUrl(file)" [alt]="file.name" />
-                      } @else {
-                        <div class="preview-file">PDF</div>
-                      }
-                      <div class="preview-meta">
-                        <button mat-flat-button class="ui-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(getFilePreviewUrl(file))">
-                          <mat-icon>open_in_new</mat-icon>
-                        </button>
-                        <button mat-flat-button class="ui-action-btn" type="button" color="warn" aria-label="Datei entfernen" (click)="removeSelectedFoto(i)">
-                          <mat-icon>delete</mat-icon>
-                        </button>
-                      </div>
-                    </article>
-                  }
-                </div>
-              }
-
-              @if (bestehendeFotos && bestehendeFotos.length > 0) {
-                <div class="preview-grid existing-previews">
-                  @for (foto of bestehendeFotos; track foto.id) {
-                    <article class="preview-card">
-                      @if (isImagePath(foto.foto_url)) {
-                        <img class="preview-image" [src]="foto.foto_url" [alt]="getFileNameFromPath(foto.foto_url)" />
-                      } @else {
-                        <div class="preview-file">PDF</div>
-                      }
-                      <div class="preview-meta">
-                        <button mat-flat-button class="ui-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(foto.foto_url)">
-                          <mat-icon>open_in_new</mat-icon>
-                        </button>
-                        <button mat-flat-button class="ui-action-btn" type="button" color="warn" aria-label="Datei löschen" (click)="loescheBestehendesFoto(foto)">
-                          <mat-icon>delete</mat-icon>
-                        </button>
-                      </div>
-                    </article>
-                  }
-                </div>
-              }
-            </div>
-          </div>
-        </section>
-
         <button
           mat-flat-button
-          color="warn"
-          class="delete-entry-btn ui-delete-btn"
-          [hidden]="!formModul.controls['id'].value"
+          color="primary"
+          [hidden]="formModul.disabled"
           type="button"
-          (click)="datenLoeschen()"
+          (click)="abbrechen()"
         >
-          Daten löschen
+          Abbrechen
         </button>
-      </form>
+      </imr-form-actions>
 
-      <div class="ui-table-wrap" [hidden]="!formModul.disabled">
-        <div class="table-toolbar">
-          <mat-form-field appearance="outline">
-            <mat-label>Suchen</mat-label>
-            <input matInput #input (keyup)="applyFilter(input.value)" placeholder="Datum, Titel oder Ort" />
-            <mat-icon matSuffix>search</mat-icon>
+      <imr-form-grid>
+        <div class="app-col-12 mb-3">
+          <mat-form-field hintLabel="* Pflichtfeld" class="imr-full-width">
+            <mat-label>Titel</mat-label>
+            <input matInput type="text" formControlName="titel" />
+            @if (formModul.controls['titel'].hasError('required')) {
+              <mat-error>Titel ist erforderlich!</mat-error>
+            }
           </mat-form-field>
         </div>
+        <div class="app-col-6 mb-3">
+          <mat-form-field class="imr-full-width">
+            <mat-label>Datum (TT.MM.JJJJ)</mat-label>
+            <input matInput type="text" formControlName="datum" appDateInputMask="dmy" />
+            @if (formModul.controls['datum'].hasError('pattern')) {
+              <mat-error>Ungültiges Datumsformat!</mat-error>
+            }
+          </mat-form-field>
+        </div>
+        <div class="app-col-6 mb-3">
+          <mat-form-field class="imr-full-width">
+            <mat-label>Ort</mat-label>
+            <input matInput type="text" formControlName="ort" />
+          </mat-form-field>
+        </div>
+        <div class="app-col-12 app-col-lg-12 mb-3">
+          <mat-form-field class="imr-full-width">
+            <mat-label>Notiz</mat-label>
+            <textarea matInput formControlName="notiz" rows="5"></textarea>
+          </mat-form-field>
+        </div>
+        <div class="app-col-12 app-col-lg-12 mb-3">
+          <div class="autocomplete-multi">
+            <mat-form-field class="imr-full-width" hintLabel="* Pflichtfeld">
+              <mat-label>Mitglieder</mat-label>
+              <mat-select formControlName="mitglied_ids" multiple>
+                <mat-select-trigger>
+                  {{ mitgliederAuswahlTriggerText }}
+                  @if (mitgliederAuswahlCounter > 1) {
+                    <span class="selection-counter">(+{{ mitgliederAuswahlCounter - 1 }})</span>
+                  }
+                </mat-select-trigger>
 
-        <table
-          mat-table
-          [dataSource]="dataSource"
-          matSort
-          matSortDisableClear
-          matSortActive="mitglieder_anzahl"
-          matSortDirection="asc"
-        >
-          <ng-container matColumnDef="datum">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Datum</th>
-            <td mat-cell *matCellDef="let element">{{ element.datum }}</td>
-          </ng-container>
-          <ng-container matColumnDef="titel">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Titel</th>
-            <td mat-cell *matCellDef="let element">{{ element.titel }}</td>
-          </ng-container>
-          <ng-container matColumnDef="ort">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Ort</th>
-            <td mat-cell *matCellDef="let element">{{ element.ort }}</td>
-          </ng-container>          
-          <ng-container matColumnDef="mitglieder">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header="mitglieder_anzahl">Mitglieder</th>
-            <td mat-cell *matCellDef="let element">{{ element.mitglieder_anzahl || 0 }}</td>
-          </ng-container>
-          <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef class="table-actions-head">Aktionen</th>
-            <td mat-cell *matCellDef="let element" class="ui-action-cell">
-              <button
-                mat-flat-button
-                class="ui-action-btn"
-                color="primary"
-                (click)="auswahlBearbeiten(element)"
-                [attr.aria-label]="'Anwesenheitsliste ' + element.titel + ' bearbeiten'"
-              >
-                <mat-icon class="m-0">edit</mat-icon>
+                @for (mitglied of sortedMitgliedOptionen; track mitglied.pkid) {
+                  <mat-option [value]="mitglied.pkid">
+                    {{ mitglied.stbnr }} - {{ mitglied.vorname }} {{ mitglied.nachname }}
+                  </mat-option>
+                }
+              </mat-select>
+              @if (formModul.controls['mitglied_ids'].value.length === 0) {
+                <mat-error>Mindestens ein Mitglied ist erforderlich!</mat-error>
+              }
+            </mat-form-field>
+
+            <p class="selection-description">Ausgewählt: {{ mitgliederAuswahlCounter }}</p>
+          </div>
+        </div>
+
+        <div class="app-col-12 app-col-lg-12 mb-3">
+          <div class="foto-doku-block">
+            <div class="upload-row">
+              <label class="upload-label" for="fotoDokuDateien">Foto Doku Dateien</label>
+              <input
+                #fotoDokuDateienInput
+                id="fotoDokuDateien"
+                class="file-input-hidden"
+                type="file"
+                multiple
+                accept=".jpg,.jpeg,.png,.pdf"
+                (change)="onFotoDokuSelected($event)"
+              />
+              <button mat-flat-button type="button" color="primary" class="upload-button" (click)="fotoDokuDateienInput.click()">
+                Dateien auswählen
               </button>
-            </td>
-          </ng-container>
+            </div>
 
-          <tr mat-header-row *matHeaderRowDef="sichtbareSpalten"></tr>
-          <tr mat-row *matRowDef="let row; columns: sichtbareSpalten"></tr>
-          <tr class="mat-row" *matNoDataRow>
-            <td class="mat-cell table-empty-cell" [attr.colspan]="sichtbareSpalten.length">
-              <div class="table-empty-state compact">
-                <mat-icon class="table-empty-icon">event</mat-icon>
-                <span class="table-empty-title">Keine Anwesenheitslisten gefunden</span>
-                <span class="table-empty-copy">Bitte Filter anpassen oder neue Liste anlegen.</span>
+            @if (fotoDokuFiles.length > 0) {
+              <div class="preview-grid">
+                @for (file of fotoDokuFiles; track file; let i = $index) {
+                  <article class="preview-card">
+                    @if (file.type.startsWith('image/')) {
+                      <img class="preview-image" [src]="getFilePreviewUrl(file)" [alt]="file.name" />
+                    } @else {
+                      <div class="preview-file">PDF</div>
+                    }
+                    <div class="preview-meta">
+                      <button mat-flat-button class="imr-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(getFilePreviewUrl(file))">
+                        <mat-icon>open_in_new</mat-icon>
+                      </button>
+                      <button mat-flat-button class="imr-action-btn" type="button" color="warn" aria-label="Datei entfernen" (click)="removeSelectedFoto(i)">
+                        <mat-icon>delete</mat-icon>
+                      </button>
+                    </div>
+                  </article>
+                }
               </div>
-            </td>
-          </tr>
-        </table>
+            }
 
-        <mat-paginator
-          [pageSizeOptions]="[10, 50, 100]"
-          showFirstLastButtons
-          aria-label="Auswahl Anzahl der sichtbaren Elemente"
-        >
-        </mat-paginator>
+            @if (bestehendeFotos && bestehendeFotos.length > 0) {
+              <div class="preview-grid existing-previews">
+                @for (foto of bestehendeFotos; track foto.id) {
+                  <article class="preview-card">
+                    @if (isImagePath(foto.foto_url)) {
+                      <img class="preview-image" [src]="foto.foto_url" [alt]="getFileNameFromPath(foto.foto_url)" />
+                    } @else {
+                      <div class="preview-file">PDF</div>
+                    }
+                    <div class="preview-meta">
+                      <button mat-flat-button class="imr-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(foto.foto_url)">
+                        <mat-icon>open_in_new</mat-icon>
+                      </button>
+                      <button mat-flat-button class="imr-action-btn" type="button" color="warn" aria-label="Datei löschen" (click)="loescheBestehendesFoto(foto)">
+                        <mat-icon>delete</mat-icon>
+                      </button>
+                    </div>
+                  </article>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      </imr-form-grid>
+
+      <button
+        mat-flat-button
+        color="warn"
+        class="delete-entry-btn imr-delete-btn"
+        [hidden]="!formModul.controls['id'].value"
+        type="button"
+        (click)="datenLoeschen()"
+      >
+        Daten löschen
+      </button>
+    </form>
+
+    <imr-table-wrap [hidden]="!formModul.disabled">
+      <div class="table-toolbar">
+        <mat-form-field appearance="outline">
+          <mat-label>Suchen</mat-label>
+          <input matInput #input (keyup)="applyFilter(input.value)" placeholder="Datum, Titel oder Ort" />
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
       </div>
+
+      <table
+        mat-table
+        [dataSource]="dataSource"
+        matSort
+        matSortDisableClear
+        matSortActive="mitglieder_anzahl"
+        matSortDirection="asc"
+      >
+        <ng-container matColumnDef="datum">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Datum</th>
+          <td mat-cell *matCellDef="let element">{{ element.datum }}</td>
+        </ng-container>
+        <ng-container matColumnDef="titel">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Titel</th>
+          <td mat-cell *matCellDef="let element">{{ element.titel }}</td>
+        </ng-container>
+        <ng-container matColumnDef="ort">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Ort</th>
+          <td mat-cell *matCellDef="let element">{{ element.ort }}</td>
+        </ng-container>
+        <ng-container matColumnDef="mitglieder">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="mitglieder_anzahl">Mitglieder</th>
+          <td mat-cell *matCellDef="let element">{{ element.mitglieder_anzahl || 0 }}</td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="table-actions-head">Aktionen</th>
+          <td mat-cell *matCellDef="let element" class="imr-action-cell">
+            <button
+              mat-flat-button
+              class="imr-action-btn"
+              color="primary"
+              (click)="auswahlBearbeiten(element)"
+              [attr.aria-label]="'Anwesenheitsliste ' + element.titel + ' bearbeiten'"
+            >
+              <mat-icon class="m-0">edit</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="sichtbareSpalten"></tr>
+        <tr mat-row *matRowDef="let row; columns: sichtbareSpalten"></tr>
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell table-empty-cell" [attr.colspan]="sichtbareSpalten.length">
+            <div class="table-empty-state compact">
+              <mat-icon class="table-empty-icon">event</mat-icon>
+              <span class="table-empty-title">Keine Anwesenheitslisten gefunden</span>
+              <span class="table-empty-copy">Bitte Filter anpassen oder neue Liste anlegen.</span>
+            </div>
+          </td>
+        </tr>
+      </table>
+
+      <mat-paginator
+        [pageSizeOptions]="[10, 50, 100]"
+        showFirstLastButtons
+        aria-label="Auswahl Anzahl der sichtbaren Elemente"
+      >
+      </mat-paginator>
+    </imr-table-wrap>
   </imr-section-card>
 </imr-page-layout>

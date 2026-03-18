@@ -5,14 +5,14 @@
     <h1>Masken verwalten</h1>
   </header>
 
-  <mat-card class="settings-card">
-    <div class="section-head">
+  <mat-card class="imr-card">
+    <div class="imr-card__head">
       <h2>Masken verwalten</h2>
     </div>
     <mat-card-content>
         @if (sichtbarkeitModul() == "tableListe")
         {
-        <div class="top-actions">
+        <div class="imr-top-actions">
           <button
             mat-flat-button
             color="accent"
@@ -32,7 +32,7 @@
           </button>
         </div>
         } @if (sichtbarkeitModul() == "tablePruefungen") {
-        <div class="top-actions">
+        <div class="imr-top-actions">
           <button
             mat-flat-button
             color="primary"
@@ -47,7 +47,7 @@
         @if (sichtbarkeitModul() == "formModul") {
         <form [formGroup]="formModul" (ngSubmit)="datenSpeichern()" class="edit-form">
           <input hidden type="text"  formControlName="id" />
-          <div class="form-actions">
+          <div class="imr-form-actions">
             <button
               mat-flat-button
               color="accent"
@@ -66,7 +66,7 @@
               Zurück
             </button>
           </div>
-          <section class="app-grid form-grid">
+          <section class="app-grid imr-form-grid">
             <div class="app-col-12 app-col-lg-6 mb-3">
               <mat-form-field hintLabel="* Pflichtfeld">
                 <mat-label>Inventar Nummer</mat-label>
@@ -108,11 +108,11 @@
             </div>
           </section>
 
-          <div class="form-actions">
+          <div class="imr-form-actions">
             <button
               mat-flat-button
               color="warn"
-              class="ui-delete-btn"
+              class="imr-delete-btn"
               [hidden]="!formModul.controls['id'].value"
               type="button"
               (click)="datenLoeschen()"
@@ -127,7 +127,7 @@
         @if (sichtbarkeitModul() == "formPruefung") {
         <form [formGroup]="formPruefung" (ngSubmit)="datenSpeichernProtokoll()" class="edit-form">
           <input hidden type="text"  formControlName="id" />
-          <div class="form-actions">
+          <div class="imr-form-actions">
             <button
               mat-flat-button
               color="accent"
@@ -145,7 +145,7 @@
               Zurück
             </button>
           </div>
-          <section class="app-grid form-grid">
+          <section class="app-grid imr-form-grid">
             <div class="app-col-12 app-col-lg-12 mb-3">
               <mat-form-field hintLabel="* Pflichtfeld">
                 <mat-label>Maske</mat-label>
@@ -270,11 +270,11 @@
             </div>
           </section>
 
-          <div class="form-actions">
+          <div class="imr-form-actions">
             <button
               mat-flat-button
               color="warn"
-              class="ui-delete-btn"
+              class="imr-delete-btn"
               [hidden]="!formPruefung.controls['id'].value || !canEditProtocol"
               type="button"
               (click)="datenProtokollLoeschen()"
@@ -309,10 +309,10 @@
           </ng-container>
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef>Aktionen</th>
-            <td mat-cell *matCellDef="let element" class="ui-action-cell">
+            <td mat-cell *matCellDef="let element" class="imr-action-cell">
               <button
                 mat-flat-button
-                class="ui-action-btn"
+                class="imr-action-btn"
                 color="primary"
                 (click)="auswahlBearbeiten(element)"
               >
@@ -320,7 +320,7 @@
               </button>
               <button
                 mat-flat-button
-                class="ui-action-btn"
+                class="imr-action-btn"
                 color="primary"
                 (click)="neuePruefungVonMaske(element)"
                 [hidden]="rolesResolved && !canEditProtocol"
@@ -329,7 +329,7 @@
               </button>
               <button
                 mat-flat-button
-                class="ui-action-btn"
+                class="imr-action-btn"
                 color="primary"
                 (click)="showPruefungen(element)"
               >
@@ -376,10 +376,10 @@
           </ng-container>
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef>Aktionen</th>
-            <td mat-cell *matCellDef="let element" class="ui-action-cell">
+            <td mat-cell *matCellDef="let element" class="imr-action-cell">
               <button
                 mat-flat-button
-                class="ui-action-btn"
+                class="imr-action-btn"
                 color="primary"
                 (click)="auswahlBearbeitenProtokoll(element)"
               >

@@ -5,15 +5,15 @@
     <h1>{{ title }}</h1>
   </header>
 
-  <mat-card class="settings-card">
-    <div class="section-head">
+  <mat-card class="imr-card">
+    <div class="imr-card__head">
       <h2>{{ viewMode === 'list' ? 'Einsätze' : 'Einsatz erfassen' }}</h2>
     </div>
 
     <mat-card-content>
       @if (viewMode === 'list') {
         <section class="drafts-section list-only">
-          <div class="actions-row top-actions">
+          <div class="actions-row imr-top-actions">
             @if (canEditBerichte) {
               <button mat-flat-button type="button" color="accent" (click)="neuerEntwurf()">Neuen Einsatz anlegen</button>
             } @else {
@@ -29,7 +29,7 @@
           @if (berichte.length === 0) {
             <p class="empty">Noch keine Einsatzberichte vorhanden.</p>
           } @else {
-            <div class="table-wrap">
+            <div class="imr-table-wrap">
               <mat-form-field>
                 <mat-label>Suchen</mat-label>
                 <input matInput #input (keyup)="applyFilter(input.value)" />
@@ -60,24 +60,24 @@
 
                 <ng-container matColumnDef="actions">
                   <th mat-header-cell *matHeaderCellDef>Aktionen</th>
-                  <td mat-cell *matCellDef="let element" class="ui-action-cell">
+                  <td mat-cell *matCellDef="let element" class="imr-action-cell">
                     @if (canEditBerichte) {
-                      <button mat-flat-button class="ui-action-btn" color="primary" type="button" (click)="berichtBearbeiten(element)">
+                      <button mat-flat-button class="imr-action-btn" color="primary" type="button" (click)="berichtBearbeiten(element)">
                         <mat-icon class="m-0">edit</mat-icon>
                       </button>
                     }
                     @if (canManageStatus) {
-                      <button mat-flat-button class="ui-action-btn" color="primary" type="button" (click)="statusUmschalten(element)">
+                      <button mat-flat-button class="imr-action-btn" color="primary" type="button" (click)="statusUmschalten(element)">
                         <mat-icon class="m-0">check</mat-icon>
                       </button>
                     }
                     @if (canPrintBericht) {
-                      <button mat-flat-button class="ui-action-btn" color="primary" type="button" (click)="druckeBericht(element)" aria-label="Bericht drucken">
+                      <button mat-flat-button class="imr-action-btn" color="primary" type="button" (click)="druckeBericht(element)" aria-label="Bericht drucken">
                         <mat-icon class="m-0">picture_as_pdf</mat-icon>
                       </button>
                     }
                     @if (canDeleteBerichte) {
-                      <button mat-flat-button class="ui-action-btn" color="warn" type="button" (click)="berichtLoeschen(element)">
+                      <button mat-flat-button class="imr-action-btn" color="warn" type="button" (click)="berichtLoeschen(element)">
                         <mat-icon class="m-0">delete</mat-icon>
                       </button>
                     }
@@ -99,7 +99,7 @@
         </section>
       } @else {
       <form [formGroup]="formBericht" (ngSubmit)="speichereBericht()" class="bericht-form">
-        <div class="actions-row top-actions">
+        <div class="actions-row imr-top-actions">
           <button mat-flat-button type="button" color="primary" (click)="zurueckZurListe()">Zur Liste</button>
         </div>
 
@@ -124,7 +124,7 @@
 
             <div class="form-section-body">
               <section class="grid two-col">
-            <mat-form-field class="full-width">
+            <mat-form-field class="imr-full-width">
               <mat-label>Status</mat-label>
               <mat-select formControlName="status">
                 @for (status of statusOptionen; track status.key) {
@@ -146,7 +146,7 @@
 
           <section class="grid two-col">
             <div class="searchable-select">
-              <mat-form-field class="full-width">
+              <mat-form-field class="imr-full-width">
                 <mat-label>Einsatzleiter</mat-label>
                 <input
                   matInput
@@ -169,7 +169,7 @@
               </mat-form-field>
             </div>
 
-            <mat-form-field class="full-width">
+            <mat-form-field class="imr-full-width">
               <mat-label>Einsatzart</mat-label>
               <mat-select formControlName="einsatzart">
                 @for (art of einsatzarten; track art) {
@@ -178,17 +178,17 @@
               </mat-select>
             </mat-form-field>
 
-            <mat-form-field class="full-width">
+            <mat-form-field class="imr-full-width">
               <mat-label>Alarmstichwort</mat-label>
               <input matInput formControlName="alarmstichwort" />
             </mat-form-field>
 
-            <mat-form-field class="full-width">
+            <mat-form-field class="imr-full-width">
               <mat-label>Einsatzadresse</mat-label>
               <input matInput formControlName="einsatzadresse" />
             </mat-form-field>
 
-            <mat-form-field class="full-width">
+            <mat-form-field class="imr-full-width">
               <mat-label>Alarmierende Stelle</mat-label>
               <mat-select formControlName="alarmierendeStelle">
                 @for (stelle of alarmierendeStelleOptionen; track stelle) {
@@ -199,17 +199,17 @@
           </section>
 
           <section class="grid three-col">
-            <mat-form-field class="full-width">
+            <mat-form-field class="imr-full-width">
               <mat-label>Einsatz Datum</mat-label>
               <input matInput type="date" formControlName="einsatzDatum" appDateInputMask="iso" />
             </mat-form-field>
 
-            <mat-form-field class="full-width">
+            <mat-form-field class="imr-full-width">
               <mat-label>Ausgerückt</mat-label>
               <input matInput type="time" formControlName="ausgerueckt" />
             </mat-form-field>
 
-            <mat-form-field class="full-width">
+            <mat-form-field class="imr-full-width">
               <mat-label>Eingerückt</mat-label>
               <input matInput type="time" formControlName="eingerueckt" />
             </mat-form-field>
@@ -233,12 +233,12 @@
 
             <div class="form-section-body">
               <section class="grid one-col">
-            <mat-form-field class="full-width">
+            <mat-form-field class="imr-full-width">
               <mat-label>Lage beim Eintreffen</mat-label>
               <textarea matInput rows="3" formControlName="lageBeimEintreffen"></textarea>
             </mat-form-field>
 
-            <mat-form-field class="full-width">
+            <mat-form-field class="imr-full-width">
               <mat-label>Gesetzte Maßnahmen</mat-label>
               <textarea matInput rows="3" formControlName="gesetzteMassnahmen"></textarea>
             </mat-form-field>
@@ -261,7 +261,7 @@
                 <div class="conditional-block">
                   @if (isBrand) {
                     <h3>Brand-Details</h3>
-                    <mat-form-field class="full-width">
+                    <mat-form-field class="imr-full-width">
                       <mat-label>Brand Kategorie</mat-label>
                       <mat-select formControlName="brandKategorie">
                         @for (opt of brandOptionenMitBeschreibung; track opt.titel) {
@@ -274,13 +274,13 @@
                         }
                       </mat-select>
                     </mat-form-field>
-                    <mat-form-field class="full-width">
+                    <mat-form-field class="imr-full-width">
                       <mat-label>Brand aus</mat-label>
                       <input matInput type="time" formControlName="brandAus" />
                     </mat-form-field>
                   } @else if (isTechnisch) {
                     <h3>Technische-Details</h3>
-                    <mat-form-field class="full-width">
+                    <mat-form-field class="imr-full-width">
                       <mat-label>Technische Kategorie</mat-label>
                       <mat-select formControlName="technischKategorie">
                         @for (opt of technischOptionen; track opt) {
@@ -294,15 +294,15 @@
                   }
                   @if (isBMA) {
                     <h3>BMA-Details</h3>
-                    <mat-form-field class="full-width">
+                    <mat-form-field class="imr-full-width">
                       <mat-label>Meldergruppe</mat-label>
                       <input matInput formControlName="bmaMeldergruppe" />
                     </mat-form-field>
-                    <mat-form-field class="full-width">
+                    <mat-form-field class="imr-full-width">
                       <mat-label>Melder</mat-label>
                       <input matInput formControlName="bmaMelder" />
                     </mat-form-field>
-                    <mat-form-field class="full-width">
+                    <mat-form-field class="imr-full-width">
                       <mat-label>Fehl- oder Täuschungsalarm</mat-label>
                       <mat-select formControlName="bmaFehlTauschungsalarm">
                         <mat-option value="">Kein Fehl-/Täuschungsalarm</mat-option>
@@ -317,7 +317,7 @@
                 <div class="conditional-block">
                   <h3>Mitalarmiert</h3>
                   <div class="autocomplete-multi">
-                    <mat-form-field class="full-width">
+                    <mat-form-field class="imr-full-width">
                       <mat-label>Mitalarmiert hinzufügen</mat-label>
                       <input
                         matInput
@@ -335,7 +335,7 @@
                       </mat-autocomplete>
                     </mat-form-field>
 
-                    <mat-chip-set class="role-chips">
+                    <mat-chip-set class="imr-chips">
                       @for (opt of selectedMitalarmiertOptionen; track opt) {
                         <mat-chip [removable]="true" (removed)="removeMitalarmiert(opt.id)">
                           {{ opt.label }}
@@ -375,10 +375,10 @@
                           <div class="preview-file">PDF</div>
                         }
                         <div class="preview-meta">
-                          <button mat-flat-button class="ui-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(getFilePreviewUrl(file))">
+                          <button mat-flat-button class="imr-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(getFilePreviewUrl(file))">
                             <mat-icon>open_in_new</mat-icon>
                           </button>
-                          <button mat-flat-button class="ui-action-btn" type="button" color="warn" aria-label="Datei entfernen" (click)="removeSelectedDokument(i, 'fotoDoku')">
+                          <button mat-flat-button class="imr-action-btn" type="button" color="warn" aria-label="Datei entfernen" (click)="removeSelectedDokument(i, 'fotoDoku')">
                             <mat-icon>delete</mat-icon>
                           </button>
                         </div>
@@ -397,10 +397,10 @@
                           <div class="preview-file">PDF</div>
                         }
                         <div class="preview-meta">
-                          <button mat-flat-button class="ui-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(foto.foto_url)">
+                          <button mat-flat-button class="imr-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(foto.foto_url)">
                             <mat-icon>open_in_new</mat-icon>
                           </button>
-                          <button mat-flat-button class="ui-action-btn" type="button" color="warn" aria-label="Datei löschen" (click)="loescheBestehendesFoto(foto)">
+                          <button mat-flat-button class="imr-action-btn" type="button" color="warn" aria-label="Datei löschen" (click)="loescheBestehendesFoto(foto)">
                             <mat-icon>delete</mat-icon>
                           </button>
                         </div>
@@ -424,10 +424,10 @@
                             <div class="preview-file">PDF</div>
                           }
                           <div class="preview-meta">
-                            <button mat-flat-button class="ui-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(getFilePreviewUrl(file))">
+                            <button mat-flat-button class="imr-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(getFilePreviewUrl(file))">
                               <mat-icon>open_in_new</mat-icon>
                             </button>
-                            <button mat-flat-button class="ui-action-btn" type="button" color="warn" aria-label="Datei entfernen" (click)="removeSelectedDokument(i, 'zulassungsschein')">
+                            <button mat-flat-button class="imr-action-btn" type="button" color="warn" aria-label="Datei entfernen" (click)="removeSelectedDokument(i, 'zulassungsschein')">
                               <mat-icon>delete</mat-icon>
                             </button>
                           </div>
@@ -446,10 +446,10 @@
                             <div class="preview-file">PDF</div>
                           }
                           <div class="preview-meta">
-                            <button mat-flat-button class="ui-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(foto.foto_url)">
+                            <button mat-flat-button class="imr-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(foto.foto_url)">
                               <mat-icon>open_in_new</mat-icon>
                             </button>
-                            <button mat-flat-button class="ui-action-btn" type="button" color="warn" aria-label="Datei löschen" (click)="loescheBestehendesFoto(foto)">
+                            <button mat-flat-button class="imr-action-btn" type="button" color="warn" aria-label="Datei löschen" (click)="loescheBestehendesFoto(foto)">
                               <mat-icon>delete</mat-icon>
                             </button>
                           </div>
@@ -473,10 +473,10 @@
                             <div class="preview-file">PDF</div>
                           }
                           <div class="preview-meta">
-                            <button mat-flat-button class="ui-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(getFilePreviewUrl(file))">
+                            <button mat-flat-button class="imr-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(getFilePreviewUrl(file))">
                               <mat-icon>open_in_new</mat-icon>
                             </button>
-                            <button mat-flat-button class="ui-action-btn" type="button" color="warn" aria-label="Datei entfernen" (click)="removeSelectedDokument(i, 'versicherungsschein')">
+                            <button mat-flat-button class="imr-action-btn" type="button" color="warn" aria-label="Datei entfernen" (click)="removeSelectedDokument(i, 'versicherungsschein')">
                               <mat-icon>delete</mat-icon>
                             </button>
                           </div>
@@ -495,10 +495,10 @@
                             <div class="preview-file">PDF</div>
                           }
                           <div class="preview-meta">
-                            <button mat-flat-button class="ui-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(foto.foto_url)">
+                            <button mat-flat-button class="imr-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(foto.foto_url)">
                               <mat-icon>open_in_new</mat-icon>
                             </button>
-                            <button mat-flat-button class="ui-action-btn" type="button" color="warn" aria-label="Datei löschen" (click)="loescheBestehendesFoto(foto)">
+                            <button mat-flat-button class="imr-action-btn" type="button" color="warn" aria-label="Datei löschen" (click)="loescheBestehendesFoto(foto)">
                               <mat-icon>delete</mat-icon>
                             </button>
                           </div>
@@ -525,7 +525,7 @@
             <div class="form-section-body">
               <section class="grid two-col">
                 <div class="autocomplete-multi">
-                  <mat-form-field class="full-width">
+                  <mat-form-field class="imr-full-width">
                     <mat-label>Fahrzeug hinzufügen</mat-label>
                     <input
                       matInput
@@ -543,7 +543,7 @@
                     </mat-autocomplete>
                   </mat-form-field>
 
-                  <mat-chip-set class="role-chips">
+                  <mat-chip-set class="imr-chips">
                     @for (fahrzeug of selectedFahrzeugOptionen; track fahrzeug.id) {
                       <mat-chip [removable]="true" (removed)="removeFahrzeug(fahrzeug.id)">
                         {{ fahrzeug.label }}
@@ -554,7 +554,7 @@
                 </div>
 
                 <div class="autocomplete-multi">
-                  <mat-form-field class="full-width">
+                  <mat-form-field class="imr-full-width">
                     <mat-label>Mitglieder</mat-label>
                     <mat-select formControlName="mitglieder" multiple>
                       <mat-select-trigger>
@@ -577,7 +577,7 @@
           </mat-expansion-panel>
         </mat-accordion>
 
-        <div class="form-actions">
+        <div class="imr-form-actions">
           <button mat-flat-button color="accent" type="submit" [disabled]="!canEditBerichte">Einsatzbericht speichern</button>
         </div>
       </form>

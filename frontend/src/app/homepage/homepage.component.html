@@ -2,21 +2,21 @@
 
 <imr-page-layout [title]="title" class="homepage-page">
   <imr-section-card title="Dienstpostenplan verwalten">
-    <div class="ui-top-actions">
+    <imr-top-actions>
       <button mat-flat-button color="primary" type="button" (click)="addSection()" [disabled]="loading">
         Sektion hinzufügen
       </button>
       <button mat-flat-button color="accent" type="button" (click)="speichern()" [disabled]="loading">
         Alle Änderungen speichern
       </button>
-    </div>
+    </imr-top-actions>
 
     <div class="sections-wrap">
       @for (section of sections; track section.local_id) {
         <section class="plan-section">
           <header class="plan-section-head app-grid">
             <div class="app-col-12 app-col-lg-4">
-              <mat-form-field class="ui-full-width" hintLabel="* Pflichtfeld">
+              <mat-form-field class="imr-full-width" hintLabel="* Pflichtfeld">
                 <mat-label>Sektionstitel</mat-label>
                 <input
                   matInput
@@ -28,7 +28,7 @@
               </mat-form-field>
             </div>
             <div class="app-col-12 app-col-lg-3">
-              <mat-form-field class="ui-full-width" hintLabel="* Pflichtfeld">
+              <mat-form-field class="imr-full-width" hintLabel="* Pflichtfeld">
                 <mat-label>Sektions-ID</mat-label>
                 <input
                   matInput
@@ -53,7 +53,7 @@
             @for (row of section.members; track row.local_id; let rowIndex = $index) {
               <article class="plan-row app-grid">
                 <div class="app-col-12 app-col-lg-3">
-                  <mat-form-field class="ui-full-width" hintLabel="* Pflichtfeld">
+                  <mat-form-field class="imr-full-width" hintLabel="* Pflichtfeld">
                     <mat-label>Position</mat-label>
                     <input
                       matInput
@@ -66,7 +66,7 @@
                 </div>
 
                 <div class="app-col-12 app-col-lg-4">
-                  <mat-form-field class="ui-full-width">
+                  <mat-form-field class="imr-full-width">
                     <mat-label>Name auswaehlen</mat-label>
                     <input
                       matInput

@@ -1,19 +1,18 @@
 // -----------------------------------------------------------------------------
-// imr-catalog.sass  �  IMR UI-Katalog � Design-Token & Komponenten-Stile
+// imr-catalog.sass - IMR UI catalog, design tokens and component styles
 //
-// Dieses File ist die zentrale Styling-Quelle der IMR UI Library.
-// Es wird von styles.sass importiert und definiert:
-//   � CSS Custom Properties (Design-Tokens) f�r alle IMR-Komponenten
-//   � Material Design 3-Overrides f�r Angular-Material-Elemente
-//   � Layout-Hilfssysteme (Grid, Utility-Klassen)
+// Central styling source for the IMR UI library.
+// Imported by styles.sass and defines:
+//   - CSS custom properties for IMR components
+//   - Material Design 3 overrides for Angular Material elements
+//   - Layout helpers such as grids and utilities
 //
-// Eigene Komponenten (imr-*) m�ssen ihre Stile nur noch via CSS-Variablen
-// anpassen und ben�tigen keine eigene Farblogik.
+// IMR components should primarily be styled through CSS variables.
 // -----------------------------------------------------------------------------
 @use './theme' as theme
 
 // ------------------------------------------------------------------------------
-// 1. IMR Design-Tokens � CSS Custom Properties
+// 1. IMR design tokens and CSS custom properties
 // ------------------------------------------------------------------------------
 
 :root
@@ -28,7 +27,7 @@
     --imr-success:            #{theme.$imr-success}
     --imr-warning:            #{theme.$imr-warning}
 
-    // -- Oberfl�chen ----------------------------------------------------------
+    // -- Surfaces -------------------------------------------------------------
     --imr-surface:            #{theme.$imr-surface}
     --imr-surface-variant:    #{theme.$imr-surface-variant}
     --imr-border:             #{theme.$imr-border}
@@ -99,7 +98,7 @@ body.header-variant-light
 
 
 // ------------------------------------------------------------------------------
-// 2. Globale Basis-Stile
+// 2. Global base styles
 // ------------------------------------------------------------------------------
 
 html, body
@@ -150,7 +149,7 @@ h1
     white-space: pre-wrap
 
 // ------------------------------------------------------------------------------
-// 3. Material Design 3 � Angular Material Overrides
+// 3. Material Design 3 and Angular Material overrides
 // ------------------------------------------------------------------------------
 
 // -- Toolbar (imr-header intern) ----------------------------------------------
@@ -691,9 +690,7 @@ mat-select
     padding-top: 0
     margin-top: 0
 
-.imr-table-wrap > .mat-mdc-paginator,
-.ui-table-wrap > .mat-mdc-paginator,
-.table-wrap > .mat-mdc-paginator
+.imr-table-wrap > .mat-mdc-paginator
     margin-top: 0 !important
 
 // -- Snackbar -----------------------------------------------------------------
@@ -791,7 +788,7 @@ mat-list-item span span
 
 
 // ------------------------------------------------------------------------------
-// 4. IMR-Komponenten-Stile (f�r imr-* Komponenten via Host oder Wrapper-Klassen)
+// 4. IMR component styles for imr-* hosts and wrapper classes
 // ------------------------------------------------------------------------------
 
 // -- imr-page-layout ----------------------------------------------------------
@@ -908,8 +905,9 @@ mat-list-item span span
     min-height: var(--imr-control-height)
     height: var(--imr-control-height)
 
-form > button.ui-delete-btn[mat-flat-button],
-mat-card-content > button.ui-delete-btn[mat-flat-button]
+form > button.imr-delete-btn[mat-flat-button],
+mat-card-content > button.imr-delete-btn[mat-flat-button],
+mat-card-content > button.imr-delete-btn[mat-flat-button]
     margin-top: .8rem
 
 // -- imr-form-grid ------------------------------------------------------------
@@ -1312,12 +1310,12 @@ td.imr-action-cell
     max-width: 1380px
 
     .toolbar,
-    .top-actions
+    .imr-top-actions
         justify-content: flex-end
         gap: 10px
         flex-wrap: wrap
 
-    .section-card
+    .imr-card
         height: 100%
 
     .click-row
@@ -1326,12 +1324,12 @@ td.imr-action-cell
     .selected-row
         background: rgba(theme.$imr-primary-light, .5)
 
-    .form-grid
+    .imr-form-grid
         display: grid
         grid-template-columns: repeat(2, minmax(0, 1fr))
         gap: 12px
 
-        .full-width
+        .imr-full-width
             grid-column: 1 / -1
 
     .actions-row
@@ -1340,7 +1338,7 @@ td.imr-action-cell
         gap: 10px
         align-items: center
 
-    .ui-action-btn
+    .imr-action-btn
         min-width: var(--imr-control-height)
         width: var(--imr-control-height)
         height: var(--imr-control-height)
@@ -1695,7 +1693,7 @@ td.imr-action-cell
 
 @media (max-width: 992px)
     .fahrzeug-page
-        .form-grid,
+        .imr-form-grid,
         .raum-create-form,
         .raum-edit-form,
         .item-edit-form,
@@ -1758,7 +1756,7 @@ td.imr-action-cell
             font-size: clamp(1.45rem, 2.2vw, 2rem)
             line-height: 1.2
 
-    .settings-card
+    .imr-card
         border-radius: 0
 
     .intro-block
@@ -2156,7 +2154,7 @@ td.imr-action-cell
             font-size: clamp(1.5rem, 2.4vw, 2.1rem)
             line-height: 1.2
 
-    .settings-card
+    .imr-card
         border-radius: 0
 
     .summary-grid
@@ -2193,7 +2191,7 @@ td.imr-action-cell
         border-color: #b6dfb6
         background: #f2fff2
 
-    .table-wrap
+    .imr-table-wrap
         overflow-x: auto
 
         table
@@ -2316,7 +2314,7 @@ td.imr-action-cell
         padding: .45rem
         border-top: 1px solid rgba(theme.$imr-border, .72)
 
-        .ui-action-btn
+        .imr-action-btn
             min-width: var(--imr-control-height)
             width: var(--imr-control-height)
             height: var(--imr-control-height)
@@ -2336,7 +2334,7 @@ td.imr-action-cell
         .upload-button
             width: 100%
 
-        .ui-table-wrap
+        .imr-table-wrap
             .table-toolbar
                 flex-direction: column
                 align-items: stretch
@@ -2469,7 +2467,7 @@ td.imr-action-cell
 .atemschutz-geraete-page,
 .atemschutz-masken-page,
 .atemschutz-messgeraete-page
-    .form-grid
+    .imr-form-grid
         > [class*='app-col-']
             margin-bottom: .55rem !important
 
@@ -2507,7 +2505,7 @@ td.imr-action-cell
     .atemschutz-geraete-page,
     .atemschutz-masken-page,
     .atemschutz-messgeraete-page
-        .form-grid
+        .imr-form-grid
             > div > mat-checkbox
                 padding: .45rem .6rem
 
@@ -2529,10 +2527,10 @@ td.imr-action-cell
     margin: 0 auto
     padding: 1rem 1rem 2rem
 
-    .settings-card
+    .imr-card
         border-radius: 0
 
-    .full-width
+    .imr-full-width
         width: 100%
 
 @media (max-width: 768px)
@@ -2554,7 +2552,7 @@ td.imr-action-cell
             font-size: clamp(1.5rem, 2.4vw, 2.1rem)
             line-height: 1.2
 
-    .settings-card
+    .imr-card
         border-radius: 0
 
     mat-form-field
@@ -2986,10 +2984,10 @@ td.imr-action-cell
             font-size: clamp(1.5rem, 2.4vw, 2.1rem)
             line-height: 1.2
 
-    .settings-card
+    .imr-card
         border-radius: 0
 
-    .top-actions
+    .imr-top-actions
         display: flex
         gap: .8rem
         align-items: center
@@ -3002,19 +3000,19 @@ td.imr-action-cell
     .edit-form
         margin-top: .2rem
 
-    .form-actions
+    .imr-form-actions
         display: flex
         flex-wrap: wrap
         gap: .6rem
         margin-bottom: .8rem
 
-    .form-grid
+    .imr-form-grid
         margin-top: .2rem
 
-    .full-width
+    .imr-full-width
         width: 100%
 
-    .table-wrap
+    .imr-table-wrap
         overflow-x: auto
         margin-top: .35rem
 
@@ -3031,14 +3029,14 @@ td.imr-action-cell
             h1
                 font-size: 1.4rem
 
-        .top-actions
+        .imr-top-actions
             button
                 width: 100%
 
         .status-filter
             width: 100%
 
-        .form-actions
+        .imr-form-actions
             button
                 width: 100%
 
@@ -3057,7 +3055,7 @@ td.imr-action-cell
             font-size: clamp(1.5rem, 2.4vw, 2.1rem)
             line-height: 1.2
 
-    .settings-card
+    .imr-card
         border-radius: 0
 
     .invoice-tabs
@@ -3077,7 +3075,7 @@ td.imr-action-cell
         mat-list-item
             border-bottom: 1px solid rgba(theme.$imr-border, .9)
 
-        .ui-action-btn
+        .imr-action-btn
             min-width: var(--imr-control-height)
             width: var(--imr-control-height)
             height: var(--imr-control-height)
@@ -3103,7 +3101,7 @@ td.imr-action-cell
 
 // -- inventar helpers -------------------------------------------------------
 .inventar-page
-    .top-actions
+    .imr-top-actions
         gap: .6rem
         margin: .25rem 0 .8rem
 
@@ -3170,8 +3168,8 @@ td.imr-action-cell
 
 @media only screen and (max-width: 700px)
     .inventar-page
-        .top-actions,
-        .form-actions
+        .imr-top-actions,
+        .imr-form-actions
             button
                 width: 100%
 
@@ -3181,7 +3179,7 @@ td.imr-action-cell
 
 // -- mitglied helpers -------------------------------------------------------
 .mitglied-page
-    .top-actions
+    .imr-top-actions
         gap: .6rem
         margin: .25rem 0 .8rem
 
@@ -3214,12 +3212,12 @@ td.imr-action-cell
 
 @media (max-width: 768px)
     .mitglied-page
-        .top-actions,
-        .form-actions
+        .imr-top-actions,
+        .imr-form-actions
             button
                 width: 100%
 
-        .table-wrap
+        .imr-table-wrap
             .table-toolbar
                 flex-direction: column
                 align-items: stretch
@@ -3246,20 +3244,20 @@ td.imr-action-cell
             font-size: clamp(1.5rem, 2.4vw, 2.1rem)
             line-height: 1.2
 
-    .settings-card
+    .imr-card
         border: 1px solid rgba(theme.$imr-border, .9)
         border-radius: 0 !important
         background: rgba(theme.$imr-surface, .96)
         box-shadow: none
 
-    .settings-card.mat-mdc-card,
-    .settings-card.mdc-card
+    .imr-card.mat-mdc-card,
+    .imr-card.mdc-card
         border-radius: 0 !important
 
-    .settings-card > .mat-mdc-card-content
+    .imr-card > .mat-mdc-card-content
         padding: 1rem !important
 
-    .top-actions
+    .imr-top-actions
         display: flex
         align-items: center
         flex-wrap: wrap
@@ -3271,7 +3269,7 @@ td.imr-action-cell
         gap: .85rem
         margin-top: .2rem
 
-    .form-actions
+    .imr-form-actions
         display: flex
         flex-wrap: wrap
         gap: .6rem
@@ -3505,11 +3503,11 @@ td.imr-action-cell
 
 @media only screen and (max-width: 700px)
     .news-page
-        .settings-card > .mat-mdc-card-content
+        .imr-card > .mat-mdc-card-content
             padding: .75rem !important
 
-        .top-actions,
-        .form-actions
+        .imr-top-actions,
+        .imr-form-actions
             button
                 width: 100%
 
@@ -3573,15 +3571,15 @@ td.imr-action-cell
 
 // -- konfiguration helpers --------------------------------------------------
 .config-page
-    .settings-card
+    .imr-card
         margin-bottom: 1.1rem
         border-radius: 0 !important
         border: 1px solid rgba(theme.$imr-border, .9)
         background-color: rgba(theme.$imr-surface, .92)
         overflow: hidden
 
-    .settings-card.mat-mdc-card,
-    .settings-card.mdc-card
+    .imr-card.mat-mdc-card,
+    .imr-card.mdc-card
         border-radius: 0 !important
 
     .role-form
@@ -3590,7 +3588,7 @@ td.imr-action-cell
         gap: .8rem
         align-items: start
 
-    .role-chips
+    .imr-chips
         grid-column: 1 / -1
         margin-top: .1rem
 
@@ -3645,7 +3643,7 @@ td.imr-action-cell
             gap: .3rem
             opacity: .85
 
-    .table-wrap
+    .imr-table-wrap
         margin-top: .4rem
 
     .backup-table-wrap
@@ -3760,14 +3758,14 @@ td.imr-action-cell
 
 // -- user helpers -----------------------------------------------------------
 .user-page
-    .top-actions
+    .imr-top-actions
         gap: .6rem
         margin: .2rem 0 .75rem
 
     .filter-field
         max-width: 320px
 
-    .table-wrap
+    .imr-table-wrap
         margin-top: .5rem
 
         .mat-column-rolle
@@ -3869,7 +3867,7 @@ td.imr-action-cell
         .role-option
             padding: .45rem .6rem
 
-        .table-wrap
+        .imr-table-wrap
             margin-top: .35rem
 
             .table-toolbar
@@ -3888,14 +3886,14 @@ td.imr-action-cell
                 width: 72px
                 min-width: 72px
 
-        .top-actions,
-        .form-actions
+        .imr-top-actions,
+        .imr-form-actions
             button
                 width: 100%
 
 // -- einsatzbericht helpers -------------------------------------------------
 .bericht-page
-    .settings-card
+    .imr-card
         margin-bottom: 1rem
         border-radius: 0
         border: 1px solid rgba(theme.$imr-border, .95)
@@ -4076,7 +4074,7 @@ td.imr-action-cell
         padding: .45rem
         border-top: 1px solid rgba(theme.$imr-border, .72)
 
-        .ui-action-btn
+        .imr-action-btn
             min-width: var(--imr-control-height)
             width: var(--imr-control-height)
             height: var(--imr-control-height)
@@ -4117,11 +4115,11 @@ td.imr-action-cell
         gap: .3rem
         align-content: start
 
-    .role-chips
+    .imr-chips
         min-height: 2rem
         align-self: start
 
-    .table-wrap
+    .imr-table-wrap
         margin-top: .5rem
 
     .actions-row
@@ -4158,11 +4156,11 @@ td.imr-action-cell
     .form-hints
         margin-top: .1rem
 
-    .form-actions
+    .imr-form-actions
         button
             min-width: 210px
 
-    .top-actions
+    .imr-top-actions
         button
             min-width: 190px
 
@@ -4227,7 +4225,7 @@ td.imr-action-cell
         flex-wrap: wrap
         align-items: center
 
-        .ui-action-btn
+        .imr-action-btn
             min-width: var(--imr-control-height)
             width: var(--imr-control-height)
             height: var(--imr-control-height)
@@ -4270,8 +4268,8 @@ td.imr-action-cell
         .permission-hints
             flex-direction: column
 
-        .form-actions,
-        .top-actions
+        .imr-form-actions,
+        .imr-top-actions
             button
                 width: 100%
                 min-width: 0
@@ -4748,7 +4746,7 @@ td.imr-action-cell
         font-size: .78rem
         color: #b45a00
 
-    .table-wrap
+    .imr-table-wrap
         margin-top: .5rem
 
     .mat-mdc-header-row
@@ -4756,7 +4754,7 @@ td.imr-action-cell
 
 @media (max-width: 768px)
     .jugend-page
-        .form-actions
+        .imr-form-actions
             button
                 width: 100%
 
@@ -5009,32 +5007,30 @@ td.imr-action-cell
 // ------------------------------------------------------------------------------
 
 @media only screen and (min-width: 768px)
-    .imr-two-col-md, .ui-two-col-md
+    .imr-two-col-md
         grid-column: span 6
 
     .imr-two-col-md.mb-3,
-    .imr-form-grid .app-col-lg-12.mb-3,
-    .ui-two-col-md.mb-3,
-    .ui-form-grid .app-col-lg-12.mb-3
+    .imr-form-grid .app-col-lg-12.mb-3
         margin-bottom: .6rem !important
 
 @media only screen and (max-width: 700px)
-    .imr-page, .ui-page
+    .imr-page
         padding: var(--imr-page-padding-mobile)
 
-    .imr-page__head, .ui-page__head, .page-head
+    .imr-page__head, .page-head
         margin-bottom: 1rem
 
         h1
             font-size: 1.4rem
 
-    .imr-card__head, .ui-card__head, .section-head
+    .imr-card__head
         padding: .72rem .85rem
 
         h2
             font-size: .9rem
 
-    .imr-form-grid, .ui-form-grid, .form-grid
+    .imr-form-grid
         padding: .75rem
 
     .table-toolbar
@@ -5050,25 +5046,24 @@ td.imr-action-cell
         width: 100%
         justify-content: flex-start
 
-    .imr-top-actions, .imr-form-actions,
-    .ui-top-actions, .ui-actions, .top-actions, .form-actions, .actions-row
+    .imr-top-actions, .imr-form-actions, .actions-row
         button
             width: 100%
 
-    .password-action, .actions-row.full-width
+    .password-action, .actions-row.imr-full-width
         align-items: stretch
 
-    .imr-lending-panel-head, .ui-lending-panel-head
+    .imr-lending-panel-head
         flex-direction: column
         align-items: stretch
 
-    .imr-lending-row-remove, .ui-lending-row-remove
+    .imr-lending-row-remove
         justify-content: stretch
 
         button
             width: 100%
 
-    .imr-transaction-actions, .ui-transaction-actions
+    .imr-transaction-actions
         flex-direction: column
 
         button
@@ -5113,8 +5108,8 @@ td.imr-action-cell
     .mat-mdc-card
         border-radius: 0
 
-    .settings-card > .mat-mdc-card-content,
-    .settings-card mat-card-content
+    .imr-card > .mat-mdc-card-content,
+    .imr-card mat-card-content
         padding: var(--imr-card-padding-mobile) !important
 
     .imr-card__content
@@ -5126,7 +5121,7 @@ td.imr-action-cell
     .imr-breadcrumb
         padding: .3rem .1rem
 
-    .imr-table-wrap, .ui-table-wrap, .table-wrap
+    .imr-table-wrap
         padding: .75rem .75rem .35rem
 
     .table-empty-cell

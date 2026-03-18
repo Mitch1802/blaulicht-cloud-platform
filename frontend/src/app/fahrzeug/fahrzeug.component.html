@@ -5,14 +5,14 @@
     <h1>Fahrzeuge verwalten</h1>
   </header>
 
-  <mat-card class="settings-card">
-    <div class="section-head">
+  <mat-card class="imr-card">
+    <div class="imr-card__head">
       <h2>Fahrzeuge & Beladung</h2>
     </div>
 
     <mat-card-content>
       @if (!editorOpen && !inventarEditorOpen) {
-        <div class="top-actions mb-3">
+        <div class="imr-top-actions mb-3">
           <a mat-flat-button color="primary" [routerLink]="['/public/fahrzeuge']" target="_blank" rel="noopener">
             Externe Checkliste öffnen
           </a>
@@ -25,12 +25,9 @@
       }
 
       @if (!editorOpen && !inventarEditorOpen) {
-        <mat-card class="section-card">
+        <mat-card class="imr-card">
           <mat-card-header>
             <mat-card-title>Fahrzeugliste</mat-card-title>
-            <div class="section-head-meta">
-              <span class="table-status-badge">{{ filteredFahrzeugCount }} / {{ fahrzeuge.length }} sichtbar</span>
-            </div>
           </mat-card-header>
           <mat-card-content>
             <div class="table-toolbar">
@@ -41,12 +38,12 @@
                   matInput
                   [value]="fahrzeugFilter"
                   (input)="applyFahrzeugFilter(fahrzeugFilterInput.value)"
-                  placeholder="Name, Bezeichnung oder Public ID"
+                  placeholder="Name oder Bezeichnung"
                 />
               </mat-form-field>
             </div>
 
-            <div class="table-wrap">
+            <div class="imr-table-wrap">
               <table mat-table [dataSource]="dataSource" matSort>
                 <ng-container matColumnDef="name">
                   <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
@@ -58,20 +55,13 @@
                   <td mat-cell *matCellDef="let row">{{ row.bezeichnung }}</td>
                 </ng-container>
 
-                <ng-container matColumnDef="public_id">
-                  <th mat-header-cell *matHeaderCellDef>Public ID</th>
-                  <td mat-cell *matCellDef="let row">
-                    <span class="table-status-badge">{{ row.public_id || 'Keine ID' }}</span>
-                  </td>
-                </ng-container>
-
                 <ng-container matColumnDef="actions">
                   <th mat-header-cell *matHeaderCellDef class="table-actions-head">Aktionen</th>
-                  <td mat-cell *matCellDef="let row" class="ui-action-cell">
+                  <td mat-cell *matCellDef="let row" class="imr-action-cell">
                     <div class="list-actions">
                       <button
                         mat-flat-button
-                        class="ui-action-btn"
+                        class="imr-action-btn"
                         color="primary"
                         type="button"
                         (click)="editFahrzeug(row)"
@@ -82,7 +72,7 @@
 
                       <button
                         mat-flat-button
-                        class="ui-action-btn"
+                        class="imr-action-btn"
                         color="accent"
                         type="button"
                         (click)="openInventarFromList(row)"
@@ -93,7 +83,7 @@
 
                       <a
                         mat-flat-button
-                        class="ui-action-btn"
+                        class="imr-action-btn"
                         color="primary"
                         [routerLink]="['/fahrzeuge', row.id, 'check']"
                         [attr.aria-label]="'Checkliste öffnen: ' + row.name"
@@ -124,12 +114,12 @@
       }
 
       @if (editorOpen) {
-        <mat-card class="section-card">
+        <mat-card class="imr-card">
           <mat-card-header>
             <mat-card-title>{{ selectedId ? 'Fahrzeug bearbeiten' : 'Neues Fahrzeug' }}</mat-card-title>
           </mat-card-header>
           <mat-card-content>
-            <form [formGroup]="fahrzeugForm" class="form-grid mb-3">
+            <form [formGroup]="fahrzeugForm" class="imr-form-grid mb-3">
               <mat-form-field>
                 <mat-label>Name</mat-label>
                 <input matInput formControlName="name" />
@@ -150,12 +140,12 @@
                 <input matInput type="date" formControlName="service_naechstes_am" appDateInputMask="iso" />
               </mat-form-field>
 
-              <mat-form-field class="full-width">
+              <mat-form-field class="imr-full-width">
                 <mat-label>Beschreibung</mat-label>
                 <textarea matInput rows="3" formControlName="beschreibung"></textarea>
               </mat-form-field>
 
-              <div class="photo-block full-width">
+              <div class="photo-block imr-full-width">
                 <p class="photo-label">Fahrzeugfoto</p>
 
                 @if (selected?.foto_url) {
@@ -196,7 +186,7 @@
                 }
               </div>
 
-              <div class="actions-row full-width">
+              <div class="actions-row imr-full-width">
                 <button
                   mat-flat-button
                   color="accent"
@@ -231,7 +221,7 @@
             <button
               mat-flat-button
               color="warn"
-              class="ui-delete-btn"
+              class="imr-delete-btn"
               [hidden]="!selectedId"
               type="button"
               (click)="deleteSelectedFahrzeug()"
@@ -244,7 +234,7 @@
       }
 
       @if (inventarEditorOpen) {
-        <mat-card class="section-card inventar-card">
+        <mat-card class="imr-card inventar-card">
           <mat-card-header>
             <mat-card-title>Inventar bearbeiten</mat-card-title>
           </mat-card-header>

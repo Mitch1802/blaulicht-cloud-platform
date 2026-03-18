@@ -1,1 +1,11 @@
 // Intentionally minimal: styles are centralized in frontend/src/imr-catalog.sass
+
+:host .mitglied-page .mitglied-toolbar
+	margin-bottom: .75rem
+
+:host .mitglied-page .mitglied-toolbar .filter-field
+	width: min(100%, 28rem)
+
+@media (max-width: 768px)
+	:host .mitglied-page .mitglied-toolbar .filter-field
+		width: 100%

@@ -1,8 +1,8 @@
 <imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <section class="eigene-daten-page">
-  <mat-card class="settings-card">
-    <div class="section-head">
+  <mat-card class="imr-card">
+    <div class="imr-card__head">
       <h2>{{ title }}</h2>
     </div>
     <mat-card-content>
@@ -11,7 +11,7 @@
 
           <section class="app-grid mt-2">
             <div class="app-col-12 app-col-lg-8 mb-3">
-              <mat-form-field class="full-width">
+              <mat-form-field class="imr-full-width">
                 <mat-label>E-Mail-Adresse</mat-label>
                 <input matInput type="email" formControlName="email" />
                 @if (formModul.controls['email'].hasError('email')) {
@@ -27,7 +27,7 @@
                 [disabled]="!formModul.valid"
                 type="button"
                 (click)="emailSpeichern()"
-                class="full-width"
+                class="imr-full-width"
               >
                 E-Mail speichern
               </button>
@@ -38,7 +38,7 @@
 
           <section class="app-grid mt-3">
             <div class="app-col-12 app-col-lg-4 mb-3">
-              <mat-form-field class="full-width">
+              <mat-form-field class="imr-full-width">
                 <mat-label>Passwort</mat-label>
                 <input matInput type="password" formControlName="password1" />
                 @if (formModul.controls['password1'].hasError('minlength')) {
@@ -49,7 +49,7 @@
               </mat-form-field>
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3">
-              <mat-form-field class="full-width">
+              <mat-form-field class="imr-full-width">
                 <mat-label>Passwort wiederholen</mat-label>
                 <input matInput type="password" formControlName="password2" />
                 @if (formModul.controls['password2'].hasError('minlength')) {
@@ -67,7 +67,7 @@
                 [disabled]="!formModul.valid"
                 type="button"
                 (click)="passwortAendern()"
-                class="full-width"
+                class="imr-full-width"
               >
                 Passwort ändern
               </button>

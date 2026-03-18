@@ -81,7 +81,7 @@ export class FahrzeugComponent implements OnInit {
 
   fahrzeuge: IFahrzeugList[] = [];
   dataSource = new MatTableDataSource<IFahrzeugList>([]);
-  sichtbareSpalten: string[] = ["name", "bezeichnung", "public_id", "actions"];
+  sichtbareSpalten: string[] = ["name", "bezeichnung", "actions"];
   fahrzeugFilter = '';
   editorOpen = false;
   inventarEditorOpen = false;
@@ -138,7 +138,7 @@ export class FahrzeugComponent implements OnInit {
 
   private configureFahrzeugFilter(): void {
     this.dataSource.filterPredicate = (row: IFahrzeugList, filter: string) => {
-      const haystack = `${row.name ?? ''} ${row.bezeichnung ?? ''} ${row.public_id ?? ''}`.toLowerCase();
+      const haystack = `${row.name ?? ''} ${row.bezeichnung ?? ''}`.toLowerCase();
       return haystack.includes(filter);
     };
   }
@@ -175,7 +175,7 @@ export class FahrzeugComponent implements OnInit {
       return;
     }
 
-    this.sichtbareSpalten = ["name", "bezeichnung", "public_id", "actions"];
+    this.sichtbareSpalten = ["name", "bezeichnung", "actions"];
   }
 
   private loadList(): void {
