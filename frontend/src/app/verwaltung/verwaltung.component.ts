@@ -6,14 +6,18 @@ import { CollectionUtilsService } from 'src/app/_service/collection-utils.servic
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { MatCardModule } from '@angular/material/card';
-import { ImrHeaderComponent } from '../imr-ui-library';
+import {
+  ImrCardContentComponent,
+  ImrHeaderComponent,
+  ImrListComponent,
+  ImrListItemComponent,
+} from '../imr-ui-library';
 import { MatTabsModule } from '@angular/material/tabs';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IStammdaten } from '../_interface/stammdaten';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
@@ -29,6 +33,9 @@ type RechnungPosition = {
   imports: [
     CommonModule,
     ImrHeaderComponent,
+    ImrCardContentComponent,
+    ImrListComponent,
+    ImrListItemComponent,
     MatCardModule,
     MatTabsModule,
     MatButtonModule,
@@ -36,7 +43,6 @@ type RechnungPosition = {
     FormsModule,
     MatFormFieldModule,
     MatInputModule,
-    MatListModule,
     MatIconModule,
     MatSelectModule,
     MatOptionModule

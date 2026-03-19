@@ -29,8 +29,6 @@ class EndpointSmokeMixin:
     def create_user_without_roles(self):
         return User.objects.create_user(
             username=f"test_{User.objects.count() + 1}",
-            first_name="Test",
-            last_name="User",
             password="T3st!PasswortSehrSicher",
             email=f"test{User.objects.count() + 1}@example.com",
         )

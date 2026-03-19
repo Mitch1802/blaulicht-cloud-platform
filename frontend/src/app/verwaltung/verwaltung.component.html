@@ -10,7 +10,7 @@
       <h2>Rechnungen & Vorlagen</h2>
     </div>
 
-    <mat-card-content>
+    <imr-card-content>
       <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" class="invoice-tabs">
           <mat-tab label="Rechnung">
             <h3>SevDesk</h3>
@@ -213,13 +213,13 @@
               </section>
             </form>
             <section>
-              <mat-list>
+              <imr-list>
                 @for (
                   pos of formRechnung.controls.positionen.value;
                   track $index;
                   let i = $index
                 ) {
-                  <mat-list-item class="app-grid">
+                  <imr-list-item itemClass="app-grid">
                     <div class="app-col-7">{{ pos.bezeichnung }}</div>
                     <div class="app-col-3">{{ formatPreis(pos.preis) }}</div>
                     <div class="app-col-2 text-end">
@@ -233,13 +233,13 @@
                         <mat-icon>delete</mat-icon>
                       </button>
                     </div>
-                  </mat-list-item>
+                  </imr-list-item>
                 }
-              </mat-list>
+              </imr-list>
             </section>
           </mat-tab>
           <mat-tab label="Coming Soon" disabled></mat-tab>
       </mat-tab-group>
-    </mat-card-content>
+    </imr-card-content>
   </mat-card>
 </section>

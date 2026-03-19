@@ -8,12 +8,12 @@ Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app w
 
 ## TODOS
 
-ng add @angular/pwa@18
+ng add @angular/pwa@21
 
 ## SETUP new Environment
 
 ```
-npm install -g @angular/cli@18
+npm install -g @angular/cli@21
 npm install
 ```
 

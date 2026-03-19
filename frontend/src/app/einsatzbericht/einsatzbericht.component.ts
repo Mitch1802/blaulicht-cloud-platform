@@ -1,5 +1,6 @@
-import { Component, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, ViewChild, inject } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, FormGroupDirective, NgForm, ReactiveFormsModule, Validators } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { IMR_UI_COMPONENTS } from '../imr-ui-library';
 import { ApiHttpService } from 'src/app/_service/api-http.service';
 import { AuthSessionService } from 'src/app/_service/auth-session.service';
@@ -16,6 +17,7 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { DateInputMaskDirective } from '../_directive/date-input-mask.directive';
 import { ImrPaginatorComponent } from '../imr-ui-library';
+import { normalizeDateInput } from '../_utils/date-normalization.util';
 
 type FahrzeugOption = {
   id: number;
@@ -89,6 +91,7 @@ export class EinsatzberichtComponent implements OnInit {
   private collectionUtilsService = inject(CollectionUtilsService);
   private navigationService = inject(NavigationService);
   private uiMessageService = inject(UiMessageService);
+  private destroyRef = inject(DestroyRef);
   @ViewChild(ImrPaginatorComponent) set matPaginator(p: ImrPaginatorComponent | undefined) {
     if (p) this.dataSource.paginator = p.paginator;
   }
@@ -529,41 +532,11 @@ export class EinsatzberichtComponent implements OnInit {
   }
 
   private normalizeDateInput(value: string | null | undefined): string {
-    if (!value) {
-      return '';
-    }
-
-    const stringValue = String(value).trim();
-    if (!stringValue) {
-      return '';
-    }
-
-    if (/^\d{4}-\d{2}-\d{2}$/.test(stringValue)) {
-      return stringValue;
-    }
-
-    if (/^\d{2}\.\d{2}\.\d{4}$/.test(stringValue)) {
-      const [day, month, year] = stringValue.split('.');
-      return `${year}-${month}-${day}`;
-    }
-
-    if (stringValue.includes('T')) {
-      const isoDate = stringValue.split('T')[0];
-      if (/^\d{4}-\d{2}-\d{2}$/.test(isoDate)) {
-        return isoDate;
-      }
-    }
-
-    const parsed = new Date(stringValue);
-    if (!Number.isNaN(parsed.getTime())) {
-      return parsed.toISOString().slice(0, 10);
-    }
-
-    return '';
+    return normalizeDateInput(value);
   }
 
   private formatDateForApi(value: string | null | undefined): string {
-    return this.normalizeDateInput(value);
+    return normalizeDateInput(value);
   }
 
   ngOnInit(): void {
@@ -571,21 +544,29 @@ export class EinsatzberichtComponent implements OnInit {
     sessionStorage.setItem('Page2', 'BER');
     this.breadcrumb = this.navigationService.ladeBreadcrumb();
 
-    this.formBericht.controls.einsatzart.valueChanges.subscribe(() => {
-      this.updateConditionalValidation();
-    });
+    this.formBericht.controls.einsatzart.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.updateConditionalValidation();
+      });
 
-    this.formBericht.controls.alarmstichwort.valueChanges.subscribe(() => {
-      this.updateConditionalValidation();
-    });
+    this.formBericht.controls.alarmstichwort.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.updateConditionalValidation();
+      });
 
-    this.formBericht.controls.technischKategorie.valueChanges.subscribe(() => {
-      this.updateConditionalValidation();
-    });
+    this.formBericht.controls.technischKategorie.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.updateConditionalValidation();
+      });
 
-    this.formBericht.controls.mitalarmiert.valueChanges.subscribe(() => {
-      this.updateConditionalValidation();
-    });
+    this.formBericht.controls.mitalarmiert.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.updateConditionalValidation();
+      });
 
     this.updateConditionalValidation();
 

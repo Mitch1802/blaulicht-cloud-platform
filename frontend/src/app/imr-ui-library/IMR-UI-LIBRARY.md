@@ -16,17 +16,25 @@ frontend/src/
 ├── styles.sass             # Globale Styles – importiert Katalog, definiert Variablen
 └── app/
     └── imr-ui-library/     # Eigene UI-Komponenten (imr-*)
-        ├── index.ts
-        ├── imr-page-layout.component.ts
-        ├── imr-section-card.component.ts
-        ├── imr-header.component.ts
-        ├── imr-top-actions.component.ts
-        ├── imr-form-actions.component.ts
-        ├── imr-table-wrap.component.ts
-        ├── imr-chips.component.ts
-        ├── imr-form-grid.component.ts
-        └── *.stories.ts    # Storybook-Stories
+  ├── index.ts
+  ├── imr-page-layout.component.ts          # Re-Export für Kompatibilität
+  ├── imr-page-layout/
+  │   ├── imr-page-layout.component.ts
+  │   ├── imr-page-layout.component.html
+  │   └── imr-page-layout.component.sass
+  ├── imr-card/
+  │   ├── imr-card.component.ts
+  │   ├── imr-card.component.html
+  │   └── imr-card.component.sass
+  ├── imr-toolbar/
+  │   ├── imr-toolbar.component.ts
+  │   ├── imr-toolbar.component.html
+  │   └── imr-toolbar.component.sass
+  └── *.stories.ts    # Storybook-Stories
 ```
+
+Jedes IMR-Element liegt in einem eigenen Ordner mit separaten TS-, HTML- und SASS-Dateien.
+Die flachen `imr-*.component.ts` Dateien im Library-Root bleiben als Re-Exports erhalten, damit bestehende Imports nicht brechen.
 
 ---
 

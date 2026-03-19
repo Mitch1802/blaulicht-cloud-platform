@@ -4,8 +4,9 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 
-from core_apps.common.email import send_welcome_email
+from core_apps.common.email import build_invite_url, send_account_invite_email
 from .models import User, Role
+from .invite_tokens import make_invite_token
 
 logger = logging.getLogger(__name__)
 
@@ -48,13 +49,14 @@ class UserSerializer(serializers.ModelSerializer):
             validated_data.pop("username", None)
 
         roles = validated_data.pop("roles", None)
+        initial_data = getattr(self, "initial_data", {})
 
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
 
         # Handle mitglied_id from raw request data (not in validated_data since it's SerializerMethodField)
-        if "mitglied_id" in self.initial_data:
-            raw_mitglied_id = self.initial_data.get("mitglied_id")
+        if "mitglied_id" in initial_data:
+            raw_mitglied_id = initial_data.get("mitglied_id")
             if raw_mitglied_id is not None:
                 from core_apps.mitglieder.models import Mitglied
                 try:
@@ -140,36 +142,69 @@ class RoleSerializer(serializers.ModelSerializer):
         fields = ['id', 'key', 'verbose_name']
 
 class AdminCreateUserSerializer(serializers.ModelSerializer):
-    password1 = serializers.CharField(write_only=True)
-    password2 = serializers.CharField(write_only=True)
+    password1 = serializers.CharField(write_only=True, required=False, allow_blank=True)
+    password2 = serializers.CharField(write_only=True, required=False, allow_blank=True)
+    send_invite = serializers.BooleanField(write_only=True, required=False)
     roles = serializers.ListField(child=serializers.CharField(), required=True, write_only=True)
     mitglied_id = serializers.IntegerField(required=False, allow_null=True, write_only=True)
 
     class Meta:
         model = User
-        fields = ("username", "email", "password1", "password2", "roles", "mitglied_id")
+        fields = ("username", "email", "password1", "password2", "send_invite", "roles", "mitglied_id")
 
     def validate(self, attrs):
-        if attrs["password1"] != attrs["password2"]:
+        password1 = str(attrs.get("password1") or "")
+        password2 = str(attrs.get("password2") or "")
+        send_invite = attrs.get("send_invite")
+
+        if send_invite is None:
+            send_invite = password1 == "" and password2 == ""
+        attrs["send_invite"] = send_invite
+
+        if send_invite:
+            if password1 or password2:
+                raise serializers.ValidationError("Im Einladungsmodus dürfen keine Initialpasswörter gesetzt werden.")
+
+            if not str(attrs.get("email") or "").strip():
+                raise serializers.ValidationError("Für den Einladungsmodus ist eine E-Mail-Adresse erforderlich.")
+
+            return attrs
+
+        if bool(password1) != bool(password2):
+            raise serializers.ValidationError("Bitte beide Passwortfelder ausfüllen oder beide leer lassen.")
+
+        if not password1:
+            raise serializers.ValidationError("Bitte ein Initialpasswort setzen oder den Einladungsmodus aktivieren.")
+
+        if password1 and password1 != password2:
             raise serializers.ValidationError("Passwörter stimmen nicht überein.")
-        validate_password(attrs["password1"])
+
+        if password1:
+            validate_password(password1)
+
         return attrs
 
     def create(self, validated_data):
         roles = validated_data.pop("roles")
-        pwd = validated_data.pop("password1")
+        pwd = str(validated_data.pop("password1", "") or "")
         validated_data.pop("password2", None)
+        send_invite = bool(validated_data.pop("send_invite", False))
         mitglied_pkid = validated_data.pop("mitglied_id", None)
 
         user = User(**validated_data)
-        user.set_password(pwd)
+        if send_invite:
+            user.set_unusable_password()
+        elif pwd:
+            user.set_password(pwd)
+        else:
+            user.set_unusable_password()
 
         if mitglied_pkid is not None:
             from core_apps.mitglieder.models import Mitglied
             try:
                 user.mitglied = Mitglied.objects.get(pkid=mitglied_pkid)
             except (Mitglied.DoesNotExist, ValueError, TypeError):
-                pass
+                logger.warning("Mitglied %s konnte für neuen Benutzer nicht zugeordnet werden.", mitglied_pkid)
 
         user.save()
 
@@ -177,18 +212,36 @@ class AdminCreateUserSerializer(serializers.ModelSerializer):
         role_qs = Role.objects.filter(key__in=roles)
         user.roles.set(role_qs)
 
-        # Zugangsdaten per E-Mail senden, falls eine Adresse hinterlegt ist.
-        # Hinweis: Das Senden des Klartext-Passworts ist nur bei admin-erstellten
-        # Erstkonten akzeptabel. Nutzer sollten ihr Passwort nach dem ersten Login
-        # umgehend ändern (Aufforderung ist in der E-Mail enthalten).
-        send_welcome_email(
-            username=user.username,
-            password=pwd,
-            email=user.email or "",
-            first_name="",
-        )
+        invite_sent = False
+        if send_invite:
+            invite_token = make_invite_token(user)
+            invite_url = build_invite_url(invite_token)
+            invite_sent = send_account_invite_email(
+                username=user.username,
+                email=user.email or "",
+                invite_url=invite_url,
+                first_name="",
+            )
+
+        setattr(user, "invite_sent", invite_sent)
 
         return user
+
+
+class InviteSetPasswordSerializer(serializers.Serializer):
+    token = serializers.CharField(required=True)
+    password1 = serializers.CharField(write_only=True, required=True)
+    password2 = serializers.CharField(write_only=True, required=True)
+
+    def validate(self, attrs):
+        password1 = str(attrs.get("password1") or "")
+        password2 = str(attrs.get("password2") or "")
+
+        if password1 != password2:
+            raise serializers.ValidationError("Passwörter stimmen nicht überein.")
+
+        validate_password(password1)
+        return attrs
 
 class UserSelfSerializer(serializers.ModelSerializer):
     roles = serializers.SlugRelatedField(

@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, finalize } from 'rxjs';
 import { environment } from 'src/environments/environment';
@@ -55,21 +55,21 @@ export class ApiHttpService {
     return headers;
   }
 
-  get<T = unknown>(modul: string, param?: any, afterSlash?: boolean): Observable<T> {
+  get<T = unknown>(modul: string, param?: Record<string, unknown>, afterSlash?: boolean): Observable<T> {
     const headers = this.ladeHeaders(false);
-    const query = this.buildQueryString(param);
+    const params = this.buildQueryParams(param);
+    const hasParams = params.keys().length > 0;
 
     let url = `${this.AppUrl}${modul}`;
-    if (!query) {
+    if (!hasParams) {
       url += '/';
     } else {
       if (afterSlash === true) {
         url += '/';
       }
-      url += query;
     }
 
-    return this.withLoading(this.http.get<T>(url, { headers }));
+    return this.withLoading(this.http.get<T>(url, { headers, params }));
   }
 
   getURL<T = unknown>(url: string): Observable<T> {
@@ -124,22 +124,45 @@ export class ApiHttpService {
     target?: 'all' | 'news' | 'homepage' | 'inventar' | 'einsatzberichte' | 'anwesenheitsliste';
     delete?: boolean;
     allow_missing_db?: boolean;
-  }): Observable<any> {
+  }): Observable<unknown> {
     return this.post('files/cleanup-orphans', payload, false);
   }
 
-  private buildQueryString(param?: Record<string, any>): string {
+  private buildQueryParams(param?: Record<string, unknown>): HttpParams {
     if (!param || typeof param !== 'object') {
-      return '';
+      return new HttpParams();
     }
 
-    let query = '';
-    for (const prop in param) {
-      if (Object.prototype.hasOwnProperty.call(param, prop)) {
-        query += query === '' ? `?${prop}=${param[prop]}` : `&${prop}=${param[prop]}`;
-      }
+    let params = new HttpParams();
+
+    for (const [key, value] of Object.entries(param)) {
+      params = this.appendParam(params, key, value);
     }
 
-    return query;
+    return params;
+  }
+
+  private appendParam(params: HttpParams, key: string, value: unknown): HttpParams {
+    if (value === undefined || value === null) {
+      return params;
+    }
+
+    if (Array.isArray(value)) {
+      let updated = params;
+      value.forEach((entry) => {
+        updated = this.appendParam(updated, key, entry);
+      });
+      return updated;
+    }
+
+    if (value instanceof Date) {
+      return params.append(key, value.toISOString());
+    }
+
+    if (typeof value === 'object') {
+      return params.append(key, JSON.stringify(value));
+    }
+
+    return params.append(key, String(value));
   }
 }

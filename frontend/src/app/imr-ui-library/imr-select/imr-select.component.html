@@ -1,0 +1,19 @@
+﻿    <mat-select
+      [id]="id"
+      [value]="value"
+      [placeholder]="placeholder"
+      [required]="required"
+      [multiple]="multiple"
+      [disabled]="disabled"
+      [attr.aria-describedby]="userAriaDescribedBy || null"
+      (selectionChange)="handleSelectionChange($event)"
+      (focus)="stateChanges.next()"
+      (closed)="handleTouched()"
+    >
+      @if (hasCustomTrigger) {
+        <mat-select-trigger><ng-content select="imr-select-trigger"></ng-content></mat-select-trigger>
+      }
+      <ng-content></ng-content>
+    </mat-select>
+  
+

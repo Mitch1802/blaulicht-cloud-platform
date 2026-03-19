@@ -45,7 +45,9 @@ Layout-Guide für responsive Grid-/Tabellenaufteilung (z. B. col-12, col-6, col-
 
 ## Tests (lokal)
 
+Python-Abhängigkeiten liegen in `django/requirements/` (`base.txt`, `production.txt`).
 Für lokale Django-Tests werden ein paar Environment-Variablen benötigt.
+Für Einladungslinks in Benutzer-Mails sollten außerdem `FRONTEND_URL` und optional `USER_INVITE_TOKEN_TTL_HOURS` gesetzt sein.
 
 PowerShell (Beispiel):
 

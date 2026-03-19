@@ -4,10 +4,33 @@ import { AuthSessionService } from '../_service/auth-session.service';
 import { NavigationService } from '../_service/navigation.service';
 import { UiMessageService } from '../_service/ui-message.service';
 import { ImrCardComponent } from '../imr-ui-library/imr-card.component';
-import { ImrHeaderComponent } from '../imr-ui-library/imr-header.component';
+import { ImrBreadcrumbItem, ImrHeaderComponent } from '../imr-ui-library/imr-header.component';
 import { ImrIconComponent } from '../imr-ui-library/imr-icon.component';
 import { RouterLink } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
+
+type StartKonfigItem = {
+  icon?: string;
+  modul?: string;
+  rolle?: string | string[];
+  kategorie?: string;
+  category?: string;
+  routerlink?: string;
+};
+
+type StartModulEintrag = {
+  modul?: string;
+  konfiguration?: StartKonfigItem[];
+};
+
+type StartResponse = {
+  user?: {
+    roles?: string[] | string;
+    username?: string;
+    display_name?: string;
+  };
+  main?: StartModulEintrag[];
+};
 
 @Component({
   selector: 'app-start',
@@ -30,15 +53,15 @@ export class StartComponent implements OnInit {
   private uiMessageService = inject(UiMessageService);
   private readonly adminRoleKey = 'ADMIN';
 
-  breadcrumb: any[] = [];
-  start_konfig: any[] = [];
+  breadcrumb: ImrBreadcrumbItem[] = [];
+  start_konfig: StartKonfigItem[] = [];
   username = '';
   display_name = '';
   meine_rollen: string[] = [];
 
-  categorizedItems: { name: string; items: any[] }[] = [];
+  categorizedItems: { name: string; items: StartKonfigItem[] }[] = [];
 
-  readonly defaultKonfig: any[] = [
+  readonly defaultKonfig: StartKonfigItem[] = [
     {
       icon: 'tune',
       modul: 'Modul Konfiguration',
@@ -69,34 +92,31 @@ export class StartComponent implements OnInit {
 
     this.breadcrumb = this.navigationService.ladeBreadcrumb();
 
-    this.apiHttpService.get("modul_konfiguration").subscribe({
-      next: (erg: any) => {
+    this.apiHttpService.get<StartResponse>('modul_konfiguration').subscribe({
+      next: (erg: StartResponse) => {
         try {
-          const user = erg.user;
+          const user = erg?.user;
           this.meine_rollen = this.normalizeRoles(user?.roles);
           this.username = user?.username ?? '';
           this.display_name = user?.display_name || this.username;
 
           const main = Array.isArray(erg?.main) ? erg.main : [];
-          const konfigs = main.find((m: any) => m.modul === 'start');
+          const konfigs = main.find((m: StartModulEintrag) => m.modul === 'start');
 
-          this.start_konfig =
-            (konfigs?.konfiguration?.length
-              ? konfigs.konfiguration
-              : this.defaultKonfig) ?? [];
+          const configured = Array.isArray(konfigs?.konfiguration) ? konfigs.konfiguration : [];
+          this.start_konfig = configured.length > 0 ? configured : this.defaultKonfig;
 
-          // 1️⃣ Zugriff strikt prüfen
-          const allowed = this.start_konfig.filter(item =>
+          const allowed = this.start_konfig.filter((item) =>
             this.userHasAccess(item) && !this.isHiddenItem(item)
           );
 
           this.categorizedItems = this.buildCategories(allowed);
 
-        } catch (e: any) {
+        } catch (e: unknown) {
           this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       }
     });
@@ -119,7 +139,7 @@ export class StartComponent implements OnInit {
       .filter(Boolean);
   }
 
-  private userHasAccess(item: any): boolean {
+  private userHasAccess(item: StartKonfigItem): boolean {
     const itemRoles = this.normalizeRoles(item?.rolle);
     const userRoles = this.meine_rollen;
 
@@ -131,23 +151,23 @@ export class StartComponent implements OnInit {
     return itemRoles.some(role => userRoles.includes(role));
   }
 
-  private isHiddenItem(item: any): boolean {
+  private isHiddenItem(item: StartKonfigItem): boolean {
     const modul = String(item?.modul ?? '').trim().toLowerCase();
     const routerlink = String(item?.routerlink ?? '').trim().toLowerCase();
 
     return modul === 'zahlen' || routerlink === '/zahlen' || routerlink.endsWith('/zahlen');
   }
 
-  private isPureAdminItem(item: any): boolean {
+  private isPureAdminItem(item: StartKonfigItem): boolean {
     const roles = this.normalizeRoles(item?.rolle);
     return roles.length === 1 && roles[0] === this.adminRoleKey;
   }
 
-  isAdminOnly(item: any): boolean {
+  isAdminOnly(item: StartKonfigItem): boolean {
     return this.isPureAdminItem(item);
   }
 
-  isPlannedItem(item: any): boolean {
+  isPlannedItem(item: StartKonfigItem): boolean {
     const category = this.normalizeCategory(item).trim().toLowerCase();
     return category === 'geplant';
   }
@@ -177,8 +197,8 @@ export class StartComponent implements OnInit {
     return idx;
   }
 
-  private buildCategories(items: any[]): { name: string; items: any[] }[] {
-    const map = new Map<string, any[]>();
+  private buildCategories(items: StartKonfigItem[]): { name: string; items: StartKonfigItem[] }[] {
+    const map = new Map<string, StartKonfigItem[]>();
 
     for (const item of items) {
       const category = this.normalizeCategory(item);
@@ -192,7 +212,7 @@ export class StartComponent implements OnInit {
       .map(([name, groupedItems]) => ({ name, items: groupedItems }));
   }
 
-  private normalizeCategory(item: any): string {
+  private normalizeCategory(item: StartKonfigItem): string {
     const raw = String(item?.kategorie ?? item?.category ?? '').trim();
     return raw || 'Allgemein';
   }

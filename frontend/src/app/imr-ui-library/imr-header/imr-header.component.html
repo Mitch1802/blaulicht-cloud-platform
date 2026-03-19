@@ -1,0 +1,35 @@
+﻿    <imr-toolbar toolbarClass="imr-header-toolbar">
+      <a class="imr-header-logo-link" routerLink="/start" aria-label="Zur Startseite">
+        <img class="imr-header-logo" src="../assets/images/icon.svg" alt="Blaulicht Cloud Logo" />
+      </a>
+      <a class="title imr-header-title imr-header-title-link" routerLink="/start" aria-label="Zur Startseite">
+        {{ appTitle }}
+      </a>
+      <span class="spacer"></span>
+      <button class="imr-header-logout" mat-icon-button type="button" aria-label="Abmelden" (click)="authService.abmelden()">
+        <mat-icon>logout</mat-icon>
+      </button>
+    </imr-toolbar>
+
+    <div class="imr-header-stepper-wrap">
+      <nav class="imr-breadcrumb" aria-label="Breadcrumb">
+        @if (hasBreadcrumb) {
+          <a class="breadcrumb-item breadcrumb-home breadcrumb-link" aria-label="Startseite" routerLink="/start">
+            <mat-icon>home</mat-icon>
+          </a>
+
+          @for (link of breadcrumb; track link; let i = $index) {
+            @if (i > 0) {
+              <span class="breadcrumb-separator" aria-hidden="true">&gt;</span>
+              @if (link.link || link.url) {
+                <a class="breadcrumb-item breadcrumb-link" [routerLink]="link.link || link.url">{{ link.kuerzel || link.label }}</a>
+              } @else {
+                <span class="breadcrumb-item">{{ link.kuerzel || link.label }}</span>
+              }
+            }
+          }
+        }
+      </nav>
+    </div>
+  
+

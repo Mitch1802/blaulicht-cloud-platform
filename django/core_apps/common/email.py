@@ -1,4 +1,5 @@
 import logging
+from urllib.parse import quote
 
 from django.conf import settings
 from django.core.mail import send_mail
@@ -6,24 +7,39 @@ from django.core.mail import send_mail
 logger = logging.getLogger(__name__)
 
 
-def send_welcome_email(username: str, password: str, email: str, first_name: str = "") -> bool:
+def _safe_frontend_base_url() -> str:
+    return str(getattr(settings, "FRONTEND_URL", "")).strip().rstrip("/")
+
+
+def build_invite_url(token: str) -> str:
+    frontend_base_url = _safe_frontend_base_url()
+    if not frontend_base_url:
+        return ""
+    return f"{frontend_base_url}/einladung?token={quote(token)}"
+
+
+def send_account_invite_email(username: str, email: str, invite_url: str, first_name: str = "") -> bool:
     """
-    Sendet die Zugangsdaten an einen neu erstellten Benutzer.
+    Sendet eine Einladungs-E-Mail mit einmaligem Link zur Passwortvergabe.
 
     Returns True wenn die E-Mail erfolgreich gesendet wurde, sonst False.
     """
     if not email:
-        logger.warning("Willkommens-E-Mail konnte nicht gesendet werden: keine E-Mail-Adresse für Benutzer '%s'.", username)
+        logger.warning("Einladungs-E-Mail konnte nicht gesendet werden: keine E-Mail-Adresse für Benutzer '%s'.", username)
+        return False
+
+    if not invite_url:
+        logger.warning("Einladungs-E-Mail konnte nicht gesendet werden: kein Invite-Link für Benutzer '%s'.", username)
         return False
 
     greeting = f"Hallo {first_name}," if first_name else "Hallo,"
-    subject = "Deine Zugangsdaten für die Blaulicht Cloud"
+    subject = "Einladung zur Blaulicht Cloud"
     message = (
         f"{greeting}\n\n"
-        f"Dein Konto wurde erfolgreich erstellt. Hier sind deine Zugangsdaten:\n\n"
-        f"Benutzername: {username}\n"
-        f"Passwort: {password}\n\n"
-        f"Bitte ändere dein Passwort nach dem ersten Login.\n\n"
+        f"für dein Konto '{username}' wurde eine Einladung erstellt.\n"
+        f"Bitte vergib dein Passwort über diesen Link:\n\n"
+        f"{invite_url}\n\n"
+        f"Hinweis: Der Link ist zeitlich begrenzt und nach der Passwortvergabe ungültig.\n\n"
         f"Mit freundlichen Grüßen\n"
         f"Dein Blaulicht Cloud Team"
     )
@@ -36,10 +52,10 @@ def send_welcome_email(username: str, password: str, email: str, first_name: str
             recipient_list=[email],
             fail_silently=False,
         )
-        logger.info("Willkommens-E-Mail an '%s' gesendet.", email)
+        logger.info("Einladungs-E-Mail an '%s' gesendet.", email)
         return True
     except Exception:
-        logger.exception("Fehler beim Senden der Willkommens-E-Mail an '%s'.", email)
+        logger.exception("Fehler beim Senden der Einladungs-E-Mail an '%s'.", email)
         return False
 
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -8,6 +8,7 @@ import {
   ReactiveFormsModule,
   FormsModule
 } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ApiHttpService } from 'src/app/_service/api-http.service';
 import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
@@ -41,6 +42,7 @@ export class ModulKonfigurationComponent implements OnInit {
   private collectionUtilsService = inject(CollectionUtilsService);
   private navigationService = inject(NavigationService);
   private uiMessageService = inject(UiMessageService);
+  private destroyRef = inject(DestroyRef);
   router = inject(Router);
 
   title = 'Modul Konfiguration';
@@ -155,11 +157,13 @@ export class ModulKonfigurationComponent implements OnInit {
     });
 
     // Wenn user im PDF-Form was ändert => JSON-String im formModul.konfiguration mitschreiben
-    this.pdfMappingForm.valueChanges.subscribe(() => {
-      if (this.formModul.controls['modul'].value === 'pdf') {
-        this.syncPdfMappingToKonfigurationControl();
-      }
-    });
+    this.pdfMappingForm.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        if (this.formModul.controls['modul'].value === 'pdf') {
+          this.syncPdfMappingToKonfigurationControl();
+        }
+      });
   }
 
   onModulChange(): void {

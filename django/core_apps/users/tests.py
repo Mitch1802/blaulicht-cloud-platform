@@ -1,7 +1,7 @@
 import time
-from uuid import uuid4
 from types import SimpleNamespace
 from unittest.mock import patch
+from uuid import uuid4
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase, override_settings
@@ -18,6 +18,7 @@ from core_apps.users.serializers import UserSerializer, UserSelfSerializer
 from core_apps.users.views import CustomUserDetailsView, ForceLogoutView
 from core_apps.users.renderers import UserJSONRenderer
 from core_apps.users.adapter import UserAdapter
+from core_apps.users.invite_tokens import make_invite_token
 
 from .models import Role
 
@@ -99,14 +100,14 @@ class UserSecurityTests(APITestCase):
         url = reverse("user-retrieve-update-destroy", kwargs={"id": self.user_a.id})
         response = self.client.patch(
             url,
-            {"is_superuser": True, "first_name": "Geaendert"},
+            {"is_superuser": True, "email": "geaendert@example.com"},
             format="json",
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.user_a.refresh_from_db()
         self.assertFalse(self.user_a.is_superuser)
-        self.assertEqual(self.user_a.first_name, "Geaendert")
+        self.assertEqual(self.user_a.email, "geaendert@example.com")
 
     def test_admin_can_change_password_of_other_user(self):
         self.client.force_authenticate(user=self.admin)
@@ -181,7 +182,7 @@ class UserSecurityTests(APITestCase):
         url = reverse("user-retrieve-update-destroy", kwargs={"id": self.user_b.id})
         response = self.client.patch(
             url,
-            {"first_name": "NichtErlaubt"},
+            {"email": "nicht-erlaubt@example.com"},
             format="json",
         )
 
@@ -203,8 +204,6 @@ class UserSecurityTests(APITestCase):
             url,
             {
                 "username": "neu_user_1",
-                "first_name": "Neu",
-                "last_name": "User",
                 "email": "neu1@example.com",
                 "password1": "StarkesPasswort!123",
                 "password2": "AnderesPasswort!123",
@@ -223,8 +222,6 @@ class UserSecurityTests(APITestCase):
             url,
             {
                 "username": "neu_user_2",
-                "first_name": "Neu",
-                "last_name": "User",
                 "email": "neu2@example.com",
                 "password1": "StarkesPasswort!123",
                 "password2": "StarkesPasswort!123",
@@ -236,6 +233,64 @@ class UserSecurityTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         created_user = User.objects.get(username="neu_user_2")
         self.assertTrue(created_user.has_role("MITGLIED"))
+        self.assertFalse(response.data["invite_sent"])
+
+    @patch("core_apps.users.serializers.send_account_invite_email", return_value=True)
+    def test_admin_create_user_with_invite_mode_sends_invite(self, send_invite_email_mock):
+        self.client.force_authenticate(user=self.admin)
+
+        url = reverse("user-create")
+        response = self.client.post(
+            url,
+            {
+                "username": "neu_user_invite",
+                "email": "neu-invite@example.com",
+                "send_invite": True,
+                "roles": ["MITGLIED"],
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(response.data["invite_sent"])
+
+        created_user = User.objects.get(username="neu_user_invite")
+        self.assertFalse(created_user.has_usable_password())
+        self.assertTrue(created_user.has_role("MITGLIED"))
+        send_invite_email_mock.assert_called_once()
+
+    def test_admin_create_user_invite_mode_requires_email(self):
+        self.client.force_authenticate(user=self.admin)
+
+        url = reverse("user-create")
+        response = self.client.post(
+            url,
+            {
+                "username": "neu_user_invite_no_email",
+                "send_invite": True,
+                "roles": ["MITGLIED"],
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_admin_create_user_password_mode_requires_password(self):
+        self.client.force_authenticate(user=self.admin)
+
+        url = reverse("user-create")
+        response = self.client.post(
+            url,
+            {
+                "username": "neu_user_password_required",
+                "email": "neu-password@example.com",
+                "send_invite": False,
+                "roles": ["MITGLIED"],
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
 class PublicTokenHelperTests(TestCase):
@@ -282,6 +337,7 @@ class UsersEndpointSmokeTests(EndpointSmokeMixin, APITestCase):
             "auth/csrf/",
             "auth/login/",
             "auth/logout/",
+            "auth/invite/complete/",
             "auth/token/refresh/",
         ]
 
@@ -355,9 +411,61 @@ class UsersEndpointSmokeTests(EndpointSmokeMixin, APITestCase):
             "auth/csrf/",
             "auth/login/",
             "auth/logout/",
+            "auth/invite/complete/",
             "auth/token/refresh/",
         ]:
             self.assert_method_matrix_no_server_error(endpoint)
+
+
+class InviteSetPasswordTests(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create(username="invite_user", email="invite@example.com", is_active=True)
+        self.user.set_unusable_password()
+        self.user.save(update_fields=["password"])
+
+    def test_invite_set_password_success(self):
+        token = make_invite_token(self.user)
+        url = reverse("invite_set_password")
+
+        response = self.client.post(
+            url,
+            {
+                "token": token,
+                "password1": "N3uesPasswort!123",
+                "password2": "N3uesPasswort!123",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password("N3uesPasswort!123"))
+
+    def test_invite_set_password_rejects_reused_token(self):
+        token = make_invite_token(self.user)
+        url = reverse("invite_set_password")
+
+        first = self.client.post(
+            url,
+            {
+                "token": token,
+                "password1": "N3uesPasswort!123",
+                "password2": "N3uesPasswort!123",
+            },
+            format="json",
+        )
+        self.assertEqual(first.status_code, status.HTTP_200_OK)
+
+        second = self.client.post(
+            url,
+            {
+                "token": token,
+                "password1": "NochEinPasswort!123",
+                "password2": "NochEinPasswort!123",
+            },
+            format="json",
+        )
+        self.assertEqual(second.status_code, status.HTTP_400_BAD_REQUEST)
 
 
 class UsersBranchCoverageTests(APITestCase):
@@ -372,16 +480,10 @@ class UsersBranchCoverageTests(APITestCase):
         self.assertTrue(User.objects.email_validator("ok@example.com"))
 
         with self.assertRaises(ValueError):
-            User.objects.create_user("", "A", "B", "Strong!123")
-        with self.assertRaises(ValueError):
-            User.objects.create_user("u1", "", "B", "Strong!123")
-        with self.assertRaises(ValueError):
-            User.objects.create_user("u1", "A", "", "Strong!123")
+            User.objects.create_user("", "Strong!123")
 
         created = User.objects.create_user(
             username="with_roles",
-            first_name="Role",
-            last_name="User",
             password="Strong!123",
             email="Role@Example.COM",
             roles=["MITGLIED"],
@@ -389,14 +491,14 @@ class UsersBranchCoverageTests(APITestCase):
         self.assertTrue(created.has_role("MITGLIED"))
 
         with self.assertRaises(ValueError):
-            User.objects.create_superuser("su1", "A", "B", "", email="su@example.com")
+            User.objects.create_superuser("su1", "", email="su@example.com")
         with self.assertRaises(ValueError):
             User.objects.create_superuser(
-                "su2", "A", "B", "Strong!123", email="su@example.com", is_superuser=False
+                "su2", "Strong!123", email="su@example.com", is_superuser=False
             )
 
         superuser = User.objects.create_superuser(
-            "su_ok", "Admin", "Root", "Strong!123", email="root@example.com"
+            "su_ok", "Strong!123", email="root@example.com"
         )
         self.assertTrue(superuser.is_superuser)
         self.assertTrue(superuser.has_role("ADMIN"))
@@ -412,8 +514,8 @@ class UsersBranchCoverageTests(APITestCase):
         user.roles.add(self.role_member)
 
         self.assertEqual(str(user), "model_user")
-        self.assertEqual(user.get_full_name, "Max Mustermann")
-        self.assertEqual(user.get_short_name, "max")
+        self.assertEqual(user.get_full_name, "model_user")
+        self.assertEqual(user.get_short_name, "model_user")
         self.assertTrue(user.has_role("MITGLIED"))
         self.assertTrue(user.has_any_role("MITGLIED", "ADMIN"))
         self.assertFalse(user.has_any_role("XYZ"))
@@ -427,16 +529,16 @@ class UsersBranchCoverageTests(APITestCase):
             password="Strong!123",
         )
         serializer = UserSerializer(instance=member)
-        updated = serializer.update(member, {"first_name": "Neu", "roles": [self.role_member]})
-        self.assertEqual(updated.first_name, "Neu")
+        updated = serializer.update(member, {"email": "neu@example.com", "roles": [self.role_member]})
+        self.assertEqual(updated.email, "neu@example.com")
         self.assertTrue(updated.has_role("MITGLIED"))
 
-        superuser = User.objects.create_superuser("sdel", "S", "U", "Strong!123")
+        superuser = User.objects.create_superuser("sdel", "Strong!123")
         super_serializer = UserSerializer(instance=superuser)
         with self.assertRaises(Exception):
             super_serializer.delete(superuser)
 
-        deleted_user = User.objects.create_user("to_delete", "Del", "User", "Strong!123")
+        deleted_user = User.objects.create_user("to_delete", "Strong!123")
         UserSerializer(instance=deleted_user).delete(deleted_user)
         self.assertFalse(User.objects.filter(username="to_delete").exists())
 
@@ -449,8 +551,8 @@ class UsersBranchCoverageTests(APITestCase):
         self.assertEqual(superuser.username, "fixed_name")
 
         self_user_serializer = UserSelfSerializer(instance=member)
-        changed = self_user_serializer.update(member, {"first_name": "Self"})
-        self.assertEqual(changed.first_name, "Self")
+        changed = self_user_serializer.update(member, {"email": "self@example.com"})
+        self.assertEqual(changed.email, "self@example.com")
 
     def test_custom_user_details_and_force_logout_paths(self):
         user = User.objects.create_user(
@@ -530,7 +632,7 @@ class UsersBranchCoverageTests(APITestCase):
 
     def test_user_adapter_save_user_path(self):
         adapter = UserAdapter()
-        user = User(username="adapter_user", first_name="A", last_name="B")
+        user = User(username="adapter_user")
         form = SimpleNamespace(cleaned_data={})
         with patch.object(user, "save", return_value=None) as mock_save:
             result = adapter.save_user(SimpleNamespace(), user, form, commit=False)

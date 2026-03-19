@@ -12,7 +12,15 @@ from dj_rest_auth.app_settings import api_settings as rest_auth_settings
 
 from .models import User, Role
 from .renderers import UserJSONRenderer
-from .serializers import UserSelfSerializer, UserSerializer, ChangePasswordSerializer, RoleSerializer, AdminCreateUserSerializer
+from .serializers import (
+    AdminCreateUserSerializer,
+    ChangePasswordSerializer,
+    InviteSetPasswordSerializer,
+    RoleSerializer,
+    UserSelfSerializer,
+    UserSerializer,
+)
+from .invite_tokens import resolve_invite_token
 from core_apps.common.permissions import IsAdminPermission, HasAnyRolePermission
 
 
@@ -143,3 +151,42 @@ class RoleViewSet(viewsets.ModelViewSet):
 class AdminCreateUserView(generics.CreateAPIView):
     serializer_class = AdminCreateUserSerializer
     permission_classes = [permissions.IsAuthenticated, IsAdminPermission]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+
+        user_data = UserSerializer(user).data
+        invite_sent = bool(getattr(user, "invite_sent", False))
+
+        return Response(
+            {
+                "user": user_data,
+                "invite_sent": invite_sent,
+            },
+            status=status.HTTP_201_CREATED,
+        )
+
+
+class InviteSetPasswordView(APIView):
+    authentication_classes = []
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        serializer = InviteSetPasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        token = serializer.validated_data["token"]
+        user = resolve_invite_token(token)
+        if user is None:
+            return Response(
+                {"detail": "Einladungslink ist ungültig oder abgelaufen."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        user.set_password(serializer.validated_data["password1"])
+        user.save(update_fields=["password"])
+
+        return Response({"detail": "Passwort erfolgreich gesetzt."}, status=status.HTTP_200_OK)
+

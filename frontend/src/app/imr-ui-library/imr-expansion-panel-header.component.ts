@@ -1,0 +1,1 @@
+export * from './imr-expansion-panel-header/imr-expansion-panel-header.component'

@@ -1,0 +1,1 @@
+export * from './imr-toolbar/imr-toolbar.component'

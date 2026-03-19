@@ -5,6 +5,25 @@ from django.utils.translation import gettext_lazy as _
 
 
 class CustomUserManager(BaseUserManager):
+    def _extract_password(self, args, password, extra_fields):
+        remaining_args = list(args)
+
+        # Kompatibilität für ältere Aufrufe mit first_name/last_name.
+        extra_fields.pop("first_name", None)
+        extra_fields.pop("last_name", None)
+
+        if password is None and len(remaining_args) == 1:
+            password = remaining_args.pop(0)
+        elif len(remaining_args) >= 3:
+            remaining_args = remaining_args[2:]
+            if password is None and remaining_args:
+                password = remaining_args.pop(0)
+
+        if remaining_args:
+            raise TypeError(_("Unerwartete Positionsargumente für create_user()."))
+
+        return password
+
     def email_validator(self, email):
         try:
             validate_email(email)
@@ -15,19 +34,16 @@ class CustomUserManager(BaseUserManager):
     def create_user(
         self,
         username,
-        first_name,
-        last_name,
-        password,
+        *args,
+        password=None,
         email=None,
         roles=None,
         **extra_fields
     ):
         if not username:
             raise ValueError(_("Benutzer müssen einen Benutzernamen haben!"))
-        if not first_name:
-            raise ValueError(_("Benutzer müssen einen Vornamen haben!"))
-        if not last_name:
-            raise ValueError(_("Benutzer müssen einen Nachnamen haben!"))
+
+        password = self._extract_password(args, password, extra_fields)
 
         if email:
             email = self.normalize_email(email)
@@ -38,8 +54,6 @@ class CustomUserManager(BaseUserManager):
         user = self.model(
             username=username,
             email=email,
-            first_name=first_name,
-            last_name=last_name,
             **extra_fields,
         )
         user.set_password(password)
@@ -56,12 +70,12 @@ class CustomUserManager(BaseUserManager):
     def create_superuser(
         self,
         username,
-        first_name,
-        last_name,
-        password,
+        *args,
+        password=None,
         email=None,
         **extra_fields
     ):
+        password = self._extract_password(args, password, extra_fields)
         extra_fields.setdefault("is_superuser", True)
         extra_fields.setdefault("is_active", True)
 
@@ -72,8 +86,6 @@ class CustomUserManager(BaseUserManager):
 
         return self.create_user(
             username=username,
-            first_name=first_name,
-            last_name=last_name,
             password=password,
             email=email,
             roles=["ADMIN"],

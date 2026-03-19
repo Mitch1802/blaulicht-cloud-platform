@@ -10,19 +10,67 @@ import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
-import { ImrHeaderComponent } from '../imr-ui-library';
+import { ImrBreadcrumbItem, ImrCardContentComponent, ImrHeaderComponent } from '../imr-ui-library';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
 import { MatButton } from '@angular/material/button';
 import { MatInput } from '@angular/material/input';
-import { MatCheckbox } from '@angular/material/checkbox';
+import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
-import { forkJoin } from 'rxjs';
+import { Observable, forkJoin } from 'rxjs';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
+
+type RoleDefinition = {
+  id?: number;
+  key: string;
+  verbose_name: string;
+};
+
+type UserListResponse = {
+  data: IBenutzer[];
+};
+
+type UserContextResponse = {
+  data: {
+    rollen: RoleDefinition[];
+    mitglieder: IMitglied[];
+  };
+};
+
+type UserDetailResponse = {
+  data: {
+    user: IBenutzer;
+  };
+};
+
+type UserCreateResponse = {
+  user?: IBenutzer;
+  invite_sent?: boolean;
+};
+
+type UserUpdateResponse = {
+  data: IBenutzer;
+};
+
+type UserFormValue = {
+  id: string;
+  username: string;
+  email: string;
+  mitglied_id: number | null;
+  roles: string[];
+  password1: string;
+  password2: string;
+};
+
+type UserCreatePayload = UserFormValue & {
+  send_invite: boolean;
+};
+
+type UserUpdatePayload = Omit<UserCreatePayload, 'password1' | 'password2' | 'send_invite'>;
 
 @Component({
     selector: 'app-user',
@@ -30,6 +78,7 @@ import { MatTabsModule } from '@angular/material/tabs';
     styleUrls: ['./user.component.sass'],
     imports: [
     ImrHeaderComponent,
+    ImrCardContentComponent,
     MatCardModule,
     FormsModule,
     ReactiveFormsModule,
@@ -53,32 +102,39 @@ export class UserComponent implements OnInit {
   private collectionUtilsService = inject(CollectionUtilsService);
   private navigationService = inject(NavigationService);
   private uiMessageService = inject(UiMessageService);
-  breakpointObserver = inject(BreakpointObserver);
-  destroyRef = inject(DestroyRef);
+  private breakpointObserver = inject(BreakpointObserver);
+  private destroyRef = inject(DestroyRef);
   private readonly adminRoleKey = 'ADMIN';
   private readonly mitgliedRoleKey = 'MITGLIED';
+  private paginator?: MatPaginator;
 
-  title = "Benutzer Verwaltung";
-  modul = "users";
-  username = "";
+  title = 'Benutzer Verwaltung';
+  modul = 'users';
+  username = '';
+  sendInviteMode = true;
 
   dataSource = new MatTableDataSource<IBenutzer>([]);
 
   @ViewChild(MatPaginator) set matPaginator(p: MatPaginator | undefined) {
-    if (p) this.dataSource.paginator = p;
+    this.paginator = p;
+    if (p) {
+      this.dataSource.paginator = p;
+    }
   }
 
   @ViewChild(MatSort) set matSort(s: MatSort | undefined) {
-    if (s) this.dataSource.sort = s;
+    if (s) {
+      this.dataSource.sort = s;
+    }
   }
 
   benutzer: IBenutzer[] = [];
   mitglieder: IMitglied[] = [];
-  breadcrumb: any = [];
-  rollen: any = [];
-  rollenOhne: any[] = [];
+  breadcrumb: ImrBreadcrumbItem[] = [];
+  rollen: RoleDefinition[] = [];
+  rollenOhne: RoleDefinition[] = [];
   rollenUebersichtSpalten: string[] = ['benutzer'];
-  rollenMatrix: { [userId: string]: string[] } = {};
+  rollenMatrix: Record<string, string[]> = {};
   rollenMatrixDirty: Set<string> = new Set();
   private readonly desktopSpaltenBenutzer = ['username', 'mitglied_name', 'rolle', 'actions'];
   private readonly mobileSpaltenBenutzer = ['username', 'rolle', 'actions'];
@@ -89,17 +145,45 @@ export class UserComponent implements OnInit {
   }
 
   private getBenutzerFilterText(user: IBenutzer): string {
-    const mitglied = this.mitglieder.find((m) => m.pkid === user.mitglied_id);
+    const mitglied = this.findMitgliedById(user.mitglied_id);
     const mitgliedLabel = mitglied ? this.getMitgliedLabel(mitglied) : '';
     const roles = this.normalizeRoleKeys(user?.roles)
-      .map((roleKey) => this.rollen.find((rolle: any) => rolle.key === roleKey)?.verbose_name || roleKey)
+      .map((roleKey) => this.rollen.find((rolle) => rolle.key === roleKey)?.verbose_name || roleKey)
       .join(' ');
 
     return `${user.username} ${mitgliedLabel} ${roles}`.toLowerCase();
   }
 
-  private normalizeRoleKeys(raw: any): string[] {
-    let values: any[] = [];
+  private createEmptyFormValue(): UserFormValue {
+    return {
+      id: '',
+      username: '',
+      email: '',
+      mitglied_id: null,
+      roles: [],
+      password1: '',
+      password2: '',
+    };
+  }
+
+  private isRoleObject(value: unknown): value is { key?: string | number | null; id?: string | number | null } {
+    return typeof value === 'object' && value !== null;
+  }
+
+  private extractRoleKey(entry: unknown): string {
+    if (typeof entry === 'string') {
+      return entry.trim();
+    }
+
+    if (this.isRoleObject(entry)) {
+      return String(entry.key ?? entry.id ?? '').trim();
+    }
+
+    return '';
+  }
+
+  private normalizeRoleKeys(raw: unknown): string[] {
+    let values: unknown[] = [];
 
     if (Array.isArray(raw)) {
       values = raw;
@@ -110,20 +194,20 @@ export class UserComponent implements OnInit {
     }
 
     const extracted = values
-      .map((entry: any) => {
-        if (typeof entry === 'string') return entry.trim();
-        if (entry && typeof entry === 'object') return String(entry.key ?? entry.id ?? '').trim();
-        return '';
-      })
-      .filter((v: string) => v !== '');
+      .map((entry) => this.extractRoleKey(entry))
+      .filter((value) => value !== '');
 
-    const allowed = new Set((this.rollen || []).map((r: any) => String(r.key || '').trim()).filter((k: string) => k !== ''));
-    const filtered = extracted.filter((key: string) => allowed.size === 0 || allowed.has(key));
+    const allowed = new Set(
+      this.rollen
+        .map((rolle) => String(rolle.key || '').trim())
+        .filter((key) => key !== '')
+    );
+    const filtered = extracted.filter((key) => allowed.size === 0 || allowed.has(key));
 
     return Array.from(new Set(filtered));
   }
 
-  private normalizeRolesWithAdminRule(raw: any): string[] {
+  private normalizeRolesWithAdminRule(raw: unknown): string[] {
     const normalized = this.normalizeRoleKeys(raw);
     if (normalized.includes(this.adminRoleKey)) {
       return [this.adminRoleKey];
@@ -131,8 +215,80 @@ export class UserComponent implements OnInit {
     return normalized.filter((key) => key !== this.adminRoleKey);
   }
 
-  private setRolesWithAdminRule(raw: any): void {
+  private setRolesWithAdminRule(raw: unknown): void {
     this.formModul.controls['roles'].setValue(this.normalizeRolesWithAdminRule(raw));
+  }
+
+  private sortUsers(users: IBenutzer[]): IBenutzer[] {
+    return this.collectionUtilsService.arraySortByKey([...users], 'username') as IBenutzer[];
+  }
+
+  private setUsers(users: IBenutzer[]): void {
+    this.benutzer = this.sortUsers(users);
+    this.dataSource.data = this.benutzer;
+  }
+
+  private findMitgliedById(mitgliedId: number | null | undefined): IMitglied | undefined {
+    return this.mitglieder.find((mitglied) => mitglied.pkid === mitgliedId);
+  }
+
+  private updateCredentialValidators(): void {
+    const emailValidators = this.isCreateMode() && this.sendInviteMode
+      ? [Validators.required, Validators.email]
+      : [Validators.email];
+
+    const passwordValidators = this.isCreateMode() && !this.sendInviteMode
+      ? [Validators.required, Validators.minLength(8)]
+      : [Validators.minLength(8)];
+
+    this.formModul.controls.email.setValidators(emailValidators);
+    this.formModul.controls.password1.setValidators(passwordValidators);
+    this.formModul.controls.password2.setValidators(passwordValidators);
+
+    this.formModul.controls.email.updateValueAndValidity({ emitEvent: false });
+    this.formModul.controls.password1.updateValueAndValidity({ emitEvent: false });
+    this.formModul.controls.password2.updateValueAndValidity({ emitEvent: false });
+  }
+
+  private resetEditor(disabled = true): void {
+    this.username = '';
+    this.formModul.reset(this.createEmptyFormValue());
+    this.mitgliedSuche.setValue('');
+    this.sendInviteMode = true;
+
+    if (disabled) {
+      this.formModul.disable();
+    } else {
+      this.formModul.enable();
+    }
+
+    this.updateCredentialValidators();
+  }
+
+  private isCreateMode(): boolean {
+    return !this.formModul.controls.id.value;
+  }
+
+  private validateCreateCredentials(password1: string, password2: string, sendInvite: boolean): boolean {
+    if (sendInvite) {
+      if (!String(this.formModul.controls.email.value || '').trim()) {
+        this.uiMessageService.erstelleMessage('error', 'Für den Einladungsmodus ist eine E-Mail-Adresse erforderlich.');
+        return false;
+      }
+      return true;
+    }
+
+    if (password1 === '' || password2 === '') {
+      this.uiMessageService.erstelleMessage('error', 'Bitte ein Initialpasswort in beide Felder eintragen.');
+      return false;
+    }
+
+    if (password1 !== password2) {
+      this.uiMessageService.erstelleMessage('error', 'Die Passwörter müssen übereinstimmen!');
+      return false;
+    }
+
+    return true;
   }
 
   isAdminRoleSelected(): boolean {
@@ -188,10 +344,11 @@ export class UserComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    sessionStorage.setItem("PageNumber", "2");
-    sessionStorage.setItem("Page2", "V_B");
+    sessionStorage.setItem('PageNumber', '2');
+    sessionStorage.setItem('Page2', 'V_B');
     this.breadcrumb = this.navigationService.ladeBreadcrumb();
     this.formModul.disable();
+    this.updateCredentialValidators();
     this.dataSource.filterPredicate = (data: IBenutzer, filter: string) => {
       if (!filter) {
         return true;
@@ -201,24 +358,20 @@ export class UserComponent implements OnInit {
     this.observeViewport();
 
     forkJoin({
-      usersResponse: this.apiHttpService.get<any>(this.modul),
-      contextResponse: this.apiHttpService.get<any>(`${this.modul}/context`),
-    }).subscribe({
+      usersResponse: this.apiHttpService.get<UserListResponse>(this.modul),
+      contextResponse: this.apiHttpService.get<UserContextResponse>(`${this.modul}/context`),
+    })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
       next: ({ usersResponse, contextResponse }) => {
-        try {
-          this.benutzer = usersResponse.data;
-          this.rollen = contextResponse.data.rollen;
-          this.mitglieder = contextResponse.data.mitglieder || [];
-          this.rollenOhne = this.rollen.filter((r: any) => r.key !== this.mitgliedRoleKey);
-          this.rollenUebersichtSpalten = ['benutzer', ...this.rollenOhne.map((r: any) => r.key)];
-          this.benutzer = this.collectionUtilsService.arraySortByKey(this.benutzer, 'username');
-          this.dataSource.data = this.benutzer;
-          this.initRollenMatrix();
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage('error', String(e));
-        }
+        this.rollen = Array.isArray(contextResponse.data?.rollen) ? contextResponse.data.rollen : [];
+        this.mitglieder = Array.isArray(contextResponse.data?.mitglieder) ? contextResponse.data.mitglieder : [];
+        this.rollenOhne = this.rollen.filter((rolle) => rolle.key !== this.mitgliedRoleKey);
+        this.rollenUebersichtSpalten = ['benutzer', ...this.rollenOhne.map((rolle) => rolle.key)];
+        this.setUsers(Array.isArray(usersResponse.data) ? usersResponse.data : []);
+        this.initRollenMatrix();
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       }
     });
@@ -240,66 +393,62 @@ export class UserComponent implements OnInit {
     if (!id) {
       return;
     }
-    const abfrageUrl = this.modul + "/" + id;
+    const abfrageUrl = `${this.modul}/${id}`;
 
-    this.apiHttpService.get(abfrageUrl).subscribe({
-      next: (erg: any) => {
-        try {
-          const details: IBenutzer = erg.data.user;
-          this.username = details.username;
-          this.formModul.enable();
-          const normalizedRoles = this.normalizeRolesWithAdminRule(details.roles);
-          this.formModul.setValue({
-            id: details.id,
-            username: details.username,
-            email: details.email || '',
-            mitglied_id: details.mitglied_id ?? null,
-            roles: normalizedRoles,
-            password1: "",
-            password2: ""
-          });
-          const selectedMitglied = this.mitglieder.find((m) => m.pkid === details.mitglied_id);
-          this.mitgliedSuche.setValue(selectedMitglied ? this.getMitgliedLabel(selectedMitglied) : '');
-          this.setRolesWithAdminRule(this.formModul.controls['roles'].value);
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage('error', String(e));
-        }
+    this.apiHttpService.get<UserDetailResponse>(abfrageUrl).subscribe({
+      next: (erg: UserDetailResponse) => {
+        const details = erg.data.user;
+        this.username = details.username;
+        this.sendInviteMode = false;
+        this.formModul.enable();
+
+        const normalizedRoles = this.normalizeRolesWithAdminRule(details.roles);
+        this.formModul.setValue({
+          id: details.id,
+          username: details.username,
+          email: details.email || '',
+          mitglied_id: details.mitglied_id ?? null,
+          roles: normalizedRoles,
+          password1: '',
+          password2: '',
+        });
+
+        const selectedMitglied = this.findMitgliedById(details.mitglied_id);
+        this.mitgliedSuche.setValue(selectedMitglied ? this.getMitgliedLabel(selectedMitglied) : '');
+        this.setRolesWithAdminRule(this.formModul.controls.roles.value);
+        this.updateCredentialValidators();
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       }
     });
   }
 
   neueDetails(): void {
-    this.formModul.enable();
+    this.resetEditor(false);
+  }
+
+  setInviteMode(enabled: boolean): void {
+    this.sendInviteMode = enabled;
+
+    if (enabled) {
+      this.formModul.controls.password1.setValue('');
+      this.formModul.controls.password2.setValue('');
+    }
+
+    this.updateCredentialValidators();
   }
 
   datenLoeschen(): void {
     const id = this.formModul.controls["id"].value!;
 
     this.apiHttpService.delete(this.modul, id).subscribe({
-      next: (erg: any) => {
-        try {
-          const data = this.benutzer;
-          const dataNew: any[] = [];
-          for (let i = 0; i < data.length; i++) {
-            if (data[i].id !== id) {
-              dataNew.push(data[i]);
-            }
-          }
-          this.username = "";
-          this.benutzer = dataNew;
-          this.dataSource.data = this.benutzer;
-          this.formModul.reset({ username: '', email: '', mitglied_id: null, roles: [], password1: '', password2: '' });
-          this.mitgliedSuche.setValue('');
-          this.formModul.disable();
-          this.uiMessageService.erstelleMessage('success', 'Benutzer erfolgreich gelöscht!');
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage('error', String(e));
-        }
+      next: () => {
+        this.setUsers(this.benutzer.filter((user) => user.id !== id));
+        this.resetEditor();
+        this.uiMessageService.erstelleMessage('success', 'Benutzer erfolgreich gelöscht!');
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       }
     });
@@ -307,93 +456,82 @@ export class UserComponent implements OnInit {
 
   abbrechen(): void {
     this.uiMessageService.erstelleMessage('info', 'Benutzer nicht gespeichert!');
-    this.username = "";
-    this.formModul.reset({ username: '', email: '', mitglied_id: null, roles: [], password1: '', password2: '' });
-    this.mitgliedSuche.setValue('');
-    this.formModul.disable();
+    this.resetEditor();
   }
 
   datenSpeichern(): void {
-    const rollen = this.normalizeRoleKeys(this.formModul.controls["roles"].value);
+    const rollen = this.normalizeRoleKeys(this.formModul.controls.roles.value);
+    const password1 = this.formModul.controls["password1"].value || '';
+    const password2 = this.formModul.controls["password2"].value || '';
+    const sendInvite = this.isCreateMode() && this.sendInviteMode;
 
     if (!rollen.includes(this.adminRoleKey) && !rollen.includes(this.mitgliedRoleKey)) {
       rollen.push(this.mitgliedRoleKey);
     }
 
-    this.formModul.controls["roles"].setValue([...rollen]);
+    this.formModul.controls.roles.setValue([...rollen]);
 
-    const idValue = this.formModul.controls["id"].value;
-    const payloadCreate = {
-      id: this.formModul.controls["id"].value || '',
-      username: this.formModul.controls["username"].value || '',
-      email: this.formModul.controls["email"].value || '',
-      mitglied_id: this.formModul.controls["mitglied_id"].value || null,
+    const idValue = this.formModul.controls.id.value;
+    const payloadCreate: UserCreatePayload = {
+      id: this.formModul.controls.id.value || '',
+      username: this.formModul.controls.username.value || '',
+      email: this.formModul.controls.email.value || '',
+      mitglied_id: this.formModul.controls.mitglied_id.value || null,
       roles: rollen,
-      password1: this.formModul.controls["password1"].value || '',
-      password2: this.formModul.controls["password2"].value || ''
+      password1,
+      password2,
+      send_invite: sendInvite,
     };
 
-    const payloadUpdate = {
-      id: this.formModul.controls["id"].value || '',
-      username: this.formModul.controls["username"].value || '',
-      email: this.formModul.controls["email"].value || '',
-      mitglied_id: this.formModul.controls["mitglied_id"].value || null,
+    const payloadUpdate: UserUpdatePayload = {
+      id: this.formModul.controls.id.value || '',
+      username: this.formModul.controls.username.value || '',
+      email: this.formModul.controls.email.value || '',
+      mitglied_id: this.formModul.controls.mitglied_id.value || null,
       roles: rollen,
     };
 
     if (idValue === '' || idValue === null) {
-      if (this.formModul.controls["password1"].value == "" || this.formModul.controls["password1"].value == "") {
-        this.uiMessageService.erstelleMessage('error', 'Passwort 1 & 2 müssen ausgefüllt sein!');
-        return
-      }else if (this.formModul.controls["password1"].value !== "" && this.formModul.controls["password2"].value !== "" && this.formModul.controls["password1"].value !== this.formModul.controls["password2"].value) {
-        this.uiMessageService.erstelleMessage('error', 'Die Passwörter müssen übereinstimmen!');
-        return
+      if (!this.validateCreateCredentials(password1, password2, sendInvite)) {
+        return;
       }
-      this.apiHttpService.post("users/create", payloadCreate, false).subscribe({
-        next: (erg: any) => {
-          try {
-            this.username = "";
-            this.benutzer.push(erg.user);
-            this.benutzer = this.collectionUtilsService.arraySortByKey(this.benutzer, 'username');
-            this.dataSource.data = this.benutzer;
-            this.formModul.reset({ username: '', email: '', mitglied_id: null, roles: [], password1: '', password2: '' });
-            this.mitgliedSuche.setValue('');
-            this.formModul.disable();
+
+      this.apiHttpService.post<UserCreateResponse>('users/create', payloadCreate, false).subscribe({
+        next: (erg: UserCreateResponse) => {
+          const createdUser = erg.user;
+
+          if (createdUser) {
+            this.setUsers([...this.benutzer, createdUser]);
+          } else {
+            this.dataSource.data = [...this.benutzer];
+          }
+
+          this.resetEditor();
+
+          if (sendInvite && erg.invite_sent) {
+            this.uiMessageService.erstelleMessage('success', 'Benutzer gespeichert und Einladungs-E-Mail versendet.');
+          } else if (sendInvite) {
+            this.uiMessageService.erstelleMessage('info', 'Benutzer gespeichert, aber die Einladungs-E-Mail konnte nicht versendet werden.');
+          } else {
             this.uiMessageService.erstelleMessage('success', 'Benutzer erfolgreich gespeichert!');
-          } catch (e: any) {
-            this.uiMessageService.erstelleMessage('error', String(e));
           }
         },
-        error: (error: any) => {
+        error: (error: unknown) => {
           this.authSessionService.errorAnzeigen(error);
         }
       });
     } else {
-      this.apiHttpService.patch(this.modul, idValue, payloadUpdate, false).subscribe({
-        next: (erg: any) => {
-          try {
-            const data = this.benutzer;
-            const dataNew: any[] = [];
-            for (let i = 0; i < data.length; i++) {
-              if (data[i].id == erg.data.id) {
-                dataNew.push(erg.data);
-              } else {
-                dataNew.push(data[i]);
-              }
-            }
-            this.username = "";
-            this.benutzer = dataNew;
-            this.benutzer = this.collectionUtilsService.arraySortByKey(this.benutzer, 'username');
-            this.dataSource.data = this.benutzer;
-            this.formModul.reset({ username: '', email: '', mitglied_id: null, roles: [], password1: '', password2: '' });
-            this.mitgliedSuche.setValue('');
-            this.formModul.disable();
-            this.uiMessageService.erstelleMessage('success', 'Benutzer erfolgreich geändert!');
-          } catch (e: any) {
-            this.uiMessageService.erstelleMessage('error', String(e));
-          }
+      this.apiHttpService.patch<UserUpdateResponse>(this.modul, idValue, payloadUpdate, false).subscribe({
+        next: (erg: UserUpdateResponse) => {
+          const updatedUsers = this.benutzer.map((user) =>
+            user.id === erg.data.id ? erg.data : user
+          );
+
+          this.setUsers(updatedUsers);
+          this.resetEditor();
+          this.uiMessageService.erstelleMessage('success', 'Benutzer erfolgreich geändert!');
         },
-        error: (error: any) => {
+        error: (error: unknown) => {
           this.authSessionService.errorAnzeigen(error);
         }
       });
@@ -402,35 +540,40 @@ export class UserComponent implements OnInit {
 
   applyFilter(value: string): void {
     this.dataSource.filter = this.normalizeFilterValue(value);
-    this.matPaginator?.firstPage();
+    this.paginator?.firstPage();
   }
 
   passwortAendern(): void {
-    if (this.formModul.controls["password1"].value !== "" && this.formModul.controls["password2"].value !== "" && this.formModul.controls["password1"].value !== this.formModul.controls["password2"].value) {
+    const password1 = this.formModul.controls.password1.value || '';
+    const password2 = this.formModul.controls.password2.value || '';
+
+    if (password1 === '' || password2 === '') {
+      this.uiMessageService.erstelleMessage('error', 'Bitte beide Passwortfelder ausfüllen.');
+      return;
+    }
+
+    if (password1 !== password2) {
       this.uiMessageService.erstelleMessage('error', 'Die Passwörter müssen übereinstimmen!');
-      return
+      return;
     }
+
     const dict = {
-      "password": this.formModul.controls["password1"].value
-    }
+      password: password1,
+    };
     const idValue = this.formModul.controls["id"].value!;
-    this.apiHttpService.patch("users/change_password", idValue, dict, false).subscribe({
-      next: (erg: any) => {
-        try {
-          this.formModul.controls["password1"].setValue("");
-          this.formModul.controls["password2"].setValue("");
-          this.uiMessageService.erstelleMessage('success', 'User Passwort erfolgreich geändert!');
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage('error', String(e));
-        }
+    this.apiHttpService.patch('users/change_password', idValue, dict, false).subscribe({
+      next: () => {
+        this.formModul.controls.password1.setValue('');
+        this.formModul.controls.password2.setValue('');
+        this.uiMessageService.erstelleMessage('success', 'User Passwort erfolgreich geändert!');
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       }
     });
   }
 
-  rolleToggle(key: string, event: any): void {
+  rolleToggle(key: string, event: MatCheckboxChange): void {
     const roleKey = String(key ?? '').trim();
     const current = this.normalizeRoleKeys(this.formModul.controls['roles'].value);
 
@@ -475,7 +618,7 @@ export class UserComponent implements OnInit {
     return key !== this.adminRoleKey && this.isAdminInMatrix(userId);
   }
 
-  rollenMatrixToggle(userId: string, roleKey: string, event: any): void {
+  rollenMatrixToggle(userId: string, roleKey: string, event: MatCheckboxChange): void {
     const current = [...(this.rollenMatrix[userId] || [])];
     if (roleKey === this.adminRoleKey) {
       this.rollenMatrix[userId] = event.checked ? [this.adminRoleKey] : [];
@@ -499,36 +642,42 @@ export class UserComponent implements OnInit {
 
     const requests = dirtyIds.map((userId) => {
       const user = this.benutzer.find((u) => u.id === userId);
-      if (!user) return null;
+      if (!user) {
+        return null;
+      }
+
       const roles = [...(this.rollenMatrix[userId] || [])];
       if (!roles.includes(this.adminRoleKey) && !roles.includes(this.mitgliedRoleKey)) {
         roles.push(this.mitgliedRoleKey);
       }
-      const payload = {
+
+      const payload: UserUpdatePayload = {
         id: userId,
         username: user.username,
+        email: user.email || '',
+        mitglied_id: user.mitglied_id ?? null,
         roles,
       };
-      return this.apiHttpService.patch(this.modul, userId, payload, false);
-    }).filter(Boolean);
 
-    forkJoin(requests as any[]).subscribe({
-      next: (results: any[]) => {
-        try {
-          results.forEach((erg: any) => {
-            const idx = this.benutzer.findIndex((u) => u.id === erg.data.id);
-            if (idx >= 0) {
-              this.benutzer[idx] = erg.data;
-            }
-          });
-          this.dataSource.data = [...this.benutzer];
-          this.rollenMatrixDirty.clear();
-          this.uiMessageService.erstelleMessage('success', 'Rollen erfolgreich gespeichert!');
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage('error', String(e));
-        }
+      return this.apiHttpService.patch(this.modul, userId, payload, false);
+    }).filter((request): request is Observable<UserUpdateResponse> => request !== null);
+
+    forkJoin(requests).subscribe({
+      next: (results: UserUpdateResponse[]) => {
+        const updatedUsers = [...this.benutzer];
+
+        results.forEach((erg) => {
+          const idx = updatedUsers.findIndex((user) => user.id === erg.data.id);
+          if (idx >= 0) {
+            updatedUsers[idx] = erg.data;
+          }
+        });
+
+        this.setUsers(updatedUsers);
+        this.rollenMatrixDirty.clear();
+        this.uiMessageService.erstelleMessage('success', 'Rollen erfolgreich gespeichert!');
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       }
     });

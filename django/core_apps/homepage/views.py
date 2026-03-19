@@ -1,4 +1,5 @@
 from collections import OrderedDict
+import logging
 from typing import Any, cast
 
 from django.db import transaction
@@ -17,6 +18,7 @@ from .models import HomepageDienstposten
 from .serializers import HomepageDienstpostenSerializer, dienstgrad_to_image_filename
 
 DEFAULT_PHOTO_FILENAME = "X.png"
+logger = logging.getLogger(__name__)
 
 
 def _resolve_photo_value(row: HomepageDienstposten) -> str:
@@ -25,7 +27,7 @@ def _resolve_photo_value(row: HomepageDienstposten) -> str:
         try:
             return photo_field.url
         except Exception:
-            pass
+            logger.exception("Homepage photo URL konnte nicht aufgelöst werden.")
     return DEFAULT_PHOTO_FILENAME
 
 
@@ -39,7 +41,7 @@ def _delete_row_photo_file(row: HomepageDienstposten) -> None:
     try:
         storage.delete(name)
     except Exception:
-        pass
+        logger.exception("Homepage photo '%s' konnte nicht gelöscht werden.", name)
 
 
 def _build_public_member_payload(row: HomepageDienstposten) -> dict[str, str]:

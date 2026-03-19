@@ -3,6 +3,7 @@ import path from 'node:path';
 
 const root = path.resolve(process.cwd());
 const appRoot = path.join(root, 'src', 'app');
+const libraryRoot = path.join(appRoot, 'imr-ui-library');
 const catalogPath = path.join(appRoot, 'imr-ui-library', 'imr-element-catalog.json');
 
 const catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
@@ -15,6 +16,9 @@ const walk = (dir) => {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) {
+      if (full === libraryRoot) {
+        continue;
+      }
       walk(full);
       continue;
     }
@@ -92,7 +96,7 @@ for (const file of htmlFiles) {
         });
       }
 
-      const hasIcon = /<mat-icon\b[^>]*>[\s\S]*?<\/mat-icon>/i.test(buttonBlock);
+      const hasIcon = /<(mat-icon|imr-icon)\b[^>]*>[\s\S]*?<\/(mat-icon|imr-icon)>/i.test(buttonBlock);
       if (!hasIcon) {
         actionIconViolations.push({
           file: path.relative(root, file),
@@ -102,8 +106,8 @@ for (const file of htmlFiles) {
       }
 
       if (allowedActionIcons.size) {
-        const iconMatch = buttonBlock.match(/<mat-icon\b[^>]*>([\s\S]*?)<\/mat-icon>/i);
-        const iconName = iconMatch ? iconMatch[1].replace(/\s+/g, ' ').trim() : '';
+        const iconMatch = buttonBlock.match(/<(mat-icon|imr-icon)\b[^>]*>([\s\S]*?)<\/(mat-icon|imr-icon)>/i);
+        const iconName = iconMatch ? iconMatch[2].replace(/\s+/g, ' ').trim() : '';
 
         if (!allowedActionIcons.has(iconName)) {
           actionIconAllowlistViolations.push({
@@ -181,7 +185,7 @@ if (
     }
   }
   if (actionIconViolations.length) {
-    console.error('\nActions-Buttons ohne mat-icon:');
+    console.error('\nActions-Buttons ohne Icon-Komponente (mat-icon oder imr-icon):');
     for (const violation of actionIconViolations) {
       console.error(` - ${violation.file}: ${violation.snippet}`);
     }

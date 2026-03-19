@@ -62,8 +62,12 @@ class Command(BaseCommand):
                 if config:
                     recipient = config.fw_email.strip()
                     fw_name = config.fw_name.strip()
-            except Exception:
-                pass
+            except Exception as exc:
+                self.stdout.write(
+                    self.style.WARNING(
+                        f"Konfiguration konnte nicht gelesen werden: {exc}"
+                    )
+                )
 
         if not recipient:
             self.stdout.write(

@@ -1,4 +1,5 @@
 import re
+import logging
 
 from rest_framework import serializers
 
@@ -21,6 +22,8 @@ DIENSTGRAD_IMAGE_MAP = {
     "sb": "Dgrd_sbea.noe.svg",
     "sbea": "Dgrd_sbea.noe.svg",
 }
+
+logger = logging.getLogger(__name__)
 
 
 def dienstgrad_to_image_filename(dienstgrad: str | None) -> str:
@@ -89,6 +92,7 @@ class HomepageDienstpostenSerializer(serializers.ModelSerializer):
         try:
             return f.url if f and getattr(f, "name", "") else None
         except Exception:
+            logger.exception("Homepage photo URL konnte nicht ermittelt werden.")
             return None
 
     def get_photo_preview(self, obj: HomepageDienstposten) -> str:
@@ -121,7 +125,7 @@ class HomepageDienstpostenSerializer(serializers.ModelSerializer):
                 try:
                     old_photo_storage.delete(old_photo_name)
                 except Exception:
-                    pass
+                    logger.exception("Altes Homepage-Foto '%s' konnte nicht gelöscht werden.", old_photo_name)
 
             return instance
 
@@ -131,7 +135,7 @@ class HomepageDienstpostenSerializer(serializers.ModelSerializer):
             try:
                 storage.delete(name)
             except Exception:
-                pass
+                logger.exception("Homepage-Foto '%s' konnte nicht gelöscht werden.", name)
             instance.photo = None
             instance.save(update_fields=["photo", "updated_at"])
 

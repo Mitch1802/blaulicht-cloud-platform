@@ -1,0 +1,1 @@
+export * from './imr-card-content/imr-card-content.component'

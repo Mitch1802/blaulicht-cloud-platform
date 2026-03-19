@@ -1,5 +1,7 @@
 from datetime import timedelta
 from pathlib import Path
+import re
+import sys
 
 import environ, os
 env = environ.Env()
@@ -10,6 +12,7 @@ ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 APP_DIR = ROOT_DIR / "core_apps"
 
 DEBUG = env.bool("DJANGO_DEBUG", False)
+TESTING = "test" in sys.argv
 # Application definition
 
 DJANGO_APPS = [
@@ -129,15 +132,16 @@ USE_I18N = True
 
 USE_TZ = True
 
-API_URL = env("DJANGO_API_URL")
-API_URL_PREFIX = f"/{str(API_URL).strip('/')}/"
+API_URL = str(env("DJANGO_API_URL")).strip("/")
+API_URL_PATH = f"{API_URL}/"
+API_URL_PREFIX = f"/{API_URL_PATH}"
 JWT_REFRESH_COOKIE_PATH = f"{API_URL_PREFIX}auth/token/refresh/"
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-MEDIA_URL = "/" + API_URL + "files/"
+MEDIA_URL = f"/{API_URL_PATH}files/"
 MEDIA_ROOT = os.path.join(ROOT_DIR, "mediafiles")
 
 DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
@@ -147,7 +151,7 @@ DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-CORS_URLS_REGEX = r"^api/.*$"
+CORS_URLS_REGEX = rf"^{re.escape(API_URL_PREFIX)}.*$"
 
 AUTH_USER_MODEL = "users.User"
 ACCOUNT_ADAPTER = "core_apps.users.adapter.UserAdapter"
@@ -227,6 +231,8 @@ PUBLIC_FAHRZEUG_PIN = env("PUBLIC_FAHRZEUG_PIN")
 PUBLIC_PIN_ENABLED = bool(PUBLIC_FAHRZEUG_PIN)
 
 BLAULICHTSMS_API_URL = env.str("BLAULICHTSMS_API_URL", default="")
+FRONTEND_URL = env.str("FRONTEND_URL", default="")
+USER_INVITE_TOKEN_TTL_HOURS = env.int("USER_INVITE_TOKEN_TTL_HOURS", default=48)
 
 # Email configuration
 # Use "django.core.mail.backends.smtp.EmailBackend" in production

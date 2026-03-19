@@ -1,7 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BreakpointObserver } from '@angular/cdk/layout';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 import { of } from 'rxjs';
 
+import { IBenutzer } from 'src/app/_interface/benutzer';
 import { ApiHttpService } from 'src/app/_service/api-http.service';
 import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
@@ -19,7 +21,12 @@ const MOCK_ROLLEN = [
 const MOCK_BENUTZER = [
   { id: '1', username: 'user1', name: 'User One', is_active: true, password: '', roles: ['PROTOKOLL'] },
   { id: '2', username: 'admin', name: 'Admin User', is_active: true, password: '', roles: ['ADMIN'] },
-];
+] satisfies IBenutzer[];
+
+type UserCreateResponse = {
+  user?: IBenutzer;
+  invite_sent?: boolean;
+};
 
 describe('UserComponent', () => {
   let component: UserComponent;
@@ -40,14 +47,17 @@ describe('UserComponent', () => {
     breakpointObserverSpy = jasmine.createSpyObj<BreakpointObserver>('BreakpointObserver', ['observe']);
 
     navigationServiceSpy.ladeBreadcrumb.and.returnValue([]);
-    collectionUtilsServiceSpy.arraySortByKey.and.callFake((array: any[]) => array);
-    breakpointObserverSpy.observe.and.returnValue(of({ matches: false, breakpoints: {} } as any));
-    apiHttpServiceSpy.get.and.callFake(((url: string) => {
+    collectionUtilsServiceSpy.arraySortByKey.and.callFake((array: IBenutzer[]) => array);
+    breakpointObserverSpy.observe.and.returnValue(of({ matches: false, breakpoints: {} as Record<string, boolean> }));
+    apiHttpServiceSpy.get.and.callFake(<T>(url: string) => {
       if (url === 'users/context') {
-        return of({ data: { rollen: [] } });
+        return of({ data: { rollen: [], mitglieder: [] } } as T);
       }
-      return of({ data: [] });
-    }) as any);
+      return of({ data: [] } as T);
+    });
+    apiHttpServiceSpy.post.and.returnValue(of({}));
+    apiHttpServiceSpy.patch.and.returnValue(of({ data: MOCK_BENUTZER[0] }));
+    apiHttpServiceSpy.delete.and.returnValue(of({}));
 
     await TestBed.configureTestingModule({
       imports: [UserComponent],
@@ -77,7 +87,7 @@ describe('UserComponent', () => {
       component['rollen'] = MOCK_ROLLEN;
       component['rollenOhne'] = MOCK_ROLLEN.filter((r) => r.key !== 'MITGLIED');
       component['rollenUebersichtSpalten'] = ['benutzer', 'ADMIN', 'PROTOKOLL'];
-      component['benutzer'] = MOCK_BENUTZER as any;
+      component['benutzer'] = [...MOCK_BENUTZER];
       component.initRollenMatrix();
     });
 
@@ -103,13 +113,13 @@ describe('UserComponent', () => {
     });
 
     it('rollenMatrixToggle adds role to user', () => {
-      component.rollenMatrixToggle('1', 'PROTOKOLL', { checked: false });
+      component.rollenMatrixToggle('1', 'PROTOKOLL', { checked: false } as MatCheckboxChange);
       expect(component.hasRoleInMatrix('1', 'PROTOKOLL')).toBeFalse();
       expect(component['rollenMatrixDirty'].has('1')).toBeTrue();
     });
 
     it('rollenMatrixToggle selecting ADMIN clears other roles', () => {
-      component.rollenMatrixToggle('1', 'ADMIN', { checked: true });
+      component.rollenMatrixToggle('1', 'ADMIN', { checked: true } as MatCheckboxChange);
       expect(component['rollenMatrix']['1']).toEqual(['ADMIN']);
       expect(component['rollenMatrixDirty'].has('1')).toBeTrue();
     });
@@ -118,6 +128,50 @@ describe('UserComponent', () => {
       component['rollenMatrixDirty'].clear();
       component.rollenMatrixSpeichern();
       expect(uiMessageServiceSpy.erstelleMessage).toHaveBeenCalledWith('info', jasmine.any(String));
+    });
+  });
+
+  describe('Einladungsmodus', () => {
+    it('aktiviert beim Anlegen standardmäßig den Einladungsmodus', () => {
+      component.neueDetails();
+
+      expect(component.sendInviteMode).toBeTrue();
+      expect(component.formModul.controls.email.hasError('required')).toBeTrue();
+    });
+
+    it('sendet beim Speichern im Einladungsmodus das explizite Flag', () => {
+      const createdUser = MOCK_BENUTZER[0];
+      apiHttpServiceSpy.post.and.returnValue(of({ user: createdUser, invite_sent: true } satisfies UserCreateResponse));
+
+      component.neueDetails();
+      component.formModul.controls.username.setValue('neu');
+      component.formModul.controls.email.setValue('neu@example.com');
+      component.formModul.controls.roles.setValue(['PROTOKOLL']);
+
+      component.datenSpeichern();
+
+      expect(apiHttpServiceSpy.post).toHaveBeenCalledWith(
+        'users/create',
+        jasmine.objectContaining({
+          send_invite: true,
+          password1: '',
+          password2: '',
+        }),
+        false,
+      );
+      expect(uiMessageServiceSpy.erstelleMessage).toHaveBeenCalledWith('success', jasmine.stringMatching(/Einladungs-E-Mail/));
+    });
+
+    it('fordert im Passwortmodus ein Initialpasswort an', () => {
+      component.neueDetails();
+      component.setInviteMode(false);
+      component.formModul.controls.username.setValue('neu');
+      component.formModul.controls.roles.setValue(['PROTOKOLL']);
+
+      component.datenSpeichern();
+
+      expect(apiHttpServiceSpy.post).not.toHaveBeenCalled();
+      expect(uiMessageServiceSpy.erstelleMessage).toHaveBeenCalledWith('error', jasmine.stringMatching(/Initialpasswort/));
     });
   });
 });

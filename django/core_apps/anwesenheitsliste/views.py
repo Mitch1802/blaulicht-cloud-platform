@@ -1,3 +1,5 @@
+import logging
+
 from rest_framework import permissions
 from rest_framework import status
 from rest_framework.decorators import action
@@ -12,6 +14,9 @@ from core_apps.mitglieder.serializers import MitgliedSerializer
 
 from .models import Anwesenheitsliste
 from .serializers import AnwesenheitslisteSerializer
+
+
+logger = logging.getLogger(__name__)
 
 
 class AnwesenheitslisteViewSet(ModelViewSet):
@@ -39,7 +44,7 @@ class AnwesenheitslisteViewSet(ModelViewSet):
             try:
                 storage.delete(name)
             except Exception:
-                pass
+                logger.exception("Anwesenheitsliste-Foto '%s' konnte nicht gelöscht werden.", name)
 
         return response
 
@@ -60,7 +65,7 @@ class AnwesenheitslisteViewSet(ModelViewSet):
             try:
                 storage.delete(name)
             except Exception:
-                pass
+                logger.exception("Einzelfoto '%s' konnte nicht gelöscht werden.", name)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 

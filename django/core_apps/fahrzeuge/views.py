@@ -1,3 +1,5 @@
+import logging
+
 from django.conf import settings
 from django.core import signing
 from django.shortcuts import get_object_or_404
@@ -25,6 +27,9 @@ from .serializers import (
 )
 
 
+logger = logging.getLogger(__name__)
+
+
 def _is_default(name: str) -> bool:
     return not name
 
@@ -34,7 +39,7 @@ def _safe_delete(storage, name: str):
         storage.delete(name)
     except Exception:
         # Cleanup darf keinen Request abbrechen.
-        pass
+        logger.exception("Datei '%s' konnte beim Cleanup nicht gelöscht werden.", name)
 
 
 # ==========================================================

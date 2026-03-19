@@ -1,0 +1,22 @@
+﻿<div hidden>
+  <ng-content select="imr-expansion-panel-header"></ng-content>
+</div>
+
+<mat-expansion-panel [class]="panelClass">
+  @if (panelHeader) {
+    <mat-expansion-panel-header
+      [class]="panelHeader.headerClass"
+      [collapsedHeight]="panelHeader.collapsedHeight"
+      [expandedHeight]="panelHeader.expandedHeight"
+    >
+      <ng-container [ngTemplateOutlet]="panelHeader.contentTemplate"></ng-container>
+    </mat-expansion-panel-header>
+  } @else if (hasHeader) {
+    <mat-expansion-panel-header>
+      <mat-panel-title><ng-content select="imr-panel-title"></ng-content></mat-panel-title>
+      <mat-panel-description><ng-content select="imr-panel-description"></ng-content></mat-panel-description>
+    </mat-expansion-panel-header>
+  }
+  <ng-content></ng-content>
+</mat-expansion-panel>
+

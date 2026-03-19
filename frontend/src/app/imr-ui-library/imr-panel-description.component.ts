@@ -1,14 +1,3 @@
-import { Component } from '@angular/core'
+export * from './imr-panel-description/imr-panel-description.component';
 
-/**
- * imr-panel-description
- *
- * Slot component for imr-expansion-panel header description.
- * Usage: <imr-expansion-panel><imr-panel-description>Desc</imr-panel-description>...</imr-expansion-panel>
- */
-@Component({
-  selector: 'imr-panel-description',
-  template: `<ng-content></ng-content>`,
-  standalone: true,
-})
-export class ImrPanelDescriptionComponent {}
+
