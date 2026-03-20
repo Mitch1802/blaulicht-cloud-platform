@@ -24,11 +24,13 @@ export * from './imr-chips.component';
 export * from './imr-form-grid.component';
 
 // Material Wrapper Components (IMR)
+export * from './imr-button.component';
 export * from './imr-card.component';
 export * from './imr-card-content/imr-card-content.component';
 export * from './imr-card-header.component';
 export * from './imr-card-title.component';
 export * from './imr-form-field.component';
+export * from './imr-input.component';
 export * from './imr-label.component';
 export * from './imr-error.component';
 export * from './imr-icon.component';
@@ -67,6 +69,8 @@ import { ImrChipsComponent } from './imr-chips.component';
 import { ImrFormGridComponent } from './imr-form-grid.component';
 
 // Material Wrapper Components
+import { ImrButtonComponent } from './imr-button.component';
+import { ImrInputComponent } from './imr-input.component';
 import { ImrCardComponent } from './imr-card.component';
 import { ImrCardContentComponent } from './imr-card-content/imr-card-content.component';
 import { ImrCardHeaderComponent } from './imr-card-header.component';
@@ -102,6 +106,8 @@ import { ImrStepComponent } from './imr-step/imr-step.component';
 
 /** Alle IMR UI-Komponenten als Array für einfachen Import in standalone-Komponenten */
 export const IMR_UI_COMPONENTS = [
+  ImrButtonComponent,
+  ImrInputComponent,
   ImrPageLayoutComponent,
   ImrSectionCardComponent,
   ImrHeaderComponent,

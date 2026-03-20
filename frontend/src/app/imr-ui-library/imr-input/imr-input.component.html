@@ -1,0 +1,25 @@
+<mat-form-field
+  [class]="fieldClass"
+  [appearance]="appearance"
+  [hintLabel]="hintLabel"
+  [subscriptSizing]="subscriptSizing"
+>
+  @if (label) {
+    <mat-label>{{ label }}</mat-label>
+  }
+  <input
+    matInput
+    [type]="type"
+    [value]="value"
+    [placeholder]="placeholder"
+    [required]="required"
+    [disabled]="disabled"
+    [readonly]="readonly"
+    [autocomplete]="autocomplete"
+    [errorStateMatcher]="errorStateMatcher"
+    (input)="handleInput($event)"
+    (blur)="handleBlur()"
+  />
+  <ng-content></ng-content>
+</mat-form-field>
+

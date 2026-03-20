@@ -1,16 +1,31 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {
+  AbstractControl,
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
 import { ApiHttpService } from 'src/app/_service/api-http.service';
 import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
-import { MatButton } from '@angular/material/button';
-import { MatInput } from '@angular/material/input';
-import { ImrHeaderComponent, ImrCardComponent, ImrFormFieldComponent, ImrLabelComponent, ImrErrorComponent } from '../imr-ui-library';
+import { MatError } from '@angular/material/input';
+import { ImrHeaderComponent, ImrCardComponent, ImrInputComponent, ImrButtonComponent } from '../imr-ui-library';
 
 @Component({
   selector: 'app-eigene-daten',
-  imports: [ImrHeaderComponent, ImrCardComponent, ImrFormFieldComponent, ImrLabelComponent, ImrErrorComponent, FormsModule, ReactiveFormsModule, MatButton, MatInput],
+  imports: [
+    ImrHeaderComponent, 
+    ImrCardComponent, 
+    FormsModule, 
+    ReactiveFormsModule, 
+    MatError,
+    ImrInputComponent,
+    ImrButtonComponent
+  ],
   templateUrl: './eigene-daten.component.html',
   styleUrl: './eigene-daten.component.sass'
 })
@@ -24,12 +39,31 @@ export class EigeneDatenComponent implements OnInit {
 
   breadcrumb: any = [];
 
+  private readonly passwordConsistencyValidator = (group: AbstractControl): ValidationErrors | null => {
+    const password1 = (group.get('password1')?.value ?? '').toString();
+    const password2 = (group.get('password2')?.value ?? '').toString();
+
+    if (!password1 && !password2) {
+      return null;
+    }
+
+    if (!password1 || !password2) {
+      return { passwordIncomplete: true };
+    }
+
+    if (password1 !== password2) {
+      return { passwordMismatch: true };
+    }
+
+    return null;
+  };
+
   formModul = new FormGroup({
     id: new FormControl(''),
     email: new FormControl('', Validators.email),
     password1: new FormControl('', Validators.minLength(8)),
     password2: new FormControl('', Validators.minLength(8))
-  });
+  }, { validators: this.passwordConsistencyValidator });
 
   ngOnInit(): void {
     sessionStorage.setItem("PageNumber", "2");
@@ -80,12 +114,28 @@ export class EigeneDatenComponent implements OnInit {
   }
 
   passwortAendern(): void {
-    if (this.formModul.controls["password1"].value !== "" && this.formModul.controls["password2"].value !== "" && this.formModul.controls["password1"].value !== this.formModul.controls["password2"].value) {
-      this.uiMessageService.erstelleMessage("error", "Die Passwörter müssen übereinstimmen!");
-      return
+    this.formModul.controls["password1"].markAsTouched();
+    this.formModul.controls["password2"].markAsTouched();
+    this.formModul.updateValueAndValidity();
+
+    const password = (this.formModul.controls["password1"].value ?? "").toString();
+
+    if (!password) {
+      this.uiMessageService.erstelleMessage("error", "Bitte ein neues Passwort eingeben!");
+      return;
     }
+
+    if (
+      this.formModul.controls["password1"].invalid ||
+      this.formModul.controls["password2"].invalid ||
+      this.formModul.hasError('passwordIncomplete') ||
+      this.formModul.hasError('passwordMismatch')
+    ) {
+      return;
+    }
+
     const dict = {
-      "password": this.formModul.controls["password1"].value
+      "password": password
     }
     const idValue = this.formModul.controls["id"].value!;
     this.apiHttpService.patch("users/change_password", idValue, dict, false).subscribe({

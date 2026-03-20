@@ -10,26 +10,20 @@
 
       <section class="app-grid mt-2">
         <div class="app-col-12 app-col-lg-8 mb-3">
-          <imr-form-field>
-            <imr-label>E-Mail-Adresse</imr-label>
-            <input matInput type="email" formControlName="email" />
-            @if (formModul.controls['email'].hasError('email')) {
-              <imr-error>Bitte eine gültige E-Mail-Adresse eingeben!</imr-error>
+          <imr-input type="email" label="E-Mail-Adresse" formControlName="email">
+            @if (formModul.controls['email'].hasError('email') && formModul.controls['email'].touched) {
+              <mat-error>Bitte eine gültige E-Mail-Adresse eingeben!</mat-error>
             }
-          </imr-form-field>
+          </imr-input>
         </div>
 
         <div class="app-col-12 app-col-lg-4 mb-3">
-          <button
-            mat-flat-button
-            color="accent"
-            [disabled]="!formModul.valid"
-            type="button"
+          <imr-button
+            [disabled]="formModul.disabled || formModul.controls['email'].invalid"
             (click)="emailSpeichern()"
-            class="imr-full-width"
           >
             E-Mail speichern
-          </button>
+          </imr-button>
         </div>
       </section>
 
@@ -37,39 +31,47 @@
 
       <section class="app-grid mt-3">
         <div class="app-col-12 app-col-lg-4 mb-3">
-          <imr-form-field>
-            <imr-label>Passwort</imr-label>
-            <input matInput type="password" formControlName="password1" />
-            @if (formModul.controls['password1'].hasError('minlength')) {
-            <imr-error>
-              Das Passwort muss mindestens 8 Zeichen lang sein!
-            </imr-error>
+          <imr-input type="password" label="Passwort" formControlName="password1">
+            @if (formModul.controls['password1'].hasError('minlength') && formModul.controls['password1'].touched) {
+              <mat-error>Das Passwort muss mindestens 8 Zeichen lang sein!</mat-error>
             }
-          </imr-form-field>
+          </imr-input>
         </div>
         <div class="app-col-12 app-col-lg-4 mb-3">
-          <imr-form-field>
-            <imr-label>Passwort wiederholen</imr-label>
-            <input matInput type="password" formControlName="password2" />
-            @if (formModul.controls['password2'].hasError('minlength')) {
-            <imr-error>
-              Das Passwort muss mindestens 8 Zeichen lang sein!
-            </imr-error>
+          <imr-input type="password" label="Passwort" formControlName="password1">
+            @if (formModul.controls['password2'].hasError('minlength') && formModul.controls['password2'].touched) {
+              <mat-error>Das Passwort muss mindestens 8 Zeichen lang sein!</mat-error>
+            } @else if (
+              formModul.hasError('passwordIncomplete')
+              && (formModul.controls['password1'].touched || formModul.controls['password2'].touched)
+            ) {
+              <mat-error>Bitte beide Passwortfelder ausfüllen.</mat-error>
+            } @else if (
+              formModul.hasError('passwordMismatch')
+              && (formModul.controls['password1'].touched || formModul.controls['password2'].touched)
+              && !formModul.controls['password1'].hasError('minlength')
+            ) {
+              <mat-error>Die Passwörter müssen übereinstimmen!</mat-error>
             }
-          </imr-form-field>
+          </imr-input>
+
         </div>
 
         <div class="app-col-12 app-col-lg-4 mb-3">
-          <button
-            mat-flat-button
-            color="accent"
-            [disabled]="!formModul.valid"
-            type="button"
+          <imr-button
+            [disabled]="
+              formModul.disabled
+              || !formModul.controls['password1'].value
+              || formModul.controls['password1'].invalid
+              || formModul.controls['password2'].invalid
+              || formModul.hasError('passwordIncomplete')
+              || formModul.hasError('passwordMismatch')
+            "
             (click)="passwortAendern()"
-            class="imr-full-width"
           >
             Passwort ändern
-          </button>
+          </imr-button>
+
         </div>
       </section>
     </form>
