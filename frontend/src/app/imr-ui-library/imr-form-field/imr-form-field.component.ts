@@ -1,6 +1,6 @@
 import { Component, ContentChild, Input, OnInit, ViewChild } from '@angular/core'
 import { MatFormField, MatFormFieldControl, MatFormFieldModule } from '@angular/material/form-field'
-
+import { ImrLabelComponent } from '../imr-label/imr-label.component'
 /**
  * imr-form-field
  *
@@ -28,6 +28,14 @@ export class ImrFormFieldComponent implements OnInit {
   @ViewChild(MatFormField, { static: true }) private readonly _matFormField!: MatFormField
   @ContentChild(MatFormFieldControl, { static: true, descendants: true })
   private readonly _fieldControl?: MatFormFieldControl<unknown>
+
+  /** True when the consumer has provided an imr-label child element. */
+  @ContentChild(ImrLabelComponent, { static: true })
+  protected readonly _labelChild?: ImrLabelComponent
+
+  get hasLabel(): boolean {
+    return !!this._labelChild
+  }
 
   ngOnInit(): void {
     if (this._fieldControl) {

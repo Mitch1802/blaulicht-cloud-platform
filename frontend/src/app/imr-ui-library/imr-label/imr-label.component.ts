@@ -1,10 +1,9 @@
 import { Component } from '@angular/core'
-import { MatFormFieldModule } from '@angular/material/form-field'
 
 /**
  * imr-label
  *
- * Wrapper around mat-label.
+ * Label for imr-form-field. Projected into a mat-label wrapper by the parent form field.
  * Usage: <imr-label>Field Label</imr-label>
  */
 @Component({
@@ -12,7 +11,7 @@ import { MatFormFieldModule } from '@angular/material/form-field'
   templateUrl: './imr-label.component.html',
   styleUrl: './imr-label.component.sass',
   standalone: true,
-  imports: [MatFormFieldModule],
+  imports: [],
 })
 export class ImrLabelComponent {}
 
