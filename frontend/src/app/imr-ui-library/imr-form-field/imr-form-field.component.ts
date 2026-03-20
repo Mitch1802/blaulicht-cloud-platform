@@ -21,9 +21,9 @@ import { MatFormField, MatFormFieldControl, MatFormFieldModule } from '@angular/
 })
 export class ImrFormFieldComponent implements OnInit {
   @Input() fieldClass = 'imr-full-width'
-  @Input() appearance: 'fill' | 'outline' = 'fill'
+  @Input() appearance: 'fill' | 'outline' = 'outline'
   @Input() hintLabel = ''
-  @Input() subscriptSizing: 'fixed' | 'dynamic' = 'fixed'
+  @Input() subscriptSizing: 'fixed' | 'dynamic' = 'dynamic'
 
   @ViewChild(MatFormField, { static: true }) private readonly _matFormField!: MatFormField
   @ContentChild(MatFormFieldControl, { static: true, descendants: true })
