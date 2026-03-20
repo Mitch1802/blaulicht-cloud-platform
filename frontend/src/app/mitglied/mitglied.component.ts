@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ViewChild, ElementRef } from '@angular/core';
+﻿import { Component, OnInit, inject, ViewChild, ElementRef } from '@angular/core';
 
 import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule, ValidatorFn, AbstractControl } from '@angular/forms';
 import { IMitglied } from 'src/app/_interface/mitglied';
@@ -9,7 +9,6 @@ import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { IMR_UI_COMPONENTS, ImrPaginatorComponent } from '../imr-ui-library';
 import { Router } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import * as Papa from 'papaparse';
@@ -43,7 +42,6 @@ type ImportSummary = {
     ...IMR_UI_COMPONENTS,
     FormsModule,
     ReactiveFormsModule,
-    MatButtonModule,
     MatInputModule,
     MatTableModule,
     MatSort,

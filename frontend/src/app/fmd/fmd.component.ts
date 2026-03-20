@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild, inject, QueryList, ViewChildren } from '@angular/core';
+﻿import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild, inject, QueryList, ViewChildren } from '@angular/core';
 import { IMitglied } from 'src/app/_interface/mitglied';
 import { ApiHttpService } from 'src/app/_service/api-http.service';
 import { AuthSessionService } from 'src/app/_service/auth-session.service';
@@ -9,7 +9,6 @@ import { IMR_UI_COMPONENTS, ImrPaginatorComponent } from '../imr-ui-library';
 import { Router } from '@angular/router';
 import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { MatInput } from '@angular/material/input';
-import { MatButton } from '@angular/material/button';
 import { IATSTraeger } from '../_interface/atstraeger';
 import { BaseChartDirective } from 'ng2-charts';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -28,7 +27,6 @@ Chart.register(ChartDataLabels);
     FormsModule,
     ReactiveFormsModule,
     ...IMR_UI_COMPONENTS,
-    MatButton,
     MatInput,
     MatTableModule,
     BaseChartDirective,

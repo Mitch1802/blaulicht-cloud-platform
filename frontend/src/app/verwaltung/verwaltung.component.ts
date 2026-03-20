@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+﻿import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ApiHttpService } from 'src/app/_service/api-http.service';
 import { AuthSessionService } from 'src/app/_service/auth-session.service';
@@ -7,16 +7,17 @@ import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { MatCardModule } from '@angular/material/card';
 import {
+  ImrButtonComponent,
   ImrCardContentComponent,
+  ImrFormFieldComponent,
   ImrHeaderComponent,
   ImrListComponent,
   ImrListItemComponent,
+  UiControlErrorsDirective,
 } from '../imr-ui-library';
 import { MatTabsModule } from '@angular/material/tabs';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IStammdaten } from '../_interface/stammdaten';
-import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
@@ -32,20 +33,21 @@ type RechnungPosition = {
   standalone: true,
   imports: [
     CommonModule,
+    ImrButtonComponent,
     ImrHeaderComponent,
     ImrCardContentComponent,
     ImrListComponent,
     ImrListItemComponent,
     MatCardModule,
     MatTabsModule,
-    MatButtonModule,
+    ImrFormFieldComponent,
     ReactiveFormsModule,
     FormsModule,
-    MatFormFieldModule,
     MatInputModule,
     MatIconModule,
     MatSelectModule,
-    MatOptionModule
+    MatOptionModule,
+    UiControlErrorsDirective
   ],
   templateUrl: './verwaltung.component.html',
   styleUrl: './verwaltung.component.sass'

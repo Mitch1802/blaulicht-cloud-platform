@@ -3,36 +3,28 @@
     <img class="login-logo" mat-card-image src="../../assets/images/logo.svg" alt="Logo" />
       <form class="login-form" [formGroup]="form" (ngSubmit)="anmelden()">
         <p>
-          <imr-form-field>
-            <imr-label>Benutzername</imr-label>
-            <input matInput formControlName="user" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" autofocus>
-            @if (f['user'].touched && f['user'].hasError('required')) {
-              <imr-error>Benutzername ist erforderlich.</imr-error>
-            }
+          <imr-form-field label="Benutzername" [requiredIndicator]="true">
+            <input matInput formControlName="user" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" autofocus uiControlErrors>
           </imr-form-field>
         </p>
-        <imr-form-field>
-          <imr-label>Passwort</imr-label>
-          <input matInput formControlName="pwd" [type]="showPassword ? 'text' : 'password'" autocomplete="current-password">
+        <imr-form-field label="Passwort" [requiredIndicator]="true">
+          <input matInput formControlName="pwd" [type]="showPassword ? 'text' : 'password'" autocomplete="current-password" uiControlErrors>
           <imr-suffix>
-            <button
+            <imr-button
+              variant="icon"
               type="button"
-              mat-icon-button
               (click)="togglePasswordVisibility()"
-              [attr.aria-label]="showPassword ? 'Passwort verbergen' : 'Passwort anzeigen'"
+              [ariaLabel]="showPassword ? 'Passwort verbergen' : 'Passwort anzeigen'"
               [attr.aria-pressed]="showPassword"
             >
               <imr-icon>{{showPassword?'visibility_off':'visibility'}}</imr-icon>
-            </button>
+            </imr-button>
           </imr-suffix>
-          @if (f['pwd'].touched && f['pwd'].hasError('required')) {
-            <imr-error>Passwort ist erforderlich.</imr-error>
-          }
         </imr-form-field>
         <div class="login-button-row">
-          <button type="submit" mat-flat-button color="primary" class="submit-button" [disabled]="form.invalid || isSubmitting">
+          <imr-button type="submit" color="primary" class="submit-button" [disabled]="form.invalid || isSubmitting">
             Anmelden
-          </button>
+          </imr-button>
         </div>
 
       </form>

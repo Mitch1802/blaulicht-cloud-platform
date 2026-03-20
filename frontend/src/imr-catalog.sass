@@ -407,10 +407,37 @@ mat-card
 mat-form-field,
 .mat-mdc-form-field
     width: 100%
+    --mat-form-field-container-height: var(--imr-control-height)
+    --mat-form-field-container-vertical-padding: .5rem
 
 .mat-mdc-form-field
     .mat-mdc-text-field-wrapper
+        min-height: var(--imr-control-height)
         transition: background-color .16s ease, box-shadow .16s ease, border-color .16s ease
+
+    .mdc-text-field--outlined,
+    .mdc-text-field--filled
+        height: var(--imr-control-height)
+
+    .mat-mdc-form-field-flex
+        min-height: var(--imr-control-height)
+
+    .mat-mdc-form-field-infix
+        min-height: calc(var(--imr-control-height) - 2px)
+        padding-top: .45rem
+        padding-bottom: .45rem
+
+    .mat-mdc-select-trigger
+        min-height: calc(var(--imr-control-height) - 2px)
+        display: flex
+        align-items: center
+
+    input.mat-mdc-input-element
+        line-height: 1.2
+        max-height: calc(var(--imr-control-height) - 2px)
+
+    textarea.mat-mdc-input-element
+        max-height: none
 
     .mat-mdc-select-arrow-wrapper
         align-self: center
@@ -445,6 +472,11 @@ mat-select
 
 .mat-mdc-autocomplete-panel
     border-radius: 0 !important
+
+// Select/Autocomplete overlays must stay above custom fixed dialogs.
+.cdk-overlay-container,
+.cdk-overlay-pane
+    z-index: 5000
 
 // -- Tabellen -----------------------------------------------------------------
 .mat-mdc-table

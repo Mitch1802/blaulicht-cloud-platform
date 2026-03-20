@@ -1,9 +1,8 @@
-import { Component, HostListener, OnInit, inject } from '@angular/core';
+﻿import { Component, HostListener, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IMR_UI_COMPONENTS } from '../imr-ui-library';
 import { MatInput } from '@angular/material/input';
-import { MatButton, MatIconButton } from '@angular/material/button';
 import { environment } from 'src/environments/environment';
 import { CommonModule } from '@angular/common';
 import { finalize, switchMap } from 'rxjs';
@@ -28,8 +27,6 @@ type VersionInfo = {
       ReactiveFormsModule,
       ...IMR_UI_COMPONENTS,
       MatInput,
-      MatButton,
-      MatIconButton,
     ]
 })
 

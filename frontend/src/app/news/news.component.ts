@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ViewChild, ElementRef } from '@angular/core';
+﻿import { Component, OnInit, inject, ViewChild, ElementRef } from '@angular/core';
 import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { INews } from 'src/app/_interface/news';
 import { INewsTemplate } from 'src/app/_interface/news-template';
@@ -8,7 +8,6 @@ import { CollectionUtilsService } from 'src/app/_service/collection-utils.servic
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { A11yModule } from '@angular/cdk/a11y';
-import { MatButton } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { IMR_UI_COMPONENTS, ImrPaginatorComponent } from '../imr-ui-library';
 import { forkJoin } from 'rxjs';
@@ -21,7 +20,6 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
     FormsModule,
     ReactiveFormsModule,
     ...IMR_UI_COMPONENTS,
-    MatButton,
     MatInputModule,
     A11yModule,
     MatTableModule,

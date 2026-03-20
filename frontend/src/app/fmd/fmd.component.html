@@ -1,4 +1,4 @@
-<imr-header [breadcrumb]="breadcrumb"></imr-header>
+﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <section class="fmd-page">
   <header class="page-head">
@@ -12,8 +12,8 @@
         @if (hasTable(activeTabIndex)) {
         <imr-form-field
           class="mb-2 filter-field-compact"
+          label="Filter"
         >
-          <imr-label>Filter</imr-label>
           <input
             matInput
             #filterInput
@@ -65,15 +65,14 @@
             </section>
           </imr-tab>
           <imr-tab label="ATS Tr�ger">
-            <button
-              mat-flat-button
+            <imr-button
               color="accent"
               [hidden]="!formModul.disabled"
               (click)="neueDetails()"
               type="button"
             >
               Hinzuf�gen
-            </button>
+            </imr-button>
             <form
               [formGroup]="formModul"
               (ngSubmit)="datenSpeichern()"
@@ -85,27 +84,24 @@
                 
                 formControlName="id"
               />
-              <button
-                mat-flat-button
+              <imr-button
                 color="accent"
                 [hidden]="!formModul.valid"
                 type="submit"
               >
                 Daten speichern
-              </button>
-              <button
-                mat-flat-button
+              </imr-button>
+              <imr-button
                 color="primary"
                 [hidden]="formModul.disabled"
                 type="button"
                 (click)="abbrechen()"
               >
                 Abbrechen
-              </button>
+              </imr-button>
               <section class="app-grid mt-2 mx-0">
                 <div class="app-col-12 app-col-lg-8 mb-3">
-                  <imr-form-field>
-                    <imr-label>Mitglied ausw�hlen</imr-label>
+                  <imr-form-field label="Mitglied ausw�hlen">
                     <imr-select formControlName="mitglied_id">
                       @for (opt of dropdownMitglieder; track opt) {
                       <imr-option [value]="opt.pkid">
@@ -117,8 +113,7 @@
                   </imr-form-field>
                 </div>
                 <div class="app-col-12 app-col-lg-4 mb-3">
-                  <imr-form-field>
-                    <imr-label>FDISK Update</imr-label>
+                  <imr-form-field label="FDISK Update">
                     <input
                       matInput
                       type="text"
@@ -140,8 +135,7 @@
                   </imr-form-field>
                 </div>
                 <div class="app-col-12 app-col-lg-4 mb-3">
-                  <imr-form-field>
-                    <imr-label>Arzttyp ausw�hlen</imr-label>
+                  <imr-form-field label="Arzttyp ausw�hlen">
                     <imr-select formControlName="arzt_typ">
                       @for (opt of arzttypen; track opt) {
                       <imr-option [value]="opt"> {{ opt }}</imr-option>
@@ -150,14 +144,12 @@
                   </imr-form-field>
                 </div>
                 <div class="app-col-12 app-col-lg-8 mb-3">
-                  <imr-form-field>
-                    <imr-label>Behandelnder Arzt</imr-label>
+                  <imr-form-field label="Behandelnder Arzt">
                     <input matInput type="text" formControlName="arzt" />
                   </imr-form-field>
                 </div>
                 <div class="app-col-12 app-col-lg-4 mb-3">
-                  <imr-form-field>
-                    <imr-label>Letzte Untersuchung</imr-label>
+                  <imr-form-field label="Letzte Untersuchung">
                     <input
                       matInput
                       type="text"
@@ -179,8 +171,7 @@
                   </imr-form-field>
                 </div>
                 <div class="app-col-12 app-col-lg-4 mb-3">
-                  <imr-form-field>
-                    <imr-label>Leistungstest</imr-label>
+                  <imr-form-field label="Leistungstest">
                     <input
                       matInput
                       type="text"
@@ -189,8 +180,7 @@
                   </imr-form-field>
                 </div>
                 <div class="app-col-12 app-col-lg-4 mb-3">
-                  <imr-form-field>
-                    <imr-label>Leistungstest Art</imr-label>
+                  <imr-form-field label="Leistungstest Art">
                     <imr-select formControlName="leistungstest_art">
                       @for (opt of leistungstestarten; track opt) {
                       <imr-option [value]="opt"> {{ opt }}</imr-option>
@@ -199,15 +189,13 @@
                   </imr-form-field>
                 </div>
                 <div class="app-col-12 app-col-lg-12 mb-3">
-                  <imr-form-field>
-                    <imr-label>Notizen</imr-label>
+                  <imr-form-field label="Notizen">
                     <input matInput type="text" formControlName="notizen" />
                   </imr-form-field>
                 </div>
               </section>
 
-              <button
-                mat-flat-button
+              <imr-button
                 color="warn"
                 class="imr-delete-btn"
                 [hidden]="!formModul.controls['id'].value"
@@ -215,7 +203,7 @@
                 (click)="datenLoeschen()"
               >
                 Daten l�schen
-              </button>
+              </imr-button>
             </form>
             <table
               mat-table
@@ -248,22 +236,20 @@
               <ng-container matColumnDef="actions">
                 <th mat-header-cell *matHeaderCellDef>Aktionen</th>
                 <td mat-cell *matCellDef="let element" class="imr-action-cell">
-                  <button
-                    mat-flat-button
+                  <imr-button
                     class="imr-action-btn"
                     color="primary"
                     (click)="auswahlBearbeiten(element)"
                   >
                     <imr-icon class="m-0">edit</imr-icon>
-                  </button>
-                  <button
-                    mat-flat-button
+                  </imr-button>
+                  <imr-button
                     class="imr-action-btn"
                     color="primary"
                     (click)="printChecklist(element)"
                   >
                     <imr-icon class="m-0">checklist</imr-icon>
-                  </button>
+                  </imr-button>
                 </td>
               </ng-container>
               <tr mat-header-row *matHeaderRowDef="sichtbareSpaltenATS"></tr>
@@ -449,49 +435,45 @@
               <div class="app-grid m-0">
                 <div class="app-col-7">Offene Untersuchungen:</div>
                 <div class="app-col-auto">
-                  <button
-                    mat-flat-button
+                  <imr-button
                     color="primary"
                     (click)="printOffeneUntersuchugen()"
                   >
                     <imr-icon class="m-0">picture_as_pdf</imr-icon>
-                  </button>
+                  </imr-button>
                 </div>
               </div>
               <div class="app-grid m-0 pt-2">
                 <div class="app-col-7">Tauglichkeit:</div>
                 <div class="app-col-auto">
-                  <button
-                    mat-flat-button
+                  <imr-button
                     color="primary"
                     (click)="printTauglichkeit()"
                   >
                     <imr-icon class="m-0">picture_as_pdf</imr-icon>
-                  </button>
+                  </imr-button>
                 </div>
               </div>
               <div class="app-grid m-0 pt-2">
                 <div class="app-col-7">Leistungstest:</div>
                 <div class="app-col-auto">
-                  <button
-                    mat-flat-button
+                  <imr-button
                     color="primary"
                     (click)="printLeistungstest()"
                   >
                     <imr-icon class="m-0">picture_as_pdf</imr-icon>
-                  </button>
+                  </imr-button>
                 </div>
               </div>
               <div class="app-grid m-0 pt-2">
                 <div class="app-col-7">Alle Mitglieder:</div>
                 <div class="app-col-auto">
-                  <button
-                    mat-flat-button
+                  <imr-button
                     color="primary"
                     (click)="printAlleMitglieder()"
                   >
                     <imr-icon class="m-0">picture_as_pdf</imr-icon>
-                  </button>
+                  </imr-button>
                 </div>
               </div>
             </div>

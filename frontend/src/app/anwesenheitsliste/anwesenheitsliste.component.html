@@ -3,15 +3,14 @@
 <imr-page-layout [title]="title" class="anwesenheitsliste-page">
   <imr-section-card title="Anwesenheitslisten verwalten">
     <imr-top-actions>
-      <button
-        mat-flat-button
+      <imr-button
         color="accent"
         [hidden]="!formModul.disabled"
         (click)="neueDetails()"
         type="button"
       >
         Hinzufügen
-      </button>
+      </imr-button>
     </imr-top-actions>
 
     <form
@@ -23,38 +22,31 @@
       <input hidden type="text" formControlName="id" />
 
       <imr-form-actions>
-        <button
-          mat-flat-button
+        <imr-button
           color="accent"
           [hidden]="!formModul.valid"
           type="submit"
         >
           Daten speichern
-        </button>
-        <button
-          mat-flat-button
+        </imr-button>
+        <imr-button
           color="primary"
           [hidden]="formModul.disabled"
           type="button"
           (click)="abbrechen()"
         >
           Abbrechen
-        </button>
+        </imr-button>
       </imr-form-actions>
 
       <imr-form-grid>
         <div class="app-col-12 mb-3">
-          <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width">
-            <imr-label>Titel</imr-label>
-            <input matInput type="text" formControlName="titel" />
-            @if (formModul.controls['titel'].hasError('required')) {
-              <imr-error>Titel ist erforderlich!</imr-error>
-            }
+          <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="Titel">
+            <input matInput type="text" formControlName="titel" uiControlErrors />
           </imr-form-field>
         </div>
         <div class="app-col-6 mb-3">
-          <imr-form-field class="imr-full-width">
-            <imr-label>Datum (TT.MM.JJJJ)</imr-label>
+          <imr-form-field class="imr-full-width" label="Datum (TT.MM.JJJJ)">
             <input matInput type="text" formControlName="datum" appDateInputMask="dmy" />
             @if (formModul.controls['datum'].hasError('pattern')) {
               <imr-error>Ungültiges Datumsformat!</imr-error>
@@ -62,21 +54,18 @@
           </imr-form-field>
         </div>
         <div class="app-col-6 mb-3">
-          <imr-form-field class="imr-full-width">
-            <imr-label>Ort</imr-label>
+          <imr-form-field class="imr-full-width" label="Ort">
             <input matInput type="text" formControlName="ort" />
           </imr-form-field>
         </div>
         <div class="app-col-12 app-col-lg-12 mb-3">
-          <imr-form-field class="imr-full-width">
-            <imr-label>Notiz</imr-label>
+          <imr-form-field class="imr-full-width" label="Notiz">
             <textarea matInput formControlName="notiz" rows="5"></textarea>
           </imr-form-field>
         </div>
         <div class="app-col-12 app-col-lg-12 mb-3">
           <div class="autocomplete-multi">
-            <imr-form-field class="imr-full-width" hintLabel="* Pflichtfeld">
-              <imr-label>Mitglieder</imr-label>
+            <imr-form-field class="imr-full-width" hintLabel="* Pflichtfeld" label="Mitglieder">
               <imr-select formControlName="mitglied_ids" [multiple]="true">
                 <imr-select-trigger>
                   {{ mitgliederAuswahlTriggerText }}
@@ -113,9 +102,9 @@
                 accept=".jpg,.jpeg,.png,.pdf"
                 (change)="onFotoDokuSelected($event)"
               />
-              <button mat-flat-button type="button" color="primary" class="upload-button" (click)="fotoDokuDateienInput.click()">
+              <imr-button type="button" color="primary" class="upload-button" (click)="fotoDokuDateienInput.click()">
                 Dateien auswählen
-              </button>
+              </imr-button>
             </div>
 
             @if (fotoDokuFiles.length > 0) {
@@ -128,12 +117,12 @@
                       <div class="preview-file">PDF</div>
                     }
                     <div class="preview-meta">
-                      <button mat-flat-button class="imr-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(getFilePreviewUrl(file))">
+                      <imr-button class="imr-action-btn" type="button" color="primary" ariaLabel="Bild öffnen" (click)="openFoto(getFilePreviewUrl(file))">
                         <imr-icon>open_in_new</imr-icon>
-                      </button>
-                      <button mat-flat-button class="imr-action-btn" type="button" color="warn" aria-label="Datei entfernen" (click)="removeSelectedFoto(i)">
+                      </imr-button>
+                      <imr-button class="imr-action-btn" type="button" color="warn" ariaLabel="Datei entfernen" (click)="removeSelectedFoto(i)">
                         <imr-icon>delete</imr-icon>
-                      </button>
+                      </imr-button>
                     </div>
                   </article>
                 }
@@ -150,12 +139,12 @@
                       <div class="preview-file">PDF</div>
                     }
                     <div class="preview-meta">
-                      <button mat-flat-button class="imr-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(foto.foto_url)">
+                      <imr-button class="imr-action-btn" type="button" color="primary" ariaLabel="Bild öffnen" (click)="openFoto(foto.foto_url)">
                         <imr-icon>open_in_new</imr-icon>
-                      </button>
-                      <button mat-flat-button class="imr-action-btn" type="button" color="warn" aria-label="Datei löschen" (click)="loescheBestehendesFoto(foto)">
+                      </imr-button>
+                      <imr-button class="imr-action-btn" type="button" color="warn" ariaLabel="Datei löschen" (click)="loescheBestehendesFoto(foto)">
                         <imr-icon>delete</imr-icon>
-                      </button>
+                      </imr-button>
                     </div>
                   </article>
                 }
@@ -165,8 +154,7 @@
         </div>
       </imr-form-grid>
 
-      <button
-        mat-flat-button
+      <imr-button
         color="warn"
         class="delete-entry-btn imr-delete-btn"
         [hidden]="!formModul.controls['id'].value"
@@ -174,13 +162,12 @@
         (click)="datenLoeschen()"
       >
         Daten löschen
-      </button>
+      </imr-button>
     </form>
 
     <imr-table-wrap [hidden]="!formModul.disabled">
       <div class="table-toolbar">
-        <imr-form-field appearance="outline">
-          <imr-label>Suchen</imr-label>
+        <imr-form-field appearance="outline" label="Suchen">
           <input matInput #input (keyup)="applyFilter(input.value)" placeholder="Datum, Titel oder Ort" />
           <imr-suffix><imr-icon>search</imr-icon></imr-suffix>
         </imr-form-field>
@@ -213,15 +200,14 @@
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef class="table-actions-head">Aktionen</th>
           <td mat-cell *matCellDef="let element" class="imr-action-cell">
-            <button
-              mat-flat-button
+            <imr-button
               class="imr-action-btn"
               color="primary"
               (click)="auswahlBearbeiten(element)"
               [attr.aria-label]="'Anwesenheitsliste ' + element.titel + ' bearbeiten'"
             >
               <imr-icon class="m-0">edit</imr-icon>
-            </button>
+            </imr-button>
           </td>
         </ng-container>
 

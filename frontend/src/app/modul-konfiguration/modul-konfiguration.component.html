@@ -10,15 +10,14 @@
       <h2>Modul-Einstellungen</h2>
     </div>
       <div class="imr-top-actions">
-        <button
-          mat-flat-button
+        <imr-button
           color="accent"
           [hidden]="!formModul.disabled"
           (click)="neueDetails()"
           type="button"
         >
           Hinzufügen
-        </button>
+        </imr-button>
       </div>
 
       <form
@@ -30,25 +29,22 @@
         <input hidden type="text" formControlName="id" />
 
         <div class="imr-form-actions">
-          <button
-            mat-flat-button
+          <imr-button
             color="accent"
             [hidden]="!formModul.valid"
             type="submit"
           >
             Daten speichern
-          </button>
-          <button
-            mat-flat-button
+          </imr-button>
+          <imr-button
             color="primary"
             [hidden]="formModul.disabled"
             type="button"
             (click)="abbrechen()"
           >
             Abbrechen
-          </button>
-          <button
-            mat-flat-button
+          </imr-button>
+          <imr-button
             color="warn"
             class="imr-delete-btn"
             [hidden]="!formModul.controls['id'].value"
@@ -56,13 +52,12 @@
             (click)="datenLoeschen()"
           >
             Daten löschen
-          </button>
+          </imr-button>
         </div>
 
         <section class="app-grid imr-form-grid">
           <div class="app-col-12 app-col-lg-12 mb-3">
-            <imr-form-field class="imr-full-width">
-              <imr-label>Verfügbare Module auswählen</imr-label>
+            <imr-form-field class="imr-full-width" label="Verfügbare Module auswählen">
               <imr-select formControlName="modul" (selectionChange)="onModulChange()">
                 <imr-option [value]="''">Bitte auswählen</imr-option>
                 @for (m of verfuegbareModulListe; track m.key) {
@@ -76,9 +71,8 @@
             @if (formModul.controls['modul'].value === 'pdf') {
               <div [formGroup]="pdfMappingForm" class="pdf-mapping">
                 @for (ex of pdfExports; track ex.key) {
-                  <imr-form-field appearance="outline" class="imr-full-width">
-                    <imr-label>{{ ex.label }}</imr-label>
-                    <imr-select [formControlName]="ex.key">
+                  <imr-form-field appearance="outline" class="imr-full-width" [label]="ex.label">
+                    <imr-select [formControlName]="ex.key" uiControlErrors>
                       <imr-option [value]="null">Bitte auswählen</imr-option>
                       @for (t of pdfTemplates; track t.id) {
                         <imr-option [value]="t.id">
@@ -87,31 +81,21 @@
                       }
                     </imr-select>
 
-                    @if (pdfMappingForm.controls[ex.key].hasError('required')) {
-                      <imr-error>Template ist erforderlich!</imr-error>
-                    }
                   </imr-form-field>
                 }
               </div>
 
               <textarea hidden matInput formControlName="konfiguration"></textarea>
             } @else {
-              <imr-form-field appearance="outline" class="imr-full-width html-source-field" subscriptSizing="dynamic">
-                <imr-label>Konfiguration (JSON)</imr-label>
+              <imr-form-field appearance="outline" class="imr-full-width html-source-field" subscriptSizing="dynamic" label="Konfiguration (JSON)">
                 <textarea
                   matInput
                   class="html-source-input"
                   formControlName="konfiguration"
                   rows="18"
                   placeholder="{ 'key': 'value' }"
+                  [uiControlErrors]="konfigurationErrorMap"
                 ></textarea>
-
-                @if (formModul.controls['konfiguration'].hasError('required')) {
-                  <imr-error>Konfiguration ist erforderlich!</imr-error>
-                }
-                @if (formModul.controls['konfiguration'].hasError('jsonInvalid')) {
-                  <imr-error>Ungültiges JSON!</imr-error>
-                }
               </imr-form-field>
 
               @if (isJugendModulAusgewaehlt()) {
@@ -164,9 +148,9 @@
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef>Aktionen</th>
             <td mat-cell *matCellDef="let element" class="imr-action-cell">
-              <button mat-flat-button class="imr-action-btn" color="primary" (click)="auswahlBearbeiten(element)">
+              <imr-button class="imr-action-btn" color="primary" (click)="auswahlBearbeiten(element)">
                 <imr-icon class="m-0">edit</imr-icon>
-              </button>
+              </imr-button>
             </td>
           </ng-container>
           <tr mat-header-row *matHeaderRowDef="sichtbareSpalten"></tr>

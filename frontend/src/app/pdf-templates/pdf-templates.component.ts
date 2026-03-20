@@ -1,4 +1,4 @@
-import {
+﻿import {
   Component,
   OnInit,
   inject,
@@ -15,16 +15,14 @@ import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
-import { MatButton } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { Router } from '@angular/router';
 import {
+  ImrButtonComponent,
   ImrCardComponent,
-  ImrErrorComponent,
   ImrFormFieldComponent,
   ImrHeaderComponent,
   ImrIconComponent,
-  ImrLabelComponent,
   ImrOptionComponent,
   ImrSelectComponent,
 } from '../imr-ui-library';
@@ -36,6 +34,7 @@ import { IPdfTemplate } from '../_interface/pdf_template';
 @Component({
   selector: 'app-pdf-templates',
   imports: [
+    ImrButtonComponent,
     ImrHeaderComponent,
     ImrCardComponent,
     FormsModule,
@@ -43,10 +42,7 @@ import { IPdfTemplate } from '../_interface/pdf_template';
     ImrFormFieldComponent,
     ImrSelectComponent,
     ImrOptionComponent,
-    ImrLabelComponent,
-    MatButton,
     MatInputModule,
-    ImrErrorComponent,
     MatTableModule,
     MatSortModule,
     ImrIconComponent,

@@ -1,4 +1,4 @@
-<imr-header [breadcrumb]="breadcrumb"></imr-header>
+﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <section class="public-fahrzeug-page">
   <header class="page-head">
@@ -13,10 +13,10 @@
 
       @if (verified) {
         <div class="actions-top">
-          <button mat-flat-button color="primary" type="button" (click)="logoutPublic()">
+          <imr-button color="primary" type="button" (click)="logoutPublic()">
             <imr-icon>logout</imr-icon>
             PIN vergessen
-          </button>
+          </imr-button>
         </div>
       }
       @if (loading) {
@@ -29,17 +29,16 @@
 
           <form [formGroup]="pinForm" class="pin-form app-grid">
             <div class="app-col-12">
-              <imr-form-field class="pin-field">
-                <imr-label>PIN</imr-label>
+              <imr-form-field class="pin-field" label="PIN">
                 <input matInput type="password" inputmode="numeric" formControlName="pin" />
               </imr-form-field>
             </div>
 
             <div class="app-col-12 pin-action">
-              <button mat-flat-button color="primary" type="button" (click)="verifyPin()" [disabled]="loading">
+              <imr-button color="primary" type="button" (click)="verifyPin()" [disabled]="loading">
                 <imr-icon>lock_open</imr-icon>
                 Freischalten
-              </button>
+              </imr-button>
             </div>
           </form>
         </section>
@@ -51,8 +50,7 @@
           </p>
 
           <form [formGroup]="auswahlForm" class="selection-form">
-            <imr-form-field class="selection-field">
-              <imr-label>Fahrzeug</imr-label>
+            <imr-form-field class="selection-field" label="Fahrzeug">
               <imr-select formControlName="public_id">
                 @for (fahrzeugOpt of fahrzeugOptionen; track fahrzeugOpt.public_id) {
                   <imr-option [value]="fahrzeugOpt.public_id">
@@ -62,8 +60,7 @@
               </imr-select>
             </imr-form-field>
 
-            <button
-              mat-flat-button
+            <imr-button
               color="primary"
               type="button"
               (click)="openSelectedFahrzeug()"
@@ -71,7 +68,7 @@
             >
               <imr-icon>checklist</imr-icon>
               Checkliste öffnen
-            </button>
+            </imr-button>
           </form>
 
           @if (!loading && fahrzeugOptionen.length === 0) {
@@ -86,10 +83,10 @@
           </div>
 
           @if (publicId === '') {
-            <button mat-flat-button color="primary" type="button" (click)="backToSelection()">
+            <imr-button color="primary" type="button" (click)="backToSelection()">
               <imr-icon>arrow_back</imr-icon>
               Fahrzeug wechseln
-            </button>
+            </imr-button>
           }
         </section>
 
@@ -116,8 +113,7 @@
                   </div>
 
                   <div class="item-controls">
-                    <imr-form-field class="status-field">
-                      <imr-label>Status</imr-label>
+                    <imr-form-field class="status-field" label="Status">
                       <imr-select
                         [value]="draft[getKey(raum.name, item)]?.status ?? 'ok'"
                         (selectionChange)="setStatus(raum.name, item, $any($event.value))"
@@ -128,8 +124,7 @@
                       </imr-select>
                     </imr-form-field>
 
-                    <imr-form-field class="ist-field">
-                      <imr-label>Ist-Menge</imr-label>
+                    <imr-form-field class="ist-field" label="Ist-Menge">
                       <input
                         matInput
                         type="number"
@@ -139,8 +134,7 @@
                     </imr-form-field>
                   </div>
 
-                  <imr-form-field class="note-field">
-                    <imr-label>Check-Notiz</imr-label>
+                  <imr-form-field class="note-field" label="Check-Notiz">
                     <input
                       matInput
                       [value]="draft[getKey(raum.name, item)]?.notiz ?? ''"

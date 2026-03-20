@@ -1,4 +1,4 @@
-<imr-header [breadcrumb]="breadcrumb"></imr-header>
+﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <section class="pdf-page">
   <header class="page-head">
@@ -11,19 +11,17 @@
     </div>
 
       <div class="imr-top-actions">
-        <button
-          mat-flat-button
+        <imr-button
           color="accent"
           [hidden]="!formModul.disabled"
           (click)="neueDetails()"
           type="button"
         >
           Hinzufügen
-        </button>
+        </imr-button>
 
         @if (tableVisible) {
-          <imr-form-field fieldClass="status-filter" subscriptSizing="dynamic">
-            <imr-label>Status</imr-label>
+          <imr-form-field fieldClass="status-filter" subscriptSizing="dynamic" label="Status">
             <imr-select
               [(ngModel)]="statusFilter"
               [ngModelOptions]="{ standalone: true }"
@@ -49,25 +47,22 @@
         <input hidden type="text"  formControlName="status" />
 
         <div class="imr-form-actions">
-          <button
-            mat-flat-button
+          <imr-button
             color="accent"
             [hidden]="readonlyMode || !formModul.valid"
             type="submit"
           >
             Daten speichern
-          </button>
-          <button
-            mat-flat-button
+          </imr-button>
+          <imr-button
             color="primary"
             [hidden]="formModul.disabled"
             type="button"
             (click)="abbrechen()"
           >
             Abbrechen
-          </button>
-          <button
-            mat-flat-button
+          </imr-button>
+          <imr-button
             color="warn"
             class="imr-delete-btn"
             [hidden]="!formModul.controls['id'].value"
@@ -75,35 +70,26 @@
             (click)="datenLoeschen()"
           >
             Daten löschen
-          </button>
+          </imr-button>
         </div>
 
         <section class="app-grid imr-form-grid">
           <div class="app-col-12 app-col-lg-6 mb-3">
-            <imr-form-field hintLabel="* Pflichtfeld" fieldClass="imr-full-width">
-              <imr-label>Typ / Modul</imr-label>
-              <imr-select formControlName="typ">
+            <imr-form-field hintLabel="* Pflichtfeld" fieldClass="imr-full-width" label="Typ / Modul">
+              <imr-select formControlName="typ" uiControlErrors>
                 @for (opt of typModul; track opt) {
                   <imr-option [value]="opt"> {{ opt }} </imr-option>
                 }
               </imr-select>
-              @if (formModul.controls['typ'].hasError('required')) {
-                <imr-error>Typ ist erforderlich! </imr-error>
-              }
             </imr-form-field>
           </div>
           <div class="app-col-12 app-col-lg-6 mb-3">
-            <imr-form-field hintLabel="* Pflichtfeld" fieldClass="imr-full-width">
-              <imr-label>Bezeichnung</imr-label>
-              <input matInput type="text" formControlName="bezeichnung" />
-              @if (formModul.controls['bezeichnung'].hasError('required')) {
-                <imr-error>Bezeichnung ist erforderlich! </imr-error>
-              }
+            <imr-form-field hintLabel="* Pflichtfeld" fieldClass="imr-full-width" label="Bezeichnung">
+              <input matInput type="text" formControlName="bezeichnung" uiControlErrors />
             </imr-form-field>
           </div>
           <div class="app-col-12 app-col-lg-12 mb-3">
-            <imr-form-field fieldClass="imr-full-width html-source-field" subscriptSizing="dynamic">
-              <imr-label>HTML Code</imr-label>
+            <imr-form-field fieldClass="imr-full-width html-source-field" subscriptSizing="dynamic" label="HTML Code">
               <textarea
                 matInput
                 class="html-source-input"
@@ -142,21 +128,21 @@
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef>Aktionen</th>
             <td mat-cell *matCellDef="let element" class="imr-action-cell">
-              <button mat-flat-button class="imr-action-btn" color="primary" (click)="auswahlBearbeiten(element)">
+              <imr-button class="imr-action-btn" color="primary" (click)="auswahlBearbeiten(element)">
                 <imr-icon class="m-0">edit</imr-icon>
-              </button>
-              <button mat-flat-button class="imr-action-btn" color="primary" (click)="test(element)">
+              </imr-button>
+              <imr-button class="imr-action-btn" color="primary" (click)="test(element)">
                 <imr-icon class="m-0">bug_report</imr-icon>
-              </button>
+              </imr-button>
               @if (element.status == 'DRAFT') {
-                <button mat-flat-button class="imr-action-btn" color="primary" (click)="publish(element)">
+                <imr-button class="imr-action-btn" color="primary" (click)="publish(element)">
                   <imr-icon class="m-0">public</imr-icon>
-                </button>
+                </imr-button>
               }
               @if (element.status == 'PUBLISHED') {
-                <button mat-flat-button class="imr-action-btn" color="primary" (click)="newVersion(element)">
+                <imr-button class="imr-action-btn" color="primary" (click)="newVersion(element)">
                   <imr-icon class="m-0">upgrade</imr-icon>
-                </button>
+                </imr-button>
               }
             </td>
           </ng-container>

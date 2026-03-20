@@ -3,12 +3,12 @@
 <imr-page-layout [title]="title" class="homepage-page">
   <imr-section-card title="Dienstpostenplan verwalten">
     <imr-top-actions>
-      <button mat-flat-button color="primary" type="button" (click)="addSection()" [disabled]="loading">
+      <imr-button color="primary" type="button" (click)="addSection()" [disabled]="loading">
         Sektion hinzufügen
-      </button>
-      <button mat-flat-button color="accent" type="button" (click)="speichern()" [disabled]="loading">
+      </imr-button>
+      <imr-button color="accent" type="button" (click)="speichern()" [disabled]="loading">
         Alle Änderungen speichern
-      </button>
+      </imr-button>
     </imr-top-actions>
 
     <div class="sections-wrap">
@@ -16,8 +16,7 @@
         <section class="plan-section">
           <header class="plan-section-head app-grid">
             <div class="app-col-12 app-col-lg-4">
-              <imr-form-field class="imr-full-width" hintLabel="* Pflichtfeld">
-                <imr-label>Sektionstitel</imr-label>
+              <imr-form-field class="imr-full-width" hintLabel="* Pflichtfeld" label="Sektionstitel">
                 <input
                   matInput
                   [(ngModel)]="section.title"
@@ -28,8 +27,7 @@
               </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-3">
-              <imr-form-field class="imr-full-width" hintLabel="* Pflichtfeld">
-                <imr-label>Sektions-ID</imr-label>
+              <imr-form-field class="imr-full-width" hintLabel="* Pflichtfeld" label="Sektions-ID">
                 <input
                   matInput
                   [(ngModel)]="section.id"
@@ -40,12 +38,12 @@
               </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-5 section-actions">
-              <button mat-flat-button color="accent" type="button" (click)="addPosition(section)" [disabled]="loading">
+              <imr-button color="accent" type="button" (click)="addPosition(section)" [disabled]="loading">
                 Position hinzufügen
-              </button>
-              <button mat-flat-button color="warn" type="button" (click)="removeSection(section)" [disabled]="loading">
+              </imr-button>
+              <imr-button color="warn" type="button" (click)="removeSection(section)" [disabled]="loading">
                 Sektion löschen
-              </button>
+              </imr-button>
             </div>
           </header>
 
@@ -53,8 +51,7 @@
             @for (row of section.members; track row.local_id; let rowIndex = $index) {
               <article class="plan-row app-grid">
                 <div class="app-col-12 app-col-lg-3">
-                  <imr-form-field class="imr-full-width" hintLabel="* Pflichtfeld">
-                    <imr-label>Position</imr-label>
+                  <imr-form-field class="imr-full-width" hintLabel="* Pflichtfeld" label="Position">
                     <input
                       matInput
                       [(ngModel)]="row.position"
@@ -66,8 +63,7 @@
                 </div>
 
                 <div class="app-col-12 app-col-lg-4">
-                  <imr-form-field class="imr-full-width">
-                    <imr-label>Name auswaehlen</imr-label>
+                  <imr-form-field class="imr-full-width" label="Name auswaehlen">
                     <input
                       matInput
                       [formControl]="getMitgliedControl(row)"
@@ -93,35 +89,32 @@
                         Foto wählen
                       </label>
 
-                      <button
-                        mat-flat-button
+                      <imr-button
                         color="warn"
                         type="button"
                         (click)="removePhoto(row)"
                         [disabled]="loading"
                       >
                         Foto löschen
-                      </button>
+                      </imr-button>
 
-                      <button
-                        mat-flat-button
+                      <imr-button
                         color="primary"
                         type="button"
                         (click)="openPhotoPreview(row)"
                         [disabled]="loading || !hasPhotoPreview(row)"
                       >
                         Vorschau
-                      </button>
+                      </imr-button>
 
-                      <button
-                        mat-flat-button
+                      <imr-button
                         color="warn"
                         type="button"
                         (click)="removePosition(section, row)"
                         [disabled]="loading"
                       >
                         Position entfernen
-                      </button>
+                      </imr-button>
                     </div>
 
                     <small>{{ getPhotoStatusText(row) }}</small>
@@ -155,7 +148,7 @@
     >
       <header class="photo-modal-head homepage-photo-modal-head">
         <h3 id="photo-modal-title">Bildvorschau</h3>
-        <button mat-flat-button color="primary" type="button" (click)="closePhotoPreview()">Schliessen</button>
+        <imr-button color="primary" type="button" (click)="closePhotoPreview()">Schliessen</imr-button>
       </header>
 
       <img [src]="photoModalUrl" alt="Bildvorschau" class="photo-modal-image homepage-photo-modal-image" />

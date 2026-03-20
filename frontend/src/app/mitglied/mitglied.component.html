@@ -1,4 +1,4 @@
-<imr-header [breadcrumb]="breadcrumb"></imr-header>
+﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <section class="mitglied-page">
   <header class="page-head">
@@ -12,21 +12,19 @@
 
       <div class="imr-top-actions">
         @if (formModul.disabled) {
-          <button
-            mat-flat-button
+          <imr-button
             color="accent"
             (click)="neueDetails()"
             type="button"
           >
             Hinzufügen
-          </button>
-          <button
-            mat-flat-button
+          </imr-button>
+          <imr-button
             color="accent"
             (click)="fileInput.click()"
           >
             FDISK CSV Import
-          </button>
+          </imr-button>
         }
       </div>
 
@@ -40,12 +38,12 @@
           </p>
 
           <div class="imr-form-actions">
-            <button mat-flat-button color="accent" type="button" (click)="importBestaetigen()">
+            <imr-button color="accent" type="button" (click)="importBestaetigen()">
               Import bestätigen
-            </button>
-            <button mat-flat-button color="primary" type="button" (click)="importAbbrechen()">
+            </imr-button>
+            <imr-button color="primary" type="button" (click)="importAbbrechen()">
               Abbrechen
-            </button>
+            </imr-button>
           </div>
 
           <div class="imr-table-wrap" [hidden]="importChanges.length === 0">
@@ -89,76 +87,56 @@
           <input hidden type="text"  formControlName="id" />
 
           <div class="imr-form-actions">
-            <button
-              mat-flat-button
+            <imr-button
               color="accent"
               [hidden]="!formModul.valid"
               type="submit"
             >
               Daten speichern
-            </button>
-            <button
-              mat-flat-button
+            </imr-button>
+            <imr-button
               color="primary"
               [hidden]="formModul.disabled"
               type="button"
               (click)="abbrechen()"
             >
               Abbrechen
-            </button>
+            </imr-button>
           </div>
 
           <section class="app-grid imr-form-grid">
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width">
-                <imr-label>Vorname</imr-label>
-                <input matInput type="text" formControlName="vorname" />
-                @if (formModul.controls["vorname"].hasError("required")) {
-                  <imr-error> Vorname ist erforderlich! </imr-error>
-                }
+              <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="Vorname">
+                <input matInput type="text" formControlName="vorname" uiControlErrors />
               </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width">
-                <imr-label>Nachname</imr-label>
-                <input matInput type="text" formControlName="nachname" />
-                @if (formModul.controls["nachname"].hasError("required")) {
-                  <imr-error> Nachname ist erforderlich! </imr-error>
-                }
+              <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="Nachname">
+                <input matInput type="text" formControlName="nachname" uiControlErrors />
               </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3">
-              <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width">
-                <imr-label>Stbnr</imr-label>
-                <input matInput type="text" formControlName="stbnr" />
-                @if (formModul.controls["stbnr"].hasError("required")) {
-                  <imr-error> Standesbuchnummer ist erforderlich! </imr-error>
-                }
+              <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="Stbnr">
+                <input matInput type="text" formControlName="stbnr" uiControlErrors />
               </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3">
-              <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width">
-                <imr-label>Status</imr-label>
+              <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="Status">
                 <imr-select formControlName="dienststatus">
                   <imr-option value="JUGEND">Jugend</imr-option>
                   <imr-option value="AKTIV">Aktiv</imr-option>
                   <imr-option value="RESERVE">Reserve</imr-option>
                   <imr-option value="ABGEMELDET">Abgemeldet</imr-option>
                 </imr-select>
-                @if (formModul.controls["dienststatus"].hasError("required")) {
-                  <imr-error>Status ist erforderlich!</imr-error>
-                }
               </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3">
-              <imr-form-field class="imr-full-width">
-                <imr-label>Dienstgrad</imr-label>
+              <imr-form-field class="imr-full-width" label="Dienstgrad">
                 <input matInput type="text" formControlName="dienstgrad" />
               </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3">
-              <imr-form-field class="imr-full-width">
-                <imr-label>SVNr</imr-label>
+              <imr-form-field class="imr-full-width" label="SVNr">
                 <input
                   matInput
                   type="text"
@@ -179,18 +157,15 @@
               </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3">
-              <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width">
-                <imr-label>Geburtsdatum</imr-label>
+              <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="Geburtsdatum">
                 <input
                   matInput
                   type="text"
                   formControlName="geburtsdatum"
+                  uiControlErrors
                   appDateInputMask="dmy"
                   placeholder="TT.MM.YYYY"
                 />
-                @if (formModul.controls["geburtsdatum"].hasError("required")) {
-                  <imr-error>Geburtsdatum ist erforderlich!</imr-error>
-                }
                 @if (formModul.controls["geburtsdatum"].hasError("pattern")) {
                   <imr-error
                     >Ungültiges Format. Bitte TT.MM.YYYY eingeben.</imr-error
@@ -210,8 +185,7 @@
             </div>
           </section>
 
-          <button
-            mat-flat-button
+          <imr-button
             color="warn"
             class="imr-delete-btn"
             [hidden]="!formModul.controls['id'].value"
@@ -219,7 +193,7 @@
             (click)="datenLoeschen()"
           >
             Daten löschen
-          </button>
+          </imr-button>
         </form>
 
         @if (formModul.disabled) {
@@ -228,8 +202,8 @@
               <imr-form-field
                 class="filter-field"
                 appearance="outline"
+                label="Filter"
               >
-                <imr-label>Filter</imr-label>
                 <input
                   matInput
                   #filterInput
@@ -271,15 +245,14 @@
               <ng-container matColumnDef="actions">
                 <th mat-header-cell *matHeaderCellDef class="table-actions-head">Aktionen</th>
                 <td mat-cell *matCellDef="let element" class="imr-action-cell">
-                  <button
-                    mat-flat-button
+                  <imr-button
                     class="imr-action-btn"
                     color="primary"
                     (click)="auswahlBearbeiten(element)"
                     [attr.aria-label]="'Mitglied ' + element.stbnr + ' ' + element.vorname + ' ' + element.nachname + ' bearbeiten'"
                   >
                     <imr-icon class="m-0">edit</imr-icon>
-                  </button>
+                  </imr-button>
                 </td>
               </ng-container>
               <tr

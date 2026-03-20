@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, ViewChild, inject } from '@angular/core';
+﻿import { Component, DestroyRef, OnInit, ViewChild, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BreakpointObserver } from '@angular/cdk/layout';
 
@@ -10,10 +10,16 @@ import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
-import { ImrBreadcrumbItem, ImrCardContentComponent, ImrHeaderComponent } from '../imr-ui-library';
+import {
+  ImrBreadcrumbItem,
+  ImrButtonComponent,
+  ImrCardContentComponent,
+  ImrFormFieldComponent,
+  ImrHeaderComponent,
+  UiControlErrorMap,
+  UiControlErrorsDirective,
+} from '../imr-ui-library';
 import { MatCardModule } from '@angular/material/card';
-import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
-import { MatButton } from '@angular/material/button';
 import { MatInput } from '@angular/material/input';
 import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
@@ -77,16 +83,15 @@ type UserUpdatePayload = Omit<UserCreatePayload, 'password1' | 'password2' | 'se
     templateUrl: './user.component.html',
     styleUrls: ['./user.component.sass'],
     imports: [
+    ImrButtonComponent,
     ImrHeaderComponent,
     ImrCardContentComponent,
+    ImrFormFieldComponent,
     MatCardModule,
     FormsModule,
     ReactiveFormsModule,
-    MatFormField,
-    MatLabel,
-    MatButton,
     MatInput,
-    MatError,
+    UiControlErrorsDirective,
     MatCheckbox,
     MatAutocompleteModule,
     MatTableModule,
@@ -139,6 +144,20 @@ export class UserComponent implements OnInit {
   private readonly desktopSpaltenBenutzer = ['username', 'mitglied_name', 'rolle', 'actions'];
   private readonly mobileSpaltenBenutzer = ['username', 'rolle', 'actions'];
   sichtbareSpaltenBenutzer: string[] = [...this.desktopSpaltenBenutzer];
+
+  readonly usernameErrorMap: UiControlErrorMap = {
+    required: 'Benutzername ist erforderlich!',
+  };
+
+  readonly initialPasswordErrorMap: UiControlErrorMap = {
+    required: 'Bitte ein Initialpasswort eingeben!',
+    minlength: 'Das Passwort muss mindestens 8 Zeichen lang sein!',
+  };
+
+  readonly initialPasswordRepeatErrorMap: UiControlErrorMap = {
+    required: 'Bitte das Initialpasswort wiederholen!',
+    minlength: 'Das Passwort muss mindestens 8 Zeichen lang sein!',
+  };
 
   private normalizeFilterValue(value: string): string {
     return String(value || '').trim().toLowerCase();

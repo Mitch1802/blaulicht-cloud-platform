@@ -1,11 +1,10 @@
-import { Component, OnInit, inject } from '@angular/core';
+﻿import { Component, OnInit, inject } from '@angular/core';
 import { ApiHttpService } from 'src/app/_service/api-http.service';
 import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { IMR_UI_COMPONENTS } from '../../imr-ui-library';
-import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import {
   AbstractControl,
@@ -28,7 +27,6 @@ import { DateInputMaskDirective } from '../../_directive/date-input-mask.directi
     ...IMR_UI_COMPONENTS,
     FormsModule,
     ReactiveFormsModule,
-    MatButtonModule,
     MatInputModule,
     MatTableModule,
     MatSortModule,

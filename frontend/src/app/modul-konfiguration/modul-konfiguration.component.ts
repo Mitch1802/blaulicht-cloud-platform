@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+﻿import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -15,7 +15,7 @@ import { CollectionUtilsService } from 'src/app/_service/collection-utils.servic
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { IMR_UI_COMPONENTS } from '../imr-ui-library';
-import { MatButton } from '@angular/material/button';
+import { UiControlErrorMap } from '../imr-ui-library';
 import { MatInput } from '@angular/material/input';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { Router } from '@angular/router';
@@ -29,7 +29,6 @@ import startRegelConfig from '../start/konfig.json';
     FormsModule,
     ReactiveFormsModule,
     ...IMR_UI_COMPONENTS,
-    MatButton,
     MatInput,
     MatTableModule,
   ],
@@ -111,6 +110,11 @@ export class ModulKonfigurationComponent implements OnInit {
     null,
     2,
   );
+
+  readonly konfigurationErrorMap: UiControlErrorMap = {
+    required: 'Konfiguration ist erforderlich!',
+    jsonInvalid: 'Ungültiges JSON!',
+  };
 
   formModul = new FormGroup({
     id: new FormControl<number | null>(null),

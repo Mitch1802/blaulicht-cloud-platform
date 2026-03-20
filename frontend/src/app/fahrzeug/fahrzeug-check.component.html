@@ -1,4 +1,4 @@
-<imr-header [breadcrumb]="breadcrumb"></imr-header>
+﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <section class="fahrzeug-check-page">
   <imr-card>
@@ -7,13 +7,11 @@
     </div>
 
         <form [formGroup]="form" >
-          <imr-form-field>
-            <imr-label>Titel</imr-label>
+          <imr-form-field label="Titel">
             <input matInput formControlName="title" placeholder="z. B. Tagescheck" />
           </imr-form-field>
 
-          <imr-form-field>
-            <imr-label>Allgemeine Notiz</imr-label>
+          <imr-form-field label="Allgemeine Notiz">
             <textarea matInput rows="2" formControlName="notiz"></textarea>
           </imr-form-field>
 
@@ -33,8 +31,7 @@
                     </div>
 
                     <div class="app-col-12 app-col-md-6">
-                      <imr-form-field >
-                        <imr-label>Notiz</imr-label>
+                      <imr-form-field label="Notiz">
                         <input matInput formControlName="notiz" placeholder="Optional" />
                       </imr-form-field>
                     </div>
@@ -44,9 +41,9 @@
             }
           </div>
 
-          <button mat-flat-button color="accent" type="button" (click)="submit()">
+          <imr-button color="accent" type="button" (click)="submit()">
             Checkliste speichern
-          </button>
+          </imr-button>
         </form>
   </imr-card>
 </section>

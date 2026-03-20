@@ -1,9 +1,8 @@
-import { CommonModule } from "@angular/common";
+﻿import { CommonModule } from "@angular/common";
 import { Component, OnInit, inject } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 
-import { MatButtonModule } from "@angular/material/button";
 import { MatInputModule } from "@angular/material/input";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
 
@@ -23,7 +22,6 @@ import { CheckStatus, CHECK_STATUS_OPTIONS } from "./fahrzeug.constants";
     ...IMR_UI_COMPONENTS,
     CommonModule,
     ReactiveFormsModule,
-    MatButtonModule,
     MatInputModule,
     MatProgressBarModule,
   ],

@@ -8,7 +8,6 @@ import {
   ImrCardComponent,
   ImrFormFieldComponent,
   ImrHeaderComponent,
-  ImrLabelComponent,
   ImrPaginatorComponent,
 } from '../../imr-ui-library';
 import { IAtemschutzGeraetProtokoll } from 'src/app/_interface/atemschutz_geraet_protokoll';
@@ -23,7 +22,6 @@ import { MatInputModule } from '@angular/material/input';
     ImrHeaderComponent,
     ImrCardComponent,
     ImrFormFieldComponent,
-    ImrLabelComponent,
     ImrPaginatorComponent,
     MatTableModule,
     MatSortModule,

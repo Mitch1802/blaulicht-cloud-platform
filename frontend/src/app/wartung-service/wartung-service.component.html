@@ -1,4 +1,4 @@
-<imr-header [breadcrumb]="breadcrumb"></imr-header>
+﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <section class="wartung-service-page">
   <header class="page-head">
@@ -11,7 +11,7 @@
     </div>
 
       <div class="actions-top">
-        <button mat-flat-button color="primary" type="button" (click)="reload()">Aktualisieren</button>
+        <imr-button color="primary" type="button" (click)="reload()">Aktualisieren</imr-button>
       </div>
       <div class="summary-grid">
         <article class="summary-card">
@@ -72,16 +72,15 @@
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef>Aktionen</th>
               <td mat-cell *matCellDef="let element" class="imr-action-cell">
-                <button
-                  mat-flat-button
+                <imr-button
                   class="imr-action-btn"
                   color="primary"
                   type="button"
                   [routerLink]="element.link"
-                  aria-label="Eintrag öffnen"
+                  ariaLabel="Eintrag öffnen"
                 >
                   <imr-icon class="m-0">remove_red_eye</imr-icon>
-                </button>
+                </imr-button>
               </td>
             </ng-container>
 

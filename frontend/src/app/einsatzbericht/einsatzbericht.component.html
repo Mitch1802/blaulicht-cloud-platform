@@ -1,4 +1,4 @@
-<imr-header [breadcrumb]="breadcrumb"></imr-header>
+﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <section class="bericht-page">
   <header class="page-head">
@@ -7,13 +7,13 @@
 
   <imr-card class="imr-card">
     <div class="imr-card__head">
-      <h2>{{ viewMode === 'list' ? 'Eins�tze' : 'Einsatz erfassen' }}</h2>
+      <h2>{{ viewMode === 'list' ? 'Einsätze' : 'Einsatz erfassen' }}</h2>
     </div>
       @if (viewMode === 'list') {
         <section class="drafts-section list-only">
           <div class="actions-row imr-top-actions">
             @if (canEditBerichte) {
-              <button mat-flat-button type="button" color="accent" (click)="neuerEntwurf()">Neuen Einsatz anlegen</button>
+              <imr-button type="button" color="accent" (click)="neuerEntwurf()">Neuen Einsatz anlegen</imr-button>
             } @else {
               <span class="permission-inline-note">Anlegen und Bearbeiten von Inhalten ist nur mit Rolle BERICHT moeglich.</span>
             }
@@ -28,8 +28,7 @@
             <p class="empty">Noch keine Einsatzberichte vorhanden.</p>
           } @else {
             <div class="imr-table-wrap">
-              <imr-form-field>
-                <imr-label>Suchen</imr-label>
+              <imr-form-field label="Suchen">
                 <input matInput #input (keyup)="applyFilter(input.value)" />
               </imr-form-field>
 
@@ -60,24 +59,24 @@
                   <th mat-header-cell *matHeaderCellDef>Aktionen</th>
                   <td mat-cell *matCellDef="let element" class="imr-action-cell">
                     @if (canEditBerichte) {
-                      <button mat-flat-button class="imr-action-btn" color="primary" type="button" (click)="berichtBearbeiten(element)">
+                      <imr-button class="imr-action-btn" color="primary" type="button" (click)="berichtBearbeiten(element)">
                         <imr-icon class="m-0">edit</imr-icon>
-                      </button>
+                      </imr-button>
                     }
                     @if (canManageStatus) {
-                      <button mat-flat-button class="imr-action-btn" color="primary" type="button" (click)="statusUmschalten(element)">
+                      <imr-button class="imr-action-btn" color="primary" type="button" (click)="statusUmschalten(element)">
                         <imr-icon class="m-0">check</imr-icon>
-                      </button>
+                      </imr-button>
                     }
                     @if (canPrintBericht) {
-                      <button mat-flat-button class="imr-action-btn" color="primary" type="button" (click)="druckeBericht(element)" aria-label="Bericht drucken">
+                      <imr-button class="imr-action-btn" color="primary" type="button" (click)="druckeBericht(element)" ariaLabel="Bericht drucken">
                         <imr-icon class="m-0">picture_as_pdf</imr-icon>
-                      </button>
+                      </imr-button>
                     }
                     @if (canDeleteBerichte) {
-                      <button mat-flat-button class="imr-action-btn" color="warn" type="button" (click)="berichtLoeschen(element)">
+                      <imr-button class="imr-action-btn" color="warn" type="button" (click)="berichtLoeschen(element)">
                         <imr-icon class="m-0">delete</imr-icon>
-                      </button>
+                      </imr-button>
                     }
                   </td>
                 </ng-container>
@@ -98,7 +97,7 @@
       } @else {
       <form [formGroup]="formBericht" (ngSubmit)="speichereBericht()" class="bericht-form">
         <div class="actions-row imr-top-actions">
-          <button mat-flat-button type="button" color="primary" (click)="zurueckZurListe()">Zur Liste</button>
+          <imr-button type="button" color="primary" (click)="zurueckZurListe()">Zur Liste</imr-button>
         </div>
 
         <div class="permission-hints form-hints">
@@ -120,8 +119,7 @@
 
             <div class="form-section-body">
               <section class="grid two-col">
-            <imr-form-field class="imr-full-width">
-              <imr-label>Status</imr-label>
+            <imr-form-field class="imr-full-width" label="Status">
               <imr-select formControlName="status">
                 @for (status of statusOptionen; track status.key) {
                   <imr-option [value]="status.key">{{ status.label }}</imr-option>
@@ -134,22 +132,22 @@
             }
 
             <div class="prefill-row">
-              <button mat-flat-button type="button" color="accent" [disabled]="!canEditBerichte" (click)="uebernehmeLetztenEinsatz()">
-                Daten BlaulichtSMS �bernehmen
-              </button>
+              <imr-button type="button" color="accent" [disabled]="!canEditBerichte" (click)="uebernehmeLetztenEinsatz()">
+                Daten BlaulichtSMS übernehmen
+              </imr-button>
             </div>
           </section>
 
           <section class="grid two-col">
             <div class="searchable-select">
-              <imr-form-field class="imr-full-width">
-                <imr-label>Einsatzleiter</imr-label>
+              <imr-form-field class="imr-full-width" label="Einsatzleiter">
                 <input
                   matInput
                   [formControl]="einsatzleiterSuche"
                   [matAutocomplete]="einsatzleiterAuto"
                   [errorStateMatcher]="einsatzleiterErrorMatcher"
                   placeholder="Name oder StbNr"
+                  uiControlErrors
                 />
                 <mat-autocomplete #einsatzleiterAuto="matAutocomplete" (optionSelected)="onEinsatzleiterSelected($event)">
                   @for (einsatzleiter of filteredEinsatzleiterOptionen; track einsatzleiter) {
@@ -159,14 +157,10 @@
                     <imr-option disabled>Kein Einsatzleiter gefunden.</imr-option>
                   }
                 </mat-autocomplete>
-                @if (formBericht.controls.einsatzleiter.hasError('required')) {
-                  <imr-error>Einsatzleiter ist erforderlich!</imr-error>
-                }
               </imr-form-field>
             </div>
 
-            <imr-form-field class="imr-full-width">
-              <imr-label>Einsatzart</imr-label>
+            <imr-form-field class="imr-full-width" label="Einsatzart">
               <imr-select formControlName="einsatzart">
                 @for (art of einsatzarten; track art) {
                   <imr-option [value]="art">{{ art }}</imr-option>
@@ -174,18 +168,15 @@
               </imr-select>
             </imr-form-field>
 
-            <imr-form-field class="imr-full-width">
-              <imr-label>Alarmstichwort</imr-label>
+            <imr-form-field class="imr-full-width" label="Alarmstichwort">
               <input matInput formControlName="alarmstichwort" />
             </imr-form-field>
 
-            <imr-form-field class="imr-full-width">
-              <imr-label>Einsatzadresse</imr-label>
+            <imr-form-field class="imr-full-width" label="Einsatzadresse">
               <input matInput formControlName="einsatzadresse" />
             </imr-form-field>
 
-            <imr-form-field class="imr-full-width">
-              <imr-label>Alarmierende Stelle</imr-label>
+            <imr-form-field class="imr-full-width" label="Alarmierende Stelle">
               <imr-select formControlName="alarmierendeStelle">
                 @for (stelle of alarmierendeStelleOptionen; track stelle) {
                   <imr-option [value]="stelle">{{ stelle }}</imr-option>
@@ -195,18 +186,15 @@
           </section>
 
           <section class="grid three-col">
-            <imr-form-field class="imr-full-width">
-              <imr-label>Einsatz Datum</imr-label>
+            <imr-form-field class="imr-full-width" label="Einsatz Datum">
               <input matInput type="date" formControlName="einsatzDatum" appDateInputMask="iso" />
             </imr-form-field>
 
-            <imr-form-field class="imr-full-width">
-              <imr-label>Ausger�ckt</imr-label>
+            <imr-form-field class="imr-full-width" label="Ausgerückt">
               <input matInput type="time" formControlName="ausgerueckt" />
             </imr-form-field>
 
-            <imr-form-field class="imr-full-width">
-              <imr-label>Einger�ckt</imr-label>
+            <imr-form-field class="imr-full-width" label="Eingerückt">
               <input matInput type="time" formControlName="eingerueckt" />
             </imr-form-field>
           </section>
@@ -216,24 +204,22 @@
 
           <imr-expansion-panel class="form-section" [class.has-error]="section2HasError">
               <imr-panel-title>
-                <span class="form-section-title">2. T�tigkeiten</span>
+                <span class="form-section-title">2. Tätigkeiten</span>
                 @if (section2HasError) {
                   <imr-icon class="section-error-icon">error</imr-icon>
                 }
               </imr-panel-title>
               <imr-panel-description>
-                <span class="form-section-subtitle">Verlauf und durchgef�rte Ma�nahmen</span>
+                <span class="form-section-subtitle">Verlauf und durchgeführte Maßnahmen</span>
               </imr-panel-description>
 
             <div class="form-section-body">
               <section class="grid one-col">
-            <imr-form-field class="imr-full-width">
-              <imr-label>Lage beim Eintreffen</imr-label>
+            <imr-form-field class="imr-full-width" label="Lage beim Eintreffen">
               <textarea matInput rows="3" formControlName="lageBeimEintreffen"></textarea>
             </imr-form-field>
 
-            <imr-form-field class="imr-full-width">
-              <imr-label>Gesetzte Ma�nahmen</imr-label>
+            <imr-form-field class="imr-full-width" label="Gesetzte Maßnahmen">
               <textarea matInput rows="3" formControlName="gesetzteMassnahmen"></textarea>
             </imr-form-field>
           </section>
@@ -253,8 +239,7 @@
                 <div class="conditional-block">
                   @if (isBrand) {
                     <h3>Brand-Details</h3>
-                    <imr-form-field class="imr-full-width">
-                      <imr-label>Brand Kategorie</imr-label>
+                    <imr-form-field class="imr-full-width" label="Brand Kategorie">
                       <imr-select formControlName="brandKategorie">
                         @for (opt of brandOptionenMitBeschreibung; track opt.titel) {
                           <imr-option [value]="opt.titel">
@@ -266,14 +251,12 @@
                         }
                       </imr-select>
                     </imr-form-field>
-                    <imr-form-field class="imr-full-width">
-                      <imr-label>Brand aus</imr-label>
+                    <imr-form-field class="imr-full-width" label="Brand aus">
                       <input matInput type="time" formControlName="brandAus" />
                     </imr-form-field>
                   } @else if (isTechnisch) {
                     <h3>Technische-Details</h3>
-                    <imr-form-field class="imr-full-width">
-                      <imr-label>Technische Kategorie</imr-label>
+                    <imr-form-field class="imr-full-width" label="Technische Kategorie">
                       <imr-select formControlName="technischKategorie">
                         @for (opt of technischOptionen; track opt) {
                           <imr-option [value]="opt">{{ opt }}</imr-option>
@@ -282,22 +265,19 @@
                     </imr-form-field>
                   } @else {
                     <h3>Einsatzspezifische Details</h3>
-                    <p class="empty">F�r diese Einsatzart gibt es keine zus�tzlichen Kategorien.</p>
+                    <p class="empty">Für diese Einsatzart gibt es keine zusätzlichen Kategorien.</p>
                   }
                   @if (isBMA) {
                     <h3>BMA-Details</h3>
-                    <imr-form-field class="imr-full-width">
-                      <imr-label>Meldergruppe</imr-label>
+                    <imr-form-field class="imr-full-width" label="Meldergruppe">
                       <input matInput formControlName="bmaMeldergruppe" />
                     </imr-form-field>
-                    <imr-form-field class="imr-full-width">
-                      <imr-label>Melder</imr-label>
+                    <imr-form-field class="imr-full-width" label="Melder">
                       <input matInput formControlName="bmaMelder" />
                     </imr-form-field>
-                    <imr-form-field class="imr-full-width">
-                      <imr-label>Fehl- oder T�uschungsalarm</imr-label>
+                    <imr-form-field class="imr-full-width" label="Fehl- oder Täuschungsalarm">
                       <imr-select formControlName="bmaFehlTauschungsalarm">
-                        <imr-option value="">Kein Fehl-/T�uschungsalarm</imr-option>
+                        <imr-option value="">Kein Fehl-/Täuschungsalarm</imr-option>
                         @for (opt of bmaFehlTauschungsalarmOptionen; track opt) {
                           <imr-option [value]="opt">{{ opt }}</imr-option>
                         }
@@ -309,13 +289,12 @@
                 <div class="conditional-block">
                   <h3>Mitalarmiert</h3>
                   <div class="autocomplete-multi">
-                    <imr-form-field class="imr-full-width">
-                      <imr-label>Mitalarmiert hinzuf�gen</imr-label>
+                    <imr-form-field class="imr-full-width" label="Mitalarmiert hinzufügen">
                       <input
                         matInput
                         [formControl]="mitalarmiertSuche"
                         [matAutocomplete]="mitalarmiertAuto"
-                        placeholder="Stelle ausw�hlen"
+                        placeholder="Stelle auswählen"
                       />
                       <mat-autocomplete #mitalarmiertAuto="matAutocomplete" (optionSelected)="onMitalarmiertSelected($event)">
                         @for (opt of filteredMitalarmiertOptionen; track opt) {
@@ -354,7 +333,7 @@
               <div class="upload-row">
                 <label class="upload-label" for="fotoDokuDateien">Foto Doku Dateien</label>
                 <input #fotoDokuDateienInput id="fotoDokuDateien" class="file-input-hidden" type="file" multiple accept=".jpg,.jpeg,.png,.pdf" (change)="onDokumentSelected($event, 'fotoDoku')" />
-                <button mat-flat-button type="button" color="primary" class="upload-button" (click)="fotoDokuDateienInput.click()">Dateien ausw�hlen</button>
+                <imr-button type="button" color="primary" class="upload-button" (click)="fotoDokuDateienInput.click()">Dateien auswählen</imr-button>
                 @if (fotoDokuFiles.length > 0) {
                   <div class="preview-grid">
                     @for (file of fotoDokuFiles; track file; let i = $index) {
@@ -365,12 +344,12 @@
                           <div class="preview-file">PDF</div>
                         }
                         <div class="preview-meta">
-                          <button mat-flat-button class="imr-action-btn" type="button" color="primary" aria-label="Bild �ffnen" (click)="openFoto(getFilePreviewUrl(file))">
+                          <imr-button class="imr-action-btn" type="button" color="primary" ariaLabel="Bild öffnen" (click)="openFoto(getFilePreviewUrl(file))">
                             <imr-icon>open_in_new</imr-icon>
-                          </button>
-                          <button mat-flat-button class="imr-action-btn" type="button" color="warn" aria-label="Datei entfernen" (click)="removeSelectedDokument(i, 'fotoDoku')">
+                          </imr-button>
+                          <imr-button class="imr-action-btn" type="button" color="warn" ariaLabel="Datei entfernen" (click)="removeSelectedDokument(i, 'fotoDoku')">
                             <imr-icon>delete</imr-icon>
-                          </button>
+                          </imr-button>
                         </div>
                       </article>
                     }
@@ -387,12 +366,12 @@
                           <div class="preview-file">PDF</div>
                         }
                         <div class="preview-meta">
-                          <button mat-flat-button class="imr-action-btn" type="button" color="primary" aria-label="Bild �ffnen" (click)="openFoto(foto.foto_url)">
+                          <imr-button class="imr-action-btn" type="button" color="primary" ariaLabel="Bild öffnen" (click)="openFoto(foto.foto_url)">
                             <imr-icon>open_in_new</imr-icon>
-                          </button>
-                          <button mat-flat-button class="imr-action-btn" type="button" color="warn" aria-label="Datei l�schen" (click)="loescheBestehendesFoto(foto)">
+                          </imr-button>
+                          <imr-button class="imr-action-btn" type="button" color="warn" ariaLabel="Datei löschen" (click)="loescheBestehendesFoto(foto)">
                             <imr-icon>delete</imr-icon>
-                          </button>
+                          </imr-button>
                         </div>
                       </article>
                     }
@@ -403,7 +382,7 @@
                 <div class="upload-row">
                   <label class="upload-label" for="zulassungDateien">Zulassungsschein Dateien</label>
                   <input #zulassungDateienInput id="zulassungDateien" class="file-input-hidden" type="file" multiple accept=".jpg,.jpeg,.png,.pdf" (change)="onDokumentSelected($event, 'zulassungsschein')" />
-                  <button mat-flat-button type="button" color="primary" class="upload-button" (click)="zulassungDateienInput.click()">Dateien ausw�hlen</button>
+                  <imr-button type="button" color="primary" class="upload-button" (click)="zulassungDateienInput.click()">Dateien auswählen</imr-button>
                   @if (zulassungFiles.length > 0) {
                     <div class="preview-grid">
                       @for (file of zulassungFiles; track file; let i = $index) {
@@ -414,12 +393,12 @@
                             <div class="preview-file">PDF</div>
                           }
                           <div class="preview-meta">
-                            <button mat-flat-button class="imr-action-btn" type="button" color="primary" aria-label="Bild �ffnen" (click)="openFoto(getFilePreviewUrl(file))">
+                            <imr-button class="imr-action-btn" type="button" color="primary" ariaLabel="Bild öffnen" (click)="openFoto(getFilePreviewUrl(file))">
                               <imr-icon>open_in_new</imr-icon>
-                            </button>
-                            <button mat-flat-button class="imr-action-btn" type="button" color="warn" aria-label="Datei entfernen" (click)="removeSelectedDokument(i, 'zulassungsschein')">
+                            </imr-button>
+                            <imr-button class="imr-action-btn" type="button" color="warn" ariaLabel="Datei entfernen" (click)="removeSelectedDokument(i, 'zulassungsschein')">
                               <imr-icon>delete</imr-icon>
-                            </button>
+                            </imr-button>
                           </div>
                         </article>
                       }
@@ -436,12 +415,12 @@
                             <div class="preview-file">PDF</div>
                           }
                           <div class="preview-meta">
-                            <button mat-flat-button class="imr-action-btn" type="button" color="primary" aria-label="Bild �ffnen" (click)="openFoto(foto.foto_url)">
+                            <imr-button class="imr-action-btn" type="button" color="primary" ariaLabel="Bild öffnen" (click)="openFoto(foto.foto_url)">
                               <imr-icon>open_in_new</imr-icon>
-                            </button>
-                            <button mat-flat-button class="imr-action-btn" type="button" color="warn" aria-label="Datei l�schen" (click)="loescheBestehendesFoto(foto)">
+                            </imr-button>
+                            <imr-button class="imr-action-btn" type="button" color="warn" ariaLabel="Datei löschen" (click)="loescheBestehendesFoto(foto)">
                               <imr-icon>delete</imr-icon>
-                            </button>
+                            </imr-button>
                           </div>
                         </article>
                       }
@@ -452,7 +431,7 @@
                 <div class="upload-row">
                   <label class="upload-label" for="versicherungDateien">Versicherungsschein Dateien</label>
                   <input #versicherungDateienInput id="versicherungDateien" class="file-input-hidden" type="file" multiple accept=".jpg,.jpeg,.png,.pdf" (change)="onDokumentSelected($event, 'versicherungsschein')" />
-                  <button mat-flat-button type="button" color="primary" class="upload-button" (click)="versicherungDateienInput.click()">Dateien ausw�hlen</button>
+                  <imr-button type="button" color="primary" class="upload-button" (click)="versicherungDateienInput.click()">Dateien auswählen</imr-button>
                   @if (versicherungFiles.length > 0) {
                     <div class="preview-grid">
                       @for (file of versicherungFiles; track file; let i = $index) {
@@ -463,12 +442,12 @@
                             <div class="preview-file">PDF</div>
                           }
                           <div class="preview-meta">
-                            <button mat-flat-button class="imr-action-btn" type="button" color="primary" aria-label="Bild �ffnen" (click)="openFoto(getFilePreviewUrl(file))">
+                            <imr-button class="imr-action-btn" type="button" color="primary" ariaLabel="Bild öffnen" (click)="openFoto(getFilePreviewUrl(file))">
                               <imr-icon>open_in_new</imr-icon>
-                            </button>
-                            <button mat-flat-button class="imr-action-btn" type="button" color="warn" aria-label="Datei entfernen" (click)="removeSelectedDokument(i, 'versicherungsschein')">
+                            </imr-button>
+                            <imr-button class="imr-action-btn" type="button" color="warn" ariaLabel="Datei entfernen" (click)="removeSelectedDokument(i, 'versicherungsschein')">
                               <imr-icon>delete</imr-icon>
-                            </button>
+                            </imr-button>
                           </div>
                         </article>
                       }
@@ -485,12 +464,12 @@
                             <div class="preview-file">PDF</div>
                           }
                           <div class="preview-meta">
-                            <button mat-flat-button class="imr-action-btn" type="button" color="primary" aria-label="Bild �ffnen" (click)="openFoto(foto.foto_url)">
+                            <imr-button class="imr-action-btn" type="button" color="primary" ariaLabel="Bild öffnen" (click)="openFoto(foto.foto_url)">
                               <imr-icon>open_in_new</imr-icon>
-                            </button>
-                            <button mat-flat-button class="imr-action-btn" type="button" color="warn" aria-label="Datei l�schen" (click)="loescheBestehendesFoto(foto)">
+                            </imr-button>
+                            <imr-button class="imr-action-btn" type="button" color="warn" ariaLabel="Datei löschen" (click)="loescheBestehendesFoto(foto)">
                               <imr-icon>delete</imr-icon>
-                            </button>
+                            </imr-button>
                           </div>
                         </article>
                       }
@@ -513,8 +492,7 @@
             <div class="form-section-body">
               <section class="grid two-col">
                 <div class="autocomplete-multi">
-                  <imr-form-field class="imr-full-width">
-                    <imr-label>Fahrzeug hinzuf�gen</imr-label>
+                  <imr-form-field class="imr-full-width" label="Fahrzeug hinzufügen">
                     <input
                       matInput
                       [formControl]="fahrzeugSuche"
@@ -542,8 +520,7 @@
                 </div>
 
                 <div class="autocomplete-multi">
-                  <imr-form-field class="imr-full-width">
-                    <imr-label>Mitglieder</imr-label>
+                  <imr-form-field class="imr-full-width" label="Mitglieder">
                     <imr-select formControlName="mitglieder" [multiple]="true">
                       <imr-select-trigger>
                         {{ mitgliederAuswahlTriggerText }}
@@ -558,7 +535,7 @@
                     </imr-select>
                   </imr-form-field>
 
-                  <p class="selection-description">Ausgew�hlt: {{ mitgliederAuswahlCounter }}</p>
+                  <p class="selection-description">Ausgewählt: {{ mitgliederAuswahlCounter }}</p>
                 </div>
               </section>
             </div>
@@ -566,9 +543,10 @@
         </imr-accordion>
 
         <div class="imr-form-actions">
-          <button mat-flat-button color="accent" type="submit" [disabled]="!canEditBerichte">Einsatzbericht speichern</button>
+          <imr-button color="accent" type="submit" [disabled]="!canEditBerichte">Einsatzbericht speichern</imr-button>
         </div>
       </form>
       }
   </imr-card>
 </section>
+

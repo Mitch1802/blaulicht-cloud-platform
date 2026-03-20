@@ -1,7 +1,6 @@
-import { Component, HostListener, OnInit, inject } from '@angular/core';
+﻿import { Component, HostListener, OnInit, inject } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { Observable, of } from 'rxjs';
 import { IMR_UI_COMPONENTS } from '../imr-ui-library';
@@ -96,7 +95,6 @@ type IJugendFertigkeitsDatumKey =
     FormsModule,
     ReactiveFormsModule,
     MatTableModule,
-    MatButtonModule,
     MatInputModule,
     DateInputMaskDirective,
   ],

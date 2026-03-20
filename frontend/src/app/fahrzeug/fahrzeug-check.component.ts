@@ -1,4 +1,4 @@
-import { CommonModule } from "@angular/common";
+﻿import { CommonModule } from "@angular/common";
 import { Component, OnInit, inject } from "@angular/core";
 import {
   FormArray,
@@ -10,7 +10,6 @@ import {
 } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 
-import { MatButtonModule } from "@angular/material/button";
 import { MatInputModule } from "@angular/material/input";
 
 import { ApiHttpService } from 'src/app/_service/api-http.service';
@@ -51,7 +50,6 @@ type CheckRoomView = {
     ...IMR_UI_COMPONENTS,
     CommonModule,
     ReactiveFormsModule,
-    MatButtonModule,
     MatInputModule,
   ],
   templateUrl: "./fahrzeug-check.component.html",

@@ -1,8 +1,7 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+﻿import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { A11yModule } from '@angular/cdk/a11y';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
-import { MatButton } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { Observable, forkJoin, map, of } from 'rxjs';
 import { IMR_UI_COMPONENTS } from '../imr-ui-library';
@@ -89,7 +88,6 @@ const DEFAULT_PLAN_TEMPLATE: ReadonlyArray<HomepageSectionTemplate> = [
     ...IMR_UI_COMPONENTS,
     MatInputModule,
     MatAutocompleteModule,
-    MatButton,
   ],
   templateUrl: './homepage.component.html',
   styleUrl: './homepage.component.sass',

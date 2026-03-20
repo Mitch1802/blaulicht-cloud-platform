@@ -5,21 +5,19 @@
   [subscriptSizing]="subscriptSizing"
 >
   @if (label) {
-    <mat-label>{{ label }}</mat-label>
+    <mat-label>
+      {{ label }}
+      @if (required) { * }
+    </mat-label>
   }
+
   <input
     matInput
     [type]="type"
-    [value]="value"
     [placeholder]="placeholder"
+    [formControl]="control"
     [required]="required"
-    [disabled]="disabled"
     [readonly]="readonly"
     [autocomplete]="autocomplete"
-    [errorStateMatcher]="errorStateMatcher"
-    (input)="handleInput($event)"
-    (blur)="handleBlur()"
   />
-  <ng-content></ng-content>
 </mat-form-field>
-

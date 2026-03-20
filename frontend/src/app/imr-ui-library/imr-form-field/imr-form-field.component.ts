@@ -1,4 +1,4 @@
-import { Component, ContentChild, Input, OnInit, ViewChild } from '@angular/core'
+import { booleanAttribute, Component, ContentChild, Input, OnInit, ViewChild } from '@angular/core'
 import { MatFormField, MatFormFieldControl, MatFormFieldModule } from '@angular/material/form-field'
 import { ImrLabelComponent } from '../imr-label/imr-label.component'
 import { ImrErrorComponent } from '../imr-error/imr-error.component'
@@ -22,10 +22,17 @@ import { ImrSuffixComponent } from '../imr-suffix/imr-suffix.component'
   imports: [MatFormFieldModule],
 })
 export class ImrFormFieldComponent implements OnInit {
+  @Input() label = ''
+  @Input() hint = ''
   @Input() fieldClass = 'imr-full-width'
   @Input() appearance: 'fill' | 'outline' = 'outline'
-  @Input() hintLabel = ''
   @Input() subscriptSizing: 'fixed' | 'dynamic' = 'dynamic'
+  @Input({ transform: booleanAttribute }) requiredIndicator = false
+
+  @Input()
+  set hintLabel(value: string) {
+    this.hint = value
+  }
 
   @ViewChild(MatFormField, { static: true }) private readonly _matFormField!: MatFormField
   @ContentChild(MatFormFieldControl, { static: true, descendants: true })
@@ -55,7 +62,11 @@ export class ImrFormFieldComponent implements OnInit {
   protected readonly _errorChild?: ImrErrorComponent
 
   get hasLabel(): boolean {
-    return !!this._labelChild
+    return this.label.trim().length > 0 || !!this._labelChild
+  }
+
+  get useProjectedLabel(): boolean {
+    return this.label.trim().length === 0 && !!this._labelChild
   }
 
   ngOnInit(): void {

@@ -7,23 +7,21 @@
 
   <imr-card class="imr-card">
       <div class="imr-top-actions">
-        <button
-          mat-flat-button
+        <imr-button
           color="primary"
           type="button"
           (click)="newsfeedOeffnen()"
         >
           Newsfeed anzeigen
-        </button>
-        <button
-          mat-flat-button
+        </imr-button>
+        <imr-button
           color="accent"
           [hidden]="isEditMode"
           (click)="neueDetails()"
           type="button"
         >
           Hinzufügen
-        </button>
+        </imr-button>
       </div>
 
       @if (isEditMode) {
@@ -35,23 +33,21 @@
         <input hidden type="text"  formControlName="id" />
 
         <div class="imr-form-actions">
-          <button
-          mat-flat-button
+          <imr-button
           color="accent"
           [hidden]="!formModul.valid"
           type="submit"
           >
           Daten speichern
-          </button>
-          <button
-          mat-flat-button
+          </imr-button>
+          <imr-button
           color="primary"
           [hidden]="formModul.disabled"
           type="button"
           (click)="abbrechen()"
           >
           Abbrechen
-          </button>
+          </imr-button>
         </div>
 
         <section class="template-block">
@@ -59,8 +55,7 @@
 
           <section class="app-grid imr-form-grid template-grid">
               <div class="app-col-12 app-col-lg-6 mb-3">
-                <imr-form-field class="imr-full-width" subscriptSizing="dynamic">
-                  <imr-label>Vorlage auswählen</imr-label>
+                <imr-form-field class="imr-full-width" subscriptSizing="dynamic" label="Vorlage auswählen">
                   <imr-select formControlName="template_id">
                     <imr-option value="">Keine Vorlage</imr-option>
                     @for (tpl of templateArray; track tpl.id) {
@@ -70,41 +65,37 @@
                 </imr-form-field>
               </div>
               <div class="app-col-12 app-col-lg-6 mb-3 template-actions">
-                <button
-                  mat-flat-button
+                <imr-button
                   color="primary"
                   type="button"
                   [disabled]="!formModul.controls['template_id'].value"
                   (click)="vorlageAnwenden()"
                 >
                   Vorlage bearbeiten
-                </button>
-                <button
-                  mat-flat-button
+                </imr-button>
+                <imr-button
                   color="warn"
                   type="button"
                   [disabled]="!formModul.controls['template_id'].value"
                   (click)="vorlageLoeschen()"
                 >
                   Vorlage löschen
-                </button>
+                </imr-button>
               </div>
               <div class="app-col-12 app-col-lg-6 mb-3">
-                <imr-form-field class="imr-full-width" subscriptSizing="dynamic">
-                  <imr-label>Vorlagenname</imr-label>
+                <imr-form-field class="imr-full-width" subscriptSizing="dynamic" label="Vorlagenname">
                   <input matInput type="text" formControlName="template_name" placeholder="z. B. Geburtstagswünsche" />
                 </imr-form-field>
               </div>
               <div class="app-col-12 app-col-lg-6 mb-3 template-actions">
-                <button
-                  mat-flat-button
+                <imr-button
                   color="accent"
                   type="button"
                   [disabled]="!formModul.controls['template_name'].value || !formModul.controls['title'].value || !formModul.controls['text'].value"
                   (click)="vorlageSpeichern()"
                 >
                   {{ formModul.controls['template_id'].value ? 'Vorlage aktualisieren' : 'Als Vorlage speichern' }}
-                </button>
+                </imr-button>
               </div>
             @if (templateArray.length === 0) {
               <div class="app-col-12 template-hint">Noch keine Vorlagen vorhanden.</div>
@@ -117,19 +108,12 @@
 
           <section class="app-grid imr-form-grid news-grid">
               <div class="app-col-12 app-col-lg-6 mb-3">
-                <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width">
-                  <imr-label>Titel</imr-label>
-                  <input matInput type="text" formControlName="title">
-                  @if (formModul.controls['title'].hasError('required')) {
-                    <imr-error>
-                      Titel ist erforderlich!
-                    </imr-error>
-                  }
+                <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="Titel">
+                  <input matInput type="text" formControlName="title" uiControlErrors>
                 </imr-form-field>
               </div>
               <div class="app-col-12 app-col-lg-6 mb-3">
-                <imr-form-field class="imr-full-width">
-                  <imr-label>Typ</imr-label>
+                <imr-form-field class="imr-full-width" label="Typ">
                   <imr-select formControlName="typ">
                       <imr-option value="intern">Intern</imr-option>
                       <imr-option value="extern">Extern</imr-option>
@@ -137,16 +121,13 @@
                 </imr-form-field>
               </div>
               <div class="app-col-12 app-col-lg-12 mb-3">
-                <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width">
-                  <imr-label>Text</imr-label>
+                <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="Text">
                   <textarea
                     matInput
                     formControlName="text"
                     rows="5"
+                    uiControlErrors
                   ></textarea>
-                  @if (formModul.controls['text'].hasError('required')) {
-                  <imr-error> Text ist erforderlich! </imr-error>
-                  }
                 </imr-form-field>
               </div>
 
@@ -160,10 +141,10 @@
                 </div>
 
                 <div class="upload-stage-actions">
-                  <button mat-flat-button type="button" color="primary" class="upload-button" (click)="fotoUpload.click()">{{btnText}}</button>
+                  <imr-button type="button" color="primary" class="upload-button" (click)="fotoUpload.click()">{{btnText}}</imr-button>
                   <input hidden #fotoUpload type="file" id="fotoUpload" accept=".jpg,.jpeg,.png" (change)="onFotoSelected($event)" />
                   @if (fileFound==true) {
-                    <button mat-flat-button color="primary" type="button" class="preview-open-btn" (click)="openModal()">Bild öffnen</button>
+                    <imr-button color="primary" type="button" class="preview-open-btn" (click)="openModal()">Bild öffnen</imr-button>
                   }
                 </div>
 
@@ -177,8 +158,8 @@
           </section>
         </section>
 
-        <button mat-flat-button class="delete-action imr-delete-btn" color="warn" [hidden]="!formModul.controls['id'].value"
-        type="button" (click)="datenLoeschen()">Daten löschen</button>
+        <imr-button class="delete-action imr-delete-btn" color="warn" [hidden]="!formModul.controls['id'].value"
+        type="button" (click)="datenLoeschen()">Daten löschen</imr-button>
       </form>
       }
 
@@ -189,8 +170,7 @@
         } @else {
           <section class="news-table-wrap imr-table-wrap">
             <div class="table-toolbar">
-              <imr-form-field class="filter-field" appearance="outline">
-                <imr-label>Suche</imr-label>
+              <imr-form-field class="filter-field" appearance="outline" label="Suche">
                 <input
                   matInput
                   type="text"
@@ -235,8 +215,7 @@
                 <ng-container matColumnDef="actions">
                   <th mat-header-cell *matHeaderCellDef class="table-actions-head">Aktionen</th>
                   <td mat-cell *matCellDef="let element" class="imr-action-cell">
-                    <button
-                      mat-flat-button
+                    <imr-button
                       class="imr-action-btn"
                       color="primary"
                       type="button"
@@ -244,9 +223,8 @@
                       [attr.aria-label]="'News ' + element.title + ' bearbeiten'"
                     >
                       <imr-icon>edit</imr-icon>
-                    </button>
-                    <button
-                      mat-flat-button
+                    </imr-button>
+                    <imr-button
                       class="imr-action-btn"
                       color="warn"
                       type="button"
@@ -254,7 +232,7 @@
                       [attr.aria-label]="'News ' + element.title + ' löschen'"
                     >
                       <imr-icon>delete</imr-icon>
-                    </button>
+                    </imr-button>
                   </td>
                 </ng-container>
 

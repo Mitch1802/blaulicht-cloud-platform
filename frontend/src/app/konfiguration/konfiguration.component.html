@@ -1,4 +1,4 @@
-<imr-header [breadcrumb]="breadcrumb"></imr-header>
+﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <section class="config-page">
   <header class="page-head">
@@ -11,19 +11,17 @@
     </div>
 
       <form [formGroup]="formRolle" (ngSubmit)="rolleSpeichern()" class="role-form">
-        <imr-form-field class="imr-full-width">
-          <imr-label>Rolle</imr-label>
-          <input matInput type="text" formControlName="rolle" />
+        <imr-form-field class="imr-full-width" label="Rolle">
+          <input matInput type="text" formControlName="rolle" uiControlErrors />
         </imr-form-field>
 
-        <button
-          mat-flat-button
+        <imr-button
           color="accent"
           [disabled]="!formRolle.valid"
           type="submit"
         >
           Rolle speichern
-        </button>
+        </imr-button>
 
         <imr-chip-set class="imr-chips">
           @for (rolle of rollen; track rolle) {
@@ -47,123 +45,74 @@
         <input hidden type="text"  formControlName="id" />
 
         <div class="actions-top">
-          <button
-            mat-flat-button
+          <imr-button
             color="accent"
             [disabled]="!formKonfig.valid"
             type="submit"
           >
             Stammdaten speichern
-          </button>
+          </imr-button>
         </div>
 
         <section class="app-grid imr-form-grid">
           <div class="app-col-12 app-col-lg-4 mb-3">
-            <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width">
-              <imr-label>FW Nummer</imr-label>
-              <input matInput type="text" formControlName="fw_nummer" />
-              @if (formKonfig.controls['fw_nummer'].hasError('required')) {
-                <imr-error> FW Nummer ist erforderlich! </imr-error>
-              }
+            <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="FW Nummer">
+              <input matInput type="text" formControlName="fw_nummer" uiControlErrors />
             </imr-form-field>
           </div>
           <div class="app-col-12 app-col-lg-8 mb-3">
-            <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width">
-              <imr-label>FW Name</imr-label>
-              <input matInput type="text" formControlName="fw_name" />
-              @if (formKonfig.controls['fw_name'].hasError('required')) {
-                <imr-error> FW Name ist erforderlich! </imr-error>
-              }
+            <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="FW Name">
+              <input matInput type="text" formControlName="fw_name" uiControlErrors />
             </imr-form-field>
           </div>
           <div class="app-col-12 app-col-lg-5 mb-3">
-            <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width">
-              <imr-label>Straße</imr-label>
-              <input matInput type="text" formControlName="fw_street" />
-              @if (formKonfig.controls['fw_street'].hasError('required')) {
-                <imr-error> Straße ist erforderlich! </imr-error>
-              }
+            <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="Straße">
+              <input matInput type="text" formControlName="fw_street" uiControlErrors />
             </imr-form-field>
           </div>
           <div class="app-col-12 app-col-lg-3 mb-3">
-            <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width">
-              <imr-label>PLZ</imr-label>
-              <input matInput type="text" formControlName="fw_plz" />
-              @if (formKonfig.controls['fw_plz'].hasError('required')) {
-                <imr-error> PLZ ist erforderlich! </imr-error>
-              }
+            <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="PLZ">
+              <input matInput type="text" formControlName="fw_plz" uiControlErrors />
             </imr-form-field>
           </div>
           <div class="app-col-12 app-col-lg-4 mb-3">
-            <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width">
-              <imr-label>Ort</imr-label>
-              <input matInput type="text" formControlName="fw_ort" />
-              @if (formKonfig.controls['fw_ort'].hasError('required')) {
-                <imr-error> Ort ist erforderlich! </imr-error>
-              }
+            <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="Ort">
+              <input matInput type="text" formControlName="fw_ort" uiControlErrors />
             </imr-form-field>
           </div>
           <div class="app-col-12 app-col-lg-6 mb-3">
-            <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width">
-              <imr-label>E-Mail</imr-label>
-              <input matInput type="text" formControlName="fw_email" />
-              @if (formKonfig.controls['fw_email'].hasError('required')) {
-                <imr-error> E-Mail ist erforderlich! </imr-error>
-              }
+            <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="E-Mail">
+              <input matInput type="text" formControlName="fw_email" uiControlErrors />
             </imr-form-field>
           </div>
           <div class="app-col-12 app-col-lg-6 mb-3">
-            <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width">
-              <imr-label>Telefon</imr-label>
-              <input matInput type="text" formControlName="fw_telefon" />
-              @if (formKonfig.controls['fw_telefon'].hasError('required')) {
-                <imr-error> Telefon ist erforderlich! </imr-error>
-              }
+            <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="Telefon">
+              <input matInput type="text" formControlName="fw_telefon" uiControlErrors />
             </imr-form-field>
           </div>
           <div class="app-col-12 app-col-lg-12 mb-3">
-            <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width">
-              <imr-label>Webseite</imr-label>
-              <input matInput type="text" formControlName="fw_webseite" />
-              @if (formKonfig.controls['fw_webseite'].hasError('required')) {
-                <imr-error> Webseite ist erforderlich! </imr-error>
-              }
+            <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="Webseite">
+              <input matInput type="text" formControlName="fw_webseite" uiControlErrors />
             </imr-form-field>
           </div>
           <div class="app-col-12 app-col-lg-12 mb-3">
-            <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width">
-              <imr-label>Kommandant</imr-label>
-              <input matInput type="text" formControlName="fw_kdt" />
-              @if (formKonfig.controls['fw_kdt'].hasError('required')) {
-                <imr-error> Kommandant ist erforderlich! </imr-error>
-              }
+            <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="Kommandant">
+              <input matInput type="text" formControlName="fw_kdt" uiControlErrors />
             </imr-form-field>
           </div>
           <div class="app-col-12 app-col-lg-12 mb-3">
-            <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width">
-              <imr-label>Bankkonto</imr-label>
-              <input matInput type="text" formControlName="fw_konto" />
-              @if (formKonfig.controls['fw_konto'].hasError('required')) {
-                <imr-error> Bankkonto ist erforderlich! </imr-error>
-              }
+            <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="Bankkonto">
+              <input matInput type="text" formControlName="fw_konto" uiControlErrors />
             </imr-form-field>
           </div>
           <div class="app-col-12 app-col-lg-4 mb-3">
-            <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width">
-              <imr-label>BIC</imr-label>
-              <input matInput type="text" formControlName="fw_bic" />
-              @if (formKonfig.controls['fw_bic'].hasError('required')) {
-                <imr-error> BIC ist erforderlich! </imr-error>
-              }
+            <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="BIC">
+              <input matInput type="text" formControlName="fw_bic" uiControlErrors />
             </imr-form-field>
           </div>
           <div class="app-col-12 app-col-lg-8 mb-3">
-            <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width">
-              <imr-label>IBAN</imr-label>
-              <input matInput type="text" formControlName="fw_iban" />
-              @if (formKonfig.controls['fw_iban'].hasError('required')) {
-                <imr-error> IBAN ist erforderlich! </imr-error>
-              }
+            <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="IBAN">
+              <input matInput type="text" formControlName="fw_iban" uiControlErrors />
             </imr-form-field>
           </div>
         </section>
@@ -187,20 +136,18 @@
       </div>
 
       <div class="actions-top">
-        <button
-          mat-flat-button
+        <imr-button
           color="accent"
           (click)="backupErstellen()"
           type="button"
         >
           Backup erstellen
-        </button>
+        </imr-button>
       </div>
 
       @if (backups.length > 0) {
       <div class="table-toolbar">
-        <imr-form-field class="filter-field" appearance="outline">
-          <imr-label>Backups filtern</imr-label>
+        <imr-form-field class="filter-field" appearance="outline" label="Backups filtern">
           <input
             matInput
             [(ngModel)]="backupFilter"
@@ -220,36 +167,33 @@
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef class="table-actions-head">Aktionen</th>
             <td mat-cell *matCellDef="let element" class="imr-action-cell">
-              <button
-                mat-flat-button
+              <imr-button
                 class="imr-action-btn"
                 color="primary"
                 type="button"
                 (click)="backupImport(element)"
-                aria-label="Backup wiederherstellen"
+                ariaLabel="Backup wiederherstellen"
               >
                 <imr-icon>settings_backup_restore</imr-icon>
-              </button>
-              <button
-                mat-flat-button
+              </imr-button>
+              <imr-button
                 class="imr-action-btn"
                 color="primary"
                 type="button"
                 (click)="backupDownload(element)"
-                aria-label="Backup herunterladen"
+                ariaLabel="Backup herunterladen"
               >
                 <imr-icon>get_app</imr-icon>
-              </button>
-              <button
-                mat-flat-button
+              </imr-button>
+              <imr-button
                 class="imr-action-btn"
                 color="warn"
                 type="button"
                 (click)="backupLoeschen(element)"
-                aria-label="Backup löschen"
+                ariaLabel="Backup löschen"
               >
                 <imr-icon>delete</imr-icon>
-              </button>
+              </imr-button>
             </td>
           </ng-container>
 
@@ -285,8 +229,7 @@
 
         <div class="app-grid mt-2">
           <div class="app-col-12 app-col-md-6 app-col-lg-4">
-            <imr-form-field appearance="outline" class="imr-full-width">
-              <imr-label>Zielbereich</imr-label>
+            <imr-form-field appearance="outline" class="imr-full-width" label="Zielbereich">
               <imr-select
                 [(ngModel)]="cleanupTarget"
                 [ngModelOptions]="{ standalone: true }"
@@ -303,29 +246,27 @@
         </div>
 
         <div class="cleanup-actions">
-          <button
-            mat-flat-button
+          <imr-button
             color="primary"
             type="button"
             [disabled]="cleanupRunning"
             (click)="mediaCleanup(false)"
-            aria-label="Verwaiste Dateien analysieren"
+            ariaLabel="Verwaiste Dateien analysieren"
           >
             <imr-icon>manage_search</imr-icon>
             Analysieren
-          </button>
+          </imr-button>
 
-          <button
-            mat-flat-button
+          <imr-button
             color="warn"
             type="button"
             [disabled]="cleanupRunning"
             (click)="mediaCleanup(true)"
-            aria-label="Verwaiste Dateien endgültig löschen"
+            ariaLabel="Verwaiste Dateien endgültig löschen"
           >
             <imr-icon>delete</imr-icon>
             Endgültig löschen
-          </button>
+          </imr-button>
         </div>
 
         @if (cleanupSummary) {
@@ -334,8 +275,7 @@
 
         @if (cleanupFiles.length > 0) {
           <div class="table-toolbar">
-            <imr-form-field class="filter-field" appearance="outline">
-              <imr-label>Bereinigung filtern</imr-label>
+            <imr-form-field class="filter-field" appearance="outline" label="Bereinigung filtern">
               <input
                 matInput
                 [(ngModel)]="cleanupFilter"
@@ -381,3 +321,5 @@
       </section>
   </imr-card>
 </section>
+
+

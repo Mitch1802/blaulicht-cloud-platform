@@ -1,4 +1,4 @@
-import { IInventar, IInventarVerleihung } from './../_interface/inventar';
+﻿import { IInventar, IInventarVerleihung } from './../_interface/inventar';
 import {
   AfterViewInit,
   Component,
@@ -22,7 +22,6 @@ import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
-import { MatButton } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { Router } from '@angular/router';
 import { IMR_UI_COMPONENTS, ImrPaginatorComponent } from '../imr-ui-library';
@@ -45,7 +44,6 @@ interface IVerleihungFormEintrag {
     FormsModule,
     ReactiveFormsModule,
     ...IMR_UI_COMPONENTS,
-    MatButton,
     MatInputModule,
     MatTableModule,
     MatSortModule,

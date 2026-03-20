@@ -1,15 +1,14 @@
-import { Component, OnInit, inject } from '@angular/core';
+﻿import { Component, OnInit, inject } from '@angular/core';
 import { ApiHttpService } from 'src/app/_service/api-http.service';
 import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
-import { ImrCardContentComponent, ImrHeaderComponent } from '../../imr-ui-library';
+import { ImrButtonComponent, ImrCardContentComponent, ImrFormFieldComponent, ImrHeaderComponent, UiControlErrorsDirective } from '../../imr-ui-library';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
 import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
-import { MatError, MatFormField, MatLabel } from '@angular/material/form-field';
-import { MatButton } from '@angular/material/button';
+import { MatError } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
@@ -25,17 +24,17 @@ import { DateInputMaskDirective } from '../../_directive/date-input-mask.directi
 @Component({
   selector: 'app--atemschutzgeraete',
   imports: [
+    ImrButtonComponent,
     ImrHeaderComponent,
     ImrCardContentComponent,
     MatCardModule,
     MatTabsModule,
     FormsModule,
     ReactiveFormsModule,
-    MatFormField,
-    MatLabel,
+    ImrFormFieldComponent,
+    UiControlErrorsDirective,
     MatSelect,
     MatOption,
-    MatButton,
     MatInput,
     MatError,
     MatTableModule,

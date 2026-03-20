@@ -1,4 +1,4 @@
-<section class="invite-page">
+﻿<section class="invite-page">
   <mat-card class="invite-card imr-card">
     <div class="imr-card__head">
       <h1>Einladung abschließen</h1>
@@ -13,39 +13,25 @@
         <form [formGroup]="form" (ngSubmit)="abschliessen()" class="invite-form">
           <input type="hidden" formControlName="token" />
 
-          <mat-form-field class="imr-full-width" appearance="outline">
-            <mat-label>Neues Passwort</mat-label>
-            <input matInput type="password" formControlName="password1" autocomplete="new-password" />
-            @if (form.controls.password1.hasError('required')) {
-              <mat-error>Passwort ist erforderlich.</mat-error>
-            }
-            @if (form.controls.password1.hasError('minlength')) {
-              <mat-error>Das Passwort muss mindestens 8 Zeichen lang sein.</mat-error>
-            }
-          </mat-form-field>
+          <imr-form-field class="imr-full-width" label="Neues Passwort" [requiredIndicator]="true">
+            <input matInput type="password" formControlName="password1" autocomplete="new-password" uiControlErrors />
+          </imr-form-field>
 
-          <mat-form-field class="imr-full-width" appearance="outline">
-            <mat-label>Passwort wiederholen</mat-label>
-            <input matInput type="password" formControlName="password2" autocomplete="new-password" />
-            @if (form.controls.password2.hasError('required')) {
-              <mat-error>Passwort-Wiederholung ist erforderlich.</mat-error>
-            }
-            @if (form.controls.password2.hasError('minlength')) {
-              <mat-error>Das Passwort muss mindestens 8 Zeichen lang sein.</mat-error>
-            }
-          </mat-form-field>
+          <imr-form-field class="imr-full-width" label="Passwort wiederholen" [requiredIndicator]="true">
+            <input matInput type="password" formControlName="password2" autocomplete="new-password" uiControlErrors />
+          </imr-form-field>
 
           @if (!passwordsMatch && form.controls.password2.touched) {
             <p class="invite-note error">Passwörter stimmen nicht überein.</p>
           }
 
           <div class="invite-actions">
-            <button mat-flat-button color="accent" type="submit" [disabled]="isSubmitting">
+            <imr-button color="accent" type="submit" [disabled]="isSubmitting">
               Passwort setzen
-            </button>
-            <button mat-flat-button color="primary" type="button" [disabled]="isSubmitting" routerLink="/login">
+            </imr-button>
+            <imr-button color="primary" type="button" [disabled]="isSubmitting" routerLink="/login">
               Zur Anmeldung
-            </button>
+            </imr-button>
           </div>
         </form>
       }

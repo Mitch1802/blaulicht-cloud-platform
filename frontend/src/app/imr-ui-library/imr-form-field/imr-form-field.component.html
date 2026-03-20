@@ -1,13 +1,24 @@
     <mat-form-field
       [class]="fieldClass"
       [appearance]="appearance"
-      [hintLabel]="hintLabel"
       [subscriptSizing]="subscriptSizing"
     >
       @if (hasLabel) {
-        <mat-label><ng-content select="imr-label"></ng-content></mat-label>
+        <mat-label>
+          @if (useProjectedLabel) {
+            <ng-content select="imr-label"></ng-content>
+          } @else {
+            {{ label }}
+          }
+          @if (requiredIndicator) {
+            <span aria-hidden="true"> *</span>
+          }
+        </mat-label>
       }
       <ng-content></ng-content>
+      @if (hint) {
+        <mat-hint>{{ hint }}</mat-hint>
+      }
       @if (_suffixChild) {
         <span matSuffix><ng-content select="imr-suffix"></ng-content></span>
       }

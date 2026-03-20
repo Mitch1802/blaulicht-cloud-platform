@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter, inject } from '@angular/core';
+﻿import { Component, OnInit, Output, EventEmitter, inject } from '@angular/core';
 
 import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ApiHttpService } from 'src/app/_service/api-http.service';
@@ -7,7 +7,6 @@ import { CollectionUtilsService } from 'src/app/_service/collection-utils.servic
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { IKonfiguration } from 'src/app/_interface/konfiguration';
-import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
 import { environment } from "src/environments/environment";
@@ -18,7 +17,7 @@ import { IMR_UI_COMPONENTS } from '../imr-ui-library';
     selector: 'app-konfiguration',
     templateUrl: './konfiguration.component.html',
     styleUrls: ['./konfiguration.component.sass'],
-    imports: [...IMR_UI_COMPONENTS, FormsModule, ReactiveFormsModule, MatButtonModule, MatInputModule, MatTableModule]
+    imports: [...IMR_UI_COMPONENTS, FormsModule, ReactiveFormsModule, MatInputModule, MatTableModule]
 })
 export class KonfigurationComponent implements OnInit {
   private apiHttpService = inject(ApiHttpService);

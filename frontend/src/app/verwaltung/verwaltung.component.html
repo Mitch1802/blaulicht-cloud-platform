@@ -1,4 +1,4 @@
-<imr-header [breadcrumb]="breadcrumb"></imr-header>
+﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <section class="verwaltung-page">
   <header class="page-head">
@@ -20,8 +20,7 @@
             >
               <section class="app-grid m-0 mt-3">
                 <div class="app-col-12 app-col-lg-9">
-                  <mat-form-field>
-                    <mat-label>SevDesk Kontakt auswählen</mat-label>
+                  <imr-form-field label="SevDesk Kontakt auswählen">
                     <mat-select formControlName="name">
                       @for (opt of kontakte; track opt) {
                         <mat-option [value]="opt.id">
@@ -29,136 +28,94 @@
                         </mat-option>
                       }
                     </mat-select>
-                  </mat-form-field>
+                  </imr-form-field>
                 </div>
                 <div class="app-col-6 app-col-lg-3">
-                  <button
-                    mat-flat-button
+                  <imr-button
                     color="primary"
                     class="m-3"
                     type="submit"
                   >
                     übernehmen
-                  </button>
+                  </imr-button>
                 </div>
               </section>
             </form>
             <hr />
             <form [formGroup]="formRechnung" (ngSubmit)="printRechnung()">
-              <button
-                mat-flat-button
+              <imr-button
                 color="primary"
                 class="m-3"
                 (click)="formRechnungReset()"
                 type="button"
               >
                 Reset
-              </button>
-              <button
-                mat-flat-button
+              </imr-button>
+              <imr-button
                 color="accent"
                 class="m-3"
                 type="submit"
               >
                 Drucken
-              </button>
+              </imr-button>
               <hr />
               <h3>Rechnungsdaten</h3>
               <section class="app-grid mt-2 mx-0">
                 <div class="app-col-12 app-col-lg-12 mb-3">
-                  <mat-form-field>
-                    <mat-label>Name</mat-label>
-                    <input matInput type="text" formControlName="adress_name" />
-                    @if (
-                      formRechnung.controls.adress_name.hasError("required")
-                    ) {
-                      <mat-error>Name ist erforderlich!</mat-error>
-                    }
-                  </mat-form-field>
+                  <imr-form-field label="Name">
+                    <input matInput type="text" formControlName="adress_name" uiControlErrors />
+                  </imr-form-field>
                 </div>
                 <div class="app-col-12 app-col-lg-6 mb-3">
-                  <mat-form-field>
-                    <mat-label>Straße</mat-label>
+                  <imr-form-field label="Straße">
                     <input
                       matInput
                       type="text"
                       formControlName="adresse_strasse"
+                      uiControlErrors
                     />
-                    @if (
-                      formRechnung.controls.adresse_strasse.hasError("required")
-                    ) {
-                      <mat-error>Straße ist erforderlich!</mat-error>
-                    }
-                  </mat-form-field>
+                  </imr-form-field>
                 </div>
                 <div class="app-col-12 app-col-lg-2 mb-3">
-                  <mat-form-field>
-                    <mat-label>PLZ</mat-label>
-                    <input matInput type="text" formControlName="adresse_plz" />
-                    @if (
-                      formRechnung.controls.adresse_plz.hasError("required")
-                    ) {
-                      <mat-error>PLZ ist erforderlich!</mat-error>
-                    }
-                  </mat-form-field>
+                  <imr-form-field label="PLZ">
+                    <input matInput type="text" formControlName="adresse_plz" uiControlErrors />
+                  </imr-form-field>
                 </div>
                 <div class="app-col-12 app-col-lg-4 mb-3">
-                  <mat-form-field>
-                    <mat-label>Ort</mat-label>
-                    <input matInput type="text" formControlName="adresse_ort" />
-                    @if (
-                      formRechnung.controls.adresse_ort.hasError("required")
-                    ) {
-                      <mat-error>Ort ist erforderlich!</mat-error>
-                    }
-                  </mat-form-field>
+                  <imr-form-field label="Ort">
+                    <input matInput type="text" formControlName="adresse_ort" uiControlErrors />
+                  </imr-form-field>
                 </div>
                 <div class="app-col-12 app-col-lg-8 mb-3">
-                  <mat-form-field>
-                    <mat-label>Betreff</mat-label>
-                    <input matInput type="text" formControlName="betreff" />
-                    @if (formRechnung.controls.betreff.hasError("required")) {
-                      <mat-error>Betreff ist erforderlich!</mat-error>
-                    }
-                  </mat-form-field>
+                  <imr-form-field label="Betreff">
+                    <input matInput type="text" formControlName="betreff" uiControlErrors />
+                  </imr-form-field>
                 </div>
                 <div class="app-col-12 app-col-lg-4 mb-3">
-                  <mat-form-field>
-                    <mat-label>Rechnungsnummer</mat-label>
+                  <imr-form-field label="Rechnungsnummer">
                     <input
                       matInput
                       type="text"
                       formControlName="invoice_nummer"
+                      uiControlErrors
                     />
-                    @if (
-                      formRechnung.controls.invoice_nummer.hasError("required")
-                    ) {
-                      <mat-error>RE Nr. ist erforderlich!</mat-error>
-                    }
-                  </mat-form-field>
+                  </imr-form-field>
                 </div>
                 <div class="app-col-12 app-col-lg-12 mb-3">
-                  <mat-form-field>
-                    <mat-label>Anrede</mat-label>
-                    <input matInput type="text" formControlName="anrede" />
-                    @if (formRechnung.controls.anrede.hasError("required")) {
-                      <mat-error>Anrede ist erforderlich!</mat-error>
-                    }
-                  </mat-form-field>
+                  <imr-form-field label="Anrede">
+                    <input matInput type="text" formControlName="anrede" uiControlErrors />
+                  </imr-form-field>
                 </div>
                 <div class="app-col-12 app-col-lg-12 mb-3">
-                  <mat-form-field>
-                    <mat-label>Text</mat-label>
+                  <imr-form-field label="Text">
                     <textarea
                       matInput
                       type="text"
                       formControlName="text"
+                      uiControlErrors
                       rows="4"
                     ></textarea>
-                    @if (formRechnung.controls.text.hasError("required")) {
-                      <mat-error>Text ist erforderlich!</mat-error>
-                    }
-                  </mat-form-field>
+                  </imr-form-field>
                 </div>
               </section>
             </form>
@@ -170,27 +127,13 @@
             >
               <section class="app-grid mt-2 mx-0">
                 <div class="app-col-12 app-col-lg-6 mb-3">
-                  <mat-form-field>
-                    <mat-label>Bezeichnung</mat-label>
-                    <input matInput type="text" formControlName="bezeichnung" />
-                    @if (
-                      formRechnungPositionen.controls.bezeichnung.hasError(
-                        "required"
-                      )
-                    ) {
-                      <mat-error>Bezeichnung ist erforderlich!</mat-error>
-                    }
-                  </mat-form-field>
+                  <imr-form-field label="Bezeichnung">
+                    <input matInput type="text" formControlName="bezeichnung" uiControlErrors />
+                  </imr-form-field>
                 </div>
                 <div class="app-col-12 app-col-lg-3 mb-3">
-                  <mat-form-field>
-                    <mat-label>Preis</mat-label>
-                    <input matInput type="text" formControlName="preis" />
-                    @if (
-                      formRechnungPositionen.controls.preis.hasError("required")
-                    ) {
-                      <mat-error>Preis ist erforderlich!</mat-error>
-                    }
+                  <imr-form-field label="Preis">
+                    <input matInput type="text" formControlName="preis" uiControlErrors />
                     @if (
                       formRechnungPositionen.controls.preis.hasError("pattern")
                     ) {
@@ -198,17 +141,16 @@
                         >Ungültiges Format! (z. B. 12,50 oder 12.50)</mat-error
                       >
                     }
-                  </mat-form-field>
+                  </imr-form-field>
                 </div>
                 <div class="app-col-12 app-col-lg-3 mb-3">
-                  <button
-                    mat-flat-button
+                  <imr-button
                     color="accent"
                     class="m-3"
                     type="submit"
                   >
                     Hinzufügen
-                  </button>
+                  </imr-button>
                 </div>
               </section>
             </form>
@@ -223,15 +165,14 @@
                     <div class="app-col-7">{{ pos.bezeichnung }}</div>
                     <div class="app-col-3">{{ formatPreis(pos.preis) }}</div>
                     <div class="app-col-2 text-end">
-                      <button
-                        mat-flat-button
+                      <imr-button
                         class="imr-action-btn"
                         type="button"
-                        aria-label="Position löschen"
+                        ariaLabel="Position löschen"
                         (click)="removePosition(i)"
                       >
                         <mat-icon>delete</mat-icon>
-                      </button>
+                      </imr-button>
                     </div>
                   </imr-list-item>
                 }
@@ -243,3 +184,5 @@
     </imr-card-content>
   </mat-card>
 </section>
+
+

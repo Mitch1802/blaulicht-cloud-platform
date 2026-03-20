@@ -1,4 +1,4 @@
-<imr-header [breadcrumb]="breadcrumb"></imr-header>
+﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <section class="jugend-page">
   <header class="page-head">
@@ -13,8 +13,8 @@
       @if (showMitgliedForm) {
         <form [formGroup]="formMitglied" (ngSubmit)="speichernMitglied()" class="edit-form mitglied-edit-form">
           <div class="imr-form-actions">
-            <button mat-flat-button color="accent" type="submit">Daten speichern</button>
-            <button mat-flat-button color="primary" type="button" (click)="mitgliedFormAbbrechen()">Abbrechen</button>
+            <imr-button color="accent" type="submit">Daten speichern</imr-button>
+            <imr-button color="primary" type="button" (click)="mitgliedFormAbbrechen()">Abbrechen</imr-button>
           </div>
 
           <section class="mitglied-summary" [hidden]="!selectedMitglied">
@@ -41,8 +41,7 @@
 
             <section class="app-grid imr-form-grid form-grid-tight">
               <div class="app-col-12 app-col-lg-4 mb-3">
-                <imr-form-field class="imr-full-width">
-                  <imr-label>Status</imr-label>
+                <imr-form-field class="imr-full-width" label="Status">
                   <imr-select formControlName="dienststatus">
                     <imr-option value="JUGEND">Jugend</imr-option>
                     <imr-option value="AKTIV">Aktiv</imr-option>
@@ -80,8 +79,7 @@
                 <div class="level-edit-panel-content">
                   <section class="app-grid imr-form-grid form-grid-tight">
                     <div class="app-col-12 app-col-lg-6 mb-3">
-                      <imr-form-field class="imr-full-width level-edit-field">
-                        <imr-label>Level</imr-label>
+                      <imr-form-field class="imr-full-width level-edit-field" label="Level">
                         <imr-select formControlName="erprobung_level">
                           @for (level of getErprobungLevelOptionen(); track level) {
                             <imr-option [value]="level">{{ getStandardLevelDropdownLabel(level) }}</imr-option>
@@ -91,8 +89,7 @@
                     </div>
 
                     <div class="app-col-12 app-col-lg-6 mb-3">
-                      <imr-form-field class="imr-full-width level-edit-field">
-                        <imr-label>Datum</imr-label>
+                      <imr-form-field class="imr-full-width level-edit-field" label="Datum">
                         <input matInput type="date" formControlName="erprobung_datum" appDateInputMask="iso" />
                       </imr-form-field>
                     </div>
@@ -117,8 +114,7 @@
                 <div class="level-edit-panel-content">
                   <section class="app-grid imr-form-grid form-grid-tight">
                     <div class="app-col-12 app-col-lg-6 mb-3">
-                      <imr-form-field class="imr-full-width level-edit-field">
-                        <imr-label>Level</imr-label>
+                      <imr-form-field class="imr-full-width level-edit-field" label="Level">
                         <imr-select formControlName="wissentest_level">
                           @for (level of getWissentestLevelOptionen(); track level) {
                             <imr-option [value]="level">{{ getStandardLevelDropdownLabel(level) }}</imr-option>
@@ -128,8 +124,7 @@
                     </div>
 
                     <div class="app-col-12 app-col-lg-6 mb-3">
-                      <imr-form-field class="imr-full-width level-edit-field">
-                        <imr-label>Datum</imr-label>
+                      <imr-form-field class="imr-full-width level-edit-field" label="Datum">
                         <input matInput type="date" formControlName="wissentest_datum" appDateInputMask="iso" />
                       </imr-form-field>
                     </div>
@@ -160,8 +155,7 @@
                 <div class="level-edit-panel-content">
                   <section class="app-grid imr-form-grid form-grid-tight">
                     <div class="app-col-12 app-col-lg-6 mb-3">
-                      <imr-form-field class="imr-full-width level-edit-field">
-                        <imr-label>Level</imr-label>
+                      <imr-form-field class="imr-full-width level-edit-field" label="Level">
                         <imr-select formControlName="fertigkeit_melder_level">
                           @for (level of getFertigkeitsabzeichenLevelOptionen(); track level) {
                             <imr-option [value]="level">{{ getFertigkeitsabzeichenLevelDropdownLabel(level) }}</imr-option>
@@ -171,8 +165,7 @@
                     </div>
 
                     <div class="app-col-12 app-col-lg-6 mb-3">
-                      <imr-form-field class="imr-full-width level-edit-field">
-                        <imr-label>Datum</imr-label>
+                      <imr-form-field class="imr-full-width level-edit-field" label="Datum">
                         <input matInput type="date" formControlName="fertigkeit_melder_datum" appDateInputMask="iso" />
                       </imr-form-field>
                     </div>
@@ -197,8 +190,7 @@
                 <div class="level-edit-panel-content">
                   <section class="app-grid imr-form-grid form-grid-tight">
                     <div class="app-col-12 app-col-lg-6 mb-3">
-                      <imr-form-field class="imr-full-width level-edit-field">
-                        <imr-label>Level</imr-label>
+                      <imr-form-field class="imr-full-width level-edit-field" label="Level">
                         <imr-select formControlName="fertigkeit_fwtechnik_level">
                           @for (level of getFertigkeitsabzeichenLevelOptionen(); track level) {
                             <imr-option [value]="level">{{ getFertigkeitsabzeichenLevelDropdownLabel(level) }}</imr-option>
@@ -208,8 +200,7 @@
                     </div>
 
                     <div class="app-col-12 app-col-lg-6 mb-3">
-                      <imr-form-field class="imr-full-width level-edit-field">
-                        <imr-label>Datum</imr-label>
+                      <imr-form-field class="imr-full-width level-edit-field" label="Datum">
                         <input matInput type="date" formControlName="fertigkeit_fwtechnik_datum" appDateInputMask="iso" />
                       </imr-form-field>
                     </div>
@@ -234,8 +225,7 @@
                 <div class="level-edit-panel-content">
                   <section class="app-grid imr-form-grid form-grid-tight">
                     <div class="app-col-12 app-col-lg-6 mb-3">
-                      <imr-form-field class="imr-full-width level-edit-field">
-                        <imr-label>Level</imr-label>
+                      <imr-form-field class="imr-full-width level-edit-field" label="Level">
                         <imr-select formControlName="fertigkeit_sicher_zu_wasser_level">
                           @for (level of getFertigkeitsabzeichenLevelOptionen(); track level) {
                             <imr-option [value]="level">{{ getFertigkeitsabzeichenLevelDropdownLabel(level) }}</imr-option>
@@ -245,8 +235,7 @@
                     </div>
 
                     <div class="app-col-12 app-col-lg-6 mb-3">
-                      <imr-form-field class="imr-full-width level-edit-field">
-                        <imr-label>Datum</imr-label>
+                      <imr-form-field class="imr-full-width level-edit-field" label="Datum">
                         <input matInput type="date" formControlName="fertigkeit_sicher_zu_wasser_datum" appDateInputMask="iso" />
                       </imr-form-field>
                     </div>
@@ -299,9 +288,9 @@
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef>Aktionen</th>
             <td mat-cell *matCellDef="let element" class="imr-action-cell">
-              <button mat-flat-button class="imr-action-btn" color="primary" (click)="editMitglied(element)">
+              <imr-button class="imr-action-btn" color="primary" (click)="editMitglied(element)">
                 <imr-icon class="m-0">edit</imr-icon>
-              </button>
+              </imr-button>
             </td>
           </ng-container>
 
@@ -319,27 +308,25 @@
     </div>
 
       <div class="actions-top">
-        <button mat-flat-button color="accent" type="button" (click)="neuesEvent()">Neues Event</button>
+        <imr-button color="accent" type="button" (click)="neuesEvent()">Neues Event</imr-button>
       </div>
       @if (showEventForm) {
         <form [formGroup]="formEvent" (ngSubmit)="speichernEvent()" class="edit-form">
           <div class="imr-form-actions">
-            <button mat-flat-button color="accent" type="submit">Event speichern</button>
-            <button mat-flat-button color="warn" type="button" [hidden]="!formEvent.controls['id'].value" (click)="eventLoeschen()">Löschen</button>
-            <button mat-flat-button color="primary" type="button" (click)="eventFormAbbrechen()">Abbrechen</button>
+            <imr-button color="accent" type="submit">Event speichern</imr-button>
+            <imr-button color="warn" type="button" [hidden]="!formEvent.controls['id'].value" (click)="eventLoeschen()">Löschen</imr-button>
+            <imr-button color="primary" type="button" (click)="eventFormAbbrechen()">Abbrechen</imr-button>
           </div>
 
           <section class="app-grid imr-form-grid">
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <imr-form-field class="imr-full-width" hintLabel="* Pflichtfeld">
-                <imr-label>Datum</imr-label>
+              <imr-form-field class="imr-full-width" hintLabel="* Pflichtfeld" label="Datum">
                 <input matInput formControlName="datum" appDateInputMask="dmy" placeholder="TT.MM.YYYY" />
               </imr-form-field>
             </div>
 
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <imr-form-field class="imr-full-width" hintLabel="* Pflichtfeld">
-                <imr-label>Art</imr-label>
+              <imr-form-field class="imr-full-width" hintLabel="* Pflichtfeld" label="Art">
                 <imr-select formControlName="kategorie" (selectionChange)="onEventKategorieGeaendert()">
                   @for (option of eventKategorien; track option.value) {
                     <imr-option [value]="option.value">{{ option.label }}</imr-option>
@@ -349,8 +336,7 @@
             </div>
 
             <div class="app-col-12 app-col-lg-12 mb-3">
-              <imr-form-field class="imr-full-width">
-                <imr-label>Teilnehmer</imr-label>
+              <imr-form-field class="imr-full-width" label="Teilnehmer">
                 <imr-select formControlName="teilnehmer_ids" multiple (selectionChange)="onEventTeilnehmerAuswahlGeaendert()">
                   @for (member of sortedJugendMitglieder; track member.pkid) {
                     <imr-option [value]="member.pkid">{{ getMitgliedMitRangText(member) }}</imr-option>
@@ -367,8 +353,7 @@
                   @for (member of getAusgewaehlteEventMitglieder(); track member.pkid) {
                     <div class="teilnehmer-level-row">
                       <div class="teilnehmer-name">{{ getMitgliedMitRangText(member) }}</div>
-                      <imr-form-field class="teilnehmer-level-field">
-                        <imr-label>Level</imr-label>
+                      <imr-form-field class="teilnehmer-level-field" label="Level">
                         <imr-select
                           [disabled]="getLevelOptionenForMitglied(member).length === 0"
                           [value]="getTeilnehmerLevel(member.pkid)"
@@ -391,8 +376,7 @@
             }
 
             <div class="app-col-12 app-col-lg-12 mb-3">
-              <imr-form-field class="imr-full-width">
-                <imr-label>Ort</imr-label>
+              <imr-form-field class="imr-full-width" label="Ort">
                 <input matInput formControlName="ort" />
               </imr-form-field>
             </div>
@@ -421,9 +405,9 @@
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef>Aktionen</th>
             <td mat-cell *matCellDef="let element" class="imr-action-cell">
-              <button mat-flat-button class="imr-action-btn" color="primary" (click)="editEvent(element)">
+              <imr-button class="imr-action-btn" color="primary" (click)="editEvent(element)">
                 <imr-icon class="m-0">edit</imr-icon>
-              </button>
+              </imr-button>
             </td>
           </ng-container>
 
@@ -435,3 +419,5 @@
   </imr-card>
   }
 </section>
+
+

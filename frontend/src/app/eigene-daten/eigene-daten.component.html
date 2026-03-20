@@ -10,18 +10,13 @@
 
       <section class="app-grid mt-2">
         <div class="app-col-12 app-col-lg-8 mb-3">
-          <imr-input type="email" label="E-Mail-Adresse" formControlName="email">
-            @if (formModul.controls['email'].hasError('email') && formModul.controls['email'].touched) {
-              <mat-error>Bitte eine gültige E-Mail-Adresse eingeben!</mat-error>
-            }
-          </imr-input>
+          <imr-form-field label="E-Mail-Adresse">
+            <input matInput type="email" formControlName="email" uiControlErrors />
+          </imr-form-field>
         </div>
 
         <div class="app-col-12 app-col-lg-4 mb-3">
-          <imr-button
-            [disabled]="formModul.disabled || formModul.controls['email'].invalid"
-            (click)="emailSpeichern()"
-          >
+          <imr-button [disabled]="formModul.disabled" (click)="emailSpeichern()">
             E-Mail speichern
           </imr-button>
         </div>
@@ -31,44 +26,19 @@
 
       <section class="app-grid mt-3">
         <div class="app-col-12 app-col-lg-4 mb-3">
-          <imr-input type="password" label="Passwort" formControlName="password1">
-            @if (formModul.controls['password1'].hasError('minlength') && formModul.controls['password1'].touched) {
-              <mat-error>Das Passwort muss mindestens 8 Zeichen lang sein!</mat-error>
-            }
-          </imr-input>
+          <imr-form-field label="Passwort" [requiredIndicator]="true">
+            <input matInput type="password" formControlName="password1" uiControlErrors />
+          </imr-form-field>
         </div>
         <div class="app-col-12 app-col-lg-4 mb-3">
-          <imr-input type="password" label="Passwort" formControlName="password1">
-            @if (formModul.controls['password2'].hasError('minlength') && formModul.controls['password2'].touched) {
-              <mat-error>Das Passwort muss mindestens 8 Zeichen lang sein!</mat-error>
-            } @else if (
-              formModul.hasError('passwordIncomplete')
-              && (formModul.controls['password1'].touched || formModul.controls['password2'].touched)
-            ) {
-              <mat-error>Bitte beide Passwortfelder ausfüllen.</mat-error>
-            } @else if (
-              formModul.hasError('passwordMismatch')
-              && (formModul.controls['password1'].touched || formModul.controls['password2'].touched)
-              && !formModul.controls['password1'].hasError('minlength')
-            ) {
-              <mat-error>Die Passwörter müssen übereinstimmen!</mat-error>
-            }
-          </imr-input>
+          <imr-form-field label="Passwort wiederholen" [requiredIndicator]="true">
+            <input matInput type="password" formControlName="password2" uiControlErrors />
+          </imr-form-field>
 
         </div>
 
         <div class="app-col-12 app-col-lg-4 mb-3">
-          <imr-button
-            [disabled]="
-              formModul.disabled
-              || !formModul.controls['password1'].value
-              || formModul.controls['password1'].invalid
-              || formModul.controls['password2'].invalid
-              || formModul.hasError('passwordIncomplete')
-              || formModul.hasError('passwordMismatch')
-            "
-            (click)="passwortAendern()"
-          >
+          <imr-button [disabled]="formModul.disabled || !passwortAendernErlaubt" (click)="passwortAendern()">
             Passwort ändern
           </imr-button>
 

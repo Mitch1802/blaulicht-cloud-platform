@@ -10,15 +10,14 @@
       <h2>Inventar verwalten</h2>
     </div>
       <div class="imr-top-actions">
-        <button
-          mat-flat-button
+        <imr-button
           color="accent"
           [hidden]="!formModul.disabled"
           (click)="neueDetails()"
           type="button"
         >
           Hinzufügen
-        </button>
+        </imr-button>
       </div>
 
       <form
@@ -30,56 +29,46 @@
           <input hidden type="text"  formControlName="id" />
 
           <div class="imr-form-actions">
-            <button
-            mat-flat-button
+            <imr-button
             color="accent"
             [hidden]="!formModul.valid"
             type="submit"
             >
             Daten speichern
-            </button>
-            <button
-            mat-flat-button
+            </imr-button>
+            <imr-button
             color="primary"
             [hidden]="formModul.disabled"
             type="button"
             (click)="abbrechen()"
             >
             Abbrechen
-            </button>
+            </imr-button>
           </div>
 
           <section class="app-grid imr-form-grid">
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width">
-                <imr-label>Bezeichnung</imr-label>
-                <input matInput type="text" formControlName="bezeichnung" />
-                @if (formModul.controls['bezeichnung'].hasError('required')) {
-                <imr-error> bezeichnung ist erforderlich! </imr-error>
-                }
+              <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="Bezeichnung">
+                <input matInput type="text" formControlName="bezeichnung" uiControlErrors />
               </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <imr-form-field class="imr-full-width">
-                <imr-label>Anzahl</imr-label>
+              <imr-form-field class="imr-full-width" label="Anzahl">
                 <input matInput type="number" formControlName="anzahl" />
               </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <imr-form-field class="imr-full-width">
-                <imr-label>Lagerort</imr-label>
+              <imr-form-field class="imr-full-width" label="Lagerort">
                 <input matInput type="text" formControlName="lagerort" />
               </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <imr-form-field class="imr-full-width">
-                <imr-label>Wartung zuletzt erledigt</imr-label>
+              <imr-form-field class="imr-full-width" label="Wartung zuletzt erledigt">
                 <input matInput type="date" formControlName="wartung_zuletzt_am" appDateInputMask="iso" />
               </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <imr-form-field class="imr-full-width">
-                <imr-label>Nächste Wartung</imr-label>
+              <imr-form-field class="imr-full-width" label="Nächste Wartung">
                 <input matInput type="date" formControlName="wartung_naechstes_am" appDateInputMask="iso" />
               </imr-form-field>
             </div>
@@ -93,14 +82,13 @@
               <div class="imr-lending-panel">
                 <div class="imr-lending-panel-head">
                   <strong>Verleihungen</strong>
-                  <button
-                    mat-flat-button
+                  <imr-button
                     color="primary"
                     type="button"
                     (click)="addVerleihungZeile()"
                   >
                     Verleihung hinzufügen
-                  </button>
+                  </imr-button>
                 </div>
 
                 @if (verleihungenForm.length === 0) {
@@ -110,8 +98,7 @@
                 @for (eintrag of verleihungenForm; track $index) {
                 <div class="imr-lending-row app-grid">
                   <div class="app-col-12 app-col-lg-4 mb-2">
-                    <imr-form-field class="imr-full-width">
-                      <imr-label>Entlehner</imr-label>
+                    <imr-form-field class="imr-full-width" label="Entlehner">
                       <input
                         matInput
                         type="text"
@@ -121,8 +108,7 @@
                     </imr-form-field>
                   </div>
                   <div class="app-col-12 app-col-lg-3 mb-2">
-                    <imr-form-field class="imr-full-width">
-                      <imr-label>Anzahl</imr-label>
+                    <imr-form-field class="imr-full-width" label="Anzahl">
                       <input
                         matInput
                         type="number"
@@ -133,8 +119,7 @@
                     </imr-form-field>
                   </div>
                   <div class="app-col-12 app-col-lg-3 mb-2">
-                    <imr-form-field class="imr-full-width">
-                      <imr-label>Verliehen bis</imr-label>
+                    <imr-form-field class="imr-full-width" label="Verliehen bis">
                       <input
                         matInput
                         type="date"
@@ -145,14 +130,13 @@
                     </imr-form-field>
                   </div>
                   <div class="app-col-12 app-col-lg-2 mb-2 imr-lending-row-remove">
-                    <button
-                      mat-flat-button
+                    <imr-button
                       color="warn"
                       type="button"
                       (click)="removeVerleihungZeile($index)"
                     >
                       Entfernen
-                    </button>
+                    </imr-button>
                   </div>
                 </div>
                 }
@@ -165,35 +149,32 @@
             </div>
             }
             <div class="app-col-12 app-col-lg-12 mb-3">
-              <imr-form-field class="imr-full-width">
-                <imr-label>Notiz</imr-label>
+              <imr-form-field class="imr-full-width" label="Notiz">
                 <textarea matInput formControlName="notiz" rows="5"></textarea>
               </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <button mat-flat-button type="button" color="primary" class="upload-button" (click)="fotoUpload.click()">{{ btnText }}</button>
+              <imr-button type="button" color="primary" class="upload-button" (click)="fotoUpload.click()">{{ btnText }}</imr-button>
               <input hidden #fotoUpload type="file" id="fotoUpload" accept=".jpg,.jpeg,.png" (change)="onFotoSelected($event)" />
               <div >
                 @if (fileFound==true) {
                 <div>
                   {{ fileName }}
                 </div>
-                <button
-                  mat-flat-button
+                <imr-button
                   color="primary"
                   type="button"
                   [hidden]="!formModul.controls['id'].value"
                   (click)="openModal()"
                 >
                   Bild öffnen
-                </button>
+                </imr-button>
                 }
               </div>
             </div>
           </section>
 
-          <button
-            mat-flat-button
+          <imr-button
             color="warn"
             class="imr-delete-btn"
             [hidden]="!formModul.controls['id'].value"
@@ -201,12 +182,11 @@
             (click)="datenLoeschen()"
           >
             Daten löschen
-          </button>
+          </imr-button>
       </form>
 
       <div class="imr-table-wrap" [hidden]="!formModul.disabled">
-        <imr-form-field>
-          <imr-label>Suchen</imr-label>
+        <imr-form-field label="Suchen">
           <input matInput #input (keyup)="applyFilter(input.value)" />
         </imr-form-field>
 
@@ -234,8 +214,7 @@
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef>Aktionen</th>
             <td mat-cell *matCellDef="let element" class="imr-action-cell">
-              <button
-                mat-flat-button
+              <imr-button
                 class="imr-action-btn"
                 color="primary"
                 type="button"
@@ -244,9 +223,8 @@
                 matTooltip="Direkt ausborgen"
               >
                 <imr-icon class="m-0">assignment_returned</imr-icon>
-              </button>
-              <button
-                mat-flat-button
+              </imr-button>
+              <imr-button
                 class="imr-action-btn"
                 color="warn"
                 type="button"
@@ -255,16 +233,15 @@
                 matTooltip="Direkt Rueckgabe buchen"
               >
                 <imr-icon class="m-0">assignment_turned_in</imr-icon>
-              </button>
-              <button
-                mat-flat-button
+              </imr-button>
+              <imr-button
                 class="imr-action-btn"
                 color="primary"
                 type="button"
                 (click)="auswahlBearbeiten(element)"
               >
                 <imr-icon class="m-0">edit</imr-icon>
-              </button>
+              </imr-button>
             </td>
           </ng-container>
           <tr mat-header-row *matHeaderRowDef="sichtbareSpalten"></tr>
@@ -296,9 +273,9 @@
   >
     <header class="imr-transaction-head">
       <h3 id="ausborgen-modal-title">Inventar ausborgen</h3>
-      <button mat-icon-button type="button" (click)="closeAusborgenModal()" aria-label="Modal schließen">
+      <imr-button variant="icon" type="button" (click)="closeAusborgenModal()" ariaLabel="Modal schließen">
         <imr-icon>close</imr-icon>
-      </button>
+      </imr-button>
     </header>
 
     <p class="imr-transaction-meta">
@@ -309,31 +286,25 @@
     </p>
 
     <form [formGroup]="ausborgenForm" (ngSubmit)="ausborgenSpeichern()" class="imr-transaction-form">
-      <imr-form-field class="imr-full-width">
-        <imr-label>Entlehner</imr-label>
-        <input matInput type="text" formControlName="an" />
-        @if (ausborgenForm.controls['an'].hasError('required') && ausborgenForm.controls['an'].touched) {
-        <imr-error>Bitte Empfaenger angeben.</imr-error>
-        }
+      <imr-form-field class="imr-full-width" label="Entlehner">
+        <input matInput type="text" formControlName="an" uiControlErrors />
       </imr-form-field>
 
-      <imr-form-field class="imr-full-width">
-        <imr-label>Anzahl</imr-label>
+      <imr-form-field class="imr-full-width" label="Anzahl">
         <input matInput type="number" min="1" formControlName="anzahl" />
       </imr-form-field>
 
-      <imr-form-field class="imr-full-width">
-        <imr-label>Verliehen bis</imr-label>
+      <imr-form-field class="imr-full-width" label="Verliehen bis">
         <input matInput type="date" formControlName="bis" appDateInputMask="iso" />
       </imr-form-field>
 
       <div class="imr-transaction-actions">
-        <button mat-flat-button color="primary" type="button" (click)="closeAusborgenModal()">
+        <imr-button color="primary" type="button" (click)="closeAusborgenModal()">
           Abbrechen
-        </button>
-        <button mat-flat-button color="accent" type="submit">
+        </imr-button>
+        <imr-button color="accent" type="submit">
           Ausborgen speichern
-        </button>
+        </imr-button>
       </div>
     </form>
   </section>
@@ -355,9 +326,9 @@
   >
     <header class="imr-transaction-head">
       <h3 id="rueckgabe-modal-title">Inventar Rueckgabe</h3>
-      <button mat-icon-button type="button" (click)="closeRueckgabeModal()" aria-label="Modal schliessen">
+      <imr-button variant="icon" type="button" (click)="closeRueckgabeModal()" ariaLabel="Modal schliessen">
         <imr-icon>close</imr-icon>
-      </button>
+      </imr-button>
     </header>
 
     <p class="imr-transaction-meta">
@@ -368,8 +339,7 @@
     </p>
 
     <form [formGroup]="rueckgabeForm" (ngSubmit)="rueckgabeSpeichern()" class="imr-transaction-form">
-      <imr-form-field class="imr-full-width">
-        <imr-label>Verleihung</imr-label>
+      <imr-form-field class="imr-full-width" label="Verleihung">
         <imr-select formControlName="eintragIndex" (selectionChange)="onRueckgabeAuswahlChange()">
           @for (eintrag of rueckgabeVerleihungen; track $index) {
           <imr-option [value]="$index">
@@ -382,8 +352,7 @@
         </imr-select>
       </imr-form-field>
 
-      <imr-form-field class="imr-full-width">
-        <imr-label>Rueckgabe Anzahl</imr-label>
+      <imr-form-field class="imr-full-width" label="Rueckgabe Anzahl">
         <input matInput type="number" min="1" [max]="getRueckgabeMaxMenge()" formControlName="anzahl" />
       </imr-form-field>
 
@@ -392,12 +361,12 @@
       </p>
 
       <div class="imr-transaction-actions">
-        <button mat-flat-button color="primary" type="button" (click)="closeRueckgabeModal()">
+        <imr-button color="primary" type="button" (click)="closeRueckgabeModal()">
           Abbrechen
-        </button>
-        <button mat-flat-button color="warn" type="submit">
+        </imr-button>
+        <imr-button color="warn" type="submit">
           Rueckgabe speichern
-        </button>
+        </imr-button>
       </div>
     </form>
   </section>
@@ -420,3 +389,4 @@
   <img class="modal-content" id="img01" [src]="filePfad" alt="Inventarbild Vorschau" />
   <div id="inventar-image-title" class="modal-caption">{{ fileName }}</div>
 </div>
+

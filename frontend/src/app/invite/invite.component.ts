@@ -1,15 +1,13 @@
-import { CommonModule } from '@angular/common';
+﻿import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { finalize } from 'rxjs';
 
 import { ApiHttpService } from '../_service/api-http.service';
-import { ImrCardContentComponent } from '../imr-ui-library';
+import { ImrButtonComponent, ImrCardContentComponent, ImrFormFieldComponent, UiControlErrorsDirective } from '../imr-ui-library';
 import { UiMessageService } from '../_service/ui-message.service';
 
 @Component({
@@ -19,10 +17,11 @@ import { UiMessageService } from '../_service/ui-message.service';
     CommonModule,
     ReactiveFormsModule,
     RouterLink,
+    ImrButtonComponent,
     ImrCardContentComponent,
-    MatButtonModule,
+    ImrFormFieldComponent,
+    UiControlErrorsDirective,
     MatCardModule,
-    MatFormFieldModule,
     MatInputModule,
   ],
   templateUrl: './invite.component.html',

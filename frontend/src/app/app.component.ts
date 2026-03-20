@@ -17,7 +17,7 @@ import { ApiHttpService } from './_service/api-http.service';
         './app.component.sass'
     ],
     providers: [
-        {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {SubscriptSizing: 'dynamic'}}
+        { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'outline', subscriptSizing: 'dynamic' } }
     ]
 })
 export class AppComponent {

@@ -30,6 +30,8 @@ export * from './imr-card-content/imr-card-content.component';
 export * from './imr-card-header.component';
 export * from './imr-card-title.component';
 export * from './imr-form-field.component';
+export * from './ui-control-errors.directive';
+export * from './ui-control-error-map.token';
 export * from './imr-input.component';
 export * from './imr-label.component';
 export * from './imr-error.component';
@@ -76,6 +78,7 @@ import { ImrCardContentComponent } from './imr-card-content/imr-card-content.com
 import { ImrCardHeaderComponent } from './imr-card-header.component';
 import { ImrCardTitleComponent } from './imr-card-title.component';
 import { ImrFormFieldComponent } from './imr-form-field.component';
+import { UiControlErrorsDirective } from './ui-control-errors.directive';
 import { ImrLabelComponent } from './imr-label.component';
 import { ImrErrorComponent } from './imr-error.component';
 import { ImrIconComponent } from './imr-icon.component';
@@ -121,6 +124,7 @@ export const IMR_UI_COMPONENTS = [
   ImrCardHeaderComponent,
   ImrCardTitleComponent,
   ImrFormFieldComponent,
+  UiControlErrorsDirective,
   ImrLabelComponent,
   ImrErrorComponent,
   ImrIconComponent,

@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, ViewChild, inject } from '@angular/core';
+﻿import { Component, DestroyRef, OnInit, ViewChild, inject } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, FormGroupDirective, NgForm, ReactiveFormsModule, Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { IMR_UI_COMPONENTS } from '../imr-ui-library';
@@ -8,7 +8,6 @@ import { CollectionUtilsService } from 'src/app/_service/collection-utils.servic
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { ErrorStateMatcher } from '@angular/material/core';
@@ -74,7 +73,6 @@ type EinsatzberichtDto = {
     ReactiveFormsModule,
     ...IMR_UI_COMPONENTS,
     MatInputModule,
-    MatButtonModule,
     MatSelectModule,
     MatAutocompleteModule,
     MatTableModule,

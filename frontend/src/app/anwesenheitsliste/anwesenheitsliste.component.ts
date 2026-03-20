@@ -1,8 +1,7 @@
-import { Component, OnInit, ViewChild, inject } from '@angular/core';
+﻿import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
-import { MatButton } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSort, MatSortModule } from '@angular/material/sort';
@@ -23,7 +22,6 @@ import { DateInputMaskDirective } from '../_directive/date-input-mask.directive'
     FormsModule,
     ReactiveFormsModule,
     ...IMR_UI_COMPONENTS,
-    MatButton,
     MatInputModule,
     MatTableModule,
     MatSortModule,
