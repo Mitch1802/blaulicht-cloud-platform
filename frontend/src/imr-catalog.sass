@@ -75,7 +75,6 @@
     --mdc-shape-small:        0px
     --mdc-shape-medium:       0px
     --mdc-shape-large:        0px
-    --mdc-text-field-container-shape: 0px
     --mdc-chip-container-shape-radius: 0px
     --mat-chip-container-shape-radius: 0px
     --mat-chip-with-avatar-avatar-shape-radius: 0px
@@ -84,12 +83,7 @@
     --mdc-dialog-container-shape: 0px
     --mdc-snackbar-container-shape: 0px
     --mat-select-container-elevation-shadow: none
-    --mat-form-field-filled-container-shape: 0px
-    // Outline form fields use the Material-default 4 px radius (matches original design)
-    --mat-form-field-outlined-container-shape: 4px
     --mat-autocomplete-container-shape: 0px
-    --mdc-outlined-text-field-container-shape: 4px
-    --mdc-filled-text-field-container-shape: 0px
 
 // Header-Variante hell
 body.header-variant-light
@@ -415,30 +409,8 @@ mat-form-field,
     width: 100%
 
 .mat-mdc-form-field
-    --mat-form-field-filled-container-shape: 0px
-    // Outlined form fields use the 4 px radius set in the global CSS vars
-    --mat-form-field-outlined-container-shape: var(--mdc-outlined-text-field-container-shape, 4px)
-    // Override MDC fill-appearance container color (the CSS variable has higher specificity
-    // than a background property rule, so we must set it here to achieve a white background)
-    --mat-form-field-filled-container-color: #fff
-    --mdc-filled-text-field-container-color: #fff
-
     .mat-mdc-text-field-wrapper
-        // Use the container-shape variable so outlined wrappers clip content at rounded corners;
-        // fill wrappers use 0px (their shape variable stays 0px)
-        border-radius: var(--mdc-outlined-text-field-container-shape, 4px) !important
         transition: background-color .16s ease, box-shadow .16s ease, border-color .16s ease
-
-    .mat-mdc-text-field-wrapper.mdc-text-field--filled
-        border-radius: 0 !important
-        background: #fff !important
-
-    &:hover .mat-mdc-text-field-wrapper.mdc-text-field--filled
-        background: #fff !important
-
-    &.mat-focused .mat-mdc-text-field-wrapper.mdc-text-field--filled
-        background: #fff !important
-        box-shadow: none
 
     .mat-mdc-select-arrow-wrapper
         align-self: center
@@ -459,29 +431,6 @@ mat-form-field,
         text-overflow: ellipsis
         overflow: hidden
         margin-block: 0px
-
-.mat-mdc-form-field .mdc-notched-outline__leading,
-.mat-mdc-form-field .mdc-notched-outline__notch,
-.mat-mdc-form-field .mdc-notched-outline__trailing
-    border-color: rgba(theme.$imr-border, .95)
-
-.mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
-.mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
-.mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing
-    border-color: theme.$imr-primary
-
-.mat-mdc-form-field .mdc-floating-label,
-.mat-mdc-form-field .mat-mdc-input-element,
-.mat-mdc-form-field .mat-mdc-select-value-text
-    color: theme.$imr-text
-
-.mat-mdc-form-field .mat-mdc-form-field-hint,
-.mat-mdc-form-field .mat-mdc-form-field-error,
-.mat-mdc-form-field .mat-mdc-form-field-required-marker
-    color: theme.$imr-text-muted
-
-.mat-mdc-input-element::placeholder
-    color: rgba(theme.$imr-text-muted, .9)
 
 mat-select
     margin: 0px
