@@ -71,7 +71,7 @@
     --imr-grid-row-gap:       .75rem
     --imr-grid-col-gap:       1rem
 
-    // -- Material MDC Shape-Overrides (keine Abrundungen) ---------------------
+    // -- Material MDC Shape-Overrides -----------------------------------------
     --mdc-shape-small:        0px
     --mdc-shape-medium:       0px
     --mdc-shape-large:        0px
@@ -85,9 +85,10 @@
     --mdc-snackbar-container-shape: 0px
     --mat-select-container-elevation-shadow: none
     --mat-form-field-filled-container-shape: 0px
-    --mat-form-field-outlined-container-shape: 0px
+    // Outline form fields use the Material-default 4 px radius (matches original design)
+    --mat-form-field-outlined-container-shape: 4px
     --mat-autocomplete-container-shape: 0px
-    --mdc-outlined-text-field-container-shape: 0px
+    --mdc-outlined-text-field-container-shape: 4px
     --mdc-filled-text-field-container-shape: 0px
 
 // Header-Variante hell
@@ -417,16 +418,22 @@ mat-form-field,
     --mat-form-field-container-height: var(--imr-control-height)
     --mat-form-field-container-vertical-padding: .35rem
     --mat-form-field-filled-container-shape: 0px
-    --mat-form-field-outlined-container-shape: 0px
+    // Use the 4 px radius set in the global vars for outlined appearance
+    --mat-form-field-outlined-container-shape: var(--mdc-outlined-text-field-container-shape, 4px)
     // Override MDC fill-appearance container color (the CSS variable has higher specificity
     // than a background property rule, so we must set it here to achieve a white background)
     --mat-form-field-filled-container-color: #fff
     --mdc-filled-text-field-container-color: #fff
 
     .mat-mdc-text-field-wrapper
-        border-radius: 0 !important
+        // Use the container-shape variable so outlined wrappers clip content at rounded corners;
+        // fill wrappers use 0px (their shape variable stays 0px)
+        border-radius: var(--mdc-outlined-text-field-container-shape, 4px) !important
         background: #fff !important
         transition: background-color .16s ease, box-shadow .16s ease, border-color .16s ease
+
+    .mat-mdc-text-field-wrapper.mdc-text-field--filled
+        border-radius: 0 !important
 
     .mat-mdc-text-field-wrapper:not(.mdc-text-field--textarea)
         min-height: var(--imr-control-height)
@@ -489,7 +496,6 @@ mat-form-field,
 .mat-mdc-form-field .mdc-notched-outline__leading,
 .mat-mdc-form-field .mdc-notched-outline__notch,
 .mat-mdc-form-field .mdc-notched-outline__trailing
-    border-radius: 0 !important
     border-color: rgba(theme.$imr-border, .95)
 
 .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
