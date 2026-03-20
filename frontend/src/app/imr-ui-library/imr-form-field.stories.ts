@@ -33,7 +33,7 @@ const meta: Meta<ImrFormFieldComponent> = {
       description: {
         component: `
 Wrapper around \`mat-form-field\` that applies consistent IMR styling:
-outline appearance, 40 px fixed height, and 4 px rounded corners matching the original Material Design outline field.
+outline appearance with 4 px rounded corners, standard Angular Material sizing, floating label, and IMR theme colours.
 
 **Usage**
 \`\`\`html

@@ -415,10 +415,8 @@ mat-form-field,
     width: 100%
 
 .mat-mdc-form-field
-    --mat-form-field-container-height: var(--imr-control-height)
-    --mat-form-field-container-vertical-padding: .35rem
     --mat-form-field-filled-container-shape: 0px
-    // Use the 4 px radius set in the global vars for outlined appearance
+    // Outlined form fields use the 4 px radius set in the global CSS vars
     --mat-form-field-outlined-container-shape: var(--mdc-outlined-text-field-container-shape, 4px)
     // Override MDC fill-appearance container color (the CSS variable has higher specificity
     // than a background property rule, so we must set it here to achieve a white background)
@@ -429,52 +427,21 @@ mat-form-field,
         // Use the container-shape variable so outlined wrappers clip content at rounded corners;
         // fill wrappers use 0px (their shape variable stays 0px)
         border-radius: var(--mdc-outlined-text-field-container-shape, 4px) !important
-        background: #fff !important
         transition: background-color .16s ease, box-shadow .16s ease, border-color .16s ease
 
     .mat-mdc-text-field-wrapper.mdc-text-field--filled
         border-radius: 0 !important
+        background: #fff !important
 
-    .mat-mdc-text-field-wrapper:not(.mdc-text-field--textarea)
-        min-height: var(--imr-control-height)
-        height: var(--imr-control-height)
+    &:hover .mat-mdc-text-field-wrapper.mdc-text-field--filled
+        background: #fff !important
 
-    .mat-mdc-text-field-wrapper:not(.mdc-text-field--textarea) .mat-mdc-form-field-flex
-        min-height: var(--imr-control-height)
-        height: var(--imr-control-height)
-        align-items: center
-
-    .mat-mdc-text-field-wrapper:not(.mdc-text-field--textarea) .mat-mdc-form-field-infix
-        min-height: calc(var(--imr-control-height) - 2px)
-        padding-top: .35rem
-        padding-bottom: .35rem
-
-    .mat-mdc-text-field-wrapper:not(.mdc-text-field--textarea) .mat-mdc-input-element,
-    .mat-mdc-text-field-wrapper:not(.mdc-text-field--textarea) .mat-mdc-select-value-text
-        line-height: 1.2
-
-    .mat-mdc-select-trigger
-        min-height: var(--imr-control-height)
-        height: var(--imr-control-height)
-        align-items: center
-
-    .mat-mdc-select-value
-        min-height: calc(var(--imr-control-height) - 2px)
-        display: flex
-        align-items: center
+    &.mat-focused .mat-mdc-text-field-wrapper.mdc-text-field--filled
+        background: #fff !important
+        box-shadow: none
 
     .mat-mdc-select-arrow-wrapper
         align-self: center
-
-    textarea.mat-mdc-form-field-textarea-control
-        min-height: calc(var(--imr-control-height) * 2)
-
-    &:hover .mat-mdc-text-field-wrapper
-        background: #fff !important
-
-    &.mat-focused .mat-mdc-text-field-wrapper
-        background: #fff !important
-        box-shadow: none
 
     .mat-mdc-form-field-hint-wrapper,
     .mat-mdc-form-field-error-wrapper
