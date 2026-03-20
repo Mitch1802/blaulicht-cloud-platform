@@ -8,6 +8,11 @@
         <mat-label><ng-content select="imr-label"></ng-content></mat-label>
       }
       <ng-content></ng-content>
+      @if (_suffixChild) {
+        <span matSuffix><ng-content select="imr-suffix"></ng-content></span>
+      }
+      @if (_errorChild) {
+        <mat-error><ng-content select="imr-error"></ng-content></mat-error>
+      }
     </mat-form-field>
-  
 

@@ -71,11 +71,10 @@
     --imr-grid-row-gap:       .75rem
     --imr-grid-col-gap:       1rem
 
-    // -- Material MDC Shape-Overrides (keine Abrundungen) ---------------------
+    // -- Material MDC Shape-Overrides -----------------------------------------
     --mdc-shape-small:        0px
     --mdc-shape-medium:       0px
     --mdc-shape-large:        0px
-    --mdc-text-field-container-shape: 0px
     --mdc-chip-container-shape-radius: 0px
     --mat-chip-container-shape-radius: 0px
     --mat-chip-with-avatar-avatar-shape-radius: 0px
@@ -84,11 +83,7 @@
     --mdc-dialog-container-shape: 0px
     --mdc-snackbar-container-shape: 0px
     --mat-select-container-elevation-shadow: none
-    --mat-form-field-filled-container-shape: 0px
-    --mat-form-field-outlined-container-shape: 0px
     --mat-autocomplete-container-shape: 0px
-    --mdc-outlined-text-field-container-shape: 0px
-    --mdc-filled-text-field-container-shape: 0px
 
 // Header-Variante hell
 body.header-variant-light
@@ -414,56 +409,11 @@ mat-form-field,
     width: 100%
 
 .mat-mdc-form-field
-    --mat-form-field-container-height: var(--imr-control-height)
-    --mat-form-field-container-vertical-padding: .35rem
-    --mat-form-field-filled-container-shape: 0px
-    --mat-form-field-outlined-container-shape: 0px
-
     .mat-mdc-text-field-wrapper
-        border-radius: 0 !important
-        background: #fff
         transition: background-color .16s ease, box-shadow .16s ease, border-color .16s ease
-
-    .mat-mdc-text-field-wrapper:not(.mdc-text-field--textarea)
-        min-height: var(--imr-control-height)
-        height: var(--imr-control-height)
-
-    .mat-mdc-text-field-wrapper:not(.mdc-text-field--textarea) .mat-mdc-form-field-flex
-        min-height: var(--imr-control-height)
-        height: var(--imr-control-height)
-        align-items: center
-
-    .mat-mdc-text-field-wrapper:not(.mdc-text-field--textarea) .mat-mdc-form-field-infix
-        min-height: calc(var(--imr-control-height) - 2px)
-        padding-top: .35rem
-        padding-bottom: .35rem
-
-    .mat-mdc-text-field-wrapper:not(.mdc-text-field--textarea) .mat-mdc-input-element,
-    .mat-mdc-text-field-wrapper:not(.mdc-text-field--textarea) .mat-mdc-select-value-text
-        line-height: 1.2
-
-    .mat-mdc-select-trigger
-        min-height: var(--imr-control-height)
-        height: var(--imr-control-height)
-        align-items: center
-
-    .mat-mdc-select-value
-        min-height: calc(var(--imr-control-height) - 2px)
-        display: flex
-        align-items: center
 
     .mat-mdc-select-arrow-wrapper
         align-self: center
-
-    textarea.mat-mdc-form-field-textarea-control
-        min-height: calc(var(--imr-control-height) * 2)
-
-    &:hover .mat-mdc-text-field-wrapper
-        background: #fff
-
-    &.mat-focused .mat-mdc-text-field-wrapper
-        background: #fff
-        box-shadow: none
 
     .mat-mdc-form-field-hint-wrapper,
     .mat-mdc-form-field-error-wrapper
@@ -481,30 +431,6 @@ mat-form-field,
         text-overflow: ellipsis
         overflow: hidden
         margin-block: 0px
-
-.mat-mdc-form-field .mdc-notched-outline__leading,
-.mat-mdc-form-field .mdc-notched-outline__notch,
-.mat-mdc-form-field .mdc-notched-outline__trailing
-    border-radius: 0 !important
-    border-color: rgba(theme.$imr-border, .95)
-
-.mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
-.mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
-.mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing
-    border-color: theme.$imr-primary
-
-.mat-mdc-form-field .mdc-floating-label,
-.mat-mdc-form-field .mat-mdc-input-element,
-.mat-mdc-form-field .mat-mdc-select-value-text
-    color: theme.$imr-text
-
-.mat-mdc-form-field .mat-mdc-form-field-hint,
-.mat-mdc-form-field .mat-mdc-form-field-error,
-.mat-mdc-form-field .mat-mdc-form-field-required-marker
-    color: theme.$imr-text-muted
-
-.mat-mdc-input-element::placeholder
-    color: rgba(theme.$imr-text-muted, .9)
 
 mat-select
     margin: 0px

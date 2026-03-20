@@ -1,6 +1,8 @@
 import { Component, ContentChild, Input, OnInit, ViewChild } from '@angular/core'
 import { MatFormField, MatFormFieldControl, MatFormFieldModule } from '@angular/material/form-field'
 import { ImrLabelComponent } from '../imr-label/imr-label.component'
+import { ImrErrorComponent } from '../imr-error/imr-error.component'
+import { ImrSuffixComponent } from '../imr-suffix/imr-suffix.component'
 /**
  * imr-form-field
  *
@@ -33,6 +35,25 @@ export class ImrFormFieldComponent implements OnInit {
   @ContentChild(ImrLabelComponent, { static: true })
   protected readonly _labelChild?: ImrLabelComponent
 
+  /**
+   * Reference to the projected imr-suffix child element, if provided.
+   * Used to conditionally render the <span matSuffix> wrapper so that
+   * mat-form-field can detect the suffix via @ContentChildren(MAT_SUFFIX).
+   * static: false because the suffix may be conditionally rendered.
+   */
+  @ContentChild(ImrSuffixComponent, { static: false })
+  protected readonly _suffixChild?: ImrSuffixComponent
+
+  /**
+   * Reference to the projected imr-error child element, if provided.
+   * Used to conditionally render the <mat-error> wrapper so that
+   * mat-form-field can detect it via @ContentChildren(MatError) and
+   * display it in the subscript area below the field.
+   * static: false because errors are typically conditionally rendered.
+   */
+  @ContentChild(ImrErrorComponent, { static: false })
+  protected readonly _errorChild?: ImrErrorComponent
+
   get hasLabel(): boolean {
     return !!this._labelChild
   }
@@ -44,6 +65,18 @@ export class ImrFormFieldComponent implements OnInit {
       // boundaries, so mat-form-field cannot find the control in projected content.
       (this._matFormField as unknown as { _control: MatFormFieldControl<unknown> })._control =
         this._fieldControl
+
+      // MatInput sets _isInFormField = true only when it successfully injects MAT_FORM_FIELD
+      // via DI. Projected content lives in the declaring component's injector scope and
+      // cannot reach mat-form-field's providers, so _isInFormField stays false. Without it,
+      // MatInput's host bindings skip adding `mdc-text-field__input` and
+      // `mat-mdc-form-field-input-control` — the classes that apply `width: 100%` and
+      // remove the native browser border. Patch the flag here (before the first CD cycle
+      // evaluates the host bindings) so the correct classes are applied.
+      const ctrl = this._fieldControl as unknown as { _isInFormField?: boolean }
+      if (typeof ctrl._isInFormField === 'boolean' && !ctrl._isInFormField) {
+        ctrl._isInFormField = true
+      }
     }
   }
 }

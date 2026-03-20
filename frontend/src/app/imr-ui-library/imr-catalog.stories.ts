@@ -16,6 +16,8 @@ import { ImrFormActionsComponent } from './imr-form-actions.component';
 import { ImrTableWrapComponent } from './imr-table-wrap.component';
 import { ImrChipsComponent } from './imr-chips.component';
 import { ImrFormGridComponent } from './imr-form-grid.component';
+import { ImrFormFieldComponent } from './imr-form-field.component';
+import { ImrLabelComponent } from './imr-label.component';
 
 /**
  * Vollständiger IMR-Komponenten-Katalog.
@@ -52,6 +54,7 @@ const meta: Meta = {
       imports: [
         ImrPageLayoutComponent, ImrSectionCardComponent, ImrTopActionsComponent,
         ImrFormActionsComponent, ImrTableWrapComponent, ImrChipsComponent, ImrFormGridComponent,
+        ImrFormFieldComponent, ImrLabelComponent,
         MatButtonModule, MatFormFieldModule, MatInputModule, MatTableModule,
         MatChipsModule, MatIconModule, MatPaginatorModule,
       ],
@@ -123,22 +126,22 @@ export const Formularseite: StoryObj = {
         <imr-section-card title="Persönliche Daten">
           <imr-form-grid>
             <div class="app-col-12 app-col-lg-6">
-              <mat-form-field>
-                <mat-label>Vorname</mat-label>
+              <imr-form-field>
+                <imr-label>Vorname</imr-label>
                 <input matInput value="Max" />
-              </mat-form-field>
+              </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6">
-              <mat-form-field>
-                <mat-label>Nachname</mat-label>
+              <imr-form-field>
+                <imr-label>Nachname</imr-label>
                 <input matInput value="Muster" />
-              </mat-form-field>
+              </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6">
-              <mat-form-field>
-                <mat-label>E-Mail</mat-label>
+              <imr-form-field>
+                <imr-label>E-Mail</imr-label>
                 <input matInput type="email" value="max@example.com" />
-              </mat-form-field>
+              </imr-form-field>
             </div>
           </imr-form-grid>
 
