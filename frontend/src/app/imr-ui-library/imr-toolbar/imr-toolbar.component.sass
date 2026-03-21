@@ -1,0 +1,29 @@
+mat-toolbar
+	height: var(--imr-header-height)
+	display: flex
+	flex-wrap: wrap
+	background: var(--imr-header-bg) !important
+	box-shadow: none
+	border-bottom: 1px solid rgba(0, 0, 0, .1)
+	position: sticky
+	top: 0
+	z-index: 500
+
+	.spacer
+		flex: 1 1 auto
+
+	.title
+		font-size: 18px
+		font-weight: 500
+		color: white
+		letter-spacing: .1px
+
+	mat-icon
+		color: white
+
+@media (max-width: 768px)
+	mat-toolbar
+		height: 52px
+
+		.title
+			font-size: 17px

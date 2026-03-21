@@ -1,2 +1,28 @@
-﻿
+﻿@use '../../../theme' as theme
+
+.imr-form-grid
+	margin-top: .2rem
+	padding: .75rem
+	border: 1px solid rgba(theme.$imr-border, .82)
+	border-radius: 0
+	background: #fff
+
+.imr-two-col-md
+	grid-column: span 12
+
+.imr-full-width
+	width: 100%
+
+@media only screen and (min-width: 768px)
+	.imr-two-col-md
+		grid-column: span 6
+
+	.imr-two-col-md.mb-3,
+	.imr-form-grid .app-col-lg-12.mb-3
+		margin-bottom: .6rem !important
+
+@media only screen and (max-width: 700px)
+	.imr-form-grid
+		padding: .75rem
+
 

@@ -1,2 +1,28 @@
-﻿
+﻿@use '../../../theme' as theme
+
+.imr-chips
+	margin-top: .3rem
+	display: flex
+	flex-wrap: wrap
+	gap: .4rem
+
+	.mat-mdc-chip
+		min-height: var(--imr-control-height)
+		height: var(--imr-control-height)
+		border-radius: 0 !important
+		border: 1px solid var(--imr-control-border)
+		background: var(--imr-control-bg)
+		color: theme.$imr-primary-deep
+
+	.mat-mdc-chip .mat-mdc-chip-action,
+	.mat-mdc-chip .mdc-evolution-chip__action
+		min-height: var(--imr-control-height)
+
+	.mat-mdc-chip .mat-mdc-chip-remove,
+	.mat-mdc-chip [matChipRemove]
+		border-radius: 0 !important
+		border: 0 !important
+		box-shadow: none !important
+		background: transparent !important
+
 

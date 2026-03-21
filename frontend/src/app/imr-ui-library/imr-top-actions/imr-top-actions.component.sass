@@ -1,2 +1,23 @@
-﻿
+﻿.imr-top-actions
+	display: flex
+	align-items: center
+	gap: .45rem
+	flex-wrap: wrap
+	margin: .15rem 0 .55rem
+
+	> .mat-mdc-button-base,
+	> a.mat-mdc-button-base,
+	> [mat-flat-button],
+	> [mat-stroked-button],
+	> [mat-raised-button],
+	> [mat-button],
+	> [mat-icon-button]
+		min-height: var(--imr-control-height)
+		height: var(--imr-control-height)
+
+@media only screen and (max-width: 700px)
+	.imr-top-actions
+		button
+			width: 100%
+
 

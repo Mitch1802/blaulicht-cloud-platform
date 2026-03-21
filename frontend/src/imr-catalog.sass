@@ -10,6 +10,20 @@
 // IMR components should primarily be styled through CSS variables.
 // -----------------------------------------------------------------------------
 @use './theme' as theme
+@use './app/imr-ui-library/imr-toolbar/imr-toolbar.component' as imrToolbarStyles
+@use './app/imr-ui-library/imr-header/imr-header.component' as imrHeaderStyles
+@use './app/imr-ui-library/imr-page-layout/imr-page-layout.component' as imrPageLayoutStyles
+@use './app/imr-ui-library/imr-section-card/imr-section-card.component' as imrSectionCardStyles
+@use './app/imr-ui-library/imr-top-actions/imr-top-actions.component' as imrTopActionsStyles
+@use './app/imr-ui-library/imr-form-actions/imr-form-actions.component' as imrFormActionsStyles
+@use './app/imr-ui-library/imr-form-grid/imr-form-grid.component' as imrFormGridStyles
+@use './app/imr-ui-library/imr-table-wrap/imr-table-wrap.component' as imrTableWrapStyles
+@use './app/imr-ui-library/imr-chips/imr-chips.component' as imrChipsStyles
+@use './app/imr-ui-library/imr-tab-group/imr-tab-group.component' as imrTabGroupStyles
+@use './app/imr-ui-library/imr-expansion-panel/imr-expansion-panel.component' as imrExpansionPanelStyles
+@use './app/imr-ui-library/imr-paginator/imr-paginator.component' as imrPaginatorStyles
+@use './app/imr-ui-library/imr-list/imr-list.component' as imrListStyles
+@use './app/imr-ui-library/imr-list-item/imr-list-item.component' as imrListItemStyles
 
 // ------------------------------------------------------------------------------
 // 1. IMR design tokens and CSS custom properties
@@ -146,89 +160,6 @@ h1
 // ------------------------------------------------------------------------------
 // 3. Material Design 3 and Angular Material overrides
 // ------------------------------------------------------------------------------
-
-// -- Toolbar (imr-header intern) ----------------------------------------------
-mat-toolbar
-    height: var(--imr-header-height)
-    display: flex
-    flex-wrap: wrap
-    background: var(--imr-header-bg) !important
-    box-shadow: none
-    border-bottom: 1px solid rgba(0, 0, 0, .1)
-    position: sticky
-    top: 0
-    z-index: 500
-
-    .spacer
-        flex: 1 1 auto
-
-    .title
-        font-size: 18px
-        font-weight: 500
-        color: white
-        letter-spacing: .1px
-
-    mat-icon
-        color: white
-
-.imr-header-toolbar
-    padding-inline: .5rem .7rem
-    background: var(--imr-header-bg) !important
-    box-shadow: none
-    transition: background .16s ease, box-shadow .16s ease
-
-.imr-header-logo-link
-    display: inline-flex
-    align-items: center
-    justify-content: center
-    border-radius: 0
-    text-decoration: none
-
-    &:focus-visible
-        outline: 2px solid rgba(255, 255, 255, .72)
-        outline-offset: 2px
-
-.imr-header-logo
-    width: 36px
-    height: 36px
-    border-radius: 0
-    object-fit: contain
-
-.imr-header-title
-    margin-left: .55rem
-    line-height: 1
-    white-space: nowrap
-
-.imr-header-title-link
-    text-decoration: none
-    color: #fff !important
-
-    &:hover
-        color: #fff !important
-        opacity: .86
-
-    &:focus-visible
-        outline: 2px solid rgba(255, 255, 255, .72)
-        outline-offset: 2px
-        border-radius: 0
-
-.imr-header-logout
-    color: white
-    margin-left: .2rem
-    width: 34px
-    height: 34px
-    padding: 0
-
-    mat-icon
-        font-size: 18px
-        width: 18px
-        height: 18px
-
-.imr-header-stepper-wrap
-    padding: .35rem .65rem .25rem
-    background: var(--imr-breadcrumb-bg)
-    border-bottom: 1px solid rgba(theme.$imr-border, .85)
-    transition: background .16s ease
 
 // -- Buttons ------------------------------------------------------------------
 .mat-mdc-button,
@@ -593,63 +524,7 @@ mat-select
     .mat-icon
         color: #fff
 
-// -- Tabs ---------------------------------------------------------------------
-.mat-mdc-tab-group
-    --mdc-secondary-navigation-tab-container-height: 42px
-
-    .mat-mdc-tab-header
-        background: #fff
-        border-bottom: 1px solid rgba(theme.$imr-border, .9)
-
-    .mdc-tab
-        border-radius: 0
-        min-width: 108px
-        padding-inline: .25rem
-        background: transparent
-        border-right: 0
-
-    .mat-mdc-tab
-        border-radius: 0
-
-    .mdc-tab__ripple,
-    .mdc-tab__ripple::before,
-    .mdc-tab__ripple::after
-        border-radius: 0
-
-    .mdc-tab__text-label
-        color: rgba(theme.$imr-text-muted, .95)
-        font-size: .85rem
-        letter-spacing: .01em
-        font-weight: 500
-
-    .mdc-tab--active .mdc-tab__text-label
-        color: theme.$imr-primary
-        font-weight: 600
-
-    .mdc-tab-indicator__content--underline
-        border-color: theme.$imr-primary !important
-        border-top-width: 3px
-        border-radius: 0
-
-    .mdc-tab:focus-visible
-        outline: 2px solid rgba(theme.$imr-primary, .5)
-        outline-offset: -2px
-
-// -- Expansion Panel ----------------------------------------------------------
-.mat-expansion-panel
-    border: 1px solid rgba(theme.$imr-border, .9)
-    border-radius: 0
-    overflow: hidden
-
 // -- Paginator ----------------------------------------------------------------
-.mat-mdc-paginator
-    border-top: 1px solid rgba(theme.$imr-border, .9)
-    background-color: transparent
-    padding-top: 0
-    margin-top: 0
-
-.imr-table-wrap > .mat-mdc-paginator
-    margin-top: 0 !important
 
 // -- Snackbar -----------------------------------------------------------------
 .app-snackbar
@@ -700,41 +575,6 @@ mat-select
     @extend .app-snackbar--error
 
 // -- Listen -------------------------------------------------------------------
-mat-list
-    padding-top: 0
-    padding-bottom: 0
-
-.mat-mdc-list-base
-    padding-top: 0
-    padding-bottom: 0
-
-mat-list-item
-    height: auto
-    padding-left: 0
-    padding-right: 0
-    padding-top: 5px
-
-.mat-mdc-list-item
-    min-height: auto
-
-mat-list-item span span
-    display: flex
-    align-items: center
-    margin: 0
-
-.mat-mdc-list-item .mdc-list-item__content
-    display: flex
-    align-items: center
-    margin: 0
-    color: theme.$imr-text
-
-    mat-icon
-        padding-right: 5px
-
-.mat-list-link span, .mat-tree-link span
-    text-decoration: underline
-    color: theme.$imr-primary
-    cursor: pointer
 
 // -- Error-Banner -------------------------------------------------------------
 .error-top
@@ -749,112 +589,6 @@ mat-list-item span span
 // 4. IMR component styles for imr-* hosts and wrapper classes
 // ------------------------------------------------------------------------------
 
-// -- imr-page-layout ----------------------------------------------------------
-.imr-page
-    max-width: var(--imr-page-max-width)
-    margin: 0 auto
-    padding: var(--imr-page-padding)
-
-.imr-page__head
-    margin: 0 0 1rem
-
-    h1
-        margin: 0
-        color: theme.$imr-primary
-        font-size: clamp(1.5rem, 2.4vw, 2.1rem)
-        line-height: 1.2
-
-// -- imr-section-card ---------------------------------------------------------
-.imr-card
-    border-radius: var(--imr-card-radius) !important
-
-.imr-card__head
-    display: flex
-    align-items: center
-    justify-content: space-between
-    gap: .75rem
-    padding: .72rem .85rem
-    margin-bottom: 0
-    background: theme.$imr-primary
-    border-bottom: 1px solid rgba(theme.$imr-primary-dark, .95)
-
-    h2,
-    .mat-mdc-card-title
-        margin: 0
-        color: #fff
-        font-size: .96rem
-        font-weight: 700
-        line-height: 1.2
-
-    .mat-mdc-card-title
-        padding-bottom: 0
-
-    .mat-mdc-card-header-text
-        margin: 0
-
-.section-head-meta
-    display: inline-flex
-    align-items: center
-    gap: .5rem
-
-.table-status-badge
-    display: inline-flex
-    align-items: center
-    min-height: 1.6rem
-    padding: 0 .55rem
-    border-radius: 0
-    border: 1px solid rgba(theme.$imr-border, .86)
-    background: #f4f4f4
-    color: rgba(theme.$imr-text, .92)
-    font-size: .68rem
-    font-weight: 700
-    letter-spacing: .04em
-    text-transform: uppercase
-
-    &.warn
-        background: rgba(theme.$imr-error, .14)
-        border-color: rgba(theme.$imr-error, .42)
-        color: color-mix(in srgb, #{theme.$imr-error} 82%, #000 18%)
-
-.imr-card__content
-    padding: var(--imr-card-padding) !important
-
-// -- imr-top-actions ----------------------------------------------------------
-.imr-top-actions
-    display: flex
-    align-items: center
-    gap: .45rem
-    flex-wrap: wrap
-    margin: .15rem 0 .55rem
-
-    > .mat-mdc-button-base,
-    > a.mat-mdc-button-base,
-    > [mat-flat-button],
-    > [mat-stroked-button],
-    > [mat-raised-button],
-    > [mat-button],
-    > [mat-icon-button]
-        min-height: var(--imr-control-height)
-        height: var(--imr-control-height)
-
-// -- imr-form-actions ---------------------------------------------------------
-.imr-form-actions
-    display: flex
-    align-items: center
-    flex-wrap: wrap
-    gap: .45rem
-    margin-bottom: .65rem
-
-    > .mat-mdc-button-base,
-    > a.mat-mdc-button-base,
-    > [mat-flat-button],
-    > [mat-stroked-button],
-    > [mat-raised-button],
-    > [mat-button],
-    > [mat-icon-button]
-        min-height: var(--imr-control-height)
-        height: var(--imr-control-height)
-
 // -- imr-form -----------------------------------------------------------------
 .imr-form
     margin-top: .2rem
@@ -867,221 +601,6 @@ form > button.imr-delete-btn[mat-flat-button],
 mat-card-content > button.imr-delete-btn[mat-flat-button],
 mat-card-content > button.imr-delete-btn[mat-flat-button]
     margin-top: .8rem
-
-// -- imr-form-grid ------------------------------------------------------------
-.imr-form-grid
-    margin-top: .2rem
-    padding: .75rem
-    border: 1px solid rgba(theme.$imr-border, .82)
-    border-radius: 0
-    background: #fff
-
-// -- imr-two-col-md -----------------------------------------------------------
-.imr-two-col-md
-    grid-column: span 12
-
-// -- imr-full-width -----------------------------------------------------------
-.imr-full-width
-    width: 100%
-
-// -- imr-table-wrap -----------------------------------------------------------
-.imr-table-wrap
-    overflow-x: auto
-    margin-top: .5rem
-    padding: .55rem .55rem .2rem
-    border: 1px solid rgba(theme.$imr-border, .86)
-    border-radius: 0
-    background: #fff
-    box-shadow: none
-
-    > .mat-mdc-form-field,
-    > mat-form-field,
-    > .filter-field
-        display: block
-        width: min(360px, 100%)
-        margin: 0 0 .5rem
-
-.table-toolbar
-    display: flex
-    align-items: center
-    justify-content: space-between
-    gap: .45rem
-    margin: 0 0 .35rem
-
-    .filter-field,
-    > .mat-mdc-form-field,
-    > mat-form-field
-        width: min(360px, 100%)
-
-.table-actions-head,
-.mat-column-actions
-    width: 8.6rem
-    min-width: 8.6rem
-
-.table-empty-cell
-    padding: 1rem .5rem !important
-
-.table-empty-state
-    display: grid
-    justify-items: center
-    gap: .22rem
-    margin: .2rem 0 .45rem
-    padding: .7rem .65rem
-    border-radius: 0
-    border: 1px dashed rgba(theme.$imr-border, .88)
-    background: rgba(theme.$imr-surface, .98)
-    text-align: center
-
-    &.compact
-        margin-top: .6rem
-        padding: .75rem .65rem
-
-.table-empty-icon
-    width: 1.25rem
-    height: 1.25rem
-    font-size: 1.25rem
-    color: rgba(theme.$imr-primary, .75)
-
-.table-empty-title
-    font-weight: 700
-    color: rgba(theme.$imr-primary-deep, .9)
-
-.table-empty-copy
-    font-size: .84rem
-    color: rgba(theme.$imr-text-muted, .95)
-
-// -- imr-action-cell ----------------------------------------------------------
-.imr-action-cell
-    display: flex
-    gap: .35rem
-    align-items: center
-
-td.imr-action-cell
-    display: table-cell
-    vertical-align: middle
-    white-space: nowrap
-
-    > * + *
-        margin-left: .35rem
-
-    .mat-icon
-        margin: 0
-        font-size: 20px
-        width: 20px
-        height: 20px
-        line-height: 20px
-
-    > .mat-mdc-button-base,
-    > a.mat-mdc-button-base,
-    > [mat-flat-button],
-    > [mat-stroked-button],
-    > [mat-raised-button],
-    > [mat-button],
-    > [mat-icon-button],
-    > .imr-action-btn
-        min-width: var(--imr-control-height)
-        width: var(--imr-control-height)
-        min-height: var(--imr-control-height)
-        height: var(--imr-control-height)
-        padding: 0
-        box-shadow: none
-
-    > .ms-2
-        margin-left: 0 !important
-
-    > .px-0
-        padding-left: 0 !important
-        padding-right: 0 !important
-
-.imr-action-btn
-    min-width: var(--imr-control-height)
-    width: var(--imr-control-height)
-    height: var(--imr-control-height)
-    padding: 0
-
-// -- imr-chips ----------------------------------------------------------------
-.imr-chips
-    margin-top: .3rem
-    display: flex
-    flex-wrap: wrap
-    gap: .4rem
-
-    .mat-mdc-chip
-        min-height: var(--imr-control-height)
-        height: var(--imr-control-height)
-        border-radius: 0 !important
-        border: 1px solid var(--imr-control-border)
-        background: var(--imr-control-bg)
-        color: theme.$imr-primary-deep
-
-    .mat-mdc-chip .mat-mdc-chip-action,
-    .mat-mdc-chip .mdc-evolution-chip__action
-        min-height: var(--imr-control-height)
-
-    .mat-mdc-chip .mat-mdc-chip-remove,
-    .mat-mdc-chip [matChipRemove]
-        border-radius: 0 !important
-        border: 0 !important
-        box-shadow: none !important
-        background: transparent !important
-
-// -- imr-breadcrumb -----------------------------------------------------------
-.imr-breadcrumb
-    width: min(var(--imr-page-max-width), 100%)
-    margin: 0 auto
-    display: flex
-    align-items: center
-    gap: .45rem
-    padding: .3rem .65rem
-    overflow-x: auto
-    white-space: nowrap
-    scrollbar-width: none
-    background: transparent
-    border-bottom: none
-    box-shadow: none
-    transition: background .16s ease
-
-    &::-webkit-scrollbar
-        display: none
-
-.breadcrumb-item
-    font-size: .82rem
-    font-weight: 500
-    color: theme.$imr-text-muted
-    opacity: 1
-
-.breadcrumb-link
-    text-decoration: none
-    transition: opacity .16s ease, color .16s ease
-    color: theme.$imr-text-muted
-
-    &:hover
-        opacity: .75
-        color: theme.$imr-text
-
-    &:focus-visible
-        outline: 2px solid rgba(theme.$imr-primary, .5)
-        outline-offset: 2px
-        border-radius: 0
-
-.breadcrumb-home
-    display: inline-flex
-    align-items: center
-    opacity: 1
-    transition: opacity .16s ease
-
-    &:hover
-        opacity: .7
-
-    mat-icon
-        font-size: 16px
-        width: 16px
-        height: 16px
-        color: theme.$imr-text-muted
-
-.breadcrumb-separator
-    color: rgba(theme.$imr-primary, .3)
-    opacity: .55
 
 // -- imr-lending (Leihe/Inventar-Panel) ---------------------------------------
 .imr-lending-panel
@@ -4965,46 +4484,10 @@ td.imr-action-cell
 // ------------------------------------------------------------------------------
 
 @media only screen and (min-width: 768px)
-    .imr-two-col-md
-        grid-column: span 6
-
-    .imr-two-col-md.mb-3,
-    .imr-form-grid .app-col-lg-12.mb-3
-        margin-bottom: .6rem !important
+    // Komponentenbezogene Grid-Regeln sind in imr-form-grid.component.sass ausgelagert.
 
 @media only screen and (max-width: 700px)
-    .imr-page
-        padding: var(--imr-page-padding-mobile)
-
-    .imr-page__head, .page-head
-        margin-bottom: 1rem
-
-        h1
-            font-size: 1.4rem
-
-    .imr-card__head
-        padding: .72rem .85rem
-
-        h2
-            font-size: .9rem
-
-    .imr-form-grid
-        padding: .75rem
-
-    .table-toolbar
-        flex-direction: column
-        align-items: stretch
-
-        .filter-field,
-        > .mat-mdc-form-field,
-        > mat-form-field
-            width: 100%
-
-    .section-head-meta
-        width: 100%
-        justify-content: flex-start
-
-    .imr-top-actions, .imr-form-actions, .actions-row
+    .actions-row
         button
             width: 100%
 
@@ -5028,62 +4511,8 @@ td.imr-action-cell
             width: 100%
 
 @media (max-width: 768px)
-    mat-toolbar
-        height: 52px
-
-        .title
-            font-size: 17px
-
-    .imr-header-toolbar
-        padding-inline: .45rem .55rem
-
-    .imr-header-logo
-        width: 36px
-        height: 36px
-
-    .imr-header-title
-        margin-left: .45rem
-        font-size: .98rem
-
-    .imr-header-logout
-        width: 34px
-        height: 34px
-
-        mat-icon
-            font-size: 18px
-            width: 18px
-            height: 18px
-
-    .imr-header-stepper-wrap
-        padding: .4rem .55rem .25rem
-
-    .imr-breadcrumb
-        gap: .35rem
-
-    .breadcrumb-item
-        font-size: .86rem
-
     .mat-mdc-card
         border-radius: 0
-
-    .imr-card > .mat-mdc-card-content,
-    .imr-card mat-card-content
-        padding: var(--imr-card-padding-mobile) !important
-
-    .imr-card__content
-        padding: var(--imr-card-padding-mobile) !important
-
-    .mat-mdc-header-cell, .mat-mdc-cell
-        font-size: .86rem
-
-    .imr-breadcrumb
-        padding: .3rem .1rem
-
-    .imr-table-wrap
-        padding: .75rem .75rem .35rem
-
-    .table-empty-cell
-        padding: .8rem .3rem !important
 
     .breadcrumb
         padding: .4rem .35rem
