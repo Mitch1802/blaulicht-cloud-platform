@@ -1,5 +1,10 @@
-﻿    <mat-chip [removable]="removable" (removed)="removed.emit()" [class]="chipClass">
-      <ng-content></ng-content>
-    </mat-chip>
+﻿<mat-chip [removable]="removable" (removed)="removed.emit()" [class]="chipClass">
+  <ng-content></ng-content>
+  @if (removable) {
+    <span matChipRemove>
+      <ng-content select="imr-chip-remove"></ng-content>
+    </span>
+  }
+</mat-chip>
   
 

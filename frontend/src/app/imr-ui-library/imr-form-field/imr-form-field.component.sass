@@ -1,2 +1,85 @@
+@use '../../../theme' as theme
+
 :host
     display: block
+    width: 100%
+
+// Material Form-Field overrides
+mat-form-field,
+.mat-mdc-form-field
+    width: 100%
+    --mat-form-field-container-height: var(--imr-control-height)
+    --mat-form-field-container-vertical-padding: .5rem
+    --mdc-outlined-text-field-container-shape: 0px
+    --mdc-filled-text-field-container-shape: 0px
+
+// ::ng-deep nötig, da MDC-interne Elemente nicht im eigenen Template sind
+// und Angular's View Encapsulation sie sonst nicht erreicht
+:host ::ng-deep
+    .mat-mdc-text-field-wrapper
+        min-height: var(--imr-control-height)
+        border-radius: 0 !important
+        transition: background-color .16s ease, box-shadow .16s ease, border-color .16s ease
+
+    .mdc-text-field--outlined,
+    .mdc-text-field--filled
+        height: var(--imr-control-height)
+        border-radius: 0 !important
+
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__trailing
+        border-radius: 0 !important
+
+    .mat-mdc-form-field-flex
+        min-height: var(--imr-control-height)
+
+    .mat-mdc-form-field-infix
+        min-height: calc(var(--imr-control-height) - 2px)
+        padding-top: .45rem
+        padding-bottom: .45rem
+
+    .mat-mdc-select-trigger
+        min-height: calc(var(--imr-control-height) - 2px)
+        display: flex
+        align-items: center
+
+    input.mat-mdc-input-element
+        line-height: 1.2
+        max-height: calc(var(--imr-control-height) - 2px)
+
+    textarea.mat-mdc-input-element
+        max-height: none
+
+    .mat-mdc-select-arrow-wrapper
+        align-self: center
+
+    .mat-mdc-form-field-icon-suffix,
+    .mat-mdc-form-field-icon-prefix
+        color: rgba(theme.$imr-primary-deep, .74)
+
+    p
+        width: 100%
+        text-align: left
+        white-space: nowrap
+        text-overflow: ellipsis
+        overflow: hidden
+        margin-block: 0px
+
+// Material Form-Field subscript styling
+.mat-mdc-form-field-subscript-wrapper
+    display: none
+    margin-top: 0
+
+    &:not(:empty)
+        display: block
+        margin-top: .18rem
+
+.mat-mdc-form-field-hint-wrapper,
+.mat-mdc-form-field-error-wrapper
+    display: none
+    min-height: 0
+    padding-inline: .25rem
+
+    &:not(:empty)
+        display: block
+        min-height: 1.05rem

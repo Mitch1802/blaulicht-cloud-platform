@@ -137,4 +137,48 @@ td.imr-action-cell
 	.table-empty-cell
 		padding: .8rem .3rem !important
 
+// Material Table overrides
+.mat-mdc-table
+	background: #fff
+	border: 1px solid var(--imr-table-border)
+	border-radius: 0
+	overflow: hidden
+	box-shadow: none
 
+	.mat-mdc-header-row
+		background: theme.$imr-primary
+		border-bottom: 1px solid rgba(theme.$imr-primary-dark, .9)
+
+	.mat-mdc-header-cell
+		color: #fff
+		font-weight: 600
+		letter-spacing: .02em
+		font-size: .74rem
+		line-height: 1.2
+		padding: .68rem .8rem
+
+	.mat-sort-header-arrow
+		color: rgba(#fff, .8)
+
+	.mat-mdc-cell
+		color: theme.$imr-text
+		font-size: .88rem
+		line-height: 1.35
+		padding: .72rem .8rem
+		border-bottom: 1px solid rgba(theme.$imr-border, .65)
+
+	.mat-mdc-row
+		min-height: 44px
+		transition: background-color .14s ease
+
+	.mat-mdc-header-row
+		min-height: 42px
+
+		&:nth-child(even)
+			background-color: var(--imr-table-row-even-bg)
+
+		&:hover
+			background-color: var(--imr-table-row-hover-bg)
+
+		&:last-child .mat-mdc-cell
+			border-bottom: 0

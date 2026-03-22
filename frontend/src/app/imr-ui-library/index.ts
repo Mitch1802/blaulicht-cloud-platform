@@ -15,6 +15,7 @@
  */
 
 export * from './imr-page-layout.component';
+export * from './imr-section.component';
 export * from './imr-section-card.component';
 export * from './imr-header.component';
 export * from './imr-top-actions.component';
@@ -62,6 +63,7 @@ export * from './imr-stepper/imr-stepper.component';
 export * from './imr-step/imr-step.component';
 
 import { ImrPageLayoutComponent } from './imr-page-layout.component';
+import { ImrSectionComponent } from './imr-section.component';
 import { ImrSectionCardComponent } from './imr-section-card.component';
 import { ImrHeaderComponent } from './imr-header.component';
 import { ImrTopActionsComponent } from './imr-top-actions.component';
@@ -112,6 +114,7 @@ export const IMR_UI_COMPONENTS = [
   ImrButtonComponent,
   ImrInputComponent,
   ImrPageLayoutComponent,
+  ImrSectionComponent,
   ImrSectionCardComponent,
   ImrHeaderComponent,
   ImrTopActionsComponent,

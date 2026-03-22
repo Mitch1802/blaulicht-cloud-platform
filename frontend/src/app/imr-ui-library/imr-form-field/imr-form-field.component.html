@@ -25,5 +25,8 @@
       @if (_errorChild) {
         <mat-error><ng-content select="imr-error"></ng-content></mat-error>
       }
+      @if (!_errorChild && autoErrorMessage) {
+        <mat-error>{{ autoErrorMessage }}</mat-error>
+      }
     </mat-form-field>
 

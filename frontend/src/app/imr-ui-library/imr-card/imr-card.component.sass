@@ -1,2 +1,42 @@
-﻿
+﻿@use '../../../theme' as theme
+
+// Material Card overrides
+:host ::ng-deep
+    mat-card
+        padding: 0
+
+    .mat-mdc-card
+        border-radius: var(--imr-card-radius)
+        border: 1px solid var(--imr-card-border)
+        background: var(--imr-card-bg)
+        box-shadow: var(--imr-card-shadow)
+        overflow: hidden
+
+    .mat-mdc-card-title
+        padding-bottom: 12px
+        color: theme.$imr-primary-dark
+
+    .mat-mdc-card-subtitle
+        padding: 12px
+        color: theme.$imr-text-muted
+
+    .mat-mdc-card-content,
+    mat-card-content
+        padding: 0 !important
+
+    .mat-mdc-card-content:first-child,
+    .mat-mdc-card-content:last-child
+        padding-top: 0 !important
+        padding-bottom: 0 !important
+
+    .link-card
+        .mat-mdc-card
+            align-items: center
+            justify-content: center
+
+            mat-icon
+                width: 112px
+                height: 112px
+                font-size: 112px
+                line-height: 1
 

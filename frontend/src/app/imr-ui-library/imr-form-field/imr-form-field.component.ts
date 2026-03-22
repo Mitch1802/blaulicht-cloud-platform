@@ -1,4 +1,4 @@
-import { booleanAttribute, Component, ContentChild, Input, OnInit, ViewChild } from '@angular/core'
+import { AfterContentInit, booleanAttribute, Component, ContentChild, Input, OnInit, ViewChild } from '@angular/core'
 import { MatFormField, MatFormFieldControl, MatFormFieldModule } from '@angular/material/form-field'
 import { ImrLabelComponent } from '../imr-label/imr-label.component'
 import { ImrErrorComponent } from '../imr-error/imr-error.component'
@@ -21,7 +21,7 @@ import { ImrSuffixComponent } from '../imr-suffix/imr-suffix.component'
   standalone: true,
   imports: [MatFormFieldModule],
 })
-export class ImrFormFieldComponent implements OnInit {
+export class ImrFormFieldComponent implements OnInit, AfterContentInit {
   @Input() label = ''
   @Input() hint = ''
   @Input() fieldClass = 'imr-full-width'
@@ -61,6 +61,9 @@ export class ImrFormFieldComponent implements OnInit {
   @ContentChild(ImrErrorComponent, { static: false })
   protected readonly _errorChild?: ImrErrorComponent
 
+  /** Error text injected by uiControlErrors for projected controls. */
+  protected autoErrorMessage = ''
+
   get hasLabel(): boolean {
     return this.label.trim().length > 0 || !!this._labelChild
   }
@@ -69,7 +72,20 @@ export class ImrFormFieldComponent implements OnInit {
     return this.label.trim().length === 0 && !!this._labelChild
   }
 
+  setAutoError(message: string | null): void {
+    this.autoErrorMessage = (message ?? '').trim()
+  }
+
   ngOnInit(): void {
+    this._patchMatFormFieldControl()
+  }
+
+  ngAfterContentInit(): void {
+    // Re-patch after content is fully initialized (needed for HMR and deferred content).
+    this._patchMatFormFieldControl()
+  }
+
+  private _patchMatFormFieldControl(): void {
     if (this._fieldControl) {
       // Set _control explicitly so mat-form-field finds it before ngAfterContentInit runs.
       // This is necessary because Angular's @ContentChildren cannot traverse ng-content

@@ -13,6 +13,7 @@
 @use './app/imr-ui-library/imr-toolbar/imr-toolbar.component' as imrToolbarStyles
 @use './app/imr-ui-library/imr-header/imr-header.component' as imrHeaderStyles
 @use './app/imr-ui-library/imr-page-layout/imr-page-layout.component' as imrPageLayoutStyles
+@use './app/imr-ui-library/imr-section/imr-section.component' as imrSectionStyles
 @use './app/imr-ui-library/imr-section-card/imr-section-card.component' as imrSectionCardStyles
 @use './app/imr-ui-library/imr-top-actions/imr-top-actions.component' as imrTopActionsStyles
 @use './app/imr-ui-library/imr-form-actions/imr-form-actions.component' as imrFormActionsStyles
@@ -24,6 +25,10 @@
 @use './app/imr-ui-library/imr-paginator/imr-paginator.component' as imrPaginatorStyles
 @use './app/imr-ui-library/imr-list/imr-list.component' as imrListStyles
 @use './app/imr-ui-library/imr-list-item/imr-list-item.component' as imrListItemStyles
+
+// -- Global reset: imr-card-content übernimmt Padding-Kontrolle ---------------
+imr-card-content .mat-mdc-card-content
+    padding: 0 !important
 
 // ------------------------------------------------------------------------------
 // 1. IMR design tokens and CSS custom properties
@@ -161,139 +166,6 @@ h1
 // 3. Material Design 3 and Angular Material overrides
 // ------------------------------------------------------------------------------
 
-// -- Buttons ------------------------------------------------------------------
-.mat-mdc-button,
-.mat-mdc-outlined-button,
-.mat-mdc-unelevated-button,
-.mat-mdc-raised-button,
-.mat-mdc-icon-button
-    border-radius: var(--imr-control-radius)
-    min-height: var(--imr-control-height)
-    height: var(--imr-control-height)
-    font-weight: 500
-    letter-spacing: .1px
-    border: 1px solid var(--imr-control-border)
-    background: var(--imr-control-bg)
-    color: theme.$imr-text
-    box-shadow: none
-    transition: var(--imr-control-transition)
-
-    &:hover:not(:disabled)
-        transform: none
-        background: #f7f7f7
-        border-color: rgba(theme.$imr-primary, .45)
-        color: theme.$imr-primary-deep
-
-    &:active:not(:disabled)
-        transform: translateY(0)
-
-    &:focus-visible
-        outline: 2px solid rgba(theme.$imr-primary, .55)
-        outline-offset: 2px
-
-.mat-mdc-button,
-.mat-mdc-outlined-button,
-.mat-mdc-unelevated-button,
-.mat-mdc-raised-button
-    padding-inline: .85rem
-
-.mat-mdc-icon-button
-    width: var(--imr-control-height)
-    min-width: var(--imr-control-height)
-    height: var(--imr-control-height)
-    padding: 0
-
-.mat-mdc-button.mat-primary,
-.mat-mdc-unelevated-button.mat-primary,
-.mat-mdc-raised-button.mat-primary,
-.mat-mdc-button.mat-accent,
-.mat-mdc-unelevated-button.mat-accent,
-.mat-mdc-raised-button.mat-accent,
-.mat-mdc-button.mat-warn,
-.mat-mdc-unelevated-button.mat-warn,
-.mat-mdc-raised-button.mat-warn
-    color: #fff
-
-.mat-mdc-unelevated-button.mat-primary,
-.mat-mdc-raised-button.mat-primary
-    background: theme.$imr-primary !important
-    border-color: rgba(theme.$imr-primary, .92) !important
-    box-shadow: none
-
-    &:hover:not(:disabled)
-        background: theme.$imr-primary-dark !important
-        border-color: rgba(theme.$imr-primary-dark, .95) !important
-
-.mat-mdc-unelevated-button.mat-accent,
-.mat-mdc-raised-button.mat-accent
-    background: theme.$imr-secondary !important
-    border-color: rgba(theme.$imr-secondary, .86) !important
-    box-shadow: none
-
-    &:hover:not(:disabled)
-        background: color-mix(in srgb, #{theme.$imr-secondary} 86%, #000 14%) !important
-        border-color: rgba(theme.$imr-secondary, .95) !important
-
-.mat-mdc-unelevated-button.mat-warn,
-.mat-mdc-raised-button.mat-warn
-    background: theme.$imr-error !important
-    border-color: rgba(theme.$imr-error, .88) !important
-    box-shadow: none
-
-    &:hover:not(:disabled)
-        background: color-mix(in srgb, #{theme.$imr-error} 86%, #000 14%) !important
-        border-color: rgba(theme.$imr-error, .95) !important
-
-.mat-mdc-button.mat-primary,
-.mat-mdc-outlined-button.mat-primary
-    color: theme.$imr-primary-deep
-    border-color: rgba(theme.$imr-primary, .42)
-    background: rgba(theme.$imr-primary-light, .34)
-
-.mat-mdc-button.mat-accent,
-.mat-mdc-outlined-button.mat-accent
-    color: color-mix(in srgb, #{theme.$imr-secondary} 86%, #000 14%)
-    border-color: rgba(theme.$imr-secondary, .46)
-    background: rgba(theme.$imr-secondary-light, .55)
-
-.mat-mdc-button.mat-warn,
-.mat-mdc-outlined-button.mat-warn
-    color: color-mix(in srgb, #{theme.$imr-error} 86%, #000 14%)
-    border-color: rgba(theme.$imr-error, .45)
-    background: rgba(theme.$imr-error, .12)
-
-.mat-mdc-icon-button.mat-primary,
-.mat-mdc-icon-button.mat-accent,
-.mat-mdc-icon-button.mat-warn
-    box-shadow: none
-
-.mat-mdc-icon-button.mat-primary
-    color: theme.$imr-primary-deep
-    background: rgba(theme.$imr-primary-light, .35)
-    border-color: rgba(theme.$imr-primary, .4)
-
-.mat-mdc-icon-button.mat-accent
-    color: color-mix(in srgb, #{theme.$imr-secondary} 86%, #000 14%)
-    background: rgba(theme.$imr-secondary-light, .52)
-    border-color: rgba(theme.$imr-secondary, .45)
-
-.mat-mdc-icon-button.mat-warn
-    color: color-mix(in srgb, #{theme.$imr-error} 86%, #000 14%)
-    background: rgba(theme.$imr-error, .12)
-    border-color: rgba(theme.$imr-error, .45)
-
-.mat-mdc-button-base:disabled
-    opacity: .55
-    box-shadow: none
-
-.mat-mdc-button,
-.mat-mdc-outlined-button,
-.mat-mdc-unelevated-button,
-.mat-mdc-raised-button,
-.mat-mdc-icon-button,
-.mat-mdc-chip
-    border-radius: var(--imr-control-radius) !important
-
 // -- Disabled-Cursor ----------------------------------------------------------
 .mat-form-field-disabled,
 .mat-form-field-disabled input,
@@ -305,24 +177,6 @@ div:has(> .mat-mdc-button-disabled)
     cursor: not-allowed
 
 // -- Cards --------------------------------------------------------------------
-mat-card
-    padding: 10px
-
-.mat-mdc-card
-    border-radius: var(--imr-card-radius)
-    border: 1px solid var(--imr-card-border)
-    background: var(--imr-card-bg)
-    box-shadow: var(--imr-card-shadow)
-    overflow: hidden
-
-.mat-mdc-card-title
-    padding-bottom: 12px
-    color: theme.$imr-primary-dark
-
-.mat-mdc-card-subtitle
-    padding: 12px
-    color: theme.$imr-text-muted
-
 .link-card
     .mat-mdc-card
         align-items: center
@@ -335,196 +189,7 @@ mat-card
             line-height: 1
 
 // -- Formfelder ---------------------------------------------------------------
-mat-form-field,
-.mat-mdc-form-field
-    width: 100%
-    --mat-form-field-container-height: var(--imr-control-height)
-    --mat-form-field-container-vertical-padding: .5rem
-
-.mat-mdc-form-field
-    .mat-mdc-text-field-wrapper
-        min-height: var(--imr-control-height)
-        transition: background-color .16s ease, box-shadow .16s ease, border-color .16s ease
-
-    .mdc-text-field--outlined,
-    .mdc-text-field--filled
-        height: var(--imr-control-height)
-
-    .mat-mdc-form-field-flex
-        min-height: var(--imr-control-height)
-
-    .mat-mdc-form-field-infix
-        min-height: calc(var(--imr-control-height) - 2px)
-        padding-top: .45rem
-        padding-bottom: .45rem
-
-    .mat-mdc-select-trigger
-        min-height: calc(var(--imr-control-height) - 2px)
-        display: flex
-        align-items: center
-
-    input.mat-mdc-input-element
-        line-height: 1.2
-        max-height: calc(var(--imr-control-height) - 2px)
-
-    textarea.mat-mdc-input-element
-        max-height: none
-
-    .mat-mdc-select-arrow-wrapper
-        align-self: center
-
-    .mat-mdc-form-field-hint-wrapper,
-    .mat-mdc-form-field-error-wrapper
-        min-height: 0
-        padding-inline: .25rem
-
-    .mat-mdc-form-field-icon-suffix,
-    .mat-mdc-form-field-icon-prefix
-        color: rgba(theme.$imr-primary-deep, .74)
-
-    p
-        width: 100%
-        text-align: left
-        white-space: nowrap
-        text-overflow: ellipsis
-        overflow: hidden
-        margin-block: 0px
-
-mat-select
-    margin: 0px
-    padding: 0px
-
-.mat-mdc-select-panel,
-.mat-mdc-select-panel.mdc-menu-surface
-    border-radius: 0 !important
-
-    .mat-mdc-option
-        min-height: var(--imr-control-height)
-
-.mat-mdc-autocomplete-panel
-    border-radius: 0 !important
-
-// Select/Autocomplete overlays must stay above custom fixed dialogs.
-.cdk-overlay-container,
-.cdk-overlay-pane
-    z-index: 5000
-
-// -- Tabellen -----------------------------------------------------------------
-.mat-mdc-table
-    background: #fff
-    border: 1px solid var(--imr-table-border)
-    border-radius: 0
-    overflow: hidden
-    box-shadow: none
-
-    .mat-mdc-header-row
-        background: theme.$imr-primary
-        border-bottom: 1px solid rgba(theme.$imr-primary-dark, .9)
-
-    .mat-mdc-header-cell
-        color: #fff
-        font-weight: 600
-        letter-spacing: .02em
-        font-size: .74rem
-        line-height: 1.2
-        padding: .68rem .8rem
-
-    .mat-sort-header-arrow
-        color: rgba(#fff, .8)
-
-    .mat-mdc-cell
-        color: theme.$imr-text
-        font-size: .88rem
-        line-height: 1.35
-        padding: .72rem .8rem
-        border-bottom: 1px solid rgba(theme.$imr-border, .65)
-
-    .mat-mdc-row
-        min-height: 44px
-        transition: background-color .14s ease
-
-    .mat-mdc-header-row
-        min-height: 42px
-
-        &:nth-child(even)
-            background-color: var(--imr-table-row-even-bg)
-
-        &:hover
-            background-color: var(--imr-table-row-hover-bg)
-
-        &:last-child .mat-mdc-cell
-            border-bottom: 0
-
-// -- Chips --------------------------------------------------------------------
-.mat-mdc-chip-set .mdc-evolution-chip-set__chips
-    gap: .42rem
-
-.mat-mdc-chip,
-.mat-mdc-standard-chip
-    --mdc-chip-container-height: var(--imr-control-height)
-    --mdc-chip-container-shape-radius: 0px
-    --mat-chip-container-shape-radius: 0px
-    border-radius: 0 !important
-    height: var(--imr-control-height)
-    min-height: var(--imr-control-height)
-    border: 1px solid var(--imr-control-border)
-    background: var(--imr-control-bg)
-    color: theme.$imr-primary-deep
-    box-shadow: none
-    transition: var(--imr-control-transition)
-
-    .mdc-evolution-chip__cell,
-    .mdc-evolution-chip__action,
-    .mdc-evolution-chip__action--primary,
-    .mdc-evolution-chip__action--trailing
-        height: var(--imr-control-height)
-        min-height: var(--imr-control-height)
-        border-radius: 0 !important
-
-    .mdc-evolution-chip__action::before,
-    .mdc-evolution-chip__action::after
-        border-radius: 0 !important
-
-    .mat-mdc-chip-focus-overlay,
-    .mat-mdc-chip-ripple,
-    .mat-mdc-chip-touch-target
-        border-radius: 0 !important
-
-    .mat-mdc-chip-remove,
-    [matChipRemove],
-    .mat-mdc-icon-button
-        border: 0 !important
-        box-shadow: none !important
-        background: transparent !important
-        border-radius: 0 !important
-
-    .mdc-evolution-chip__text-label,
-    .mat-mdc-chip-action-label
-        color: inherit
-        font-weight: 600
-        letter-spacing: .2px
-
-    &:hover
-        transform: none
-        background: #f7f7f7
-        border-color: rgba(theme.$imr-primary, .4)
-        box-shadow: none
-
-    &:focus-within
-        outline: 2px solid rgba(theme.$imr-primary, .55)
-        outline-offset: 2px
-
-.mat-mdc-standard-chip.mdc-evolution-chip--selected
-    background: theme.$imr-primary
-    border-color: rgba(theme.$imr-primary, .88)
-    color: #fff
-
-    .mdc-evolution-chip__text-label,
-    .mat-mdc-chip-remove,
-    .mat-icon
-        color: #fff
-
-// -- Paginator ----------------------------------------------------------------
+// Material Form-Field overrides are in imr-form-field.component.sass
 
 // -- Snackbar -----------------------------------------------------------------
 .app-snackbar
@@ -708,22 +373,6 @@ mat-card-content > button.imr-delete-btn[mat-flat-button]
         opacity: 1
         transform: translateY(0) scale(1)
 
-// -- imr-form-section ---------------------------------------------------------
-.imr-form-section
-    border-radius: 0
-    border: 1px solid rgba(theme.$imr-border, .9)
-    background: rgba(theme.$imr-surface, .94)
-
-.imr-form-section-title
-    color: theme.$imr-primary-deep
-    font-weight: 600
-
-.imr-form-section-subtitle
-    color: theme.$imr-text-muted
-
-.imr-form-section-body
-    padding-top: .35rem
-
 // -- modul-konfiguration helpers --------------------------------------------
 .modul-form
     @extend .imr-form
@@ -814,15 +463,6 @@ mat-card-content > button.imr-delete-btn[mat-flat-button]
         flex-wrap: wrap
         gap: 10px
         align-items: center
-
-    .imr-action-btn
-        min-width: var(--imr-control-height)
-        width: var(--imr-control-height)
-        height: var(--imr-control-height)
-        padding: 0
-
-        .mat-icon
-            margin: 0
 
     .list-actions
         display: flex
@@ -1791,15 +1431,6 @@ mat-card-content > button.imr-delete-btn[mat-flat-button]
         padding: .45rem
         border-top: 1px solid rgba(theme.$imr-border, .72)
 
-        .imr-action-btn
-            min-width: var(--imr-control-height)
-            width: var(--imr-control-height)
-            height: var(--imr-control-height)
-            padding: 0
-
-            .mat-icon
-                margin: 0
-
     .existing-previews
         margin-top: .4rem
 
@@ -2000,9 +1631,7 @@ mat-card-content > button.imr-delete-btn[mat-flat-button]
 
 // -- eigene-daten helpers --------------------------------------------------
 .eigene-daten-page
-    max-width: theme.$imr-page-max-width
-    margin: 0 auto
-    padding: 1rem 1rem 2rem
+    @extend .imr-section
 
     .imr-card
         border-radius: 0
@@ -2010,24 +1639,9 @@ mat-card-content > button.imr-delete-btn[mat-flat-button]
     .imr-full-width
         width: 100%
 
-@media (max-width: 768px)
-    .eigene-daten-page
-        padding: .75rem .75rem 1.5rem
-
 // -- fmd helpers -----------------------------------------------------------
 .fmd-page
-    max-width: theme.$imr-page-max-width
-    margin: 0 auto
-    padding: 1rem 1rem 2rem
-
-    .page-head
-        margin: 0 0 1.5rem
-
-        h1
-            margin: 0
-            color: theme.$imr-primary
-            font-size: clamp(1.5rem, 2.4vw, 2.1rem)
-            line-height: 1.2
+    @extend .imr-section
 
     .imr-card
         border-radius: 0
@@ -2551,15 +2165,6 @@ mat-card-content > button.imr-delete-btn[mat-flat-button]
 
         mat-list-item
             border-bottom: 1px solid rgba(theme.$imr-border, .9)
-
-        .imr-action-btn
-            min-width: var(--imr-control-height)
-            width: var(--imr-control-height)
-            height: var(--imr-control-height)
-            padding: 0
-
-            .mat-icon
-                margin: 0
 
 @media (max-width: 768px)
     .verwaltung-page
@@ -3551,15 +3156,6 @@ mat-card-content > button.imr-delete-btn[mat-flat-button]
         padding: .45rem
         border-top: 1px solid rgba(theme.$imr-border, .72)
 
-        .imr-action-btn
-            min-width: var(--imr-control-height)
-            width: var(--imr-control-height)
-            height: var(--imr-control-height)
-            padding: 0
-
-            .mat-icon
-                margin: 0
-
         a,
         span
             font-size: .8rem
@@ -3701,12 +3297,6 @@ mat-card-content > button.imr-delete-btn[mat-flat-button]
         gap: .45rem
         flex-wrap: wrap
         align-items: center
-
-        .imr-action-btn
-            min-width: var(--imr-control-height)
-            width: var(--imr-control-height)
-            height: var(--imr-control-height)
-            padding: 0
 
     .status-badge
         border-radius: 0
@@ -4284,7 +3874,7 @@ mat-card-content > button.imr-delete-btn[mat-flat-button]
     display: grid
     grid-template-columns: repeat(var(--imr-grid-columns), minmax(0, 1fr))
     gap: var(--imr-grid-row-gap) var(--imr-grid-col-gap)
-    margin: 0
+    margin: 1rem
 
 .row > :where([class*='col-']),
 .row > :where([class*='app-col-']),

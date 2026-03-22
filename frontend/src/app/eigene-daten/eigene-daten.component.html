@@ -8,14 +8,14 @@
     <form [formGroup]="formModul">
       <input hidden type="text" formControlName="id" />
 
-      <section class="app-grid mt-2">
-        <div class="app-col-12 app-col-lg-8 mb-3">
+      <section class="app-grid">
+        <div class="app-col-12 app-col-lg-8">
           <imr-form-field label="E-Mail-Adresse">
             <input matInput type="email" formControlName="email" uiControlErrors />
           </imr-form-field>
         </div>
 
-        <div class="app-col-12 app-col-lg-4 mb-3">
+        <div class="app-col-12 app-col-lg-4">
           <imr-button [disabled]="formModul.disabled" (click)="emailSpeichern()">
             E-Mail speichern
           </imr-button>
@@ -24,20 +24,20 @@
 
       <hr />
 
-      <section class="app-grid mt-3">
-        <div class="app-col-12 app-col-lg-4 mb-3">
+      <section class="app-grid">
+        <div class="app-col-12 app-col-lg-4">
           <imr-form-field label="Passwort" [requiredIndicator]="true">
             <input matInput type="password" formControlName="password1" uiControlErrors />
           </imr-form-field>
         </div>
-        <div class="app-col-12 app-col-lg-4 mb-3">
+        <div class="app-col-12 app-col-lg-4">
           <imr-form-field label="Passwort wiederholen" [requiredIndicator]="true">
             <input matInput type="password" formControlName="password2" uiControlErrors />
           </imr-form-field>
 
         </div>
 
-        <div class="app-col-12 app-col-lg-4 mb-3">
+        <div class="app-col-12 app-col-lg-4">
           <imr-button [disabled]="formModul.disabled || !passwortAendernErlaubt" (click)="passwortAendern()">
             Passwort ändern
           </imr-button>
