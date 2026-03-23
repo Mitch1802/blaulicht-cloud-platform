@@ -47,9 +47,9 @@
             </div>
           </header>
 
-          <div class="plan-rows app-grid">
+          <div class="plan-rows">
             @for (row of section.members; track row.local_id; let rowIndex = $index) {
-              <article class="plan-row app-grid">
+              <div class="plan-row app-grid">
                 <div class="app-col-12 app-col-lg-3">
                   <imr-form-field class="imr-full-width" hintLabel="* Pflichtfeld" label="Position">
                     <input
@@ -120,7 +120,7 @@
                     <small>{{ getPhotoStatusText(row) }}</small>
                   </div>
                 </div>
-              </article>
+              </div>
             }
           </div>
         </section>
