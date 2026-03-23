@@ -57,6 +57,18 @@ mat-form-field,
     .mat-mdc-form-field-icon-prefix
         color: rgba(theme.$imr-primary-deep, .74)
 
+    // Icon-Buttons innerhalb des Suffix-Slots sollen transparent wirken,
+    // damit das Auge-Icon beim Passwortfeld klar sichtbar ist
+    .mat-mdc-form-field-icon-suffix .mat-mdc-icon-button
+        background: transparent !important
+        border-color: transparent !important
+        box-shadow: none !important
+        color: rgba(theme.$imr-primary-deep, .7) !important
+
+        &:hover:not(:disabled)
+            background: rgba(theme.$imr-primary-light, .3) !important
+            border-color: transparent !important
+
     p
         width: 100%
         text-align: left

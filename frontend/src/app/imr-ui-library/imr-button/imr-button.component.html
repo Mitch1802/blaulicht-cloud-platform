@@ -1,3 +1,7 @@
+<ng-template #btnContent>
+  <ng-content></ng-content>
+</ng-template>
+
 @switch (variant) {
   @case ('stroked') {
     <button
@@ -13,7 +17,7 @@
       [class]="buttonClass"
       (click)="handleClick($event)"
     >
-      <ng-content></ng-content>
+      <ng-container [ngTemplateOutlet]="btnContent"></ng-container>
     </button>
   }
   @case ('raised') {
@@ -30,7 +34,7 @@
       [class]="buttonClass"
       (click)="handleClick($event)"
     >
-      <ng-content></ng-content>
+      <ng-container [ngTemplateOutlet]="btnContent"></ng-container>
     </button>
   }
   @case ('basic') {
@@ -47,7 +51,7 @@
       [class]="buttonClass"
       (click)="handleClick($event)"
     >
-      <ng-content></ng-content>
+      <ng-container [ngTemplateOutlet]="btnContent"></ng-container>
     </button>
   }
   @case ('icon') {
@@ -63,7 +67,7 @@
       [class]="buttonClass"
       (click)="handleClick($event)"
     >
-      <ng-content></ng-content>
+      <ng-container [ngTemplateOutlet]="btnContent"></ng-container>
     </button>
   }
   @case ('fab') {
@@ -79,7 +83,7 @@
       [class]="buttonClass"
       (click)="handleClick($event)"
     >
-      <ng-content></ng-content>
+      <ng-container [ngTemplateOutlet]="btnContent"></ng-container>
     </button>
   }
   @case ('mini-fab') {
@@ -95,7 +99,7 @@
       [class]="buttonClass"
       (click)="handleClick($event)"
     >
-      <ng-content></ng-content>
+      <ng-container [ngTemplateOutlet]="btnContent"></ng-container>
     </button>
   }
   @default {
@@ -112,7 +116,7 @@
       [class]="buttonClass"
       (click)="handleClick($event)"
     >
-      <ng-content></ng-content>
+      <ng-container [ngTemplateOutlet]="btnContent"></ng-container>
     </button>
   }
 }

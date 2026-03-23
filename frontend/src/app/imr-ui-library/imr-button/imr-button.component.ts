@@ -1,5 +1,6 @@
 import { booleanAttribute, Component, EventEmitter, Input, Output } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
+import { NgTemplateOutlet } from '@angular/common'
 
 type ImrButtonVariant = 'flat' | 'stroked' | 'raised' | 'basic' | 'icon' | 'fab' | 'mini-fab'
 type ImrButtonType = 'button' | 'submit' | 'reset'
@@ -10,7 +11,7 @@ type ImrButtonColor = 'primary' | 'accent' | 'warn'
   templateUrl: './imr-button.component.html',
   styleUrl: './imr-button.component.sass',
   standalone: true,
-  imports: [MatButtonModule],
+  imports: [MatButtonModule, NgTemplateOutlet],
 })
 export class ImrButtonComponent {
   @Input() variant: ImrButtonVariant = 'flat'
