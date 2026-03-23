@@ -57,17 +57,21 @@ mat-form-field,
     .mat-mdc-form-field-icon-prefix
         color: rgba(theme.$imr-primary-deep, .74)
 
-    // Icon-Buttons innerhalb des Suffix-Slots sollen transparent wirken,
-    // damit das Auge-Icon beim Passwortfeld klar sichtbar ist
-    .mat-mdc-form-field-icon-suffix .mat-mdc-icon-button
-        background: transparent !important
-        border-color: transparent !important
-        box-shadow: none !important
-        color: rgba(theme.$imr-primary-deep, .7) !important
+    // Icon-buttons inside the suffix slot should appear transparent so the
+    // password-toggle eye icon is clearly visible.
+    // Specificity (4 classes) intentionally beats the 3-class accent rule in
+    // imr-button.component.sass, which carries an extra Angular scoping
+    // attribute that we cannot override without a higher-specificity selector
+    // or !important.
+    .mat-mdc-form-field-icon-suffix .mat-mdc-icon-button.mat-accent.mat-mdc-button-base
+        background: transparent
+        border-color: transparent
+        box-shadow: none
+        color: rgba(theme.$imr-primary-deep, .7)
 
         &:hover:not(:disabled)
-            background: rgba(theme.$imr-primary-light, .3) !important
-            border-color: transparent !important
+            background: rgba(theme.$imr-primary-light, .3)
+            border-color: transparent
 
     p
         width: 100%

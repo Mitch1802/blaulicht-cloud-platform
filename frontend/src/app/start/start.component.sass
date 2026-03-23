@@ -76,9 +76,10 @@
         &:focus-visible
             outline: none
 
-// .module-card ist der cardClass-Wert, der auf mat-card innerhalb von imr-card
-// gesetzt wird. Da mat-card in imr-cards eigenem Template lebt, reicht
-// normale View Encapsulation nicht aus – ::ng-deep ist notwendig.
+// .module-card is passed as cardClass and lands on mat-card inside imr-card's
+// own template. Angular's Emulated ViewEncapsulation scopes each component's
+// CSS to its own template, so start component selectors cannot reach mat-card
+// across the boundary — ::ng-deep is required here.
 :host ::ng-deep
     .module-card
         min-height: 148px
