@@ -4,6 +4,7 @@ import {
   booleanAttribute,
   Component,
   ContentChild,
+  ContentChildren,
   EventEmitter,
   forwardRef,
   inject,
@@ -12,6 +13,7 @@ import {
   OnDestroy,
   OnInit,
   Output,
+  QueryList,
   ViewChild,
 } from '@angular/core'
 import { CommonModule } from '@angular/common'
@@ -20,6 +22,7 @@ import { MatFormFieldControl } from '@angular/material/form-field'
 import { MatSelect, MatSelectChange, MatSelectModule } from '@angular/material/select'
 import { Subject, takeUntil } from 'rxjs'
 import { ImrSelectTriggerComponent } from '../imr-select-trigger/imr-select-trigger.component'
+import { ImrOptionComponent } from '../imr-option/imr-option.component'
 
 let nextUniqueId = 0
 
@@ -62,6 +65,7 @@ export class ImrSelectComponent
 {
   @ViewChild(MatSelect, { static: true }) private readonly matSelect!: MatSelect
   @ContentChild(ImrSelectTriggerComponent) selectTrigger?: ImrSelectTriggerComponent
+  @ContentChildren(ImrOptionComponent, { descendants: true }) imrOptions!: QueryList<ImrOptionComponent>
 
   readonly stateChanges = new Subject<void>()
   readonly controlType = 'imr-select'

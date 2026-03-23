@@ -1,19 +1,30 @@
-﻿    <mat-select
-      [id]="id"
-      [value]="value"
-      [placeholder]="placeholder"
-      [required]="required"
-      [multiple]="multiple"
-      [disabled]="disabled"
-      [attr.aria-describedby]="userAriaDescribedBy || null"
-      (selectionChange)="handleSelectionChange($event)"
-      (focus)="stateChanges.next()"
-      (closed)="handleTouched()"
-    >
-      @if (hasCustomTrigger) {
-        <mat-select-trigger><ng-content select="imr-select-trigger"></ng-content></mat-select-trigger>
-      }
-      <ng-content></ng-content>
-    </mat-select>
-  
+<!-- Hidden container to keep imr-option elements in the DOM so their
+     text content can be read for the mat-option labels. Placed before
+     mat-select so text content is available when @for renders mat-options. -->
+<div aria-hidden="true" style="display:none">
+  <ng-content select="imr-option" />
+</div>
 
+<mat-select
+    [id]="id"
+    [value]="value"
+    [placeholder]="placeholder"
+    [required]="required"
+    [multiple]="multiple"
+    [disabled]="disabled"
+    [attr.aria-describedby]="userAriaDescribedBy || null"
+    (selectionChange)="handleSelectionChange($event)"
+    (focus)="stateChanges.next()"
+    (closed)="handleTouched()"
+  >
+  @if (hasCustomTrigger) {
+    <mat-select-trigger><ng-content select="imr-select-trigger" /></mat-select-trigger>
+  }
+
+  @for (opt of imrOptions; track opt) {
+    <mat-option [value]="opt.value" [disabled]="opt.disabled">{{ opt.viewLabel }}</mat-option>
+  }
+
+  <!-- Support for directly nested mat-option / mat-optgroup elements -->
+  <ng-content />
+</mat-select>
