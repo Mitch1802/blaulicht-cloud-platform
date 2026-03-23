@@ -151,10 +151,10 @@
                 />
                 <mat-autocomplete #einsatzleiterAuto="matAutocomplete" (optionSelected)="onEinsatzleiterSelected($event)">
                   @for (einsatzleiter of filteredEinsatzleiterOptionen; track einsatzleiter) {
-                    <imr-option [value]="einsatzleiter">{{ einsatzleiter }}</imr-option>
+                    <mat-option [value]="einsatzleiter">{{ einsatzleiter }}</mat-option>
                   }
                   @if (filteredEinsatzleiterOptionen.length === 0) {
-                    <imr-option disabled>Kein Einsatzleiter gefunden.</imr-option>
+                    <mat-option disabled>Kein Einsatzleiter gefunden.</mat-option>
                   }
                 </mat-autocomplete>
               </imr-form-field>
@@ -298,10 +298,10 @@
                       />
                       <mat-autocomplete #mitalarmiertAuto="matAutocomplete" (optionSelected)="onMitalarmiertSelected($event)">
                         @for (opt of filteredMitalarmiertOptionen; track opt) {
-                          <imr-option [value]="opt.id">{{ opt.label }}</imr-option>
+                          <mat-option [value]="opt.id">{{ opt.label }}</mat-option>
                         }
                         @if (filteredMitalarmiertOptionen.length === 0) {
-                          <imr-option disabled>Keine Stellen gefunden.</imr-option>
+                          <mat-option disabled>Keine Stellen gefunden.</mat-option>
                         }
                       </mat-autocomplete>
                     </imr-form-field>
@@ -501,10 +501,10 @@
                     />
                     <mat-autocomplete #fahrzeugAuto="matAutocomplete" (optionSelected)="onFahrzeugSelected($event)">
                       @for (fahrzeug of filteredFahrzeugOptionen; track fahrzeug.id) {
-                        <imr-option [value]="fahrzeug.id">{{ fahrzeug.label }}</imr-option>
+                        <mat-option [value]="fahrzeug.id">{{ fahrzeug.label }}</mat-option>
                       }
                       @if (filteredFahrzeugOptionen.length === 0) {
-                        <imr-option disabled>Keine Fahrzeuge gefunden.</imr-option>
+                        <mat-option disabled>Keine Fahrzeuge gefunden.</mat-option>
                       }
                     </mat-autocomplete>
                   </imr-form-field>

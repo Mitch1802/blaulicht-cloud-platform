@@ -72,10 +72,10 @@
                     />
                     <mat-autocomplete #mitgliedAuto="matAutocomplete" (optionSelected)="onMitgliedSelected(row, $event)">
                       @for (mitglied of getFilteredMitglieder(row); track mitglied.pkid) {
-                        <imr-option [value]="mitglied.pkid">{{ getMitgliedLabel(mitglied) }}</imr-option>
+                        <mat-option [value]="mitglied.pkid">{{ getMitgliedLabel(mitglied) }}</mat-option>
                       }
                       @if (getFilteredMitglieder(row).length === 0) {
-                        <imr-option disabled>Keine Mitglieder gefunden.</imr-option>
+                        <mat-option disabled>Keine Mitglieder gefunden.</mat-option>
                       }
                     </mat-autocomplete>
                   </imr-form-field>

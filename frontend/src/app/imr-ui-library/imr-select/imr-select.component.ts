@@ -5,6 +5,7 @@ import {
   Component,
   ContentChild,
   ContentChildren,
+  ElementRef,
   EventEmitter,
   forwardRef,
   inject,
@@ -64,6 +65,7 @@ export class ImrSelectComponent
     OnDestroy
 {
   @ViewChild(MatSelect, { static: true }) private readonly matSelect!: MatSelect
+  @ViewChild(MatSelect, { static: true, read: ElementRef }) private readonly matSelectEl!: ElementRef<HTMLElement>
   @ContentChild(ImrSelectTriggerComponent) selectTrigger?: ImrSelectTriggerComponent
   @ContentChildren(ImrOptionComponent, { descendants: true }) imrOptions!: QueryList<ImrOptionComponent>
 
@@ -176,8 +178,14 @@ export class ImrSelectComponent
     this.stateChanges.next()
   }
 
-  onContainerClick(): void {
+  onContainerClick(event: MouseEvent): void {
     if (this.disabled) {
+      return
+    }
+
+    // If the click originated from within the mat-select element, let mat-select
+    // handle its own open/close toggle and don't interfere.
+    if (this.matSelectEl.nativeElement.contains(event.target as Node)) {
       return
     }
 
