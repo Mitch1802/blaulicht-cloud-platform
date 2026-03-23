@@ -1,4 +1,4 @@
-import { booleanAttribute, Component, ElementRef, inject, Input } from '@angular/core'
+import { AfterContentChecked, booleanAttribute, Component, ElementRef, inject, Input } from '@angular/core'
 
 /**
  * imr-option
@@ -15,15 +15,20 @@ import { booleanAttribute, Component, ElementRef, inject, Input } from '@angular
   styleUrl: './imr-option.component.sass',
   standalone: true,
 })
-export class ImrOptionComponent {
+export class ImrOptionComponent implements AfterContentChecked {
   @Input() value: unknown
   @Input({ transform: booleanAttribute }) disabled = false
 
   private readonly el = inject(ElementRef<HTMLElement>)
+  private _viewLabel = ''
 
-  /** Returns the rendered text content of this option (used as mat-option label). */
+  /** Cached text content of this option, used as the mat-option label. */
   get viewLabel(): string {
-    return (this.el.nativeElement.textContent ?? '').trim()
+    return this._viewLabel
+  }
+
+  ngAfterContentChecked(): void {
+    this._viewLabel = (this.el.nativeElement.textContent ?? '').trim()
   }
 }
 

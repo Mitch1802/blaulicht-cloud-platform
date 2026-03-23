@@ -3,8 +3,12 @@
 // Material Select Panel overrides
 .mat-mdc-select-panel,
 .mat-mdc-select-panel.mdc-menu-surface
-    border-radius: 0 !important
+	border-radius: 0 !important
 
-    .mat-mdc-option
-        min-height: var(--imr-control-height)
+	.mat-mdc-option
+		min-height: var(--imr-control-height)
 
+// Hidden container used to keep imr-option elements in the DOM
+// so Angular resolves their text-content bindings for viewLabel.
+.imr-options-host
+	display: none
