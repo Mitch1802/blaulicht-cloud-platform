@@ -76,10 +76,11 @@
         &:focus-visible
             outline: none
 
-            .module-card
-                outline: 2px solid rgba(theme.$imr-primary, .55)
-                outline-offset: 2px
-
+// .module-card is passed as cardClass and lands on mat-card inside imr-card's
+// own template. Angular's Emulated ViewEncapsulation scopes each component's
+// CSS to its own template, so start component selectors cannot reach mat-card
+// across the boundary — ::ng-deep is required here.
+:host ::ng-deep
     .module-card
         min-height: 148px
         padding: .85rem .75rem .78rem
@@ -114,6 +115,10 @@
         &:focus-visible
             outline: 2px solid rgba(theme.$imr-primary, .55)
             outline-offset: 2px
+
+    .module-card-link:focus-visible .module-card
+        outline: 2px solid rgba(theme.$imr-primary, .55)
+        outline-offset: 2px
 
     .module-card.admin-only
         background: rgba(theme.$imr-warning, .07)
@@ -221,19 +226,6 @@
             grid-template-columns: repeat(2, minmax(0, 1fr))
             gap: .4rem
 
-        .module-card
-            min-height: 78px
-            padding: .52rem .48rem .52rem .48rem
-            flex-direction: row
-            justify-content: flex-start
-            text-align: left
-            gap: .4rem
-
-            &::after
-                inset: 0 auto 0 0
-                width: 4px
-                height: auto
-
         .module-icon-shell
             width: 2.25rem
             height: 2.25rem
@@ -276,6 +268,21 @@
             font-size: .55rem
             letter-spacing: .03em
             padding: .1rem .35rem
+
+@media (max-width: 768px)
+    :host ::ng-deep
+        .module-card
+            min-height: 78px
+            padding: .52rem .48rem .52rem .48rem
+            flex-direction: row
+            justify-content: flex-start
+            text-align: left
+            gap: .4rem
+
+            &::after
+                inset: 0 auto 0 0
+                width: 4px
+                height: auto
 
 @media (max-width: 560px)
     .start-page
