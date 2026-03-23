@@ -182,7 +182,9 @@ export class ImrSelectComponent
     }
 
     this.matSelect.focus()
-    this.matSelect.open()
+    if (!this.matSelect.panelOpen) {
+      this.matSelect.open()
+    }
   }
 
   ngOnDestroy(): void {
