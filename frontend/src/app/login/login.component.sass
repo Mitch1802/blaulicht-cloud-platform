@@ -1,1 +1,48 @@
-// Intentionally minimal: styles are centralized in frontend/src/imr-catalog.sass
+@use './theme' as theme
+
+.login-page
+    display: block
+    padding-top: 50px
+
+    .login-card
+        text-align: center
+        display: flex
+        justify-content: center
+        align-items: center
+        margin: 0 auto
+
+    .login-logo
+        padding: 10px
+        max-width: 70vw
+        width: 350px
+
+    .login-card-content
+        display: flex
+        justify-content: center
+        text-align: center
+        width: 90%
+
+    .login-card-content > form
+        width: 100%
+
+    .login-button-row
+        display: flex
+        justify-content: center
+        margin: 20px
+
+    .form-hint
+        margin: 0 0 8px
+        font-size: .9rem
+
+    .login-footer
+        margin-top: .6rem
+        text-align: center
+        line-height: 1.35
+        opacity: .85
+
+    .login-resolution
+        margin-top: .15rem
+
+    input[type=password]::-ms-reveal,
+    input[type=password]::-ms-clear
+        display: none

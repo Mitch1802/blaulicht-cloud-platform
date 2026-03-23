@@ -1,4 +1,4 @@
-// Intentionally minimal: styles are centralized in frontend/src/imr-catalog.sass
+@use './theme' as theme
 
 :host .mitglied-page .mitglied-toolbar
 	margin-bottom: .75rem
@@ -9,3 +9,58 @@
 @media (max-width: 768px)
 	:host .mitglied-page .mitglied-toolbar .filter-field
 		width: 100%
+
+.mitglied-page
+    .imr-top-actions
+        gap: .6rem
+        margin: .25rem 0 .8rem
+
+    .import-preview
+        margin: .5rem 0 1rem
+
+        h3
+            margin: 0 0 .3rem
+            color: theme.$imr-primary
+            font-size: 1rem
+
+        p
+            margin: 0 0 .6rem
+
+    .filter-field
+        max-width: 320px
+
+    .file-input-hidden
+        position: absolute
+        width: 1px
+        height: 1px
+        padding: 0
+        margin: -1px
+        overflow: hidden
+        clip: rect(0, 0, 0, 0)
+        border: 0
+
+    .mat-mdc-header-row
+        font-weight: 600 !important
+
+@media (max-width: 768px)
+    .mitglied-page
+        .imr-top-actions,
+        .imr-form-actions
+            button
+                width: 100%
+
+        .imr-table-wrap
+            .table-toolbar
+                flex-direction: column
+                align-items: stretch
+                gap: .5rem
+
+                .filter-field
+                    width: 100%
+
+                .table-status-badge
+                    width: 100%
+                    justify-content: center
+
+                mat-form-field
+                    width: 100%

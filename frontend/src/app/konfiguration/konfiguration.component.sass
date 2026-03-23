@@ -1,1 +1,187 @@
-// Intentionally minimal: styles are centralized in frontend/src/imr-catalog.sass
+@use './theme' as theme
+
+.config-page
+    .imr-card
+        margin-bottom: 1.1rem
+        border-radius: 0 !important
+        border: 1px solid rgba(theme.$imr-border, .9)
+        background-color: rgba(theme.$imr-surface, .92)
+        overflow: hidden
+
+    .imr-card.mat-mdc-card,
+    .imr-card.mdc-card
+        border-radius: 0 !important
+
+    .role-form
+        display: grid
+        grid-template-columns: 1fr auto
+        gap: .8rem
+        align-items: start
+
+    .imr-chips
+        grid-column: 1 / -1
+        margin-top: .1rem
+
+    .mat-mdc-chip
+        min-height: var(--imr-control-height)
+        height: var(--imr-control-height)
+        border-radius: 0 !important
+        border: 1px solid var(--imr-control-border)
+        background: var(--imr-control-bg)
+        color: theme.$imr-primary-deep
+
+    .mat-mdc-chip .mat-mdc-chip-action,
+    .mat-mdc-chip .mdc-evolution-chip__action
+        min-height: var(--imr-control-height)
+
+    .mat-mdc-chip .mat-mdc-chip-remove,
+    .mat-mdc-chip [matChipRemove]
+        border-radius: 0 !important
+
+    .mat-mdc-form-field .mat-mdc-text-field-wrapper
+        min-height: var(--imr-control-height)
+        height: var(--imr-control-height)
+
+    .mat-mdc-form-field .mat-mdc-form-field-flex
+        min-height: var(--imr-control-height)
+        align-items: center
+
+    .mat-mdc-form-field .mat-mdc-form-field-infix
+        min-height: calc(var(--imr-control-height) - 2px)
+        padding-top: .35rem
+        padding-bottom: .35rem
+
+    .actions-top
+        margin: .3rem 0 .95rem
+
+    .backup-warning
+        display: inline-flex
+        align-items: center
+        gap: .4rem
+        margin: .2rem 0 .7rem
+        color: theme.$imr-error
+
+    .backup-legend
+        display: flex
+        flex-wrap: wrap
+        gap: .8rem 1.2rem
+        margin-bottom: .85rem
+
+        span
+            display: inline-flex
+            align-items: center
+            gap: .3rem
+            opacity: .85
+
+    .imr-table-wrap
+        margin-top: .4rem
+
+    .backup-table-wrap
+        margin-top: .25rem
+
+        .mat-column-actions
+            width: 150px
+            min-width: 150px
+
+        .mat-column-name
+            width: auto
+
+    .backup-name
+        white-space: nowrap
+        overflow: hidden
+        text-overflow: ellipsis
+
+    .backup-empty
+        margin: .7rem 0 .15rem
+        opacity: .75
+
+    .cleanup-legend
+        margin: .1rem 0 .55rem
+
+    .cleanup-section
+        padding: 0
+
+    .cleanup-intro
+        margin: .2rem 0 .7rem
+        color: theme.$imr-text-muted
+        line-height: 1.35
+
+    .cleanup-actions
+        display: flex
+        flex-wrap: wrap
+        gap: .6rem
+        margin-top: .3rem
+
+        button
+            min-width: 172px
+
+    .cleanup-summary
+        margin: .7rem 0 .45rem
+        line-height: 1.35
+
+    .cleanup-empty
+        margin: .6rem 0 .25rem
+        color: theme.$imr-text-muted
+        opacity: .9
+
+    .cleanup-table-wrap
+        margin-top: .2rem
+
+        .mat-column-target
+            width: 130px
+            min-width: 130px
+
+        .mat-column-filename
+            width: auto
+
+    .cleanup-filename
+        white-space: nowrap
+        overflow: hidden
+        text-overflow: ellipsis
+
+@media (max-width: 768px)
+    .config-page
+        .role-form
+            grid-template-columns: 1fr
+
+            button[type="submit"]
+                width: 100%
+
+        .actions-top
+            button
+                width: 100%
+
+        .backup-legend
+            gap: .55rem .9rem
+            margin-bottom: .7rem
+
+        .backup-table-wrap,
+        .cleanup-table-wrap
+            table
+                th.mat-mdc-header-cell
+                    font-size: .78rem
+
+                td.mat-mdc-cell
+                    font-size: .83rem
+
+                th.mat-mdc-header-cell,
+                td.mat-mdc-cell
+                    padding-left: .45rem
+                    padding-right: .45rem
+
+        .cleanup-actions
+            gap: .45rem
+
+            button
+                width: 100%
+                min-height: var(--imr-control-height)
+                height: var(--imr-control-height)
+
+        .cleanup-intro
+            margin: .15rem 0 .6rem
+
+        .cleanup-summary
+            margin: .6rem 0 .35rem
+
+        .cleanup-empty
+            margin: .5rem 0 .2rem

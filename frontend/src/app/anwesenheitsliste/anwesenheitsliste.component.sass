@@ -1,1 +1,96 @@
-// Intentionally minimal: styles are centralized in frontend/src/imr-catalog.sass
+@use './theme' as theme
+
+.anwesenheitsliste-page
+    .selection-description
+        margin: -.2rem 0 0
+        font-size: .8rem
+        opacity: .72
+
+    .selection-counter
+        font-size: .78rem
+        opacity: .72
+        margin-left: .25rem
+
+    .foto-doku-block
+        border: 1px solid rgba(theme.$imr-border, .95)
+        border-radius: 0
+        padding: .8rem
+        background: rgba(theme.$imr-surface, .9)
+
+    .upload-row
+        display: flex
+        align-items: center
+        gap: .6rem
+        flex-wrap: wrap
+
+    .upload-label
+        font-weight: 600
+        color: theme.$imr-primary
+
+    .file-input-hidden
+        position: absolute
+        width: 1px
+        height: 1px
+        padding: 0
+        margin: -1px
+        overflow: hidden
+        clip: rect(0, 0, 0, 0)
+        border: 0
+
+    .preview-grid
+        display: grid
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr))
+        gap: .6rem
+        margin-top: .6rem
+
+    .preview-card
+        border: 1px solid rgba(theme.$imr-border, .95)
+        border-radius: 0
+        background: rgba(theme.$imr-surface, .94)
+        overflow: hidden
+
+    .preview-image
+        width: 100%
+        height: 120px
+        object-fit: cover
+        display: block
+
+    .preview-file
+        height: 120px
+        display: flex
+        align-items: center
+        justify-content: center
+        font-weight: 600
+        color: theme.$imr-primary
+
+    .preview-meta
+        display: flex
+        align-items: center
+        justify-content: flex-end
+        gap: .2rem
+        padding: .45rem
+        border-top: 1px solid rgba(theme.$imr-border, .72)
+
+    .existing-previews
+        margin-top: .4rem
+
+@media (max-width: 768px)
+    .anwesenheitsliste-page
+        .foto-doku-block
+            padding: .65rem
+
+        .upload-button
+            width: 100%
+
+        .imr-table-wrap
+            .table-toolbar
+                flex-direction: column
+                align-items: stretch
+                gap: .5rem
+
+                mat-form-field
+                    width: 100%
+
+                .table-status-badge
+                    width: 100%
+                    justify-content: center

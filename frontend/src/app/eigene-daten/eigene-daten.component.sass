@@ -1,1 +1,10 @@
-// Intentionally minimal: styles are centralized in frontend/src/imr-catalog.sass
+@use './theme' as theme
+
+.eigene-daten-page
+    @extend .imr-section
+
+    .imr-card
+        border-radius: 0
+
+    .imr-full-width
+        width: 100%

@@ -1,2 +1,40 @@
-// Intentionally minimal: styles are centralized in frontend/src/imr-catalog.sass
+@use './theme' as theme
 
+.fmd-page
+    @extend .imr-section
+
+    .imr-card
+        border-radius: 0
+
+    mat-form-field
+        width: 100%
+
+    .filter-field-compact
+        max-width: 320px
+
+    .export-wrap
+        width: 90%
+
+    table
+        width: 100%
+
+    .red-cell
+        background-color: rgba(theme.$imr-error, .16)
+        color: theme.$imr-error
+
+    .green-cell
+        background-color: rgba(theme.$imr-success, .16)
+        color: theme.$imr-success
+
+    .mat-mdc-header-row
+        font-weight: 600
+
+@media (max-width: 768px)
+    .fmd-page
+        padding: .75rem .75rem 1.5rem
+
+        .page-head
+            margin-bottom: 1rem
+
+            h1
+                font-size: 1.4rem

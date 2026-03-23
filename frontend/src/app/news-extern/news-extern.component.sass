@@ -1,1 +1,333 @@
-// Intentionally minimal: styles are centralized in frontend/src/imr-catalog.sass
+@use './theme' as theme
+
+.news-extern-page
+    min-height: 100vh
+    padding: clamp(.8rem, 2vw, 1.5rem)
+    background: radial-gradient(circle at 12% -18%, rgba(theme.$imr-primary-light, .34) 0%, rgba(theme.$imr-surface, .98) 43%, rgba(theme.$imr-surface-variant, .38) 100%)
+
+    .newsfeed-shell
+        width: min(1280px, 100%)
+        margin: 0 auto
+        display: grid
+        gap: 1rem
+
+    .newsfeed-head
+        display: grid
+        gap: .45rem
+        padding: 1rem 1.1rem
+        border: 1px solid rgba(theme.$imr-border, .82)
+        background: linear-gradient(130deg, rgba(theme.$imr-primary-light, .36) 0%, rgba(theme.$imr-surface, .98) 54%, rgba(theme.$imr-surface-variant, .46) 100%)
+        box-shadow: 0 14px 30px rgba(theme.$imr-primary-dark, .08)
+
+    .feed-kicker
+        margin: 0
+        font-size: .78rem
+        letter-spacing: .18em
+        text-transform: uppercase
+        font-weight: 700
+        color: rgba(theme.$imr-primary-deep, .68)
+
+    h1
+        margin: 0
+        font-size: clamp(1.9rem, 4vw, 3.25rem)
+        line-height: 1.06
+        color: theme.$imr-primary-deep
+
+    .feed-copy
+        margin: 0
+        max-width: 52rem
+        line-height: 1.55
+        color: rgba(theme.$imr-primary-deep, .78)
+
+    .feed-meta
+        display: flex
+        flex-wrap: wrap
+        gap: .5rem
+
+    .feed-meta-chip
+        display: inline-flex
+        align-items: center
+        min-height: 32px
+        padding: 0 .75rem
+        border: 1px solid rgba(theme.$imr-border, .8)
+        background: rgba(theme.$imr-surface, .95)
+        font-size: .84rem
+        font-weight: 600
+        color: rgba(theme.$imr-primary-deep, .78)
+
+    .newsfeed-stage
+        border: 1px solid rgba(theme.$imr-border, .82)
+        background: rgba(theme.$imr-surface, .98)
+        box-shadow: 0 12px 28px rgba(theme.$imr-primary-dark, .08)
+
+    .newsfeed-stage.mat-mdc-card,
+    .newsfeed-stage.mdc-card
+        border-radius: 0 !important
+
+    .newsfeed-stage > .mat-mdc-card-content
+        padding: 1rem !important
+
+    .newsfeed-feature-stage
+        position: relative
+        overflow: hidden
+
+        &.is-transitioning
+            pointer-events: none
+
+    .newsfeed-feature
+        display: grid
+        grid-template-columns: minmax(320px, .95fr) minmax(0, 1.1fr)
+        gap: 1rem
+        align-items: stretch
+        transition: transform .42s cubic-bezier(.22, .61, .36, 1), opacity .42s ease
+
+    .newsfeed-feature-current
+        position: relative
+        z-index: 2
+
+    .newsfeed-feature-incoming
+        position: absolute
+        inset: 0
+        z-index: 1
+        opacity: 0
+        transform: translate3d(7%, 0, 0)
+
+    .newsfeed-feature-stage.direction-backward
+        .newsfeed-feature-incoming
+            transform: translate3d(-7%, 0, 0)
+
+    .newsfeed-feature-stage.transition-active.direction-forward
+        .newsfeed-feature-current
+            opacity: 0
+            transform: translate3d(-7%, 0, 0)
+
+        .newsfeed-feature-incoming
+            opacity: 1
+            transform: translate3d(0, 0, 0)
+
+    .newsfeed-feature-stage.transition-active.direction-backward
+        .newsfeed-feature-current
+            opacity: 0
+            transform: translate3d(7%, 0, 0)
+
+        .newsfeed-feature-incoming
+            opacity: 1
+            transform: translate3d(0, 0, 0)
+
+    .feature-media
+        margin: 0
+        border: 1px solid rgba(theme.$imr-border, .85)
+        background: rgba(theme.$imr-primary-light, .2)
+        overflow: hidden
+        min-height: 300px
+
+        img
+            width: 100%
+            height: 100%
+            object-fit: cover
+            display: block
+
+    .feature-media-placeholder
+        display: grid
+        place-items: center
+        border-style: dashed
+
+        span
+            font-size: clamp(2rem, 5vw, 3.2rem)
+            font-weight: 700
+            letter-spacing: .12em
+            color: rgba(theme.$imr-primary-deep, .48)
+
+    .feature-content
+        display: grid
+        align-content: start
+        gap: .75rem
+
+    .feature-top
+        display: grid
+        gap: .4rem
+
+    .feature-position
+        font-size: .82rem
+        letter-spacing: .08em
+        text-transform: uppercase
+        font-weight: 700
+        color: rgba(theme.$imr-primary-deep, .64)
+
+    .feature-progress
+        height: 6px
+        background: rgba(theme.$imr-border, .6)
+        overflow: hidden
+
+        span
+            display: block
+            height: 100%
+            background: linear-gradient(90deg, theme.$imr-primary 0%, theme.$imr-primary-deep 100%)
+            transition: width .2s ease
+
+    .feature-autoplay
+        display: grid
+        gap: .28rem
+        margin-top: .1rem
+
+    .feature-autoplay-label
+        font-size: .74rem
+        letter-spacing: .08em
+        text-transform: uppercase
+        font-weight: 700
+        color: rgba(theme.$imr-primary-deep, .58)
+
+    .feature-autoplay-track
+        height: 5px
+        background: rgba(theme.$imr-border, .45)
+        overflow: hidden
+
+        span
+            display: block
+            height: 100%
+            background: linear-gradient(90deg, rgba(theme.$imr-primary-light, .85) 0%, theme.$imr-primary 100%)
+            transition: width .12s linear
+
+    .feature-content h2
+        margin: 0
+        font-size: clamp(1.4rem, 3.2vw, 2.5rem)
+        line-height: 1.1
+        color: theme.$imr-primary-deep
+
+    .feature-content p
+        margin: 0
+        font-size: clamp(1rem, 1.8vw, 1.28rem)
+        line-height: 1.6
+        color: rgba(theme.$imr-primary-deep, .82)
+        white-space: pre-wrap
+
+    .feature-nav
+        display: flex
+        flex-wrap: wrap
+        gap: .55rem
+        margin-top: .15rem
+
+        > .mat-mdc-button-base,
+        > button[mat-flat-button],
+        > button[mat-stroked-button]
+            min-height: var(--imr-control-height)
+            height: var(--imr-control-height)
+
+    .empty-feed-state
+        display: grid
+        gap: .35rem
+        padding: 1rem
+        border: 1px dashed rgba(theme.$imr-primary, .38)
+        background: rgba(theme.$imr-primary-light, .12)
+
+        h2,
+        p
+            margin: 0
+
+        h2
+            color: theme.$imr-primary-deep
+
+        p
+            color: rgba(theme.$imr-primary-deep, .72)
+
+    .termine-panel
+        position: sticky
+        bottom: .55rem
+        display: grid
+        gap: .7rem
+        padding: .9rem 1rem
+        border: 1px solid rgba(theme.$imr-border, .86)
+        background: rgba(theme.$imr-surface, .95)
+        backdrop-filter: blur(8px)
+        box-shadow: 0 14px 26px rgba(theme.$imr-primary-dark, .1)
+
+    .termine-head
+        display: flex
+        align-items: center
+        justify-content: space-between
+        gap: .6rem
+
+        h2
+            margin: 0
+            font-size: clamp(1.1rem, 2.4vw, 1.65rem)
+            color: theme.$imr-primary-deep
+
+    .termine-count
+        display: inline-flex
+        align-items: center
+        justify-content: center
+        min-width: 2rem
+        min-height: 2rem
+        padding: 0 .55rem
+        border: 1px solid rgba(theme.$imr-border, .8)
+        background: rgba(theme.$imr-primary-light, .22)
+        font-weight: 700
+        color: theme.$imr-primary-deep
+
+    .termine-grid
+        display: grid
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr))
+        gap: .55rem
+
+    .termin-item
+        display: grid
+        gap: .18rem
+        padding: .65rem .7rem
+        border: 1px solid rgba(theme.$imr-border, .75)
+        background: rgba(theme.$imr-surface, .98)
+
+    .termin-date,
+    .termin-title
+        margin: 0
+
+    .termin-date
+        font-size: .82rem
+        font-weight: 700
+        letter-spacing: .04em
+        text-transform: uppercase
+        color: rgba(theme.$imr-primary-deep, .64)
+
+    .termin-title
+        font-size: .98rem
+        color: rgba(theme.$imr-primary-deep, .84)
+
+    .termine-empty
+        margin: 0
+        color: rgba(theme.$imr-primary-deep, .72)
+
+@media (max-width: 960px)
+    .news-extern-page
+        .newsfeed-feature
+            grid-template-columns: 1fr
+
+        .feature-media
+            min-height: 220px
+
+@media only screen and (max-width: 700px)
+    .news-extern-page
+        padding: .65rem
+
+        .newsfeed-head,
+        .newsfeed-stage > .mat-mdc-card-content,
+        .termine-panel
+            padding: .75rem
+
+        .feed-meta
+            flex-direction: column
+            align-items: stretch
+
+        .feature-content h2
+            font-size: 1.4rem
+
+        .feature-content p
+            font-size: 1rem
+
+        .feature-nav
+            button
+                width: 100%
+
+        .termine-grid
+            grid-template-columns: 1fr
+
+        .termine-panel
+            position: static

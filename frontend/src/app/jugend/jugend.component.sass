@@ -1,1 +1,217 @@
-// Intentionally minimal: styles are centralized in frontend/src/imr-catalog.sass
+@use './theme' as theme
+
+.jugend-page
+    .mitglied-edit-form
+        display: flex
+        flex-direction: column
+        gap: .85rem
+
+    .mitglied-summary
+        margin: 0
+        padding: .9rem 1rem
+        border: 1px solid rgba(theme.$imr-primary, .22)
+        border-radius: 0
+        background: rgba(theme.$imr-primary, .07)
+
+    .summary-title
+        display: flex
+        flex-direction: column
+        gap: .2rem
+        margin-bottom: .6rem
+
+        h3
+            margin: 0
+            color: theme.$imr-primary
+            font-size: 1.1rem
+
+        p
+            margin: 0
+            font-size: .92rem
+            color: rgba(#000, .68)
+
+    .summary-badges
+        display: flex
+        flex-wrap: wrap
+        gap: .45rem
+
+    .summary-badge
+        display: inline-flex
+        align-items: center
+        padding: .28rem .55rem
+        border-radius: 0
+        border: 1px solid rgba(theme.$imr-primary, .16)
+        background: rgba(#fff, .86)
+        font-size: .8rem
+        line-height: 1.2
+
+    .edit-group
+        padding: .85rem .9rem .35rem
+        border: 1px solid rgba(theme.$imr-primary, .16)
+        border-radius: 0
+        background: #fff
+
+        h3
+            margin: 0 0 .55rem
+            color: theme.$imr-primary
+            font-size: .98rem
+
+    .form-grid-tight
+        margin-top: 0
+
+    .inline-hinweis
+        display: flex
+        align-items: center
+        min-height: 56px
+        padding: .35rem .75rem
+        border-radius: 0
+        border: 1px solid rgba(theme.$imr-primary, .16)
+        background: rgba(theme.$imr-primary, .04)
+        font-size: .9rem
+
+    .level-edit-list
+        display: flex
+        flex-direction: column
+        gap: .5rem
+
+    .level-edit-panel
+        border: 1px solid rgba(theme.$imr-primary, .15)
+        border-radius: 0
+        background: rgba(theme.$imr-primary, .03)
+        overflow: hidden
+
+    .level-edit-panel-header
+        list-style: none
+        display: flex
+        align-items: center
+        justify-content: space-between
+        gap: .75rem
+        cursor: pointer
+        padding: .55rem .7rem
+
+        &::-webkit-details-marker
+            display: none
+
+        &::after
+            content: '>'
+            font-size: .85rem
+            color: theme.$imr-primary
+            transition: transform .16s ease
+
+    .level-edit-panel[open] .level-edit-panel-header::after
+        transform: rotate(90deg)
+
+    .level-edit-panel-content
+        padding: .6rem .7rem .05rem
+        border-top: 1px dashed rgba(theme.$imr-primary, .18)
+
+        .form-grid-tight
+            margin-top: .2rem
+
+    .level-edit-label
+        display: flex
+        flex-direction: column
+
+        strong
+            font-size: .92rem
+            line-height: 1.2
+
+        span
+            margin-top: .1rem
+            font-size: .78rem
+            color: rgba(#000, .6)
+
+    .level-edit-meta
+        display: flex
+        flex-wrap: wrap
+        justify-content: flex-end
+        gap: .3rem
+
+    .level-edit-chip
+        display: inline-flex
+        align-items: center
+        padding: .2rem .45rem
+        border-radius: 0
+        font-size: .74rem
+        line-height: 1.15
+        border: 1px solid rgba(theme.$imr-primary, .16)
+        background: rgba(#fff, .92)
+
+    .level-edit-field
+        margin-bottom: -1.25em
+
+    .teilnehmer-level-card
+        border: 1px solid rgba(theme.$imr-primary, .15)
+        border-radius: 0
+        padding: .75rem
+        background: rgba(theme.$imr-primary, .04)
+
+        h3
+            margin: 0 0 .6rem
+            color: theme.$imr-primary
+            font-size: 1rem
+
+    .teilnehmer-level-row
+        display: grid
+        grid-template-columns: 1fr minmax(180px, 220px)
+        gap: .75rem
+        align-items: center
+
+        & + &
+            margin-top: .45rem
+
+    .teilnehmer-name
+        font-size: .95rem
+
+    .teilnehmer-level-field
+        width: 100%
+
+    .teilnehmer-level-hinweis
+        grid-column: 2
+        margin-top: -.35rem
+        font-size: .78rem
+        color: #b45a00
+
+    .imr-table-wrap
+        margin-top: .5rem
+
+    .mat-mdc-header-row
+        font-weight: 600 !important
+
+@media (max-width: 768px)
+    .jugend-page
+        .imr-form-actions
+            button
+                width: 100%
+
+        .mitglied-summary
+            padding: .8rem .75rem
+
+        .summary-badges
+            gap: .35rem
+
+        .summary-badge
+            width: 100%
+            border-radius: 0
+
+        .edit-group
+            padding: .75rem .7rem .25rem
+
+        .inline-hinweis
+            min-height: auto
+
+        .teilnehmer-level-row
+            grid-template-columns: 1fr
+
+        .teilnehmer-level-hinweis
+            grid-column: auto
+            margin-top: -.75rem
+
+        .level-edit-field
+            margin-bottom: -1.25em
+
+        .level-edit-panel-header
+            align-items: flex-start
+
+        .level-edit-meta
+            width: 100%
+            justify-content: flex-start

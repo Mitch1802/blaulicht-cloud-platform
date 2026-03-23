@@ -1,4 +1,4 @@
-// Intentionally minimal: styles are centralized in frontend/src/imr-catalog.sass
+@use './theme' as theme
 
 .html-source-field
 	--mat-form-field-container-height: 340px
@@ -23,3 +23,60 @@
 	height: auto !important
 	line-height: 1.35
 	resize: vertical
+
+.modul-form
+    @extend .imr-form
+
+.pdf-mapping
+    display: grid
+    grid-template-columns: 1fr
+    gap: .5rem
+
+.jugend-hilfe-box
+    margin-top: .75rem
+    padding: .85rem 1rem
+    border: 1px solid rgba(theme.$imr-primary, .25)
+    border-radius: 0
+    background: rgba(theme.$imr-primary, .05)
+
+    h3
+        margin: 0 0 .45rem
+        font-size: 1rem
+        color: theme.$imr-primary
+
+    h4
+        margin: .65rem 0 .35rem
+        font-size: .92rem
+
+    p
+        margin: 0 0 .45rem
+
+    ul
+        margin: 0
+        padding-left: 1.1rem
+
+    pre
+        margin: .45rem 0 0
+        padding: .65rem
+        border-radius: 0
+        background: #fff
+        overflow: auto
+        font-size: .82rem
+
+.hilfe-grid
+    display: grid
+    grid-template-columns: repeat(2, minmax(0, 1fr))
+    gap: .65rem
+
+.token-grid
+    display: grid
+    grid-template-columns: repeat(2, minmax(0, 1fr))
+    gap: .35rem .85rem
+
+.token-item
+    font-size: .84rem
+
+@media (max-width: 768px)
+    .hilfe-grid,
+    .token-grid
+        grid-template-columns: 1fr

@@ -1,1 +1,112 @@
-// Intentionally minimal: styles are centralized in frontend/src/imr-catalog.sass
+@use './theme' as theme
+
+.inventar-page
+    .imr-top-actions
+        gap: .6rem
+        margin: .25rem 0 .8rem
+
+    .leihstatus-checkbox
+        display: flex
+        align-items: center
+        min-height: 56px
+
+.inventar-image-modal
+    display: none
+    position: fixed
+    z-index: 1300
+    padding: 2rem 1rem 1rem
+    left: 0
+    top: 0
+    width: 100%
+    height: 100%
+    overflow: auto
+    background-color: rgba(theme.$imr-primary-dark, .76)
+    backdrop-filter: blur(6px)
+
+    .modal-content
+        margin: auto
+        display: block
+        width: min(900px, 100%)
+        max-width: 900px
+        max-height: calc(100vh - 10rem)
+        object-fit: contain
+        border-radius: 0
+        border: 1px solid rgba(theme.$imr-border, .75)
+        background: rgba(theme.$imr-surface, .98)
+        box-shadow: 0 24px 50px rgba(0, 0, 0, .24)
+
+    .modal-caption
+        margin: auto
+        display: block
+        width: min(900px, 100%)
+        max-width: 900px
+        text-align: center
+        color: #fff
+        padding: .85rem 0 0
+        min-height: 0
+        font-weight: 600
+
+    .close
+        position: absolute
+        top: 1rem
+        right: 1rem
+        border: 0
+        width: 2.75rem
+        height: 2.75rem
+        border-radius: 0
+        background: rgba(theme.$imr-surface, .16)
+        color: #fff
+        font-size: 2rem
+        font-weight: 600
+        line-height: 1
+        transition: background-color .16s ease, transform .16s ease
+
+    .close:hover,
+    .close:focus
+        background: rgba(theme.$imr-surface, .28)
+        transform: translateY(-1px)
+
+@media only screen and (max-width: 700px)
+    .inventar-page
+        .imr-top-actions,
+        .imr-form-actions
+            button
+                width: 100%
+
+    .inventar-image-modal
+        .modal-content
+            width: 100%
+
+.imr-lending-panel
+    border: 1px solid rgba(theme.$imr-primary, .16)
+    border-radius: 0
+    padding: .8rem
+    background: rgba(theme.$imr-primary-light, .18)
+
+.imr-lending-panel-head
+    display: flex
+    align-items: center
+    justify-content: space-between
+    gap: .75rem
+    margin-bottom: .75rem
+
+.imr-lending-empty
+    margin: .25rem 0 .75rem
+    color: rgba(theme.$imr-primary-dark, .76)
+
+.imr-lending-row
+    border: 1px solid rgba(theme.$imr-primary, .14)
+    border-radius: 0
+    padding: .65rem .65rem .15rem
+    margin-bottom: .6rem
+    background: #fff
+
+.imr-lending-row-remove
+    display: flex
+    align-items: flex-start
+    justify-content: flex-end
+
+.imr-lending-summary
+    margin: .2rem 0 0
+    font-size: .92rem
+    color: rgba(theme.$imr-primary-dark, .84)
