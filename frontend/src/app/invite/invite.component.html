@@ -13,11 +13,11 @@
         <form [formGroup]="form" (ngSubmit)="abschliessen()" class="invite-form">
           <input type="hidden" formControlName="token" />
 
-          <imr-form-field class="imr-full-width" label="Neues Passwort" [requiredIndicator]="true">
+          <imr-form-field class="imr-full-width" label="Neues Passwort">
             <input matInput type="password" formControlName="password1" autocomplete="new-password" uiControlErrors />
           </imr-form-field>
 
-          <imr-form-field class="imr-full-width" label="Passwort wiederholen" [requiredIndicator]="true">
+          <imr-form-field class="imr-full-width" label="Passwort wiederholen">
             <input matInput type="password" formControlName="password2" autocomplete="new-password" uiControlErrors />
           </imr-form-field>
 
