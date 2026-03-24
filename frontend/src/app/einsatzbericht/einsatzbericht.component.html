@@ -11,15 +11,22 @@
     </div>
       @if (viewMode === 'list') {
         <section class="drafts-section list-only">
-          <div class="actions-row imr-top-actions">
+          <imr-top-actions>
+            @if (canEditBerichte) {
+              <imr-button color="accent" type="button" (click)="neuerEntwurf()">Neuen Einsatz anlegen</imr-button>
+            } @else {
+              <span class="permission-inline-note">Anlegen und Bearbeiten von Inhalten ist nur mit Rolle BERICHT moeglich.</span>
+            }
+          </imr-top-actions>
+          <!-- <div class="actions-row imr-top-actions">
             @if (canEditBerichte) {
               <imr-button type="button" color="accent" (click)="neuerEntwurf()">Neuen Einsatz anlegen</imr-button>
             } @else {
               <span class="permission-inline-note">Anlegen und Bearbeiten von Inhalten ist nur mit Rolle BERICHT moeglich.</span>
             }
-          </div>
+          </div> -->
 
-          <div class="permission-hints">
+          <div class="permission-hints m-2">
             <span><strong>Inhalte/Bilder:</strong> BERICHT</span>
             <span><strong>Status/Loeschen:</strong> VERWALTUNG</span>
           </div>
@@ -96,9 +103,11 @@
         </section>
       } @else {
       <form [formGroup]="formBericht" (ngSubmit)="speichereBericht()" class="bericht-form">
-        <div class="actions-row imr-top-actions">
+        <imr-top-actions>
+        <!-- <div class="actions-row imr-top-actions"> -->
           <imr-button type="button" color="primary" (click)="zurueckZurListe()">Zur Liste</imr-button>
-        </div>
+        <!-- </div> -->
+        </imr-top-actions>
 
         <div class="permission-hints form-hints">
           <span><strong>Inhalte/Bilder:</strong> BERICHT</span>
