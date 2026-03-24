@@ -27,7 +27,6 @@ export class ImrFormFieldComponent implements OnInit, AfterContentInit {
   @Input() fieldClass = 'imr-full-width'
   @Input() appearance: 'fill' | 'outline' = 'outline'
   @Input() subscriptSizing: 'fixed' | 'dynamic' = 'dynamic'
-  @Input({ transform: booleanAttribute }) requiredIndicator = false
 
   @Input()
   set hintLabel(value: string) {
