@@ -17,18 +17,11 @@
             } @else {
               <span class="permission-inline-note">Anlegen und Bearbeiten von Inhalten ist nur mit Rolle BERICHT moeglich.</span>
             }
-          </imr-top-actions>
-          <!-- <div class="actions-row imr-top-actions">
-            @if (canEditBerichte) {
-              <imr-button type="button" color="accent" (click)="neuerEntwurf()">Neuen Einsatz anlegen</imr-button>
-            } @else {
-              <span class="permission-inline-note">Anlegen und Bearbeiten von Inhalten ist nur mit Rolle BERICHT moeglich.</span>
-            }
-          </div> -->
+          </imr-top-actions>>
 
           <div class="permission-hints m-2">
             <span><strong>Inhalte/Bilder:</strong> BERICHT</span>
-            <span><strong>Status/Loeschen:</strong> VERWALTUNG</span>
+            <span><strong>Status/Drucken/Löschen:</strong> VERWALTUNG</span>
           </div>
 
           @if (berichte.length === 0) {
@@ -104,14 +97,12 @@
       } @else {
       <form [formGroup]="formBericht" (ngSubmit)="speichereBericht()" class="bericht-form">
         <imr-top-actions>
-        <!-- <div class="actions-row imr-top-actions"> -->
           <imr-button type="button" color="primary" (click)="zurueckZurListe()">Zur Liste</imr-button>
-        <!-- </div> -->
         </imr-top-actions>
 
-        <div class="permission-hints form-hints">
+        <div class="permission-hints form-hints m-2">
           <span><strong>Inhalte/Bilder:</strong> BERICHT</span>
-          <span><strong>Status/Loeschen:</strong> VERWALTUNG</span>
+          <span><strong>Status/Drucken/Löschen:</strong> VERWALTUNG</span>
         </div>
 
         <imr-accordion class="bericht-accordion" [multi]="false">
@@ -551,9 +542,9 @@
           </imr-expansion-panel>
         </imr-accordion>
 
-        <div class="imr-form-actions">
+        <imr-top-actions>
           <imr-button color="accent" type="submit" [disabled]="!canEditBerichte">Einsatzbericht speichern</imr-button>
-        </div>
+        </imr-top-actions>
       </form>
       }
   </imr-card>
