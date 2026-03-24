@@ -104,12 +104,6 @@ imr-card-content .mat-mdc-card-content
     --mat-select-container-elevation-shadow: none
     --mat-autocomplete-container-shape: 0px
 
-// Header-Variante hell
-body.header-variant-light
-    --imr-header-bg:          #{theme.$imr-primary}
-    --imr-header-shadow:      rgba(0, 0, 0, .08)
-    --imr-breadcrumb-bg:      #{theme.$imr-background}
-
 
 // ------------------------------------------------------------------------------
 // 2. Global base styles
@@ -132,12 +126,8 @@ a
 
 button,
 [role='button'],
-a,
-.link-card
+a
     cursor: pointer
-
-.link-card *
-    cursor: inherit
 
 p
     cursor: default
@@ -151,16 +141,8 @@ h1
     padding-top: 10px
     white-space: pre-wrap
 
-.a-tel, .a-mailto
-    color: theme.$imr-text
-    text-decoration: none
-
 .border
     border: solid 1px rgba(theme.$imr-border, .95)
-
-.mehrzeiliger-text
-    content: "\A"
-    white-space: pre-wrap
 
 // ------------------------------------------------------------------------------
 // 3. Material Design 3 and Angular Material overrides
@@ -175,18 +157,6 @@ h1
 .mat-mdc-button-disabled span,
 div:has(> .mat-mdc-button-disabled)
     cursor: not-allowed
-
-// -- Cards --------------------------------------------------------------------
-.link-card
-    .mat-mdc-card
-        align-items: center
-        justify-content: center
-
-        mat-icon
-            width: 112px
-            height: 112px
-            font-size: 112px
-            line-height: 1
 
 // -- Formfelder ---------------------------------------------------------------
 // Material Form-Field overrides are in imr-form-field.component.sass
@@ -226,27 +196,6 @@ div:has(> .mat-mdc-button-disabled)
 
 .app-snackbar--error
     --mdc-snackbar-container-color: #{theme.$imr-error}
-
-.msg-snackbar-success
-    @extend .app-snackbar
-    @extend .app-snackbar--success
-
-.msg-snackbar-info
-    @extend .app-snackbar
-    @extend .app-snackbar--info
-
-.msg-snackbar-error
-    @extend .app-snackbar
-    @extend .app-snackbar--error
-
-// -- Error-Banner -------------------------------------------------------------
-.error-top
-    color: white
-    background-color: theme.$imr-error
-    text-align: center
-    padding: 10px
-    font-size: 1.2rem
-
 
 // ------------------------------------------------------------------------------
 // 4. IMR component styles for imr-* hosts and wrapper classes
@@ -335,117 +284,6 @@ mat-card-content > button.imr-delete-btn[mat-flat-button]
     to
         opacity: 1
         transform: translateY(0) scale(1)
-
-// -- template-header helpers -----------------------------------------------
-.app-header-toolbar
-    --mat-toolbar-container-background-color: #{theme.$imr-primary}
-    --mat-toolbar-container-text-color: #fff
-    background: theme.$imr-primary
-    box-shadow: none
-    border-bottom: 1px solid rgba(0, 0, 0, .1)
-    padding-inline: .5rem .7rem
-
-.app-header-logo
-    width: 36px
-    height: 36px
-    border-radius: 0
-    object-fit: contain
-    cursor: pointer
-
-.app-header-title
-    margin-left: .55rem
-    line-height: 1
-    white-space: nowrap
-    cursor: pointer
-    font-size: 1rem
-    font-weight: 500
-
-.app-header-logout
-    color: white
-    margin-left: .2rem
-    width: 34px
-    height: 34px
-    padding: 0
-
-    mat-icon
-        font-size: 18px
-        width: 18px
-        height: 18px
-
-.app-header-breadcrumb
-    width: min(#{theme.$imr-page-max-width}, 100%)
-    margin: 0 auto
-    display: flex
-    align-items: center
-    gap: .45rem
-    padding: .2rem .05rem
-    overflow-x: auto
-    white-space: nowrap
-    scrollbar-width: none
-
-    &::-webkit-scrollbar
-        display: none
-
-.breadcrumb-item
-    font-size: .82rem
-    font-weight: 500
-    color: theme.$imr-text-muted
-
-.breadcrumb-link
-    text-decoration: none
-    cursor: pointer
-    transition: opacity .16s ease
-
-    &:hover
-        opacity: .75
-
-    &:focus-visible
-        outline: 2px solid rgba(theme.$imr-primary, .35)
-        outline-offset: 2px
-        border-radius: 0
-
-.breadcrumb-home
-    display: inline-flex
-    align-items: center
-
-    mat-icon
-        font-size: 16px
-        width: 16px
-        height: 16px
-
-.breadcrumb-separator
-    color: theme.$imr-text-muted
-    opacity: .65
-
-@media (max-width: 768px)
-    .app-header-toolbar
-        padding-inline: .4rem .5rem
-
-    .app-header-logo
-        width: 32px
-        height: 32px
-
-    .app-header-title
-        margin-left: .4rem
-        font-size: .92rem
-
-    .app-header-logout
-        width: 30px
-        height: 30px
-
-        mat-icon
-            font-size: 16px
-            width: 16px
-            height: 16px
-
-    .app-header-stepper-wrap
-        padding: .25rem .35rem .2rem
-
-    .app-header-breadcrumb
-        gap: .35rem
-
-    .breadcrumb-item
-        font-size: .78rem
 
 // -- atemschutz-template helpers -------------------------------------------
 .atemschutz-geraete-page,
@@ -680,40 +518,10 @@ mat-card-content > button.imr-delete-btn[mat-flat-button]
 .ps-3
     padding-left: 1rem !important
 
-.content
-    width: min(1280px, 100%)
-    margin: 1rem auto 0
-    padding: 0 1rem 2rem
-    color: theme.$imr-text
-
-.content > [class*='app-col-'],
-.content > [class*='col-']
-    display: block
-    grid-column: auto !important
-    margin-left: auto !important
-    margin-right: auto !important
-    width: min(980px, 100%)
-    max-width: 980px
-
-.content > [class*='app-col-'] > .mat-mdc-card,
-.content > [class*='col-'] > .mat-mdc-card
-    width: 100%
-
-.content-item
-    padding: 5px
-
-    img
-        display: flex
-        justify-content: center
-        align-self: center
-
 .autocomplete-multi
     display: flex
     flex-direction: column
     gap: .25rem
-
-.auswahl-button
-    white-space: nowrap
 
 
 // ------------------------------------------------------------------------------
@@ -750,14 +558,3 @@ mat-card-content > button.imr-delete-btn[mat-flat-button]
 @media (max-width: 768px)
     .mat-mdc-card
         border-radius: 0
-
-    .breadcrumb
-        padding: .4rem .35rem
-
-        button
-            margin-right: 4px
-            min-height: 2.2rem
-
-@media (max-width: 575px)
-    .auswahl-button
-        padding-top: 20px

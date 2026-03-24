@@ -143,10 +143,6 @@
         clip: rect(0, 0, 0, 0)
         border: 0
 
-    .file-list
-        margin: .45rem 0 0
-        padding-left: 1rem
-
     .preview-grid
         display: grid
         grid-template-columns: repeat(auto-fill, minmax(180px, 1fr))
@@ -273,56 +269,6 @@
 
         &.list-only
             margin-top: .2rem
-
-    .list-title
-        display: inline-flex
-        align-items: center
-        gap: .45rem
-
-        &::before
-            content: ''
-            width: .5rem
-            height: .5rem
-            border-radius: 0
-            background: theme.$imr-primary
-
-    .draft-list
-        display: grid
-        gap: .5rem
-
-    .draft-item
-        border: 1px solid rgba(theme.$imr-border, .95)
-        border-radius: 0
-        padding: .6rem
-        display: flex
-        justify-content: space-between
-        gap: .8rem
-        align-items: center
-        background: rgba(theme.$imr-surface, .92)
-        transition: border-color .15s ease, box-shadow .15s ease
-
-        &:hover
-            border-color: rgba(theme.$imr-primary, .3)
-            box-shadow: 0 6px 18px rgba(theme.$imr-primary-dark, .11)
-
-    .draft-main
-        display: grid
-        gap: .2rem
-
-        strong
-            color: theme.$imr-primary
-
-        span
-            opacity: .85
-
-        small
-            opacity: .65
-
-    .draft-actions
-        display: flex
-        gap: .45rem
-        flex-wrap: wrap
-        align-items: center
 
     .status-badge
         border-radius: 0
