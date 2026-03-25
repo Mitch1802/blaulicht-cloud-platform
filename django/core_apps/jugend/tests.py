@@ -101,6 +101,7 @@ class JugendApiTests(EndpointSmokeMixin, APITestCase):
             "datum": "01.03.2026",
             "ort": "Feuerwehrhaus",
             "kategorie": "WISSENSTEST",
+            "stand_x_override": True,
             "teilnehmer_ids": [self.jugend_mitglied.pkid],
             "teilnehmer_levels": [
                 {
@@ -115,6 +116,7 @@ class JugendApiTests(EndpointSmokeMixin, APITestCase):
         self.assertEqual(create_response.data.get("titel"), "Wissentest März")
         self.assertEqual(create_response.data.get("ort"), "Feuerwehrhaus")
         self.assertEqual(create_response.data.get("kategorie"), "WISSENSTEST")
+        self.assertTrue(create_response.data.get("stand_x_override"))
         self.assertEqual(len(create_response.data.get("teilnehmer", [])), 1)
         self.assertEqual(create_response.data["teilnehmer"][0].get("dienstgrad"), "JFM")
         self.assertEqual(create_response.data["teilnehmer"][0].get("level"), 3)

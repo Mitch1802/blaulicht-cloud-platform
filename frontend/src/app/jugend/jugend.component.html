@@ -345,6 +345,20 @@
               </imr-form-field>
             </div>
 
+            <div class="app-col-12 app-col-lg-12 mb-1">
+              <imr-checkbox formControlName="stand_x_override" (change)="onStandXOverrideGeaendert()">
+                Stand X: Voraussetzungen für dieses Event außer Kraft setzen
+              </imr-checkbox>
+            </div>
+
+            @if (isVoraussetzungenOverrideAktiv()) {
+              <div class="app-col-12 app-col-lg-12 mb-3">
+                <div class="override-hinweis">
+                  Stand X ist aktiv. Level können unabhängig von den Voraussetzungen vergeben werden.
+                </div>
+              </div>
+            }
+
             @if (getAusgewaehlteEventMitglieder().length > 0) {
               <div class="app-col-12 app-col-lg-12 mb-3">
                 <div class="teilnehmer-level-card">

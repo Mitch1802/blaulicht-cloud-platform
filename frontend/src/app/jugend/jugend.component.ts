@@ -262,6 +262,7 @@ export class JugendComponent implements OnInit {
     datum: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
     ort: new FormControl<string>('', { nonNullable: true }),
     kategorie: new FormControl<JugendEventKategorie | ''>('', { nonNullable: true, validators: [Validators.required] }),
+    stand_x_override: new FormControl<boolean>(false, { nonNullable: true }),
     teilnehmer_ids: new FormControl<number[]>([], { nonNullable: true }),
   });
 
@@ -360,6 +361,7 @@ export class JugendComponent implements OnInit {
       datum: '',
       ort: '',
       kategorie: '',
+      stand_x_override: false,
       teilnehmer_ids: [],
     });
   }
@@ -377,6 +379,7 @@ export class JugendComponent implements OnInit {
       datum: event.datum,
       ort: event.ort ?? '',
       kategorie: this.parseEventKategorie(event.kategorie),
+      stand_x_override: event.stand_x_override === true,
       teilnehmer_ids: (event.teilnehmer ?? []).map((m) => m.pkid),
     });
 
@@ -428,12 +431,13 @@ export class JugendComponent implements OnInit {
     const kategorie = this.formEvent.controls.kategorie.value;
     const teilnehmerIds = this.formEvent.controls.teilnehmer_ids.value;
     const titel = this.getStandardTitelForKategorie(kategorie) || 'Jugend Event';
+    const standXOverride = this.isVoraussetzungenOverrideAktiv();
     const teilnehmerLevels: IEventTeilnehmerLevelInput[] = teilnehmerIds.map((pkid) => ({
       pkid,
       level: this.getTeilnehmerLevel(pkid),
     }));
 
-    if (this.isLevelPflichtKategorie(kategorie)) {
+    if (this.isLevelPflichtKategorie(kategorie) && !standXOverride) {
       const teilnehmerOhneErlaubteStufe = teilnehmerIds.find((pkid) => !this.hatErlaubteEventLevel(pkid));
       if (teilnehmerOhneErlaubteStufe != null) {
         this.uiMessageService.erstelleMessage(
@@ -453,15 +457,17 @@ export class JugendComponent implements OnInit {
       }
     }
 
-    const ungueltigeLevel = teilnehmerLevels.find(
-      (item) => item.level !== null && !this.istEventLevelErlaubt(item.pkid, item.level),
-    );
-    if (ungueltigeLevel) {
-      this.uiMessageService.erstelleMessage(
-        'error',
-        'Mindestens ein ausgewähltes Level ist laut Voraussetzungen nicht erlaubt.',
+    if (!standXOverride) {
+      const ungueltigeLevel = teilnehmerLevels.find(
+        (item) => item.level !== null && !this.istEventLevelErlaubt(item.pkid, item.level),
       );
-      return;
+      if (ungueltigeLevel) {
+        this.uiMessageService.erstelleMessage(
+          'error',
+          'Mindestens ein ausgewähltes Level ist laut Voraussetzungen nicht erlaubt.',
+        );
+        return;
+      }
     }
 
     const payload = {
@@ -469,6 +475,7 @@ export class JugendComponent implements OnInit {
       datum: this.formEvent.controls.datum.value,
       ort: this.formEvent.controls.ort.value,
       kategorie,
+      stand_x_override: standXOverride,
       teilnehmer_ids: teilnehmerIds,
       teilnehmer_levels: teilnehmerLevels,
     };
@@ -576,6 +583,10 @@ export class JugendComponent implements OnInit {
     this.synchronisiereTitelMitKategorie();
   }
 
+  onStandXOverrideGeaendert(): void {
+    this.ensureTeilnehmerLevelInRange();
+  }
+
   getAusgewaehlteEventMitglieder(): IMitglied[] {
     const selectedIds = new Set(this.formEvent.controls.teilnehmer_ids.value);
     return this.jugendMitglieder.filter((mitglied) => selectedIds.has(mitglied.pkid));
@@ -604,6 +615,10 @@ export class JugendComponent implements OnInit {
       mitglied,
       this.formEvent.controls.kategorie.value,
     );
+  }
+
+  isVoraussetzungenOverrideAktiv(): boolean {
+    return this.formEvent.controls.stand_x_override.value === true;
   }
 
   getLevelLabel(level: number): string {
@@ -897,6 +912,9 @@ export class JugendComponent implements OnInit {
     const age = this.getAlter(mitglied);
     const erreichteTokens = this.getErreichteTokensFuerMitglied(mitglied);
     const maxLevel = this.getMaxLevelForKategorie(kategorie);
+    if (this.isVoraussetzungenOverrideAktiv()) {
+      return Array.from({ length: maxLevel }, (_, idx) => idx + 1);
+    }
     const erlaubte: number[] = [];
 
     for (let level = 1; level <= maxLevel; level += 1) {

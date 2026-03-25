@@ -70,6 +70,7 @@ class JugendEventSerializer(serializers.ModelSerializer):
             "ort",
             "kategorie",
             "kategorie_label",
+            "stand_x_override",
             "teilnehmer_ids",
             "teilnehmer_levels",
             "teilnehmer",

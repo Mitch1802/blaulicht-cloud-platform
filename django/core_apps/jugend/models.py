@@ -75,6 +75,10 @@ class JugendEvent(TimeStampedModel):
         related_name="jugend_events_neu",
         blank=True,
     )
+    stand_x_override = models.BooleanField(
+        default=False,
+        verbose_name=_("Voraussetzungen ausser Kraft"),
+    )
 
     class Meta(TimeStampedModel.Meta):
         ordering = ["-datum", "titel"]

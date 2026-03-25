@@ -16,5 +16,6 @@ export interface IJugendEvent {
   ort: string;
   kategorie: string;
   kategorie_label?: string;
+  stand_x_override?: boolean;
   teilnehmer: IJugendEventTeilnehmer[];
 }
