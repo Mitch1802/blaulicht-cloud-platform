@@ -28,7 +28,7 @@
             <p class="empty">Noch keine Einsatzberichte vorhanden.</p>
           } @else {
             <div class="imr-table-wrap">
-              <imr-form-field label="Suchen">
+              <imr-form-field label="Suchen" class="mb-2">
                 <input matInput #input (keyup)="applyFilter(input.value)" />
               </imr-form-field>
 

@@ -33,15 +33,47 @@ mat-form-field,
     .mat-mdc-form-field-flex
         min-height: var(--imr-control-height)
 
+    .mat-mdc-form-field-type-mat-select .mat-mdc-form-field-flex
+        align-items: center
+
     .mat-mdc-form-field-infix
         min-height: calc(var(--imr-control-height) - 2px)
         padding-top: .45rem
         padding-bottom: .45rem
 
-    .mat-mdc-select-trigger
-        min-height: calc(var(--imr-control-height) - 2px)
+    .mat-mdc-form-field-type-mat-select .mat-mdc-form-field-infix
         display: flex
         align-items: center
+        padding-top: 0
+        padding-bottom: 0
+
+    .mat-mdc-select-trigger
+        min-height: calc(var(--imr-control-height) - 2px)
+        height: calc(var(--imr-control-height) - 2px)
+        display: flex
+        align-items: center
+        line-height: 1.2
+
+    .mat-mdc-form-field-type-mat-select .mat-mdc-select
+        display: flex
+        align-items: center
+        min-height: calc(var(--imr-control-height) - 2px)
+        width: 100%
+
+    .mat-mdc-select-value,
+    .mat-mdc-select-value-text
+        display: flex
+        align-items: center
+        min-height: calc(var(--imr-control-height) - 2px)
+        line-height: 1.2
+        width: 100%
+
+    .mat-mdc-form-field-type-mat-select .mat-mdc-select-min-line
+        display: flex
+        align-items: center
+        min-height: calc(var(--imr-control-height) - 2px)
+        line-height: 1
+        width: 100%
 
     input.mat-mdc-input-element
         line-height: 1.2
@@ -51,7 +83,32 @@ mat-form-field,
         max-height: none
 
     .mat-mdc-select-arrow-wrapper
-        align-self: center
+        align-self: stretch
+        min-height: calc(var(--imr-control-height) - 2px)
+        height: calc(var(--imr-control-height) - 2px)
+        transform: none !important
+        margin-left: .4rem
+        display: flex
+        align-items: center
+        justify-content: center
+        position: relative
+        top: -2px
+
+    .mat-mdc-select-arrow
+        width: 1rem
+        height: 1rem
+        display: flex
+        align-items: center
+        justify-content: center
+        transform-origin: center
+
+        svg
+            width: 1.15rem
+            height: 1.15rem
+
+    .mat-mdc-select-arrow svg
+        width: 1.15rem
+        height: 1.15rem
 
     .mat-mdc-form-field-icon-suffix,
     .mat-mdc-form-field-icon-prefix
