@@ -18,6 +18,15 @@
               [formGroup]="formAuswahl"
               (ngSubmit)="sevdeskKontaktUebernehmen()"
             >
+              <imr-top-actions>
+                <imr-button
+                  color="primary"
+                  type="submit"
+                >
+                  übernehmen
+                </imr-button>
+              </imr-top-actions>
+
               <section class="app-grid m-0 mt-3">
                 <div class="app-col-12 app-col-lg-9">
                   <imr-form-field label="SevDesk Kontakt auswählen">
@@ -30,34 +39,27 @@
                     </mat-select>
                   </imr-form-field>
                 </div>
-                <div class="app-col-6 app-col-lg-3">
-                  <imr-button
-                    color="primary"
-                    class="m-3"
-                    type="submit"
-                  >
-                    übernehmen
-                  </imr-button>
-                </div>
               </section>
             </form>
             <hr />
             <form [formGroup]="formRechnung" (ngSubmit)="printRechnung()">
-              <imr-button
-                color="primary"
-                class="m-3"
-                (click)="formRechnungReset()"
-                type="button"
-              >
-                Reset
-              </imr-button>
-              <imr-button
-                color="accent"
-                class="m-3"
-                type="submit"
-              >
-                Drucken
-              </imr-button>
+              <imr-top-actions>
+                <imr-button
+                  color="primary"
+                  class="m-3"
+                  (click)="formRechnungReset()"
+                  type="button"
+                >
+                  Reset
+                </imr-button>
+                <imr-button
+                  color="accent"
+                  class="m-3"
+                  type="submit"
+                >
+                  Drucken
+                </imr-button>
+              </imr-top-actions>
               <hr />
               <h3>Rechnungsdaten</h3>
               <section class="app-grid mt-2 mx-0">
@@ -125,6 +127,16 @@
               [formGroup]="formRechnungPositionen"
               (ngSubmit)="addPosition()"
             >
+              <imr-top-actions>
+                <imr-button
+                  color="accent"
+                  class="m-3"
+                  type="submit"
+                >
+                  Hinzufügen
+                </imr-button>
+              </imr-top-actions>
+
               <section class="app-grid mt-2 mx-0">
                 <div class="app-col-12 app-col-lg-6 mb-3">
                   <imr-form-field label="Bezeichnung">
@@ -142,15 +154,6 @@
                       >
                     }
                   </imr-form-field>
-                </div>
-                <div class="app-col-12 app-col-lg-3 mb-3">
-                  <imr-button
-                    color="accent"
-                    class="m-3"
-                    type="submit"
-                  >
-                    Hinzufügen
-                  </imr-button>
                 </div>
               </section>
             </form>

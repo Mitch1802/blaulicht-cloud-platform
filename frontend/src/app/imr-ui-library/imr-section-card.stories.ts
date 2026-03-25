@@ -77,12 +77,12 @@ export const MitActionsUndTabelle: Story = {
         <div imrCardActions>
           <button mat-flat-button color="primary">Hinzufügen</button>
         </div>
-        <div class="imr-top-actions">
+        <imr-top-actions>
           <mat-form-field>
             <mat-label>Suchen</mat-label>
             <input matInput />
           </mat-form-field>
-        </div>
+        </imr-top-actions>
         <div class="imr-table-wrap">
           <table mat-table [dataSource]="[]">
             <ng-container matColumnDef="col1">

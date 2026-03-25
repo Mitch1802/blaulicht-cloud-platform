@@ -15,11 +15,11 @@
 
         <mat-tab label="Benutzer">
           @if (formModul.disabled) {
-          <div class="imr-top-actions">
+          <imr-top-actions>
             <imr-button color="accent" (click)="neueDetails()" type="button">
               Hinzufügen
             </imr-button>
-          </div>
+          </imr-top-actions>
           }
 
           <div class="imr-table-wrap" [hidden]="!formModul.disabled">
@@ -96,14 +96,14 @@
           <form [formGroup]="formModul" (ngSubmit)="datenSpeichern()" [hidden]="formModul.disabled" class="edit-form">
             <input hidden type="text"  formControlName="id" />
 
-            <div class="imr-form-actions">
+            <imr-top-actions class="imr-form-actions">
               <imr-button color="accent" [hidden]="!formModul.valid" type="submit">
                 Daten speichern
               </imr-button>
               <imr-button color="primary" [hidden]="formModul.disabled" type="button" (click)="abbrechen()">
                 Abbrechen
               </imr-button>
-            </div>
+            </imr-top-actions>
 
             @if (username === "admin") {
               <input hidden type="text" formControlName="username" />
@@ -229,11 +229,11 @@
         </mat-tab>
 
         <mat-tab label="Rollenübersicht">
-          <div class="imr-top-actions rollen-matrix-actions">
+          <imr-top-actions class="rollen-matrix-actions">
             <imr-button color="accent" type="button" (click)="rollenMatrixSpeichern()">
               Rollen speichern
             </imr-button>
-          </div>
+          </imr-top-actions>
           <div class="imr-table-wrap rollen-matrix-wrap">
             <table mat-table [dataSource]="benutzer" class="rollen-matrix-table">
               <ng-container matColumnDef="benutzer">

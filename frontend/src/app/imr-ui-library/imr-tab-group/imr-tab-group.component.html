@@ -1,5 +1,11 @@
-﻿    <mat-tab-group [selectedIndex]="selectedIndex" (selectedIndexChange)="selectedIndexChange.emit($event)">
-      <ng-content></ng-content>
+﻿    <mat-tab-group [selectedIndex]="selectedIndex" (selectedIndexChange)="onSelectedIndexChange($event)">
+      @for (tab of renderedTabs; track tab) {
+      <mat-tab [label]="tab.label">
+        <ng-template matTabContent>
+          <ng-container [ngTemplateOutlet]="tab.contentTpl"></ng-container>
+        </ng-template>
+      </mat-tab>
+      }
     </mat-tab-group>
   
 

@@ -11,17 +11,19 @@
     </div>
 
       <form [formGroup]="formRolle" (ngSubmit)="rolleSpeichern()" class="role-form">
+        <imr-top-actions>
+          <imr-button
+            color="accent"
+            [disabled]="!formRolle.valid"
+            type="submit"
+          >
+            Rolle speichern
+          </imr-button>
+        </imr-top-actions>
+
         <imr-form-field class="imr-full-width" label="Rolle">
           <input matInput type="text" formControlName="rolle" uiControlErrors />
         </imr-form-field>
-
-        <imr-button
-          color="accent"
-          [disabled]="!formRolle.valid"
-          type="submit"
-        >
-          Rolle speichern
-        </imr-button>
 
         <imr-chip-set class="imr-chips">
           @for (rolle of rollen; track rolle) {
@@ -44,7 +46,7 @@
       <form [formGroup]="formKonfig" (ngSubmit)="konfigSpeichern()">
         <input hidden type="text"  formControlName="id" />
 
-        <div class="actions-top">
+        <imr-top-actions class="actions-top">
           <imr-button
             color="accent"
             [disabled]="!formKonfig.valid"
@@ -52,7 +54,7 @@
           >
             Stammdaten speichern
           </imr-button>
-        </div>
+        </imr-top-actions>
 
         <section class="app-grid imr-form-grid">
           <div class="app-col-12 app-col-lg-4 mb-3">
@@ -135,7 +137,7 @@
         <span><imr-icon>delete</imr-icon> Löschen</span>
       </div>
 
-      <div class="actions-top">
+      <imr-top-actions class="actions-top">
         <imr-button
           color="accent"
           (click)="backupErstellen()"
@@ -143,7 +145,7 @@
         >
           Backup erstellen
         </imr-button>
-      </div>
+      </imr-top-actions>
 
       @if (backups.length > 0) {
       <div class="table-toolbar">

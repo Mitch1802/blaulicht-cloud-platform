@@ -185,6 +185,38 @@ export class FmdComponent implements OnInit, AfterViewInit {
     return this.tabsMitTabelle.has(index);
   }
 
+  private normalizeArrayPayload<T>(payload: any): T[] {
+    if (Array.isArray(payload)) {
+      return payload as T[];
+    }
+
+    if (Array.isArray(payload?.main)) {
+      return payload.main as T[];
+    }
+
+    if (Array.isArray(payload?.results)) {
+      return payload.results as T[];
+    }
+
+    return [];
+  }
+
+  private normalizeConfigPayload(payload: any): any[] {
+    if (Array.isArray(payload)) {
+      return payload;
+    }
+
+    if (Array.isArray(payload?.main)) {
+      return payload.main;
+    }
+
+    if (payload && typeof payload === 'object') {
+      return [payload];
+    }
+
+    return [];
+  }
+
   ngOnInit(): void {
     sessionStorage.setItem("PageNumber", "2");
     sessionStorage.setItem("Page2", "FMD");
@@ -197,21 +229,27 @@ export class FmdComponent implements OnInit, AfterViewInit {
     }).subscribe({
       next: ({ main, context }) => {
         try {
-          const konfigs = context.modul_konfig.find((m: any) => m.modul === 'fmd');
+          const mainPayload = main as any;
+          const modulKonfig = this.normalizeArrayPayload<any>(context?.modul_konfig ?? context?.modulKonfig);
+          const konfigListe = this.normalizeConfigPayload(context?.konfig);
+          const mitglieder = this.normalizeArrayPayload<any>(context?.mitglieder ?? mainPayload?.mitglieder);
+          const mains = this.normalizeArrayPayload<any>(mainPayload);
+
+          const konfigs = modulKonfig.find((m: any) => m.modul === 'fmd');
           this.modul_konfig = konfigs?.konfiguration ?? [];
           
-          const templates = context.modul_konfig.find((m: any) => m.modul === 'pdf');
+          const templates = modulKonfig.find((m: any) => m.modul === 'pdf');
           this.pdf_konfig = templates?.konfiguration ?? [];
 
-          this.stammdaten = <IStammdaten>context.konfig[0];
-
-          const mains = main as any[];
-          this.mitglieder = context.mitglieder as any[];
-          this.mitgliederGesamt = context.mitglieder as any[];
-          const memberMap = new Map<number, any>(this.mitglieder.map((m: any) => [m.pkid, m]));
+          this.stammdaten = <IStammdaten>(konfigListe[0] ?? {});
+          this.mitglieder = mitglieder;
+          this.mitgliederGesamt = mitglieder;
+          const memberMap = new Map<number, any>(
+            this.mitglieder.map((m: any) => [Number(m.pkid), m])
+          );
 
           this.atstraeger = mains.map(item => {
-            const mitg = memberMap.get(item.mitglied_id) || {};
+            const mitg = memberMap.get(Number(item.mitglied_id)) || {};
             return {
               ...item,
               stbnr: mitg.stbnr,
@@ -230,7 +268,11 @@ export class FmdComponent implements OnInit, AfterViewInit {
           this.updateTauglichkeitFürAlle();
           this.updateChartData();
         } catch (e: any) {
-          this.uiMessageService.erstelleMessage("error", e);
+          const fallbackRows = this.normalizeArrayPayload<any>(main as any);
+          this.atstraeger = fallbackRows;
+          this.dataSource.data = fallbackRows;
+          console.error('FMD initial load failed, showing fallback rows', e);
+          this.uiMessageService.erstelleMessage('error', 'FMD konnte nicht vollständig aufbereitet werden. Rohdaten werden angezeigt.');
         }
       },
       error: (error: any) => {

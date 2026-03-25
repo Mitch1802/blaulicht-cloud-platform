@@ -6,7 +6,7 @@
   </header>
 
   <imr-card class="imr-card">
-      <div class="imr-top-actions">
+      <imr-top-actions>
         <imr-button
           color="primary"
           type="button"
@@ -22,7 +22,7 @@
         >
           Hinzufügen
         </imr-button>
-      </div>
+      </imr-top-actions>
 
       @if (isEditMode) {
       <form
@@ -32,7 +32,7 @@
       >
         <input hidden type="text"  formControlName="id" />
 
-        <div class="imr-form-actions">
+        <imr-top-actions class="imr-form-actions">
           <imr-button
           color="accent"
           [hidden]="!formModul.valid"
@@ -48,7 +48,9 @@
           >
           Abbrechen
           </imr-button>
-        </div>
+          <imr-button class="delete-action imr-delete-btn" color="warn" [hidden]="!formModul.controls['id'].value"
+          type="button" (click)="datenLoeschen()">Daten löschen</imr-button>
+        </imr-top-actions>
 
         <section class="template-block">
           <h3 class="block-title">Vorlagenverwaltung</h3>
@@ -157,9 +159,6 @@
             </div>
           </section>
         </section>
-
-        <imr-button class="delete-action imr-delete-btn" color="warn" [hidden]="!formModul.controls['id'].value"
-        type="button" (click)="datenLoeschen()">Daten löschen</imr-button>
       </form>
       }
 

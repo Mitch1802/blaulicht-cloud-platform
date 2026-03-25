@@ -9,484 +9,488 @@
     <div class="imr-card__head">
       <h2>Atemschutz Verwaltung</h2>
     </div>
-        @if (hasTable(activeTabIndex)) {
-        <imr-form-field
-          class="mb-2 filter-field-compact"
-          label="Filter"
+    @if (hasTable(activeTabIndex)) {
+    <imr-top-actions>
+      <imr-form-field
+        class="mb-2 filter-field-compact"
+        label="Filter"
+      >
+        <input
+          matInput
+          #filterInput
+          (input)="applyFilter(filterInput.value)"
+          placeholder="Suchen..."
+        />
+      </imr-form-field>
+    </imr-top-actions>
+    }
+
+    <imr-tab-group (selectedIndexChange)="onTabChange($event)">
+      <imr-tab label="Übersicht">
+        <section class="app-grid mt-3 mb-3 mx-0">
+          <div class="app-col-12 app-col-lg-4">
+            <h2>Tauglichkeit</h2>
+            @if (chartTauglichkeit.datasets[0].data.length) {
+            <canvas
+              baseChart
+              [data]="chartTauglichkeit"
+              [type]="pieChartType"
+              [options]="pieChartOptions"
+            >
+            </canvas>
+            }
+          </div>
+          <div class="app-col-12 app-col-lg-4">
+            <h2>Untersuchung</h2>
+            @if (chartUntersuchung.datasets[0].data.length) {
+            <canvas
+              baseChart
+              [data]="chartUntersuchung"
+              [type]="pieChartType"
+              [options]="pieChartOptions"
+            >
+            </canvas>
+            }
+          </div>
+          <div class="app-col-12 app-col-lg-4">
+            <h2>Altersverteilung</h2>
+            @if (chartAlter.datasets[0].data.length) {
+            <canvas
+              baseChart
+              [data]="chartAlter"
+              [type]="pieChartType"
+              [options]="pieChartOptions"
+            >
+            </canvas>
+            }
+          </div>
+        </section>
+      </imr-tab>
+      <imr-tab label="ATS Träger">
+        <imr-top-actions>
+          <imr-button
+            color="accent"
+            [hidden]="!formModul.disabled"
+            (click)="neueDetails()"
+            type="button"
+          >
+            Hinzufügen
+          </imr-button>
+        </imr-top-actions>
+        <form
+          [formGroup]="formModul"
+          (ngSubmit)="datenSpeichern()"
+          [hidden]="formModul.disabled"
         >
           <input
-            matInput
-            #filterInput
-            (input)="applyFilter(filterInput.value)"
-            placeholder="Suchen..."
+            hidden
+            type="text"
+            
+            formControlName="id"
           />
-        </imr-form-field>
-        }
+          <imr-button
+            color="accent"
+            [hidden]="!formModul.valid"
+            type="submit"
+          >
+            Daten speichern
+          </imr-button>
+          <imr-button
+            color="primary"
+            [hidden]="formModul.disabled"
+            type="button"
+            (click)="abbrechen()"
+          >
+            Abbrechen
+          </imr-button>
+          <section class="app-grid mt-2 mx-0">
+            <div class="app-col-12 app-col-lg-8 mb-3">
+              <imr-form-field label="Mitglied auswählen">
+                <imr-select formControlName="mitglied_id">
+                  @for (opt of dropdownMitglieder; track opt) {
+                  <imr-option [value]="opt.pkid">
+                    {{ opt.stbnr }} - {{ opt.vorname }}
+                    {{ opt.nachname }}
+                  </imr-option>
+                  }
+                </imr-select>
+              </imr-form-field>
+            </div>
+            <div class="app-col-12 app-col-lg-4 mb-3">
+              <imr-form-field label="FDISK Update">
+                <input
+                  matInput
+                  type="text"
+                  formControlName="fdisk_aenderung"
+                  appDateInputMask="dmy"
+                  placeholder="TT.MM.YYYY"
+                />
+                @if
+                (formModul.controls['fdisk_aenderung'].hasError('pattern'))
+                {
+                <imr-error
+                  >Ungültiges Format. Bitte TT.MM.YYYY eingeben.</imr-error
+                >
+                } @if
+                (formModul.controls['fdisk_aenderung'].hasError('dateInvalid'))
+                {
+                <imr-error>Kein existierendes Datum!</imr-error>
+                }
+              </imr-form-field>
+            </div>
+            <div class="app-col-12 app-col-lg-4 mb-3">
+              <imr-form-field label="Arzttyp auswählen">
+                <imr-select formControlName="arzt_typ">
+                  @for (opt of arzttypen; track opt) {
+                  <imr-option [value]="opt"> {{ opt }}</imr-option>
+                  }
+                </imr-select>
+              </imr-form-field>
+            </div>
+            <div class="app-col-12 app-col-lg-8 mb-3">
+              <imr-form-field label="Behandelnder Arzt">
+                <input matInput type="text" formControlName="arzt" />
+              </imr-form-field>
+            </div>
+            <div class="app-col-12 app-col-lg-4 mb-3">
+              <imr-form-field label="Letzte Untersuchung">
+                <input
+                  matInput
+                  type="text"
+                  formControlName="letzte_untersuchung"
+                  appDateInputMask="dmy"
+                  placeholder="TT.MM.YYYY"
+                />
+                @if
+                (formModul.controls['letzte_untersuchung'].hasError('pattern'))
+                {
+                <imr-error
+                  >Ung�ltiges Format. Bitte TT.MM.YYYY eingeben.</imr-error
+                >
+                } @if
+                (formModul.controls['letzte_untersuchung'].hasError('dateInvalid'))
+                {
+                <imr-error>Kein existierendes Datum!</imr-error>
+                }
+              </imr-form-field>
+            </div>
+            <div class="app-col-12 app-col-lg-4 mb-3">
+              <imr-form-field label="Leistungstest">
+                <input
+                  matInput
+                  type="text"
+                  formControlName="leistungstest"
+                />
+              </imr-form-field>
+            </div>
+            <div class="app-col-12 app-col-lg-4 mb-3">
+              <imr-form-field label="Leistungstest Art">
+                <imr-select formControlName="leistungstest_art">
+                  @for (opt of leistungstestarten; track opt) {
+                  <imr-option [value]="opt"> {{ opt }}</imr-option>
+                  }
+                </imr-select>
+              </imr-form-field>
+            </div>
+            <div class="app-col-12 app-col-lg-12 mb-3">
+              <imr-form-field label="Notizen">
+                <input matInput type="text" formControlName="notizen" />
+              </imr-form-field>
+            </div>
+          </section>
 
-        <imr-tab-group (selectedIndexChange)="onTabChange($event)">
-          <imr-tab label="Übersicht">
-            <section class="app-grid mt-3 mb-3 mx-0">
-              <div class="app-col-12 app-col-lg-4">
-                <h2>Tauglichkeit</h2>
-                @if (chartTauglichkeit.datasets[0].data.length) {
-                <canvas
-                  baseChart
-                  [data]="chartTauglichkeit"
-                  [type]="pieChartType"
-                  [options]="pieChartOptions"
-                >
-                </canvas>
-                }
-              </div>
-              <div class="app-col-12 app-col-lg-4">
-                <h2>Untersuchung</h2>
-                @if (chartUntersuchung.datasets[0].data.length) {
-                <canvas
-                  baseChart
-                  [data]="chartUntersuchung"
-                  [type]="pieChartType"
-                  [options]="pieChartOptions"
-                >
-                </canvas>
-                }
-              </div>
-              <div class="app-col-12 app-col-lg-4">
-                <h2>Altersverteilung</h2>
-                @if (chartAlter.datasets[0].data.length) {
-                <canvas
-                  baseChart
-                  [data]="chartAlter"
-                  [type]="pieChartType"
-                  [options]="pieChartOptions"
-                >
-                </canvas>
-                }
-              </div>
-            </section>
-          </imr-tab>
-          <imr-tab label="ATS Träger">
-            <imr-button
-              color="accent"
-              [hidden]="!formModul.disabled"
-              (click)="neueDetails()"
-              type="button"
-            >
-              Hinzufügen
-            </imr-button>
-            <form
-              [formGroup]="formModul"
-              (ngSubmit)="datenSpeichern()"
-              [hidden]="formModul.disabled"
-            >
-              <input
-                hidden
-                type="text"
-                
-                formControlName="id"
-              />
+          <imr-button
+            color="warn"
+            class="imr-delete-btn"
+            [hidden]="!formModul.controls['id'].value"
+            type="button"
+            (click)="datenLoeschen()"
+          >
+            Daten löschen
+          </imr-button>
+        </form>
+        <table
+          mat-table
+          [dataSource]="dataSource"
+          [hidden]="!formModul.disabled"
+          matSort
+        >
+          <ng-container matColumnDef="stbnr">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Stbnr.
+            </th>
+            <td mat-cell *matCellDef="let element">{{ element.stbnr }}</td>
+          </ng-container>
+          <ng-container matColumnDef="vorname">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Vorname
+            </th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.vorname }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="nachname">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Nachname
+            </th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.nachname }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Aktionen</th>
+            <td mat-cell *matCellDef="let element" class="imr-action-cell">
               <imr-button
-                color="accent"
-                [hidden]="!formModul.valid"
-                type="submit"
+                class="imr-action-btn"
+                color="primary"
+                (click)="auswahlBearbeiten(element)"
               >
-                Daten speichern
+                <imr-icon class="m-0">edit</imr-icon>
               </imr-button>
+              <imr-button
+                class="imr-action-btn"
+                color="primary"
+                (click)="printChecklist(element)"
+              >
+                <imr-icon class="m-0">checklist</imr-icon>
+              </imr-button>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="sichtbareSpaltenATS"></tr>
+          <tr
+            mat-row
+            *matRowDef="let row; columns: sichtbareSpaltenATS"
+          ></tr>
+        </table>
+      </imr-tab>
+      <imr-tab label="Untersuchungen">
+        <table
+          mat-table
+          [dataSource]="dataSource"
+          class="mat-elevation-z8"
+          matSort
+        >
+          <ng-container matColumnDef="stbnr">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Stbnr.
+            </th>
+            <td mat-cell *matCellDef="let element">{{ element.stbnr }}</td>
+          </ng-container>
+          <ng-container matColumnDef="vorname">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Vorname
+            </th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.vorname }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="nachname">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Nachname
+            </th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.nachname }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="letzte_untersuchung">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Letzte Untersuchung
+            </th>
+            <td
+              mat-cell
+              *matCellDef="let element"
+              [class.red-cell]="element.letzte_untersuchung === null"
+            >
+              {{ element.letzte_untersuchung }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="naechste_untersuchung">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              N�chste Untersuchung
+            </th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.naechste_untersuchung }}
+            </td>
+          </ng-container>
+
+          <tr
+            mat-header-row
+            *matHeaderRowDef="sichtbareSpaltenUntersuchung"
+          ></tr>
+          <tr
+            mat-row
+            *matRowDef="let row; columns: sichtbareSpaltenUntersuchung"
+            [class.red-cell]="
+              +row.naechste_untersuchung <= currentYear ||
+              row.naechste_untersuchung === null
+            "
+          ></tr>
+        </table>
+      </imr-tab>
+      <imr-tab label="Leistungstest">
+        <table
+          mat-table
+          [dataSource]="dataSource"
+          class="mat-elevation-z8"
+          matSort
+        >
+          <ng-container matColumnDef="stbnr">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Stbnr.
+            </th>
+            <td mat-cell *matCellDef="let element">{{ element.stbnr }}</td>
+          </ng-container>
+          <ng-container matColumnDef="vorname">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Vorname
+            </th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.vorname }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="nachname">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Nachname
+            </th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.nachname }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="leistungstest">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Leistungstest
+            </th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.leistungstest }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="leistungstest_art">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Leistungstest Art
+            </th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.leistungstest_art }}
+            </td>
+          </ng-container>
+
+          <tr
+            mat-header-row
+            *matHeaderRowDef="sichtbareSpaltenLeistungstest"
+          ></tr>
+          <tr
+            mat-row
+            *matRowDef="let row; columns: sichtbareSpaltenLeistungstest"
+            [class.red-cell]="!isLeistungstestOk(row.leistungstest)"
+            [class.green-cell]="isLeistungstestOk(row.leistungstest)"
+          ></tr>
+        </table>
+      </imr-tab>
+      <imr-tab label="Tauglichkeit">
+        <table
+          mat-table
+          [dataSource]="dataSource"
+          class="mat-elevation-z8"
+          matSort
+        >
+          <ng-container matColumnDef="stbnr">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Stbnr.
+            </th>
+            <td mat-cell *matCellDef="let element">{{ element.stbnr }}</td>
+          </ng-container>
+          <ng-container matColumnDef="vorname">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Vorname
+            </th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.vorname }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="nachname">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Nachname
+            </th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.nachname }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="tauglichkeit">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Tauglichkeit
+            </th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.tauglichkeit }}
+            </td>
+          </ng-container>
+          <tr
+            mat-header-row
+            *matHeaderRowDef="sichtbareSpaltenTauglichkeit"
+          ></tr>
+          <tr
+            mat-row
+            *matRowDef="let row; columns: sichtbareSpaltenTauglichkeit"
+            [class.red-cell]="row.tauglichkeit === 'nein'"
+            [class.green-cell]="row.tauglichkeit === 'tauglich'"
+          ></tr>
+        </table>
+      </imr-tab>
+      <imr-tab label="Export">
+        <div class="app-container p-3 export-wrap">
+          <div class="app-grid m-0 pt-2">
+            <div class="app-col-7">Offene Untersuchungen:</div>
+            <div class="app-col-auto">
               <imr-button
                 color="primary"
-                [hidden]="formModul.disabled"
-                type="button"
-                (click)="abbrechen()"
+                (click)="printOffeneUntersuchugen()"
               >
-                Abbrechen
+                <imr-icon class="m-0">picture_as_pdf</imr-icon>
               </imr-button>
-              <section class="app-grid mt-2 mx-0">
-                <div class="app-col-12 app-col-lg-8 mb-3">
-                  <imr-form-field label="Mitglied auswählen">
-                    <imr-select formControlName="mitglied_id">
-                      @for (opt of dropdownMitglieder; track opt) {
-                      <imr-option [value]="opt.pkid">
-                        {{ opt.stbnr }} - {{ opt.vorname }}
-                        {{ opt.nachname }}
-                      </imr-option>
-                      }
-                    </imr-select>
-                  </imr-form-field>
-                </div>
-                <div class="app-col-12 app-col-lg-4 mb-3">
-                  <imr-form-field label="FDISK Update">
-                    <input
-                      matInput
-                      type="text"
-                      formControlName="fdisk_aenderung"
-                      appDateInputMask="dmy"
-                      placeholder="TT.MM.YYYY"
-                    />
-                    @if
-                    (formModul.controls['fdisk_aenderung'].hasError('pattern'))
-                    {
-                    <imr-error
-                      >Ungültiges Format. Bitte TT.MM.YYYY eingeben.</imr-error
-                    >
-                    } @if
-                    (formModul.controls['fdisk_aenderung'].hasError('dateInvalid'))
-                    {
-                    <imr-error>Kein existierendes Datum!</imr-error>
-                    }
-                  </imr-form-field>
-                </div>
-                <div class="app-col-12 app-col-lg-4 mb-3">
-                  <imr-form-field label="Arzttyp auswählen">
-                    <imr-select formControlName="arzt_typ">
-                      @for (opt of arzttypen; track opt) {
-                      <imr-option [value]="opt"> {{ opt }}</imr-option>
-                      }
-                    </imr-select>
-                  </imr-form-field>
-                </div>
-                <div class="app-col-12 app-col-lg-8 mb-3">
-                  <imr-form-field label="Behandelnder Arzt">
-                    <input matInput type="text" formControlName="arzt" />
-                  </imr-form-field>
-                </div>
-                <div class="app-col-12 app-col-lg-4 mb-3">
-                  <imr-form-field label="Letzte Untersuchung">
-                    <input
-                      matInput
-                      type="text"
-                      formControlName="letzte_untersuchung"
-                      appDateInputMask="dmy"
-                      placeholder="TT.MM.YYYY"
-                    />
-                    @if
-                    (formModul.controls['letzte_untersuchung'].hasError('pattern'))
-                    {
-                    <imr-error
-                      >Ung�ltiges Format. Bitte TT.MM.YYYY eingeben.</imr-error
-                    >
-                    } @if
-                    (formModul.controls['letzte_untersuchung'].hasError('dateInvalid'))
-                    {
-                    <imr-error>Kein existierendes Datum!</imr-error>
-                    }
-                  </imr-form-field>
-                </div>
-                <div class="app-col-12 app-col-lg-4 mb-3">
-                  <imr-form-field label="Leistungstest">
-                    <input
-                      matInput
-                      type="text"
-                      formControlName="leistungstest"
-                    />
-                  </imr-form-field>
-                </div>
-                <div class="app-col-12 app-col-lg-4 mb-3">
-                  <imr-form-field label="Leistungstest Art">
-                    <imr-select formControlName="leistungstest_art">
-                      @for (opt of leistungstestarten; track opt) {
-                      <imr-option [value]="opt"> {{ opt }}</imr-option>
-                      }
-                    </imr-select>
-                  </imr-form-field>
-                </div>
-                <div class="app-col-12 app-col-lg-12 mb-3">
-                  <imr-form-field label="Notizen">
-                    <input matInput type="text" formControlName="notizen" />
-                  </imr-form-field>
-                </div>
-              </section>
-
-              <imr-button
-                color="warn"
-                class="imr-delete-btn"
-                [hidden]="!formModul.controls['id'].value"
-                type="button"
-                (click)="datenLoeschen()"
-              >
-                Daten löschen
-              </imr-button>
-            </form>
-            <table
-              mat-table
-              [dataSource]="dataSource"
-              [hidden]="!formModul.disabled"
-              matSort
-            >
-              <ng-container matColumnDef="stbnr">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                  Stbnr.
-                </th>
-                <td mat-cell *matCellDef="let element">{{ element.stbnr }}</td>
-              </ng-container>
-              <ng-container matColumnDef="vorname">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                  Vorname
-                </th>
-                <td mat-cell *matCellDef="let element">
-                  {{ element.vorname }}
-                </td>
-              </ng-container>
-              <ng-container matColumnDef="nachname">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                  Nachname
-                </th>
-                <td mat-cell *matCellDef="let element">
-                  {{ element.nachname }}
-                </td>
-              </ng-container>
-              <ng-container matColumnDef="actions">
-                <th mat-header-cell *matHeaderCellDef>Aktionen</th>
-                <td mat-cell *matCellDef="let element" class="imr-action-cell">
-                  <imr-button
-                    class="imr-action-btn"
-                    color="primary"
-                    (click)="auswahlBearbeiten(element)"
-                  >
-                    <imr-icon class="m-0">edit</imr-icon>
-                  </imr-button>
-                  <imr-button
-                    class="imr-action-btn"
-                    color="primary"
-                    (click)="printChecklist(element)"
-                  >
-                    <imr-icon class="m-0">checklist</imr-icon>
-                  </imr-button>
-                </td>
-              </ng-container>
-              <tr mat-header-row *matHeaderRowDef="sichtbareSpaltenATS"></tr>
-              <tr
-                mat-row
-                *matRowDef="let row; columns: sichtbareSpaltenATS"
-              ></tr>
-            </table>
-          </imr-tab>
-          <imr-tab label="Untersuchungen">
-            <table
-              mat-table
-              [dataSource]="dataSource"
-              class="mat-elevation-z8"
-              matSort
-            >
-              <ng-container matColumnDef="stbnr">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                  Stbnr.
-                </th>
-                <td mat-cell *matCellDef="let element">{{ element.stbnr }}</td>
-              </ng-container>
-              <ng-container matColumnDef="vorname">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                  Vorname
-                </th>
-                <td mat-cell *matCellDef="let element">
-                  {{ element.vorname }}
-                </td>
-              </ng-container>
-              <ng-container matColumnDef="nachname">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                  Nachname
-                </th>
-                <td mat-cell *matCellDef="let element">
-                  {{ element.nachname }}
-                </td>
-              </ng-container>
-              <ng-container matColumnDef="letzte_untersuchung">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                  Letzte Untersuchung
-                </th>
-                <td
-                  mat-cell
-                  *matCellDef="let element"
-                  [class.red-cell]="element.letzte_untersuchung === null"
-                >
-                  {{ element.letzte_untersuchung }}
-                </td>
-              </ng-container>
-              <ng-container matColumnDef="naechste_untersuchung">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                  N�chste Untersuchung
-                </th>
-                <td mat-cell *matCellDef="let element">
-                  {{ element.naechste_untersuchung }}
-                </td>
-              </ng-container>
-
-              <tr
-                mat-header-row
-                *matHeaderRowDef="sichtbareSpaltenUntersuchung"
-              ></tr>
-              <tr
-                mat-row
-                *matRowDef="let row; columns: sichtbareSpaltenUntersuchung"
-                [class.red-cell]="
-                  +row.naechste_untersuchung <= currentYear ||
-                  row.naechste_untersuchung === null
-                "
-              ></tr>
-            </table>
-          </imr-tab>
-          <imr-tab label="Leistungstest">
-            <table
-              mat-table
-              [dataSource]="dataSource"
-              class="mat-elevation-z8"
-              matSort
-            >
-              <ng-container matColumnDef="stbnr">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                  Stbnr.
-                </th>
-                <td mat-cell *matCellDef="let element">{{ element.stbnr }}</td>
-              </ng-container>
-              <ng-container matColumnDef="vorname">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                  Vorname
-                </th>
-                <td mat-cell *matCellDef="let element">
-                  {{ element.vorname }}
-                </td>
-              </ng-container>
-              <ng-container matColumnDef="nachname">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                  Nachname
-                </th>
-                <td mat-cell *matCellDef="let element">
-                  {{ element.nachname }}
-                </td>
-              </ng-container>
-              <ng-container matColumnDef="leistungstest">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                  Leistungstest
-                </th>
-                <td mat-cell *matCellDef="let element">
-                  {{ element.leistungstest }}
-                </td>
-              </ng-container>
-              <ng-container matColumnDef="leistungstest_art">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                  Leistungstest Art
-                </th>
-                <td mat-cell *matCellDef="let element">
-                  {{ element.leistungstest_art }}
-                </td>
-              </ng-container>
-
-              <tr
-                mat-header-row
-                *matHeaderRowDef="sichtbareSpaltenLeistungstest"
-              ></tr>
-              <tr
-                mat-row
-                *matRowDef="let row; columns: sichtbareSpaltenLeistungstest"
-                [class.red-cell]="!isLeistungstestOk(row.leistungstest)"
-                [class.green-cell]="isLeistungstestOk(row.leistungstest)"
-              ></tr>
-            </table>
-          </imr-tab>
-          <imr-tab label="Tauglichkeit">
-            <table
-              mat-table
-              [dataSource]="dataSource"
-              class="mat-elevation-z8"
-              matSort
-            >
-              <ng-container matColumnDef="stbnr">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                  Stbnr.
-                </th>
-                <td mat-cell *matCellDef="let element">{{ element.stbnr }}</td>
-              </ng-container>
-              <ng-container matColumnDef="vorname">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                  Vorname
-                </th>
-                <td mat-cell *matCellDef="let element">
-                  {{ element.vorname }}
-                </td>
-              </ng-container>
-              <ng-container matColumnDef="nachname">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                  Nachname
-                </th>
-                <td mat-cell *matCellDef="let element">
-                  {{ element.nachname }}
-                </td>
-              </ng-container>
-              <ng-container matColumnDef="tauglichkeit">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                  Tauglichkeit
-                </th>
-                <td mat-cell *matCellDef="let element">
-                  {{ element.tauglichkeit }}
-                </td>
-              </ng-container>
-              <tr
-                mat-header-row
-                *matHeaderRowDef="sichtbareSpaltenTauglichkeit"
-              ></tr>
-              <tr
-                mat-row
-                *matRowDef="let row; columns: sichtbareSpaltenTauglichkeit"
-                [class.red-cell]="row.tauglichkeit === 'nein'"
-                [class.green-cell]="row.tauglichkeit === 'tauglich'"
-              ></tr>
-            </table>
-          </imr-tab>
-          <imr-tab label="Export">
-            <div class="app-container ps-3 export-wrap">
-              <div class="app-grid m-0">
-                <div class="app-col-7">Offene Untersuchungen:</div>
-                <div class="app-col-auto">
-                  <imr-button
-                    color="primary"
-                    (click)="printOffeneUntersuchugen()"
-                  >
-                    <imr-icon class="m-0">picture_as_pdf</imr-icon>
-                  </imr-button>
-                </div>
-              </div>
-              <div class="app-grid m-0 pt-2">
-                <div class="app-col-7">Tauglichkeit:</div>
-                <div class="app-col-auto">
-                  <imr-button
-                    color="primary"
-                    (click)="printTauglichkeit()"
-                  >
-                    <imr-icon class="m-0">picture_as_pdf</imr-icon>
-                  </imr-button>
-                </div>
-              </div>
-              <div class="app-grid m-0 pt-2">
-                <div class="app-col-7">Leistungstest:</div>
-                <div class="app-col-auto">
-                  <imr-button
-                    color="primary"
-                    (click)="printLeistungstest()"
-                  >
-                    <imr-icon class="m-0">picture_as_pdf</imr-icon>
-                  </imr-button>
-                </div>
-              </div>
-              <div class="app-grid m-0 pt-2">
-                <div class="app-col-7">Alle Mitglieder:</div>
-                <div class="app-col-auto">
-                  <imr-button
-                    color="primary"
-                    (click)="printAlleMitglieder()"
-                  >
-                    <imr-icon class="m-0">picture_as_pdf</imr-icon>
-                  </imr-button>
-                </div>
-              </div>
             </div>
-          </imr-tab>
-        </imr-tab-group>
+          </div>
+          <div class="app-grid m-0 pt-2">
+            <div class="app-col-7">Tauglichkeit:</div>
+            <div class="app-col-auto">
+              <imr-button
+                color="primary"
+                (click)="printTauglichkeit()"
+              >
+                <imr-icon class="m-0">picture_as_pdf</imr-icon>
+              </imr-button>
+            </div>
+          </div>
+          <div class="app-grid m-0 pt-2">
+            <div class="app-col-7">Leistungstest:</div>
+            <div class="app-col-auto">
+              <imr-button
+                color="primary"
+                (click)="printLeistungstest()"
+              >
+                <imr-icon class="m-0">picture_as_pdf</imr-icon>
+              </imr-button>
+            </div>
+          </div>
+          <div class="app-grid m-0 pt-2">
+            <div class="app-col-7">Alle Mitglieder:</div>
+            <div class="app-col-auto">
+              <imr-button
+                color="primary"
+                (click)="printAlleMitglieder()"
+              >
+                <imr-icon class="m-0">picture_as_pdf</imr-icon>
+              </imr-button>
+            </div>
+          </div>
+        </div>
+      </imr-tab>
+    </imr-tab-group>
 
-        @if (hasTable(activeTabIndex)) {
-        <imr-paginator
-          [pageSizeOptions]="pageOptions"
-          showFirstLastButtons
-          aria-label="Auswahl Anzahl der sichtbaren Elemente"
-        >
-        </imr-paginator>
-        }
+    @if (hasTable(activeTabIndex)) {
+    <imr-paginator
+      [pageSizeOptions]="pageOptions"
+      showFirstLastButtons
+      aria-label="Auswahl Anzahl der sichtbaren Elemente"
+    >
+    </imr-paginator>
+    }
   </imr-card>
 </section>

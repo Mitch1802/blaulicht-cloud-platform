@@ -1,6 +1,8 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core'
+import { AfterContentInit, Component, ContentChildren, EventEmitter, Input, OnDestroy, Output, QueryList } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { MatTabsModule } from '@angular/material/tabs'
+import { Subscription } from 'rxjs'
+import { ImrTabComponent } from '../imr-tab/imr-tab.component'
 
 /**
  * imr-tab-group
@@ -21,8 +23,38 @@ import { MatTabsModule } from '@angular/material/tabs'
   imports: [CommonModule, MatTabsModule],
 })
 export class ImrTabGroupComponent {
+  @ContentChildren(ImrTabComponent) tabs!: QueryList<ImrTabComponent>
   @Input() selectedIndex = 0
   @Output() selectedIndexChange = new EventEmitter<number>()
+  renderedTabs: ImrTabComponent[] = []
+  private tabsChangesSub?: Subscription
+
+  ngAfterContentInit(): void {
+    this.syncTabs()
+    this.tabsChangesSub = this.tabs.changes.subscribe(() => this.syncTabs())
+  }
+
+  ngOnDestroy(): void {
+    this.tabsChangesSub?.unsubscribe()
+  }
+
+  onSelectedIndexChange(index: number): void {
+    this.selectedIndex = index
+    this.selectedIndexChange.emit(index)
+  }
+
+  private syncTabs(): void {
+    this.renderedTabs = this.tabs?.toArray() ?? []
+    if (this.renderedTabs.length === 0) {
+      this.selectedIndex = 0
+      return
+    }
+
+    if (this.selectedIndex < 0 || this.selectedIndex >= this.renderedTabs.length) {
+      this.selectedIndex = 0
+      this.selectedIndexChange.emit(this.selectedIndex)
+    }
+  }
 }
 
 

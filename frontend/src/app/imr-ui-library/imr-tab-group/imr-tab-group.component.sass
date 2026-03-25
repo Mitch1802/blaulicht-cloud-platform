@@ -6,6 +6,7 @@
 	.mat-mdc-tab-header
 		background: #fff
 		border-bottom: 1px solid rgba(theme.$imr-border, .9)
+		overflow: hidden
 
 	.mdc-tab
 		border-radius: 0
@@ -40,5 +41,14 @@
 	.mdc-tab:focus-visible
 		outline: 2px solid rgba(theme.$imr-primary, .5)
 		outline-offset: -2px
+
+@media (max-width: 768px)
+	.mat-mdc-tab-group
+		.mdc-tab
+			min-width: 84px
+			padding-inline: .15rem
+
+		.mdc-tab__text-label
+			font-size: .8rem
 
 

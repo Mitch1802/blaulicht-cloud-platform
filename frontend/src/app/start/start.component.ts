@@ -8,6 +8,7 @@ import { ImrBreadcrumbItem, ImrHeaderComponent } from '../imr-ui-library/imr-hea
 import { ImrIconComponent } from '../imr-ui-library/imr-icon.component';
 import { RouterLink } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import startRegelConfig from './konfig.json';
 
 type StartKonfigItem = {
   icon?: string;
@@ -61,29 +62,7 @@ export class StartComponent implements OnInit {
 
   categorizedItems: { name: string; items: StartKonfigItem[] }[] = [];
 
-  readonly defaultKonfig: StartKonfigItem[] = [
-    {
-      icon: 'tune',
-      modul: 'Modul Konfiguration',
-      rolle: 'ADMIN',
-      kategorie: 'Administration',
-      routerlink: '/modul_konfiguration',
-    },
-    {
-      icon: 'engineering',
-      modul: 'Benutzerverwaltung',
-      rolle: 'ADMIN',
-      kategorie: 'Administration',
-      routerlink: '/benutzer',
-    },
-    {
-      icon: 'settings',
-      modul: 'Konfiguration',
-      rolle: 'ADMIN',
-      kategorie: 'Administration',
-      routerlink: '/konfiguration',
-    },
-  ];
+  readonly defaultKonfig: StartKonfigItem[] = startRegelConfig;
 
   ngOnInit(): void {
     sessionStorage.setItem('PageNumber', '1');

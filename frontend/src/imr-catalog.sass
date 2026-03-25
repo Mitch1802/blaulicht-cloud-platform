@@ -104,6 +104,9 @@ imr-card-content .mat-mdc-card-content
     --mat-select-container-elevation-shadow: none
     --mat-autocomplete-container-shape: 0px
 
+*, *::before, *::after
+    box-sizing: border-box
+
 
 // ------------------------------------------------------------------------------
 // 2. Global base styles
@@ -114,6 +117,8 @@ html, body
     min-height: 100vh
     margin: 0
     padding: 0
+    width: 100%
+    overflow-x: hidden
     color: theme.$imr-text
     -webkit-font-smoothing: antialiased
     text-rendering: optimizeLegibility
@@ -123,6 +128,10 @@ a
 
     &:hover
         color: theme.$imr-primary-dark
+
+img, svg, canvas, video
+    max-width: 100%
+    height: auto
 
 button,
 [role='button'],
@@ -360,6 +369,11 @@ mat-card-content > button.imr-delete-btn[mat-flat-button]
     gap: var(--imr-grid-row-gap) var(--imr-grid-col-gap)
     // margin: 1rem
     margin: .5rem 1rem
+
+@media (max-width: 768px)
+    .row, .app-grid
+        margin-left: 0
+        margin-right: 0
 
 .row > :where([class*='col-']),
 .row > :where([class*='app-col-']),

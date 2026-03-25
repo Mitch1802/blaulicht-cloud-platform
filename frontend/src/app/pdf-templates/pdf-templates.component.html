@@ -10,7 +10,7 @@
       <h2>Vorlagen verwalten</h2>
     </div>
 
-      <div class="imr-top-actions">
+      <imr-top-actions>
         <imr-button
           color="accent"
           [hidden]="!formModul.disabled"
@@ -34,7 +34,7 @@
             </imr-select>
           </imr-form-field>
         }
-      </div>
+      </imr-top-actions>
 
       <form
         [formGroup]="formModul"
@@ -46,7 +46,7 @@
         <input hidden type="text"  formControlName="version" />
         <input hidden type="text"  formControlName="status" />
 
-        <div class="imr-form-actions">
+        <imr-top-actions class="imr-form-actions">
           <imr-button
             color="accent"
             [hidden]="readonlyMode || !formModul.valid"
@@ -71,7 +71,7 @@
           >
             Daten löschen
           </imr-button>
-        </div>
+        </imr-top-actions>
 
         <section class="app-grid imr-form-grid">
           <div class="app-col-12 app-col-lg-6 mb-3">

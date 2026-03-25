@@ -16,6 +16,7 @@ import {
   ImrCardComponent,
   ImrButtonComponent,
   ImrFormFieldComponent,
+  ImrTopActionsComponent,
   UiControlErrorsDirective,
 } from '../imr-ui-library';
 
@@ -28,6 +29,7 @@ import {
     ReactiveFormsModule, 
     MatInputModule,
     ImrFormFieldComponent,
+    ImrTopActionsComponent,
     UiControlErrorsDirective,
     ImrButtonComponent,
   ],

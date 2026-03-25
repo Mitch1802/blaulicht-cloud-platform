@@ -11,7 +11,7 @@
     </div>
         @if (sichtbarkeitModul() == "tableListe")
         {
-        <div class="imr-top-actions">
+        <imr-top-actions>
           <imr-button
             color="accent"
             (click)="neueDetails()"
@@ -27,9 +27,9 @@
           >
             Protokoll Eintrag
           </imr-button>
-        </div>
+        </imr-top-actions>
         } @if (sichtbarkeitModul() == "tablePruefungen") {
-        <div class="imr-top-actions">
+        <imr-top-actions>
           <imr-button
             color="primary"
             (click)="showMessgeraete()"
@@ -37,13 +37,13 @@
           >
             Zurück
           </imr-button>
-        </div>
+        </imr-top-actions>
         }
         <!-- FORM -->
         @if (sichtbarkeitModul() == "formModul") {
         <form [formGroup]="formModul" (ngSubmit)="datenSpeichern()" class="edit-form">
           <input hidden type="text"  formControlName="id" />
-          <div class="imr-form-actions">
+          <imr-top-actions class="imr-form-actions">
             <imr-button
               color="accent"
               [hidden]="!formModul.valid"
@@ -59,7 +59,16 @@
             >
               Zurück
             </imr-button>
-          </div>
+            <imr-button
+              color="warn"
+              class="imr-delete-btn"
+              [hidden]="!formModul.controls['id'].value"
+              type="button"
+              (click)="datenLoeschen()"
+            >
+              Daten löschen
+            </imr-button>
+          </imr-top-actions>
           <section class="app-grid imr-form-grid">
             <div class="app-col-12 app-col-lg-6 mb-3">
               <imr-form-field hintLabel="* Pflichtfeld" label="Inventar Nummer">
@@ -87,18 +96,6 @@
               </imr-form-field>
             </div>
           </section>
-
-          <div class="imr-form-actions">
-            <imr-button
-              color="warn"
-              class="imr-delete-btn"
-              [hidden]="!formModul.controls['id'].value"
-              type="button"
-              (click)="datenLoeschen()"
-            >
-              Daten löschen
-            </imr-button>
-          </div>
         </form>
         }
         <!-- MESSGERÄT FORM ENDE -->
@@ -106,7 +103,7 @@
         @if (sichtbarkeitModul() == "formPruefung") {
         <form [formGroup]="formPruefung" (ngSubmit)="datenSpeichernProtokoll()" class="edit-form">
           <input hidden type="text"  formControlName="id" />
-          <div class="imr-form-actions">
+          <imr-top-actions class="imr-form-actions">
             <imr-button
               color="accent"
               type="submit"
@@ -121,7 +118,16 @@
             >
               Zurück
             </imr-button>
-          </div>
+            <imr-button
+              color="warn"
+              class="imr-delete-btn"
+              [hidden]="!formPruefung.controls['id'].value || !canEditProtocol"
+              type="button"
+              (click)="datenProtokollLoeschen()"
+            >
+              Daten löschen
+            </imr-button>
+          </imr-top-actions>
           <section class="app-grid imr-form-grid">
             <div class="app-col-12 app-col-lg-12 mb-3">
               <imr-form-field hintLabel="* Pflichtfeld" label="Messgerät">
@@ -171,18 +177,6 @@
               </imr-form-field>
             </div>
           </section>
-
-          <div class="imr-form-actions">
-            <imr-button
-              color="warn"
-              class="imr-delete-btn"
-              [hidden]="!formPruefung.controls['id'].value || !canEditProtocol"
-              type="button"
-              (click)="datenProtokollLoeschen()"
-            >
-              Daten löschen
-            </imr-button>
-          </div>
         </form>
         }
         <!-- PRÜFUNG FORM ENDE -->

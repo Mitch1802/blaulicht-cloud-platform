@@ -7,7 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { finalize } from 'rxjs';
 
 import { ApiHttpService } from '../_service/api-http.service';
-import { ImrButtonComponent, ImrCardContentComponent, ImrFormFieldComponent, UiControlErrorsDirective } from '../imr-ui-library';
+import { ImrButtonComponent, ImrCardContentComponent, ImrFormFieldComponent, ImrTopActionsComponent, UiControlErrorsDirective } from '../imr-ui-library';
 import { UiMessageService } from '../_service/ui-message.service';
 
 @Component({
@@ -20,6 +20,7 @@ import { UiMessageService } from '../_service/ui-message.service';
     ImrButtonComponent,
     ImrCardContentComponent,
     ImrFormFieldComponent,
+    ImrTopActionsComponent,
     UiControlErrorsDirective,
     MatCardModule,
     MatInputModule,

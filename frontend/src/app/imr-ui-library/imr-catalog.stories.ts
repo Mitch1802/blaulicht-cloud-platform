@@ -12,7 +12,6 @@ import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { ImrPageLayoutComponent } from './imr-page-layout.component';
 import { ImrSectionCardComponent } from './imr-section-card.component';
 import { ImrTopActionsComponent } from './imr-top-actions.component';
-import { ImrFormActionsComponent } from './imr-form-actions.component';
 import { ImrTableWrapComponent } from './imr-table-wrap.component';
 import { ImrChipsComponent } from './imr-chips.component';
 import { ImrFormGridComponent } from './imr-form-grid.component';
@@ -41,7 +40,6 @@ const meta: Meta = {
 | Section Card | \`<imr-section-card>\` | Card mit Kopfbereich, Titel, Aktionen und Content |
 | Header | \`<imr-header>\` | App-Toolbar mit Logo, Titel, Breadcrumb |
 | Top Actions | \`<imr-top-actions>\` | Aktionsleiste oben (Filter, Buttons) |
-| Form Actions | \`<imr-form-actions>\` | Formular-Aktionsleiste (Speichern/Abbrechen) |
 | Table Wrap | \`<imr-table-wrap>\` | Scrollbarer Tabellen-Container |
 | Chips | \`<imr-chips>\` | Container für mat-chip Elemente |
 | Form Grid | \`<imr-form-grid>\` | 12-Spalten-Grid für Formularfelder |
@@ -53,7 +51,7 @@ const meta: Meta = {
     moduleMetadata({
       imports: [
         ImrPageLayoutComponent, ImrSectionCardComponent, ImrTopActionsComponent,
-        ImrFormActionsComponent, ImrTableWrapComponent, ImrChipsComponent, ImrFormGridComponent,
+        ImrTableWrapComponent, ImrChipsComponent, ImrFormGridComponent,
         ImrFormFieldComponent, ImrLabelComponent,
         MatButtonModule, MatFormFieldModule, MatInputModule, MatTableModule,
         MatChipsModule, MatIconModule, MatPaginatorModule,
@@ -145,10 +143,10 @@ export const Formularseite: StoryObj = {
             </div>
           </imr-form-grid>
 
-          <imr-form-actions>
+          <imr-top-actions>
             <button mat-flat-button color="accent" type="submit">Speichern</button>
             <button mat-flat-button color="primary" type="button">Abbrechen</button>
-          </imr-form-actions>
+          </imr-top-actions>
         </imr-section-card>
 
         <imr-section-card title="Rollen" style="margin-top: 1rem; display: block">

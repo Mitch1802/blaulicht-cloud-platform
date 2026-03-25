@@ -25,14 +25,14 @@
             <p class="invite-note error">Passwörter stimmen nicht überein.</p>
           }
 
-          <div class="invite-actions">
+          <imr-top-actions class="invite-actions">
             <imr-button color="accent" type="submit" [disabled]="isSubmitting">
               Passwort setzen
             </imr-button>
             <imr-button color="primary" type="button" [disabled]="isSubmitting" routerLink="/login">
               Zur Anmeldung
             </imr-button>
-          </div>
+          </imr-top-actions>
         </form>
       }
     </imr-card-content>

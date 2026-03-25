@@ -10,7 +10,7 @@
       <h2>Fahrzeuge & Beladung</h2>
     </div>
       @if (!editorOpen && !inventarEditorOpen) {
-        <div class="imr-top-actions mb-3">
+        <imr-top-actions class="mb-3">
           <a mat-flat-button color="primary" [routerLink]="['/public/fahrzeuge']" target="_blank" rel="noopener">
             Externe Checkliste öffnen
           </a>
@@ -19,7 +19,7 @@
             <imr-icon>add</imr-icon>
             Hinzufügen
           </imr-button>
-        </div>
+        </imr-top-actions>
       }
 
       @if (!editorOpen && !inventarEditorOpen) {
@@ -172,7 +172,7 @@
                 }
               </div>
 
-              <div class="actions-row imr-full-width">
+              <imr-top-actions class="actions-row imr-full-width">
                 <imr-button
                   color="accent"
                   type="button"
@@ -200,7 +200,7 @@
                     Check öffnen
                   </a>
                 }
-              </div>
+              </imr-top-actions>
             </form>
 
             <imr-button
@@ -303,10 +303,12 @@
                     }
                   </div>
 
-                  <imr-button color="accent" type="button" (click)="addRaum()">
-                    <imr-icon>add</imr-icon>
-                    Raum anlegen
-                  </imr-button>
+                  <imr-top-actions>
+                    <imr-button color="accent" type="button" (click)="addRaum()">
+                      <imr-icon>add</imr-icon>
+                      Raum anlegen
+                    </imr-button>
+                  </imr-top-actions>
                 </form>
               </section>
 
@@ -362,7 +364,7 @@
                           </div>
                         </div>
 
-                        <div class="raum-actions">
+                        <imr-top-actions class="raum-actions">
                           <imr-button color="accent" type="button" (click)="saveRaum(raum)">
                             <imr-icon>save</imr-icon>
                             Raum speichern
@@ -379,7 +381,7 @@
                             <imr-icon>delete</imr-icon>
                             Raum löschen
                           </imr-button>
-                        </div>
+                        </imr-top-actions>
                       </form>
 
                       <div class="items-area">
@@ -455,7 +457,7 @@
                                 <input matInput formControlName="notiz" />
                               </imr-form-field>
 
-                              <div class="item-actions">
+                              <imr-top-actions class="item-actions">
                                 <imr-button color="accent" type="button" (click)="saveItem(raum, item)">
                                   <imr-icon>save</imr-icon>
                                   Item speichern
@@ -465,7 +467,7 @@
                                   <imr-icon>delete</imr-icon>
                                   Item löschen
                                 </imr-button>
-                              </div>
+                              </imr-top-actions>
                             </form>
                           }
 
@@ -500,10 +502,12 @@
                                 <input matInput formControlName="notiz" />
                               </imr-form-field>
 
-                              <imr-button color="accent" type="button" (click)="addItem(raum)">
-                                <imr-icon>add</imr-icon>
-                                Item anlegen
-                              </imr-button>
+                              <imr-top-actions>
+                                <imr-button color="accent" type="button" (click)="addItem(raum)">
+                                  <imr-icon>add</imr-icon>
+                                  Item anlegen
+                                </imr-button>
+                              </imr-top-actions>
                             </form>
                           </section>
                         }

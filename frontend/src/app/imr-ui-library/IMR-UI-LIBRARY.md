@@ -226,15 +226,15 @@ Aktionsleiste für den oberen Bereich – für Filter-Inputs und primäre Button
 
 ---
 
-### `<imr-form-actions>`
+### Formular-Aktionen
 
-Aktionsleiste für Formularbereiche – für Speichern/Abbrechen-Buttons.
+Für Formularbereiche wird ebenfalls `<imr-top-actions>` verwendet.
 
 ```html
-<imr-form-actions>
+<imr-top-actions>
   <button mat-flat-button color="accent" type="submit">Speichern</button>
   <button mat-flat-button color="primary" type="button" (click)="cancel()">Abbrechen</button>
-</imr-form-actions>
+</imr-top-actions>
 ```
 
 ---

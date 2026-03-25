@@ -25,6 +25,7 @@ import {
   ImrIconComponent,
   ImrOptionComponent,
   ImrSelectComponent,
+  ImrTopActionsComponent,
 } from '../imr-ui-library';
 import { FormatService } from '../helpers/format.service';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -42,6 +43,7 @@ import { IPdfTemplate } from '../_interface/pdf_template';
     ImrFormFieldComponent,
     ImrSelectComponent,
     ImrOptionComponent,
+    ImrTopActionsComponent,
     MatInputModule,
     MatTableModule,
     MatSortModule,

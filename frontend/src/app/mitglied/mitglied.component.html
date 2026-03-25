@@ -10,7 +10,7 @@
       <h2>Mitglieder verwalten</h2>
     </div>
 
-      <div class="imr-top-actions">
+      <imr-top-actions>
         @if (formModul.disabled) {
           <imr-button
             color="accent"
@@ -26,7 +26,7 @@
             FDISK CSV Import
           </imr-button>
         }
-      </div>
+      </imr-top-actions>
 
       @if (importSummary) {
         <div class="import-preview">
@@ -37,14 +37,14 @@
             Unverändert: {{ importSummary.unchanged }}
           </p>
 
-          <div class="imr-form-actions">
+          <imr-top-actions class="imr-form-actions">
             <imr-button color="accent" type="button" (click)="importBestaetigen()">
               Import bestätigen
             </imr-button>
             <imr-button color="primary" type="button" (click)="importAbbrechen()">
               Abbrechen
             </imr-button>
-          </div>
+          </imr-top-actions>
 
           <div class="imr-table-wrap" [hidden]="importChanges.length === 0">
             <table mat-table [dataSource]="importChanges">
@@ -86,7 +86,7 @@
         >
           <input hidden type="text"  formControlName="id" />
 
-          <div class="imr-form-actions">
+          <imr-top-actions class="imr-form-actions">
             <imr-button
               color="accent"
               [hidden]="!formModul.valid"
@@ -102,7 +102,7 @@
             >
               Abbrechen
             </imr-button>
-          </div>
+          </imr-top-actions>
 
           <section class="app-grid imr-form-grid">
             <div class="app-col-12 app-col-lg-6 mb-3">

@@ -21,7 +21,7 @@
     >
       <input hidden type="text" formControlName="id" />
 
-      <imr-form-actions>
+      <imr-top-actions class="imr-form-actions">
         <imr-button
           color="accent"
           [hidden]="!formModul.valid"
@@ -37,7 +37,16 @@
         >
           Abbrechen
         </imr-button>
-      </imr-form-actions>
+        <imr-button
+          color="warn"
+          class="delete-entry-btn imr-delete-btn"
+          [hidden]="!formModul.controls['id'].value"
+          type="button"
+          (click)="datenLoeschen()"
+        >
+          Daten löschen
+        </imr-button>
+      </imr-top-actions>
 
       <imr-form-grid>
         <div class="app-col-12 mb-3">
@@ -153,16 +162,6 @@
           </div>
         </div>
       </imr-form-grid>
-
-      <imr-button
-        color="warn"
-        class="delete-entry-btn imr-delete-btn"
-        [hidden]="!formModul.controls['id'].value"
-        type="button"
-        (click)="datenLoeschen()"
-      >
-        Daten löschen
-      </imr-button>
     </form>
 
     <imr-table-wrap [hidden]="!formModul.disabled">

@@ -9,7 +9,7 @@
     <div class="imr-card__head">
       <h2>Inventar verwalten</h2>
     </div>
-      <div class="imr-top-actions">
+      <imr-top-actions>
         <imr-button
           color="accent"
           [hidden]="!formModul.disabled"
@@ -18,7 +18,7 @@
         >
           Hinzufügen
         </imr-button>
-      </div>
+      </imr-top-actions>
 
       <form
         [formGroup]="formModul"
@@ -28,7 +28,7 @@
       >
           <input hidden type="text"  formControlName="id" />
 
-          <div class="imr-form-actions">
+          <imr-top-actions class="imr-form-actions">
             <imr-button
             color="accent"
             [hidden]="!formModul.valid"
@@ -44,7 +44,16 @@
             >
             Abbrechen
             </imr-button>
-          </div>
+            <imr-button
+              color="warn"
+              class="imr-delete-btn"
+              [hidden]="!formModul.controls['id'].value"
+              type="button"
+              (click)="datenLoeschen()"
+            >
+              Daten löschen
+            </imr-button>
+          </imr-top-actions>
 
           <section class="app-grid imr-form-grid">
             <div class="app-col-12 app-col-lg-6 mb-3">
@@ -173,16 +182,6 @@
               </div>
             </div>
           </section>
-
-          <imr-button
-            color="warn"
-            class="imr-delete-btn"
-            [hidden]="!formModul.controls['id'].value"
-            type="button"
-            (click)="datenLoeschen()"
-          >
-            Daten löschen
-          </imr-button>
       </form>
 
       <div class="imr-table-wrap" [hidden]="!formModul.disabled">
@@ -298,14 +297,14 @@
         <input matInput type="date" formControlName="bis" appDateInputMask="iso" />
       </imr-form-field>
 
-      <div class="imr-transaction-actions">
+      <imr-top-actions class="imr-transaction-actions">
         <imr-button color="primary" type="button" (click)="closeAusborgenModal()">
           Abbrechen
         </imr-button>
         <imr-button color="accent" type="submit">
           Ausborgen speichern
         </imr-button>
-      </div>
+      </imr-top-actions>
     </form>
   </section>
 </div>
@@ -360,14 +359,14 @@
         Maximal: {{ getRueckgabeMaxMenge() }} | Rest fuer diese Verleihung nach Rueckgabe: {{ getRueckgabeRestNachEingabe() }}
       </p>
 
-      <div class="imr-transaction-actions">
+      <imr-top-actions class="imr-transaction-actions">
         <imr-button color="primary" type="button" (click)="closeRueckgabeModal()">
           Abbrechen
         </imr-button>
         <imr-button color="warn" type="submit">
           Rueckgabe speichern
         </imr-button>
-      </div>
+      </imr-top-actions>
     </form>
   </section>
 </div>

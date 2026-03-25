@@ -13,6 +13,7 @@ import {
   ImrHeaderComponent,
   ImrListComponent,
   ImrListItemComponent,
+  ImrTopActionsComponent,
   UiControlErrorsDirective,
 } from '../imr-ui-library';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -38,6 +39,7 @@ type RechnungPosition = {
     ImrCardContentComponent,
     ImrListComponent,
     ImrListItemComponent,
+    ImrTopActionsComponent,
     MatCardModule,
     MatTabsModule,
     ImrFormFieldComponent,

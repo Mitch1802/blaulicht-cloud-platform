@@ -9,7 +9,7 @@
     <div class="imr-card__head">
       <h2>Modul-Einstellungen</h2>
     </div>
-      <div class="imr-top-actions">
+      <imr-top-actions>
         <imr-button
           color="accent"
           [hidden]="!formModul.disabled"
@@ -18,7 +18,7 @@
         >
           Hinzufügen
         </imr-button>
-      </div>
+      </imr-top-actions>
 
       <form
         [formGroup]="formModul"
@@ -28,7 +28,7 @@
       >
         <input hidden type="text" formControlName="id" />
 
-        <div class="imr-form-actions">
+        <imr-top-actions class="imr-form-actions">
           <imr-button
             color="accent"
             [hidden]="!formModul.valid"
@@ -53,7 +53,7 @@
           >
             Daten löschen
           </imr-button>
-        </div>
+        </imr-top-actions>
 
         <section class="app-grid imr-form-grid">
           <div class="app-col-12 app-col-lg-12 mb-3">

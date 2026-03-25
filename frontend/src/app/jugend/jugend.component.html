@@ -12,10 +12,10 @@
 
       @if (showMitgliedForm) {
         <form [formGroup]="formMitglied" (ngSubmit)="speichernMitglied()" class="edit-form mitglied-edit-form">
-          <div class="imr-form-actions">
+          <imr-top-actions class="imr-form-actions">
             <imr-button color="accent" type="submit">Daten speichern</imr-button>
             <imr-button color="primary" type="button" (click)="mitgliedFormAbbrechen()">Abbrechen</imr-button>
-          </div>
+          </imr-top-actions>
 
           <section class="mitglied-summary" [hidden]="!selectedMitglied">
             <div class="summary-title">
@@ -307,16 +307,16 @@
       <h2>Jugend-Events</h2>
     </div>
 
-      <div class="actions-top">
+      <imr-top-actions class="actions-top">
         <imr-button color="accent" type="button" (click)="neuesEvent()">Neues Event</imr-button>
-      </div>
+      </imr-top-actions>
       @if (showEventForm) {
         <form [formGroup]="formEvent" (ngSubmit)="speichernEvent()" class="edit-form">
-          <div class="imr-form-actions">
+          <imr-top-actions class="imr-form-actions">
             <imr-button color="accent" type="submit">Event speichern</imr-button>
             <imr-button color="warn" type="button" [hidden]="!formEvent.controls['id'].value" (click)="eventLoeschen()">Löschen</imr-button>
             <imr-button color="primary" type="button" (click)="eventFormAbbrechen()">Abbrechen</imr-button>
-          </div>
+          </imr-top-actions>
 
           <section class="app-grid imr-form-grid">
             <div class="app-col-12 app-col-lg-6 mb-3">

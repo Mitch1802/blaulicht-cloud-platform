@@ -12,12 +12,12 @@
 
 
       @if (verified) {
-        <div class="actions-top">
+        <imr-top-actions class="actions-top">
           <imr-button color="primary" type="button" (click)="logoutPublic()">
             <imr-icon>logout</imr-icon>
             PIN vergessen
           </imr-button>
-        </div>
+        </imr-top-actions>
       }
       @if (loading) {
         <imr-progress-bar mode="indeterminate" class="mb-3"></imr-progress-bar>
@@ -35,10 +35,12 @@
             </div>
 
             <div class="app-col-12 pin-action">
-              <imr-button color="primary" type="button" (click)="verifyPin()" [disabled]="loading">
-                <imr-icon>lock_open</imr-icon>
-                Freischalten
-              </imr-button>
+              <imr-top-actions>
+                <imr-button color="primary" type="button" (click)="verifyPin()" [disabled]="loading">
+                  <imr-icon>lock_open</imr-icon>
+                  Freischalten
+                </imr-button>
+              </imr-top-actions>
             </div>
           </form>
         </section>
@@ -60,15 +62,17 @@
               </imr-select>
             </imr-form-field>
 
-            <imr-button
-              color="primary"
-              type="button"
-              (click)="openSelectedFahrzeug()"
-              [disabled]="loading"
-            >
-              <imr-icon>checklist</imr-icon>
-              Checkliste öffnen
-            </imr-button>
+            <imr-top-actions>
+              <imr-button
+                color="primary"
+                type="button"
+                (click)="openSelectedFahrzeug()"
+                [disabled]="loading"
+              >
+                <imr-icon>checklist</imr-icon>
+                Checkliste öffnen
+              </imr-button>
+            </imr-top-actions>
           </form>
 
           @if (!loading && fahrzeugOptionen.length === 0) {

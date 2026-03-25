@@ -2,7 +2,7 @@
 import { RouterLink } from '@angular/router';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 
-import { ImrButtonComponent, ImrCardComponent, ImrHeaderComponent, ImrIconComponent } from '../imr-ui-library';
+import { ImrButtonComponent, ImrCardComponent, ImrHeaderComponent, ImrIconComponent, ImrTopActionsComponent } from '../imr-ui-library';
 import { IWartungServiceEintrag, IWartungServiceResponse, IWartungServiceSummary } from '../_interface/wartung_service';
 import { ApiHttpService } from 'src/app/_service/api-http.service';
 import { AuthSessionService } from 'src/app/_service/auth-session.service';
@@ -17,6 +17,7 @@ import { UiMessageService } from 'src/app/_service/ui-message.service';
     ImrHeaderComponent,
     ImrCardComponent,
     ImrIconComponent,
+    ImrTopActionsComponent,
     MatTableModule,
     RouterLink,
   ],

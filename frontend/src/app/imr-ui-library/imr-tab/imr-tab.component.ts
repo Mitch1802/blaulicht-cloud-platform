@@ -1,5 +1,4 @@
-import { Component, Input } from '@angular/core'
-import { MatTabsModule } from '@angular/material/tabs'
+import { Component, Input, TemplateRef, ViewChild } from '@angular/core'
 
 /**
  * imr-tab
@@ -12,10 +11,11 @@ import { MatTabsModule } from '@angular/material/tabs'
   templateUrl: './imr-tab.component.html',
   styleUrl: './imr-tab.component.sass',
   standalone: true,
-  imports: [MatTabsModule],
+  imports: [],
 })
 export class ImrTabComponent {
   @Input() label = ''
+  @ViewChild(TemplateRef, { static: true }) contentTpl!: TemplateRef<unknown>
 }
 
 

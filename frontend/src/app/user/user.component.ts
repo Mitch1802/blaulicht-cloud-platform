@@ -16,6 +16,7 @@ import {
   ImrCardContentComponent,
   ImrFormFieldComponent,
   ImrHeaderComponent,
+  ImrTopActionsComponent,
   UiControlErrorMap,
   UiControlErrorsDirective,
 } from '../imr-ui-library';
@@ -87,6 +88,7 @@ type UserUpdatePayload = Omit<UserCreatePayload, 'password1' | 'password2' | 'se
     ImrHeaderComponent,
     ImrCardContentComponent,
     ImrFormFieldComponent,
+    ImrTopActionsComponent,
     MatCardModule,
     FormsModule,
     ReactiveFormsModule,
