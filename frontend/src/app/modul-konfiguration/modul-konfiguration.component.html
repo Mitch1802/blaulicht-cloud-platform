@@ -59,7 +59,6 @@
           <div class="app-col-12 app-col-lg-12 mb-3">
             <imr-form-field class="imr-full-width" label="Verfügbare Module auswählen">
               <imr-select formControlName="modul" (selectionChange)="onModulChange()">
-                <imr-option [value]="''">Bitte auswählen</imr-option>
                 @for (m of verfuegbareModulListe; track m.key) {
                   <imr-option [value]="m.key">{{ m.label }}</imr-option>
                 }

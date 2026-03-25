@@ -150,6 +150,7 @@ export class ModulKonfigurationComponent implements OnInit {
     this.apiHttpService.get(this.modul).subscribe({
       next: (erg: any) => {
         try {
+          this.formModul.disable();
           this.modulListe = erg.main ?? [];
           this.modulByKey = new Map(this.modulListe.map((x: any) => [x.modul, x]));
           this.dataSource.data = this.modulListe;

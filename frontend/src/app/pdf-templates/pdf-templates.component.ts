@@ -276,8 +276,8 @@ export class PdfTemplatesComponent implements OnInit {
   }
 
   abbrechen(): void {
+    this.resetFormNachAktion();
     this.uiMessageService.erstelleMessage('info', 'Pdf Template nicht gespeichert!');
-    this.router.navigate(['/pdf_template']);
   }
 
   neueDetails(): void {

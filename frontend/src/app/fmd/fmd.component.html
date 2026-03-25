@@ -24,7 +24,7 @@
         }
 
         <imr-tab-group (selectedIndexChange)="onTabChange($event)">
-          <imr-tab label="�bersicht">
+          <imr-tab label="Übersicht">
             <section class="app-grid mt-3 mb-3 mx-0">
               <div class="app-col-12 app-col-lg-4">
                 <h2>Tauglichkeit</h2>
@@ -64,14 +64,14 @@
               </div>
             </section>
           </imr-tab>
-          <imr-tab label="ATS Tr�ger">
+          <imr-tab label="ATS Träger">
             <imr-button
               color="accent"
               [hidden]="!formModul.disabled"
               (click)="neueDetails()"
               type="button"
             >
-              Hinzuf�gen
+              Hinzufügen
             </imr-button>
             <form
               [formGroup]="formModul"
@@ -101,7 +101,7 @@
               </imr-button>
               <section class="app-grid mt-2 mx-0">
                 <div class="app-col-12 app-col-lg-8 mb-3">
-                  <imr-form-field label="Mitglied ausw�hlen">
+                  <imr-form-field label="Mitglied auswählen">
                     <imr-select formControlName="mitglied_id">
                       @for (opt of dropdownMitglieder; track opt) {
                       <imr-option [value]="opt.pkid">
@@ -125,7 +125,7 @@
                     (formModul.controls['fdisk_aenderung'].hasError('pattern'))
                     {
                     <imr-error
-                      >Ung�ltiges Format. Bitte TT.MM.YYYY eingeben.</imr-error
+                      >Ungültiges Format. Bitte TT.MM.YYYY eingeben.</imr-error
                     >
                     } @if
                     (formModul.controls['fdisk_aenderung'].hasError('dateInvalid'))
@@ -135,7 +135,7 @@
                   </imr-form-field>
                 </div>
                 <div class="app-col-12 app-col-lg-4 mb-3">
-                  <imr-form-field label="Arzttyp ausw�hlen">
+                  <imr-form-field label="Arzttyp auswählen">
                     <imr-select formControlName="arzt_typ">
                       @for (opt of arzttypen; track opt) {
                       <imr-option [value]="opt"> {{ opt }}</imr-option>
@@ -202,7 +202,7 @@
                 type="button"
                 (click)="datenLoeschen()"
               >
-                Daten l�schen
+                Daten löschen
               </imr-button>
             </form>
             <table

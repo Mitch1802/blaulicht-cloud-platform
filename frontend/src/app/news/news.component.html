@@ -57,7 +57,7 @@
               <div class="app-col-12 app-col-lg-6 mb-3">
                 <imr-form-field class="imr-full-width" subscriptSizing="dynamic" label="Vorlage auswählen">
                   <imr-select formControlName="template_id">
-                    <imr-option value="">Keine Vorlage</imr-option>
+                    <!-- <imr-option value="">Keine Vorlage</imr-option> -->
                     @for (tpl of templateArray; track tpl.id) {
                       <imr-option [value]="tpl.id">{{ tpl.name }} ({{ tpl.typ }})</imr-option>
                     }
