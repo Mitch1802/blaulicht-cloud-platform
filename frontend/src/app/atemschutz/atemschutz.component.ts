@@ -7,6 +7,12 @@ import { ImrIconComponent } from '../imr-ui-library/imr-icon.component';
 import { ImrPageLayoutComponent } from '../imr-ui-library/imr-page-layout.component';
 import { ImrSectionCardComponent } from '../imr-ui-library/imr-section-card.component';
 
+type AtemschutzModul = {
+  titel: string;
+  icon: string;
+  routerLink: string;
+};
+
 @Component({
     selector: 'app-atemschutz',
     imports: [
@@ -25,6 +31,13 @@ export class AtemschutzComponent implements OnInit {
   title = 'Atemschutz';
 
   breadcrumb: ImrBreadcrumbItem[] = [];
+
+  readonly moduleCards: AtemschutzModul[] = [
+    { titel: 'Masken', icon: 'sports_motorsports', routerLink: '/atemschutz/masken' },
+    { titel: 'Geräte', icon: 'battery_alert', routerLink: '/atemschutz/geraete' },
+    { titel: 'Messgeräte', icon: 'flare', routerLink: '/atemschutz/messgeraete' },
+    { titel: 'Dienstbuch', icon: 'menu_book', routerLink: '/atemschutz/dienstbuch' }
+  ];
 
   ngOnInit(): void {
     sessionStorage.setItem('PageNumber', '2');

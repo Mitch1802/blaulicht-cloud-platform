@@ -40,11 +40,11 @@
 .module-grid
     display: grid
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr))
-    gap: .65rem
+    gap: .5rem
+    padding: 0 .5rem .5rem .5rem
 
 .category-block
-    margin-bottom: .7rem
-    padding: .7rem
+    margin-bottom: .5rem
     border-radius: 0
     border: 1px solid rgba(theme.$imr-border, .86)
     background: rgba(theme.$imr-surface, .96)
@@ -58,8 +58,8 @@
     display: flex
     align-items: center
     justify-content: flex-start
-    gap: .75rem
-    margin: 0 0 .65rem
+    gap: .5rem
+    margin: 0 0 .5rem
     padding: .48rem .72rem
     border: 1px solid theme.$imr-primary
     background: theme.$imr-primary
@@ -222,12 +222,8 @@
             flex-direction: column
             align-items: stretch
 
-        // .category-block
-        //     padding: .6rem
-
         .category-block .category-head
             align-items: flex-start
-            // padding: .4rem .55rem
 
         .module-grid
             grid-template-columns: repeat(2, minmax(0, 1fr))

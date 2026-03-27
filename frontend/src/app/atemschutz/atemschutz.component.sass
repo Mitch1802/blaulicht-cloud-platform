@@ -38,34 +38,41 @@
     margin-bottom: .55rem
 
 .category-block
-    margin-bottom: .7rem
-    padding: .7rem
+    margin-bottom: .5rem
     border-radius: 0
     border: 1px solid rgba(theme.$imr-border, .86)
     background: rgba(theme.$imr-surface, .96)
     box-shadow: none
+    scroll-margin-top: calc(var(--imr-header-height, 52px) + 1.25rem)
 
-.category-head
+    &:last-child
+        margin-bottom: 0
+
+.category-block .category-head
     display: flex
     align-items: center
     justify-content: flex-start
-    gap: .75rem
-    margin: 0 0 .65rem
-    padding: .42rem .62rem
+    gap: .5rem
+    margin: 0 0 .5rem
+    padding: .48rem .72rem
     border: 1px solid theme.$imr-primary
     background: theme.$imr-primary
+    min-height: 2.05rem
 
-.category-title
+.category-block .category-title
     margin: 0
-    font-size: .96rem
+    font-size: .94rem
     font-weight: 700
     color: theme.$imr-surface
-    letter-spacing: .01em
+    letter-spacing: .03em
+    text-transform: uppercase
+    line-height: 1
 
 .module-grid
     display: grid
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr))
-    gap: .65rem
+    gap: .5rem
+    padding: 0 .5rem .5rem .5rem
 
 .module-card-link
     display: block
@@ -152,50 +159,47 @@
         outline-offset: 2px
 
 @media (max-width: 768px)
-    .welcome
-        padding: .85rem
+    .atemschutz-page
+        .welcome
+            padding: .85rem
 
-    .welcome-main
-        flex-direction: column
-        align-items: stretch
+        .welcome-main
+            flex-direction: column
+            align-items: stretch
 
-    .category-block
-        padding: .6rem
+        .category-block .category-head
+            align-items: flex-start
 
-    .category-head
-        align-items: flex-start
-        padding: .4rem .55rem
+        .module-grid
+            grid-template-columns: repeat(2, minmax(0, 1fr))
+            gap: .4rem
 
-    .module-grid
-        grid-template-columns: repeat(2, minmax(0, 1fr))
-        gap: .4rem
+        .module-icon-shell
+            width: 2.25rem
+            height: 2.25rem
+            margin-bottom: 0
+            flex: 0 0 auto
 
-    .module-icon-shell
-        width: 2.25rem
-        height: 2.25rem
-        margin-bottom: 0
-        flex: 0 0 auto
+        .module-card-body
+            min-width: 0
+            justify-items: start
 
-    .module-card-body
-        min-width: 0
-        justify-items: start
+        .module-icon
+            width: 1.3rem
+            height: 1.3rem
+            font-size: 1.3rem
+            line-height: 1.3rem
+            margin-top: .05rem
+            flex: 0 0 auto
 
-    .module-icon
-        width: 1.3rem
-        height: 1.3rem
-        font-size: 1.3rem
-        line-height: 1.3rem
-        margin-top: .05rem
-        flex: 0 0 auto
-
-    .module-title
-        min-height: 0
-        font-size: .9rem
-        min-height: auto
-        max-height: none
-        max-width: 100%
-        min-width: 0
-        justify-content: flex-start
+        .module-title
+            min-height: 0
+            font-size: .9rem
+            min-height: auto
+            max-height: none
+            max-width: 100%
+            min-width: 0
+            justify-content: flex-start
             text-align: left
             overflow: hidden
             text-overflow: ellipsis
