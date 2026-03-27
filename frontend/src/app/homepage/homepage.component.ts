@@ -4,7 +4,7 @@ import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatInputModule } from '@angular/material/input';
 import { Observable, forkJoin, map, of } from 'rxjs';
-import { IMR_UI_COMPONENTS } from '../imr-ui-library';
+import { IMR_UI_COMPONENTS, ImrBreadcrumbItem } from '../imr-ui-library';
 import { IMitglied } from '../_interface/mitglied';
 import { IHomepageDienstposten } from '../_interface/homepage';
 import { ApiHttpService } from '../_service/api-http.service';
@@ -104,7 +104,7 @@ export class HomepageComponent implements OnInit, OnDestroy {
   modulBulk = 'homepage/intern/bulk';
   modulContext = 'homepage/context';
 
-  breadcrumb: any[] = [];
+  breadcrumb: ImrBreadcrumbItem[] = [];
   loading = false;
 
   sections: HomepageSectionDraft[] = [];
@@ -153,13 +153,13 @@ export class HomepageComponent implements OnInit, OnDestroy {
           this.pendingPhotoRemovals.clear();
           this.closePhotoPreview();
           this.normalizeSectionsInPlace();
-        } catch (e: any) {
+        } catch (e: unknown) {
           this.uiMessageService.erstelleMessage('error', String(e));
         } finally {
           this.loading = false;
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.loading = false;
         this.authSessionService.errorAnzeigen(error);
       },
@@ -663,19 +663,19 @@ export class HomepageComponent implements OnInit, OnDestroy {
                 this.closePhotoPreview();
                 this.normalizeSectionsInPlace();
                 this.uiMessageService.erstelleMessage('success', 'Dienstpostenplan gespeichert.');
-              } catch (e: any) {
+              } catch (e: unknown) {
                 this.uiMessageService.erstelleMessage('error', String(e));
               } finally {
                 this.loading = false;
               }
             },
-            error: (error: any) => {
+            error: (error: unknown) => {
               this.loading = false;
               this.authSessionService.errorAnzeigen(error);
             },
           });
         },
-        error: (error: any) => {
+        error: (error: unknown) => {
           this.loading = false;
           this.authSessionService.errorAnzeigen(error);
         },

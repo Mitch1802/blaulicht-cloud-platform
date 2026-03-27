@@ -5,13 +5,13 @@
         <ng-content></ng-content>
       </ng-template>
 
-      <mat-card-content *ngIf="wrapContent; else plainContent">
+      @if (wrapContent) {
+        <mat-card-content>
+          <ng-container [ngTemplateOutlet]="cardBody"></ng-container>
+        </mat-card-content>
+      } @else {
         <ng-container [ngTemplateOutlet]="cardBody"></ng-container>
-      </mat-card-content>
-
-      <ng-template #plainContent>
-        <ng-container [ngTemplateOutlet]="cardBody"></ng-container>
-      </ng-template>
+      }
     </mat-card>
   
 

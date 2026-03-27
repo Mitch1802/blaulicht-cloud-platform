@@ -2,16 +2,17 @@
 
 <imr-page-layout [title]="title" class="anwesenheitsliste-page">
   <imr-section-card title="Anwesenheitslisten verwalten">
+    @if(formModul.disabled) {
     <imr-top-actions>
       <imr-button
         color="accent"
-        [hidden]="!formModul.disabled"
         (click)="neueDetails()"
         type="button"
       >
         Hinzufügen
       </imr-button>
     </imr-top-actions>
+    }
 
     <form
       [formGroup]="formModul"
@@ -49,12 +50,12 @@
       </imr-top-actions>
 
       <imr-form-grid>
-        <div class="app-col-12 mb-3">
+        <div class="app-col-12">
           <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="Titel">
             <input matInput type="text" formControlName="titel" uiControlErrors />
           </imr-form-field>
         </div>
-        <div class="app-col-6 mb-3">
+        <div class="app-col-6">
           <imr-form-field class="imr-full-width" label="Datum (TT.MM.JJJJ)">
             <input matInput type="text" formControlName="datum" appDateInputMask="dmy" />
             @if (formModul.controls['datum'].hasError('pattern')) {
@@ -62,17 +63,17 @@
             }
           </imr-form-field>
         </div>
-        <div class="app-col-6 mb-3">
+        <div class="app-col-6">
           <imr-form-field class="imr-full-width" label="Ort">
             <input matInput type="text" formControlName="ort" />
           </imr-form-field>
         </div>
-        <div class="app-col-12 app-col-lg-12 mb-3">
+        <div class="app-col-12 app-col-lg-12">
           <imr-form-field class="imr-full-width" label="Notiz">
-            <textarea matInput formControlName="notiz" rows="5"></textarea>
+            <textarea matInput formControlName="notiz"></textarea>
           </imr-form-field>
         </div>
-        <div class="app-col-12 app-col-lg-12 mb-3">
+        <div class="app-col-12 app-col-lg-12">
           <div class="autocomplete-multi">
             <imr-form-field class="imr-full-width" hintLabel="* Pflichtfeld" label="Mitglieder">
               <imr-select formControlName="mitglied_ids" [multiple]="true">
@@ -98,7 +99,7 @@
           </div>
         </div>
 
-        <div class="app-col-12 app-col-lg-12 mb-3">
+        <div class="app-col-12 app-col-lg-12">
           <div class="foto-doku-block">
             <div class="upload-row">
               <label class="upload-label" for="fotoDokuDateien">Foto Doku Dateien</label>

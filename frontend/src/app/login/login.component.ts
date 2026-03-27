@@ -121,14 +121,14 @@ export class LoginComponent implements OnInit {
       .pipe(switchMap(() => this.apiHttpService.post(this.modul, data, false)))
       .pipe(finalize(() => (this.isSubmitting = false)))
       .subscribe({
-        next: (erg: any) => {
+        next: () => {
           try {
             this.router.navigate(['/start']);
-          } catch (e: any) {
+          } catch (e: unknown) {
             this.uiMessageService.erstelleMessage('error', String(e));
           }
         },
-        error: (error: any) => {
+        error: (error: unknown) => {
           this.authSessionService.errorAnzeigen(error);
         }
       });

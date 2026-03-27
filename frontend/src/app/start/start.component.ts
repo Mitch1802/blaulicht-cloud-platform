@@ -6,6 +6,8 @@ import { UiMessageService } from '../_service/ui-message.service';
 import { ImrCardComponent } from '../imr-ui-library/imr-card.component';
 import { ImrBreadcrumbItem, ImrHeaderComponent } from '../imr-ui-library/imr-header.component';
 import { ImrIconComponent } from '../imr-ui-library/imr-icon.component';
+import { ImrPageLayoutComponent } from '../imr-ui-library/imr-page-layout.component';
+import { ImrSectionCardComponent } from '../imr-ui-library/imr-section-card.component';
 import { RouterLink } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import startRegelConfig from './konfig.json';
@@ -40,6 +42,8 @@ type StartResponse = {
   standalone: true,
   imports: [
     ImrHeaderComponent,
+    ImrPageLayoutComponent,
+    ImrSectionCardComponent,
     ImrCardComponent,
     ImrIconComponent,
     RouterLink,

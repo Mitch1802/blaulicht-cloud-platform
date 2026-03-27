@@ -3,7 +3,7 @@
     <img class="login-logo" mat-card-image src="../../assets/images/logo.svg" alt="Logo" />
       <form class="login-form" [formGroup]="form" (ngSubmit)="anmelden()">
         <p>
-          <imr-form-field label="Benutzername" hintLabel="* Pflichtfeld">
+          <imr-form-field label="Benutzername">
             <input matInput formControlName="user" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" autofocus uiControlErrors>
           </imr-form-field>
         </p>

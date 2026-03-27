@@ -4,8 +4,16 @@ import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
-import { ImrButtonComponent, ImrCardContentComponent, ImrFormFieldComponent, ImrHeaderComponent, ImrTopActionsComponent, UiControlErrorsDirective } from '../../imr-ui-library';
-import { MatCardModule } from '@angular/material/card';
+import {
+  ImrButtonComponent,
+  ImrBreadcrumbItem,
+  ImrFormFieldComponent,
+  ImrHeaderComponent,
+  ImrPageLayoutComponent,
+  ImrSectionCardComponent,
+  ImrTopActionsComponent,
+  UiControlErrorsDirective,
+} from '../../imr-ui-library';
 import { MatTabsModule } from '@angular/material/tabs';
 import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { MatError } from '@angular/material/form-field';
@@ -21,14 +29,18 @@ import { IAtemschutzGeraetProtokoll } from 'src/app/_interface/atemschutz_geraet
 import { IMitglied } from 'src/app/_interface/mitglied';
 import { DateInputMaskDirective } from '../../_directive/date-input-mask.directive';
 
+type AtemschutzRolesResponse = { roles?: unknown; user?: { roles?: unknown }; main?: { user?: { roles?: unknown } } };
+type FmdAtemschutzEintrag = { mitglied_id: number; [key: string]: unknown };
+type AtemschutzGeraeteKontextResponse = { main: IAtemschutzGeraet[]; fmd: FmdAtemschutzEintrag[]; mitglieder: IMitglied[] };
+
 @Component({
   selector: 'app--atemschutzgeraete',
   imports: [
     ImrButtonComponent,
     ImrHeaderComponent,
-    ImrCardContentComponent,
+    ImrPageLayoutComponent,
+    ImrSectionCardComponent,
     ImrTopActionsComponent,
-    MatCardModule,
     MatTabsModule,
     FormsModule,
     ReactiveFormsModule,
@@ -67,7 +79,7 @@ export class AtemschutzGeraeteComponent implements OnInit {
   userRoles: string[] = [];
   canEditProtocol = false;
   rolesResolved = false;
-  breadcrumb: any = [];
+  breadcrumb: ImrBreadcrumbItem[] = [];
   dataSource = new MatTableDataSource<IAtemschutzGeraet>(this.geraete);
   dataSourcePruefungen = new MatTableDataSource<IAtemschutzGeraetProtokoll>(this.pruefungen);
   sichtbareSpalten: string[] = ['inv_nr', 'typ', 'art', 'standort', 'letzte_pruefung', 'naechste_pruefung', 'actions'];
@@ -124,18 +136,18 @@ export class AtemschutzGeraeteComponent implements OnInit {
   }
 
   private reloadGeraeteKontext(): void {
-    this.apiHttpService.get(this.modul).subscribe({
-      next: (erg: any) => {
+    this.apiHttpService.get<AtemschutzGeraeteKontextResponse>(this.modul).subscribe({
+      next: (erg) => {
         try {
-          this.geraete = erg.main as any[];
-          this.dataSource.data = erg.main as any[];
+          this.geraete = erg.main;
+          this.dataSource.data = erg.main;
 
-          const fmd = erg.fmd as any[];
-          const mitgliederGesamt= erg.mitglieder as any[];
-          const memberMap = new Map<number, any>(mitgliederGesamt.map((m: any) => [m.pkid, m]));
+          const fmd = erg.fmd;
+          const mitgliederGesamt = erg.mitglieder;
+          const memberMap = new Map<number, IMitglied>(mitgliederGesamt.map(m => [m.pkid, m]));
 
           this.mitglieder = fmd.map(item => {
-            const mitg = memberMap.get(item.mitglied_id) || {};
+            const mitg = memberMap.get(item.mitglied_id) ?? {} as IMitglied;
             return {
               ...item,
               stbnr: mitg.stbnr,
@@ -143,14 +155,14 @@ export class AtemschutzGeraeteComponent implements OnInit {
               nachname: mitg.nachname,
               geburtsdatum: mitg.geburtsdatum,
               hauptberuflich: mitg.hauptberuflich
-            };
+            } as unknown as IMitglied;
           });
           this.mitglieder = this.collectionUtilsService.arraySortByKey(this.mitglieder, 'stbnr');
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage("error", e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage("error", String(e));
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       }
     });
@@ -170,7 +182,7 @@ export class AtemschutzGeraeteComponent implements OnInit {
     this.title = this.title_pruefung;
   }
 
-  neuePruefungVonMaske(element: any): void {
+  neuePruefungVonMaske(element: IAtemschutzGeraet): void {
     if (this.rolesResolved && !this.canEditProtocol) {
       this.uiMessageService.erstelleMessage('info', 'Nur ADMIN/PROTOKOLL dürfen Protokolle anlegen.');
       return;
@@ -182,37 +194,36 @@ export class AtemschutzGeraeteComponent implements OnInit {
     this.formPruefung.controls['geraet_id'].disable();
   }
 
-  auswahlBearbeiten(element: any): void {
-    if (element.id === 0) {
+  auswahlBearbeiten(element: IAtemschutzGeraet): void {
+    if (!element.id || element.id === '0') {
       return;
     }
     const abfrageUrl = `${this.modul}/${element.id}`;
 
-    this.apiHttpService.get(abfrageUrl).subscribe({
-      next: (erg: any) => {
+    this.apiHttpService.get<IAtemschutzGeraet>(abfrageUrl).subscribe({
+      next: (erg) => {
         try {
-          const details: IAtemschutzGeraet = erg;
           this.formModul.enable();
           this.formModul.setValue({
-            id: details.id,
-            inv_nr: details.inv_nr,
-            art: details.art,
-            typ: details.typ,
-            druckminderer: details.druckminderer,
-            lungenautomat: details.lungenautomat,
-            rahmen_nr: details.rahmen_nr,
-            eigentuemer: details.eigentuemer,
-            barcode: details.barcode,
-            standort: details.standort,
-            baujahr: details.baujahr,
-            datum_im_dienst: details.datum_im_dienst,
-            naechste_gue: details.naechste_gue
+            id: erg.id,
+            inv_nr: erg.inv_nr,
+            art: erg.art,
+            typ: erg.typ,
+            druckminderer: erg.druckminderer,
+            lungenautomat: erg.lungenautomat,
+            rahmen_nr: erg.rahmen_nr,
+            eigentuemer: erg.eigentuemer,
+            barcode: erg.barcode,
+            standort: erg.standort,
+            baujahr: erg.baujahr,
+            datum_im_dienst: erg.datum_im_dienst,
+            naechste_gue: erg.naechste_gue
           });
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage('error', e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       }
     });
@@ -223,8 +234,8 @@ export class AtemschutzGeraeteComponent implements OnInit {
     this.title = this.title_modul;
   }
 
-  showPruefungen(element: any): void {
-    if (element.id === 0) {
+  showPruefungen(element: IAtemschutzGeraet): void {
+    if (!element.id || element.id === '0') {
       return;
     }
     this.title = this.title_pruefung;
@@ -232,62 +243,61 @@ export class AtemschutzGeraeteComponent implements OnInit {
     const abfrageUrl = `${this.modul}/protokoll`;
     const param = { 'geraet_id': element.pkid };
 
-    this.apiHttpService.get(abfrageUrl, param, true).subscribe({
-      next: (erg: any) => {
+    this.apiHttpService.get<IAtemschutzGeraetProtokoll[]>(abfrageUrl, param, true).subscribe({
+      next: (erg) => {
         try {
           this.showPruefungTable = true;
           this.pruefungen = erg;
           this.dataSourcePruefungen.data = this.pruefungen;
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage('error', e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       }
     });
   }
 
-  auswahlBearbeitenProtokoll(element: any): void {
-    if (element.id === 0) {
+  auswahlBearbeitenProtokoll(element: IAtemschutzGeraetProtokoll): void {
+    if (!element.id || element.id === '0') {
       return;
     }
     const abfrageUrl = `${this.modul}/protokoll/${element.id}`;
 
-    this.apiHttpService.get(abfrageUrl).subscribe({
-      next: (erg: any) => {
+    this.apiHttpService.get<IAtemschutzGeraetProtokoll>(abfrageUrl).subscribe({
+      next: (erg) => {
         try {
           this.showPruefungTable = false;
           this.showPruefungForm = true;
-          const details: IAtemschutzGeraetProtokoll = erg;
           this.formPruefung.setValue({
-            id: details.id,
-            geraet_id: details.geraet_id,
-            datum: details.datum,
-            taetigkeit: details.taetigkeit,
-            verwendung_typ: details.verwendung_typ,
-            verwendung_min: details.verwendung_min,
-            mitglied_id: details.mitglied_id,
-            geraet_ok: details.geraet_ok,
-            name_pruefer: details.name_pruefer,
-            tausch_hochdruckdichtring: details.tausch_hochdruckdichtring,
-            tausch_membran: details.tausch_membran,
-            tausch_gleitring: details.tausch_gleitring,
-            pruefung_10jahre: details.pruefung_10jahre,
-            pruefung_jaehrlich: details.pruefung_jaehrlich,
-            preufung_monatlich: details.preufung_monatlich,
-            notiz: details.notiz,
+            id: erg.id,
+            geraet_id: erg.geraet_id,
+            datum: erg.datum,
+            taetigkeit: erg.taetigkeit,
+            verwendung_typ: erg.verwendung_typ,
+            verwendung_min: erg.verwendung_min,
+            mitglied_id: erg.mitglied_id,
+            geraet_ok: erg.geraet_ok,
+            name_pruefer: erg.name_pruefer,
+            tausch_hochdruckdichtring: erg.tausch_hochdruckdichtring,
+            tausch_membran: erg.tausch_membran,
+            tausch_gleitring: erg.tausch_gleitring,
+            pruefung_10jahre: erg.pruefung_10jahre,
+            pruefung_jaehrlich: erg.pruefung_jaehrlich,
+            preufung_monatlich: erg.preufung_monatlich,
+            notiz: erg.notiz,
           });
 
           this.formPruefung.enable();
           if (this.rolesResolved && !this.canEditProtocol) {
             this.applyNoteOnlyMode();
           }
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage('error', e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       }
     });
@@ -299,16 +309,14 @@ export class AtemschutzGeraeteComponent implements OnInit {
       return;
     }
 
-    const objekt: any = this.formModul.value;
+    const objekt = this.formModul.value;
     const idValue = this.formModul.controls['id'].value;
 
     if (!idValue) {
-      this.apiHttpService.post(this.modul, objekt, false).subscribe({
-        next: (erg: any) => {
+      this.apiHttpService.post<IAtemschutzGeraet>(this.modul, objekt, false).subscribe({
+        next: (erg) => {
           try {
-            const newMask: IAtemschutzGeraet = erg;
-
-            this.geraete.push(newMask);
+            this.geraete.push(erg);
             this.geraete = this.collectionUtilsService.arraySortByKey(this.geraete, 'inv_nr');
             this.dataSource.data = this.geraete;
 
@@ -329,20 +337,19 @@ export class AtemschutzGeraeteComponent implements OnInit {
             });
             this.formModul.disable();
             this.uiMessageService.erstelleMessage('success', 'Gerät gespeichert!');
-          } catch (e: any) {
-            this.uiMessageService.erstelleMessage('error', e);
+          } catch (e: unknown) {
+            this.uiMessageService.erstelleMessage('error', String(e));
           }
         },
-        error: (error: any) => this.authSessionService.errorAnzeigen(error)
+        error: (error: unknown) => this.authSessionService.errorAnzeigen(error)
       });
     } else {
-      this.apiHttpService.patch(this.modul, idValue, objekt, false).subscribe({
-        next: (erg: any) => {
+      this.apiHttpService.patch<IAtemschutzGeraet>(this.modul, idValue, objekt, false).subscribe({
+        next: (erg) => {
           try {
-            const updated: any = erg;
             this.geraete = this.geraete
-              .map(m => m.id === updated.id ? updated : m)
-              .sort((a, b) => a.inv_nr - b.inv_nr);
+              .map(m => m.id === erg.id ? erg : m)
+              .sort((a, b) => a.inv_nr.localeCompare(b.inv_nr, 'de', { numeric: true }));
 
             this.dataSource.data = this.geraete;
 
@@ -364,11 +371,11 @@ export class AtemschutzGeraeteComponent implements OnInit {
             this.formModul.disable();
 
             this.uiMessageService.erstelleMessage('success', 'Gerät geändert!');
-          } catch (e: any) {
-            this.uiMessageService.erstelleMessage('error', e);
+          } catch (e: unknown) {
+            this.uiMessageService.erstelleMessage('error', String(e));
           }
         },
-        error: (error: any) => this.authSessionService.errorAnzeigen(error)
+        error: (error: unknown) => this.authSessionService.errorAnzeigen(error)
       });
     }
   }
@@ -386,16 +393,15 @@ export class AtemschutzGeraeteComponent implements OnInit {
         return;
       }
 
-      const objekt: any = this.formPruefung.getRawValue();
-      if (objekt.mitglied_id == 0) {
+      const objekt = this.formPruefung.getRawValue();
+      if (objekt.mitglied_id === 0) {
         objekt.mitglied_id = null;
       }
 
-      this.apiHttpService.post(`${this.modul}/protokoll`, objekt, false).subscribe({
-        next: (erg: any) => {
+      this.apiHttpService.post<IAtemschutzGeraetProtokoll>(`${this.modul}/protokoll`, objekt, false).subscribe({
+        next: (erg) => {
           try {
-            const newPrufung: IAtemschutzGeraetProtokoll = erg;
-            this.pruefungen.push(newPrufung);
+            this.pruefungen.push(erg);
             this.pruefungen = this.collectionUtilsService.arraySortByKey(this.pruefungen, 'datum');
             this.dataSourcePruefungen.data = this.pruefungen;
             this.reloadGeraeteKontext();
@@ -421,28 +427,27 @@ export class AtemschutzGeraeteComponent implements OnInit {
             this.showPruefungForm = false;
             this.showPruefungTable = false;
             this.uiMessageService.erstelleMessage('success', 'Protokoll gespeichert!');
-          } catch (e: any) {
-            this.uiMessageService.erstelleMessage('error', e);
+          } catch (e: unknown) {
+            this.uiMessageService.erstelleMessage('error', String(e));
           }
         },
-        error: (error: any) => this.authSessionService.errorAnzeigen(error)
+        error: (error: unknown) => this.authSessionService.errorAnzeigen(error)
       });
     } else {
-      const objekt: any = this.canEditProtocol
+      const objekt = (this.canEditProtocol
         ? this.formPruefung.getRawValue()
-        : { notiz: this.formPruefung.controls['notiz'].value ?? '' };
-      
-      if (objekt.mitglied_id == 0) {
-        objekt.mitglied_id = null;
+        : { notiz: this.formPruefung.controls['notiz'].value ?? '' }) as Record<string, unknown>;
+
+      if (objekt['mitglied_id'] === 0) {
+        objekt['mitglied_id'] = null;
       }
 
-      this.apiHttpService.patch(`${this.modul}/protokoll`, idValue, objekt, false).subscribe({
-        next: (erg: any) => {
+      this.apiHttpService.patch<IAtemschutzGeraetProtokoll>(`${this.modul}/protokoll`, idValue, objekt, false).subscribe({
+        next: (erg) => {
           try {
-            const updated: any = erg;
             this.pruefungen = this.pruefungen
-              .map(m => m.id === updated.id ? updated : m)
-              .sort((a, b) => a.datum - b.datum);
+              .map(m => m.id === erg.id ? erg : m)
+              .sort((a, b) => a.datum.localeCompare(b.datum));
 
             this.dataSourcePruefungen.data = this.pruefungen;
             this.reloadGeraeteKontext();
@@ -467,11 +472,11 @@ export class AtemschutzGeraeteComponent implements OnInit {
             this.formPruefung.disable();
             this.showPruefungTable = true;
             this.uiMessageService.erstelleMessage('success', 'Protokoll geändert!');
-          } catch (e: any) {
-            this.uiMessageService.erstelleMessage('error', e);
+          } catch (e: unknown) {
+            this.uiMessageService.erstelleMessage('error', String(e));
           }
         },
-        error: (error: any) => this.authSessionService.errorAnzeigen(error)
+        error: (error: unknown) => this.authSessionService.errorAnzeigen(error)
       });
     }
   }
@@ -529,9 +534,9 @@ export class AtemschutzGeraeteComponent implements OnInit {
     }
 
     this.apiHttpService.delete(this.modul, id).subscribe({
-      next: (erg: any) => {
+      next: () => {
         try {
-          this.geraete = this.geraete.filter((m: any) => m.id !== id);
+          this.geraete = this.geraete.filter((m) => m.id !== id);
           this.dataSource.data = this.geraete;
 
           this.formModul.reset({
@@ -552,11 +557,11 @@ export class AtemschutzGeraeteComponent implements OnInit {
           this.formModul.disable();
 
           this.uiMessageService.erstelleMessage('success', 'Gerät erfolgreich gelöscht!');
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage('error', e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       }
     });
@@ -575,9 +580,9 @@ export class AtemschutzGeraeteComponent implements OnInit {
     }
 
     this.apiHttpService.delete(`${this.modul}/protokoll`, id).subscribe({
-      next: (erg: any) => {
+      next: () => {
         try {
-          this.pruefungen = this.pruefungen.filter((m: any) => m.id !== id);
+          this.pruefungen = this.pruefungen.filter((m) => m.id !== id);
           this.dataSourcePruefungen.data = this.pruefungen;
           this.reloadGeraeteKontext();
 
@@ -602,11 +607,11 @@ export class AtemschutzGeraeteComponent implements OnInit {
           this.showPruefungForm = false;
           this.showPruefungTable = true;
           this.uiMessageService.erstelleMessage('success', 'Protokoll erfolgreich gelöscht!');
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage('error', e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       }
     });
@@ -690,8 +695,8 @@ export class AtemschutzGeraeteComponent implements OnInit {
   }
 
   private loadCurrentUserRoles(): void {
-    this.apiHttpService.get('users/self').subscribe({
-      next: (erg: any) => {
+    this.apiHttpService.get<AtemschutzRolesResponse>('users/self').subscribe({
+      next: (erg) => {
         const roles = this.extractRolesFromResponse(erg);
         if (roles.length > 0) {
           this.applyRoleState(roles);
@@ -704,14 +709,15 @@ export class AtemschutzGeraeteComponent implements OnInit {
   }
 
   private loadRolesFromModulKonfiguration(): void {
-    this.apiHttpService.get('modul_konfiguration').subscribe({
-      next: (erg: any) => this.applyRoleState(this.extractRolesFromResponse(erg)),
+    this.apiHttpService.get<AtemschutzRolesResponse>('modul_konfiguration').subscribe({
+      next: (erg) => this.applyRoleState(this.extractRolesFromResponse(erg)),
       error: () => this.applyRoleState([])
     });
   }
 
-  private extractRolesFromResponse(value: any): string[] {
-    return this.normalizeRoles(value?.roles ?? value?.user?.roles ?? value?.main?.user?.roles);
+  private extractRolesFromResponse(value: unknown): string[] {
+    const v = value as AtemschutzRolesResponse;
+    return this.normalizeRoles(v?.roles ?? v?.user?.roles ?? v?.main?.user?.roles);
   }
 
   private applyRoleState(roles: string[]): void {
@@ -731,11 +737,12 @@ export class AtemschutzGeraeteComponent implements OnInit {
   private normalizeRoles(value: unknown): string[] {
     if (Array.isArray(value)) {
       return value
-        .flatMap((entry: any) =>
-          String(entry?.key ?? entry?.role ?? entry?.name ?? entry)
+        .flatMap((entry: unknown) => {
+          const e = entry as Record<string, unknown>;
+          return String(e?.key ?? e?.role ?? e?.name ?? entry)
             .split(',')
-            .map((part: string) => part.trim().toUpperCase())
-        )
+            .map((part: string) => part.trim().toUpperCase());
+        })
         .filter(Boolean);
     }
 

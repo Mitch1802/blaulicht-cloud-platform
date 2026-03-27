@@ -1,14 +1,7 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
-<section class="jugend-page">
-  <header class="page-head">
-    <h1>{{ title }}</h1>
-  </header>
-
-  <imr-card>
-    <div class="imr-card__head">
-      <h2>Jugend-Mitglieder</h2>
-    </div>
+<imr-page-layout [title]="title" class="jugend-page">
+  <imr-section-card title="Jugend-Mitglieder">
 
       @if (showMitgliedForm) {
         <form [formGroup]="formMitglied" (ngSubmit)="speichernMitglied()" class="edit-form mitglied-edit-form">
@@ -299,13 +292,11 @@
         </table>
       </div>
       }
-  </imr-card>
+  </imr-section-card>
 
   @if (!showMitgliedForm) {
-  <imr-card cardClass="imr-card mt-3">
-    <div class="imr-card__head">
-      <h2>Jugend-Events</h2>
-    </div>
+  <div class="mt-3">
+    <imr-section-card title="Jugend-Events">
 
       <imr-top-actions class="actions-top">
         <imr-button color="accent" type="button" (click)="neuesEvent()">Neues Event</imr-button>
@@ -430,8 +421,9 @@
         </table>
       </div>
       }
-  </imr-card>
+    </imr-section-card>
+  </div>
   }
-</section>
+</imr-page-layout>
 
 

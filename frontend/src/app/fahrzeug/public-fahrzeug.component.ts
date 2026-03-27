@@ -6,7 +6,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { MatInputModule } from "@angular/material/input";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
 
-import { IMR_UI_COMPONENTS } from "../imr-ui-library";
+import { IMR_UI_COMPONENTS, ImrBreadcrumbItem } from "../imr-ui-library";
 import { ApiHttpService } from 'src/app/_service/api-http.service';
 import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
@@ -37,7 +37,7 @@ export class PublicFahrzeugComponent implements OnInit {
   private uiMessageService = inject(UiMessageService);
   private fb = inject(FormBuilder);
 
-  breadcrumb: { label: string; url?: string }[] = [];
+  breadcrumb: ImrBreadcrumbItem[] = [];
 
   publicId = "";
   token: string | null = null;
@@ -99,8 +99,8 @@ export class PublicFahrzeugComponent implements OnInit {
     const pin = this.pinForm.controls.pin.value.trim();
     this.loading = true;
 
-    this.apiHttpService.post(`public/pin/verify`, { pin }).subscribe({
-      next: (res: any) => {
+    this.apiHttpService.post<{ access_token?: string }>(`public/pin/verify`, { pin }).subscribe({
+      next: (res) => {
         const access = String(res?.access_token ?? "");
         if (!access) {
           this.uiMessageService.erstelleMessage("error", "Kein Token erhalten.");
@@ -114,7 +114,7 @@ export class PublicFahrzeugComponent implements OnInit {
 
         this.loadAfterVerify();
       },
-      error: (err: any) => this.authSessionService.errorAnzeigen(err),
+      error: (err: unknown) => this.authSessionService.errorAnzeigen(err),
     }).add(() => {
       this.loading = false;
     });
@@ -164,12 +164,12 @@ export class PublicFahrzeugComponent implements OnInit {
     if (!this.token) return;
 
     this.loading = true;
-    this.apiHttpService.getWithBearer("public/fahrzeuge", this.token).subscribe({
-      next: (res: any) => {
-        const optionen = (res as IFahrzeugPublicList[]) ?? [];
+    this.apiHttpService.getWithBearer<IFahrzeugPublicList[]>("public/fahrzeuge", this.token).subscribe({
+      next: (res) => {
+        const optionen = res ?? [];
         this.fahrzeugOptionen = optionen;
       },
-      error: (err: any) => this.authSessionService.errorAnzeigen(err),
+      error: (err: unknown) => this.authSessionService.errorAnzeigen(err),
     }).add(() => {
       this.loading = false;
     });
@@ -181,12 +181,12 @@ export class PublicFahrzeugComponent implements OnInit {
     this.loading = true;
 
     // Header Bearer via ApiHttpService.getWithBearer()
-    this.apiHttpService.getWithBearer(`public/fahrzeuge/${publicId}`, this.token).subscribe({
-      next: (res: any) => {
-        this.fahrzeug = res as IFahrzeugPublic;
+    this.apiHttpService.getWithBearer<IFahrzeugPublic>(`public/fahrzeuge/${publicId}`, this.token).subscribe({
+      next: (res) => {
+        this.fahrzeug = res;
         this.initDraft();
       },
-      error: (err: any) => this.authSessionService.errorAnzeigen(err),
+      error: (err: unknown) => this.authSessionService.errorAnzeigen(err),
     }).add(() => {
       this.loading = false;
     });
@@ -206,17 +206,17 @@ export class PublicFahrzeugComponent implements OnInit {
     return `${(raumName ?? "").trim()}::${reihenfolge ?? 0}::${(itemName ?? "").trim()}`.toLowerCase();
   }
 
-  getKey(raumName: string, item: any): string {
+  getKey(raumName: string, item: { reihenfolge: number; name: string }): string {
     return this.keyFor(raumName, item.reihenfolge, item.name);
   }
 
-  setStatus(raumName: string, item: any, status: CheckStatus): void {
+  setStatus(raumName: string, item: { reihenfolge: number; name: string }, status: CheckStatus): void {
     const key = this.getKey(raumName, item);
     this.draft[key] ??= { status: "ok" };
     this.draft[key].status = status;
   }
 
-  setIst(raumName: string, item: any, value: any): void {
+  setIst(raumName: string, item: { reihenfolge: number; name: string }, value: unknown): void {
     const key = this.getKey(raumName, item);
     this.draft[key] ??= { status: "ok" };
 
@@ -224,7 +224,7 @@ export class PublicFahrzeugComponent implements OnInit {
     this.draft[key].menge_aktuel = Number.isFinite(num as number) ? (num as number) : null;
   }
 
-  setNotiz(raumName: string, item: any, value: any): void {
+  setNotiz(raumName: string, item: { reihenfolge: number; name: string }, value: unknown): void {
     const key = this.getKey(raumName, item);
     this.draft[key] ??= { status: "ok" };
     this.draft[key].notiz = String(value ?? "");

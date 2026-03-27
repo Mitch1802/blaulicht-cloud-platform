@@ -53,7 +53,7 @@ function removeLeadingTimeAndToken(value: string, alarmToken: string): string {
   return normalized.trim();
 }
 
-function sanitizeAlarmstichwort(value: string): string {
+function _sanitizeAlarmstichwort(value: string): string {
   return String(value ?? '')
     .replace(/\b\d{1,2}[./-]\d{1,2}[./-]\d{2,4}\b/g, '')
     .replace(/\d{1,2}:\d{2}(?::\d{2})?\s*(?:uhr)?\s*/gi, '')

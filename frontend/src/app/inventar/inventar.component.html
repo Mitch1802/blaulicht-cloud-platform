@@ -1,14 +1,7 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
-<section class="inventar-page">
-  <header class="page-head">
-    <h1>{{ title }}</h1>
-  </header>
-
-  <imr-card class="imr-card">
-    <div class="imr-card__head">
-      <h2>Inventar verwalten</h2>
-    </div>
+<imr-page-layout [title]="title" class="inventar-page">
+  <imr-section-card title="Inventar verwalten">
       <imr-top-actions>
         <imr-button
           color="accent"
@@ -166,7 +159,7 @@
               <imr-button type="button" color="primary" class="upload-button" (click)="fotoUpload.click()">{{ btnText }}</imr-button>
               <input hidden #fotoUpload type="file" id="fotoUpload" accept=".jpg,.jpeg,.png" (change)="onFotoSelected($event)" />
               <div >
-                @if (fileFound==true) {
+                @if (fileFound === true) {
                 <div>
                   {{ fileName }}
                 </div>
@@ -254,8 +247,8 @@
         >
         </imr-paginator>
       </div>
-  </imr-card>
-</section>
+  </imr-section-card>
+</imr-page-layout>
 
 @if (ausborgenModalOffen && ausborgenArtikel) {
 <div class="imr-transaction-backdrop" (click)="closeAusborgenModal()">

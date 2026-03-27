@@ -1,16 +1,7 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
-<section class="user-page">
-  <header class="page-head">
-    <h1>{{ title }}</h1>
-  </header>
-
-  <mat-card class="imr-card">
-    <div class="imr-card__head">
-      <h2>Benutzer verwalten</h2>
-    </div>
-
-    <imr-card-content>
+<imr-page-layout [title]="title" class="user-page">
+  <imr-section-card title="Benutzer verwalten">
       <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" class="user-tabs">
 
         <mat-tab label="Benutzer">
@@ -274,8 +265,7 @@
         </mat-tab>
 
       </mat-tab-group>
-    </imr-card-content>
-  </mat-card>
-</section>
+  </imr-section-card>
+</imr-page-layout>
 
 

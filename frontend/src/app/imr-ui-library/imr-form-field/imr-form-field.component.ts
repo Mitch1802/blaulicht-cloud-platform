@@ -1,4 +1,4 @@
-import { AfterContentInit, booleanAttribute, Component, ContentChild, Input, OnInit, ViewChild } from '@angular/core'
+import { AfterContentInit, Component, ContentChild, Input, OnInit, ViewChild } from '@angular/core'
 import { MatFormField, MatFormFieldControl, MatFormFieldModule } from '@angular/material/form-field'
 import { ImrLabelComponent } from '../imr-label/imr-label.component'
 import { ImrErrorComponent } from '../imr-error/imr-error.component'

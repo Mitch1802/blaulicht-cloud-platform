@@ -24,7 +24,7 @@ import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { MatInputModule } from '@angular/material/input';
 import { Router } from '@angular/router';
-import { IMR_UI_COMPONENTS, ImrPaginatorComponent } from '../imr-ui-library';
+import { IMR_UI_COMPONENTS, ImrBreadcrumbItem, ImrPaginatorComponent } from '../imr-ui-library';
 import { FormatService } from '../helpers/format.service';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSort, MatSortModule } from '@angular/material/sort';
@@ -70,7 +70,7 @@ export class InventarComponent implements OnInit, AfterViewInit {
   modul = 'inventar';
 
   inventarArray: IInventar[] = [];
-  breadcrumb: any = [];
+  breadcrumb: ImrBreadcrumbItem[] = [];
   dataSource = new MatTableDataSource<IInventar>(this.inventarArray);
   sichtbareSpalten: string[] = ['bezeichnung', 'anzahl', 'lagerort', 'leihstatus', 'actions'];
 
@@ -124,17 +124,17 @@ export class InventarComponent implements OnInit, AfterViewInit {
     this.formModul.disable();
     this.observeLeihstatus();
 
-    this.apiHttpService.get(this.modul).subscribe({
-      next: (erg: any) => {
+    this.apiHttpService.get<IInventar[]>(this.modul).subscribe({
+      next: (erg) => {
         try {
-          this.inventarArray = this.convertNewsDate(erg) as IInventar[];
+          this.inventarArray = this.convertNewsDate(erg);
           this.dataSource.data = this.inventarArray;
           this.bindTableControls();
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage('error', e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       }
     });
@@ -152,7 +152,7 @@ export class InventarComponent implements OnInit, AfterViewInit {
   }
 
   /** Server-Datum ins gewünschte Anzeigeformat bringen */
-  convertNewsDate(data: any): any[] {
+  convertNewsDate(data: IInventar[]): IInventar[] {
     for (let i = 0; i < data.length; i++) {
       const created_at = String(data[i].created_at).split('T');
       const created_at_date = created_at[0];
@@ -363,10 +363,10 @@ export class InventarComponent implements OnInit, AfterViewInit {
       })
       .filter((eintrag) => eintrag.anzahl > 0);
 
-    this.apiHttpService.patch(this.modul, artikel.id, { verleihungen: neueVerleihungen }, false).subscribe({
-      next: (updateErg: any) => {
+    this.apiHttpService.patch<IInventar>(this.modul, artikel.id, { verleihungen: neueVerleihungen }, false).subscribe({
+      next: (updateErg: IInventar) => {
         try {
-          const updated = updateErg as IInventar;
+          const updated = updateErg;
           this.inventarArray = this.inventarArray
             .map((m) => (m.id === updated.id ? updated : m))
             .sort((a, b) => a.bezeichnung.localeCompare(b.bezeichnung, 'de'));
@@ -374,11 +374,11 @@ export class InventarComponent implements OnInit, AfterViewInit {
           this.bindTableControls();
           this.closeRueckgabeModal();
           this.uiMessageService.erstelleMessage('success', 'Rueckgabe erfolgreich gespeichert.');
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage('error', e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
-      error: (error: any) => this.authSessionService.errorAnzeigen(error),
+      error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
     });
   }
 
@@ -411,10 +411,10 @@ export class InventarComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    this.apiHttpService.get(`${this.modul}/${artikel.id}`).subscribe({
-      next: (erg: any) => {
+    this.apiHttpService.get<IInventar>(`${this.modul}/${artikel.id}`).subscribe({
+      next: (erg) => {
         try {
-          const details = erg as IInventar;
+          const details = erg;
           const aktuelleVerleihungen = this.getVerleihungenAusInventar(details);
           const payload = {
             verleihungen: [
@@ -427,10 +427,10 @@ export class InventarComponent implements OnInit, AfterViewInit {
             ],
           };
 
-          this.apiHttpService.patch(this.modul, artikel.id, payload, false).subscribe({
-            next: (updateErg: any) => {
+          this.apiHttpService.patch<IInventar>(this.modul, artikel.id, payload, false).subscribe({
+            next: (updateErg) => {
               try {
-                const updated = updateErg as IInventar;
+                const updated = updateErg;
                 this.inventarArray = this.inventarArray
                   .map((m) => (m.id === updated.id ? updated : m))
                   .sort((a, b) => a.bezeichnung.localeCompare(b.bezeichnung, 'de'));
@@ -438,17 +438,17 @@ export class InventarComponent implements OnInit, AfterViewInit {
                 this.bindTableControls();
                 this.closeAusborgenModal();
                 this.uiMessageService.erstelleMessage('success', 'Inventar erfolgreich ausgeborgt.');
-              } catch (e: any) {
-                this.uiMessageService.erstelleMessage('error', e);
+              } catch (e: unknown) {
+                this.uiMessageService.erstelleMessage('error', String(e));
               }
             },
-            error: (error: any) => this.authSessionService.errorAnzeigen(error),
+            error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
           });
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage('error', e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
-      error: (error: any) => this.authSessionService.errorAnzeigen(error),
+      error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
     });
   }
 
@@ -463,10 +463,11 @@ export class InventarComponent implements OnInit, AfterViewInit {
   private getVerleihungenAusInventar(element: IInventar): IInventarVerleihung[] {
     const apiEntries = Array.isArray(element.verleihungen) ? element.verleihungen : [];
     const normalizedEntries = apiEntries
-      .map((eintrag: any) => {
-        const an = String(eintrag?.an ?? '').trim();
-        const anzahl = Number(eintrag?.anzahl ?? 0);
-        const bisRaw = eintrag?.bis;
+      .map((eintrag: unknown) => {
+        const row = eintrag as Partial<IInventarVerleihung>;
+        const an = String(row?.an ?? '').trim();
+        const anzahl = Number(row?.anzahl ?? 0);
+        const bisRaw = row?.bis;
         const bis = bisRaw ? String(bisRaw).trim() : null;
         return {
           an,
@@ -628,39 +629,39 @@ export class InventarComponent implements OnInit, AfterViewInit {
   datenLoeschen(): void {
     const id = this.formModul.controls['id'].value!;
     this.apiHttpService.delete(this.modul, id).subscribe({
-      next: (erg: any) => {
+      next: () => {
         try {
           this.inventarArray = this.inventarArray.filter(n => n.id !== id);
           this.dataSource.data = this.inventarArray;
           this.resetFormNachAktion();
           this.uiMessageService.erstelleMessage('success', 'Inventar erfolgreich gelöscht!');
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage('error', e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
-      error: (error: any) => this.authSessionService.errorAnzeigen(error)
+      error: (error: unknown) => this.authSessionService.errorAnzeigen(error)
     });
   }
 
-  auswahlBearbeiten(element: any): void {
-    if (element.id === 0) {
+  auswahlBearbeiten(element: IInventar): void {
+    if (!element.id || element.id === '0') {
       return;
     }
     const abfrageUrl = `${this.modul}/${element.id}`;
-    this.apiHttpService.get(abfrageUrl).subscribe({
-      next: (erg: any) => {
+    this.apiHttpService.get<IInventar>(abfrageUrl).subscribe({
+      next: (erg) => {
         try {
-          let details: IInventar = erg;
+          const details: IInventar = erg;
           this.formModul.enable();
           this.btnUploadStatus = true;
 
           // UI-Status für bestehendes Bild
-          if ((details as any).foto_url) {
+          if (details.foto_url) {
             this.btnText = 'Bild ersetzen';
-            const parts = (details as any).foto_url.split('/');
+            const parts = details.foto_url.split('/');
             this.fileName = parts[parts.length - 1];
             this.fileFound = true;
-            this.filePfad = (details as any).foto_url;
+            this.filePfad = details.foto_url;
           } else {
             this.btnText = 'Bild auswählen';
             this.fileName = '';
@@ -691,11 +692,11 @@ export class InventarComponent implements OnInit, AfterViewInit {
           if (this.isVerliehenAktiv() && this.verleihungenForm.length === 0) {
             this.verleihungenForm = [this.createLeihEintrag()];
           }
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage('error', e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
-      error: (error: any) => this.authSessionService.errorAnzeigen(error)
+      error: (error: unknown) => this.authSessionService.errorAnzeigen(error)
     });
   }
 
@@ -782,8 +783,8 @@ export class InventarComponent implements OnInit, AfterViewInit {
         fd.append('verleihungen', JSON.stringify(payload.verleihungen));
         fd.append('foto', file, file.name || 'upload.png');
 
-        this.apiHttpService.post(this.modul, fd, true).subscribe({
-          next: (erg: any) => {
+        this.apiHttpService.post<IInventar>(this.modul, fd, true).subscribe({
+          next: (erg) => {
             try {
               const newMask: IInventar = erg;
               this.inventarArray.push(newMask);
@@ -792,16 +793,16 @@ export class InventarComponent implements OnInit, AfterViewInit {
               this.bindTableControls();
               this.resetFormNachAktion();
               this.uiMessageService.erstelleMessage('success', 'Inventar erfolgreich gespeichert!');
-            } catch (e: any) {
-              this.uiMessageService.erstelleMessage('error', e);
+            } catch (e: unknown) {
+              this.uiMessageService.erstelleMessage('error', String(e));
             }
           },
-          error: (error: any) => this.authSessionService.errorAnzeigen(error)
+          error: (error: unknown) => this.authSessionService.errorAnzeigen(error)
         });
       } else {
         // JSON ohne Bild
-        this.apiHttpService.post(this.modul, payload, false).subscribe({
-          next: (erg: any) => {
+        this.apiHttpService.post<IInventar>(this.modul, payload, false).subscribe({
+          next: (erg) => {
             try {
               const newMask: IInventar = erg;
               this.inventarArray.push(newMask);
@@ -810,11 +811,11 @@ export class InventarComponent implements OnInit, AfterViewInit {
               this.bindTableControls();
               this.resetFormNachAktion();
               this.uiMessageService.erstelleMessage('success', 'Inventar erfolgreich gespeichert!');
-            } catch (e: any) {
-              this.uiMessageService.erstelleMessage('error', e);
+            } catch (e: unknown) {
+              this.uiMessageService.erstelleMessage('error', String(e));
             }
           },
-          error: (error: any) => this.authSessionService.errorAnzeigen(error)
+          error: (error: unknown) => this.authSessionService.errorAnzeigen(error)
         });
       }
     } else {
@@ -834,10 +835,10 @@ export class InventarComponent implements OnInit, AfterViewInit {
         fd.append('verleihungen', JSON.stringify(payload.verleihungen));
         fd.append('foto', file, file.name || 'upload.png');
 
-        this.apiHttpService.patch(this.modul, idValue, fd, true).subscribe({
-          next: (erg: any) => {
+        this.apiHttpService.patch<IInventar>(this.modul, idValue, fd, true).subscribe({
+          next: (erg) => {
             try {
-              const updated: any = erg;
+              const updated: IInventar = erg;
               this.inventarArray = this.inventarArray
                 .map(m => m.id === updated.id ? updated : m)
                 .sort((a, b) => a.bezeichnung.localeCompare(b.bezeichnung, 'de'));
@@ -846,18 +847,18 @@ export class InventarComponent implements OnInit, AfterViewInit {
               this.bindTableControls();
               this.resetFormNachAktion();
               this.uiMessageService.erstelleMessage('success', 'Inventar erfolgreich geändert!');
-            } catch (e: any) {
-              this.uiMessageService.erstelleMessage('error', e);
+            } catch (e: unknown) {
+              this.uiMessageService.erstelleMessage('error', String(e));
             }
           },
-          error: (error: any) => this.authSessionService.errorAnzeigen(error)
+          error: (error: unknown) => this.authSessionService.errorAnzeigen(error)
         });
       } else {
         // Nur Text/Titel ändern (JSON)
-        this.apiHttpService.patch(this.modul, idValue, payload, false).subscribe({
-          next: (erg: any) => {
+        this.apiHttpService.patch<IInventar>(this.modul, idValue, payload, false).subscribe({
+          next: (erg) => {
             try {
-              const updated: any = erg;
+              const updated: IInventar = erg;
               this.inventarArray = this.inventarArray
                 .map(m => m.id === updated.id ? updated : m)
                 .sort((a, b) => a.bezeichnung.localeCompare(b.bezeichnung, 'de'));
@@ -866,17 +867,17 @@ export class InventarComponent implements OnInit, AfterViewInit {
               this.bindTableControls();
               this.resetFormNachAktion();
               this.uiMessageService.erstelleMessage('success', 'Inventar erfolgreich geändert!');
-            } catch (e: any) {
-              this.uiMessageService.erstelleMessage('error', e);
+            } catch (e: unknown) {
+              this.uiMessageService.erstelleMessage('error', String(e));
             }
           },
-          error: (error: any) => this.authSessionService.errorAnzeigen(error)
+          error: (error: unknown) => this.authSessionService.errorAnzeigen(error)
         });
       }
     }
   }
 
-  onFotoSelected(event: Event): void {
+  onFotoSelected(_event: Event): void {
     const file = this.getSelectedFile();
     if (!file) {
       this.fileFound = false;
@@ -898,7 +899,7 @@ export class InventarComponent implements OnInit, AfterViewInit {
   }
 
   openModal(): void {
-    const modal: any = document.getElementById('myModal');
+    const modal = document.getElementById('myModal') as HTMLElement | null;
     if (modal) {
       this.focusBeforeImageModal =
         typeof document !== 'undefined' && document.activeElement instanceof HTMLElement
@@ -910,7 +911,7 @@ export class InventarComponent implements OnInit, AfterViewInit {
   }
 
   closeModal(): void {
-    const modal: any = document.getElementById('myModal');
+    const modal = document.getElementById('myModal') as HTMLElement | null;
     if (modal) modal.style.display = 'none';
 
     const focusTarget = this.focusBeforeImageModal;

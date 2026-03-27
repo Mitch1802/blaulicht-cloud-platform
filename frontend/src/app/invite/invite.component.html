@@ -1,10 +1,5 @@
-﻿<section class="invite-page">
-  <mat-card class="invite-card imr-card">
-    <div class="imr-card__head">
-      <h1>Einladung abschließen</h1>
-    </div>
-
-    <imr-card-content>
+﻿<imr-page-layout pageClass="invite-page">
+  <imr-section-card sectionTitle="Einladung abschließen" cardClass="invite-card">
       @if (tokenMissing) {
         <p class="invite-note error">Der Einladungslink ist unvollständig. Bitte fordere eine neue Einladung an.</p>
       } @else {
@@ -35,6 +30,5 @@
           </imr-top-actions>
         </form>
       }
-    </imr-card-content>
-  </mat-card>
-</section>
+  </imr-section-card>
+</imr-page-layout>

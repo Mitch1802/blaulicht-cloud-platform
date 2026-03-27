@@ -1,14 +1,7 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
-<section class="public-fahrzeug-page">
-  <header class="page-head">
-    <h1>Externe Fahrzeug-Checkliste</h1>
-  </header>
-
-  <imr-card>
-    <div class="imr-card__head">
-      <h2>Checkliste ohne Speichern</h2>
-    </div>
+<imr-page-layout title="Externe Fahrzeug-Checkliste" class="public-fahrzeug-page">
+  <imr-section-card title="Checkliste ohne Speichern">
 
 
       @if (verified) {
@@ -152,5 +145,5 @@
         </imr-accordion>
       }
 
-  </imr-card>
-</section>
+  </imr-section-card>
+</imr-page-layout>

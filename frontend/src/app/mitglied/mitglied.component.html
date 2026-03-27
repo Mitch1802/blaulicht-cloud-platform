@@ -1,14 +1,7 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
-<section class="mitglied-page">
-  <header class="page-head">
-    <h1>{{ title }}</h1>
-  </header>
-
-  <imr-card>
-    <div class="imr-card__head">
-      <h2>Mitglieder verwalten</h2>
-    </div>
+<imr-page-layout [title]="title" class="mitglied-page">
+  <imr-section-card title="Mitglieder verwalten">
 
       <imr-top-actions>
         @if (formModul.disabled) {
@@ -281,5 +274,5 @@
             </imr-paginator>
           </div>
         }
-  </imr-card>
-</section>
+  </imr-section-card>
+</imr-page-layout>

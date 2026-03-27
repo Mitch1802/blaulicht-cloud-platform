@@ -5,7 +5,7 @@ import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
-import { IMR_UI_COMPONENTS, ImrPaginatorComponent } from '../imr-ui-library';
+import { IMR_UI_COMPONENTS, ImrBreadcrumbItem, ImrPaginatorComponent } from '../imr-ui-library';
 import { Router } from '@angular/router';
 import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { MatInput } from '@angular/material/input';
@@ -18,6 +18,37 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { IStammdaten } from '../_interface/stammdaten';
 import { forkJoin } from 'rxjs';
 import { DateInputMaskDirective } from '../_directive/date-input-mask.directive';
+
+type FmdKonfigIntervall = { von: number; bis: number; intervall: number };
+type FmdModulKonfig = { intervall?: FmdKonfigIntervall[]; [key: string]: unknown };
+type FmdPdfKonfig = { idFmdDeckblatt?: string; idFmdListe?: string; [key: string]: unknown };
+type FmdModulKonfigItem = { modul: string; konfiguration?: Record<string, unknown> };
+type FmdContextResponse = { modul_konfig?: unknown; modulKonfig?: unknown; konfig?: unknown; mitglieder?: unknown };
+type FmdMainResponse = { main?: unknown; mitglieder?: unknown; results?: unknown } | unknown[];
+
+type MitgliedMitAts = IMitglied & {
+  tauglichkeit?: string | null;
+  naechste_untersuchung?: string | null;
+  leistungstest?: string | null;
+  liste_ats?: string;
+  liste_tauglich?: string;
+  liste_arzt?: string;
+  liste_leistungstest?: string;
+};
+
+type FmdFormValue = {
+  id: string;
+  mitglied_id: number;
+  arzt: string;
+  arzt_typ: string;
+  letzte_untersuchung: string;
+  leistungstest: string;
+  leistungstest_art: string;
+  notizen: string;
+  fdisk_aenderung: string;
+  naechste_untersuchung?: string;
+  tauglichkeit?: string;
+};
 
 Chart.register(ChartDataLabels);
 
@@ -83,9 +114,9 @@ export class FmdComponent implements OnInit, AfterViewInit {
     return this.collectionUtilsService.arraySortByKey(liste, 'stbnr');
   }
 
-  breadcrumb: any = [];
+  breadcrumb: ImrBreadcrumbItem[] = [];
 
-  pageOptions: any[] = [5, 10, 50, 100]
+  pageOptions: number[] = [5, 10, 50, 100]
 
   dataSource = new MatTableDataSource<IATSTraeger>(this.atstraeger);
   sichtbareSpaltenATS: string[] = ['stbnr', 'vorname', 'nachname', 'actions'];
@@ -111,7 +142,7 @@ export class FmdComponent implements OnInit, AfterViewInit {
           weight: 'bold',
           size: 14
         },
-        formatter: (value, ctx) => {
+        formatter: (value, _ctx) => {
           return value;
         }
       }
@@ -151,22 +182,22 @@ export class FmdComponent implements OnInit, AfterViewInit {
     ]),
   });
 
-  arzttypen: any = [
+  arzttypen: string[] = [
     "Praktischer Arzt",
     "FW Arzt",
     "Betriebsarzt"
   ]
 
-  leistungstestarten: any = [
+  leistungstestarten: string[] = [
     "unbekannt",
     "Finnentest",
     "Fahrrad",
     "Cooper (Laufen)"
   ]
 
-  modul_konfig: any = {};
-  pdf_konfig: any = {};
-  stammdaten: any = {};
+  modul_konfig: FmdModulKonfig = {};
+  pdf_konfig: FmdPdfKonfig = {};
+  stammdaten: IStammdaten = {} as IStammdaten;
 
   @ViewChildren(BaseChartDirective) charts?: QueryList<BaseChartDirective>;
   @ViewChild(ImrPaginatorComponent, { static: false }) paginator?: ImrPaginatorComponent;
@@ -185,33 +216,35 @@ export class FmdComponent implements OnInit, AfterViewInit {
     return this.tabsMitTabelle.has(index);
   }
 
-  private normalizeArrayPayload<T>(payload: any): T[] {
+  private normalizeArrayPayload<T>(payload: unknown): T[] {
     if (Array.isArray(payload)) {
       return payload as T[];
     }
 
-    if (Array.isArray(payload?.main)) {
-      return payload.main as T[];
+    const p = payload as { main?: unknown; results?: unknown };
+    if (Array.isArray(p?.main)) {
+      return p.main as T[];
     }
 
-    if (Array.isArray(payload?.results)) {
-      return payload.results as T[];
+    if (Array.isArray(p?.results)) {
+      return p.results as T[];
     }
 
     return [];
   }
 
-  private normalizeConfigPayload(payload: any): any[] {
+  private normalizeConfigPayload(payload: unknown): Record<string, unknown>[] {
     if (Array.isArray(payload)) {
-      return payload;
+      return payload as Record<string, unknown>[];
     }
 
-    if (Array.isArray(payload?.main)) {
-      return payload.main;
+    const p = payload as { main?: unknown };
+    if (Array.isArray(p?.main)) {
+      return p.main as Record<string, unknown>[];
     }
 
     if (payload && typeof payload === 'object') {
-      return [payload];
+      return [payload as Record<string, unknown>];
     }
 
     return [];
@@ -224,58 +257,58 @@ export class FmdComponent implements OnInit, AfterViewInit {
     this.formModul.disable();
 
     forkJoin({
-      main: this.apiHttpService.get<any[]>(this.modul),
-      context: this.apiHttpService.get<any>(`${this.modul}/context`),
+      main: this.apiHttpService.get<FmdMainResponse>(this.modul),
+      context: this.apiHttpService.get<FmdContextResponse>(`${this.modul}/context`),
     }).subscribe({
       next: ({ main, context }) => {
         try {
-          const mainPayload = main as any;
-          const modulKonfig = this.normalizeArrayPayload<any>(context?.modul_konfig ?? context?.modulKonfig);
+          const mainPayload = main as { mitglieder?: unknown };
+          const modulKonfig = this.normalizeArrayPayload<FmdModulKonfigItem>(context?.modul_konfig ?? context?.modulKonfig);
           const konfigListe = this.normalizeConfigPayload(context?.konfig);
-          const mitglieder = this.normalizeArrayPayload<any>(context?.mitglieder ?? mainPayload?.mitglieder);
-          const mains = this.normalizeArrayPayload<any>(mainPayload);
+          const mitglieder = this.normalizeArrayPayload<IMitglied>(context?.mitglieder ?? mainPayload?.mitglieder);
+          const mains = this.normalizeArrayPayload<IATSTraeger>(main);
 
-          const konfigs = modulKonfig.find((m: any) => m.modul === 'fmd');
-          this.modul_konfig = konfigs?.konfiguration ?? [];
-          
-          const templates = modulKonfig.find((m: any) => m.modul === 'pdf');
-          this.pdf_konfig = templates?.konfiguration ?? [];
+          const konfigs = modulKonfig.find((m) => m.modul === 'fmd');
+          this.modul_konfig = (konfigs?.konfiguration ?? {}) as FmdModulKonfig;
 
-          this.stammdaten = <IStammdaten>(konfigListe[0] ?? {});
+          const templates = modulKonfig.find((m) => m.modul === 'pdf');
+          this.pdf_konfig = (templates?.konfiguration ?? {}) as FmdPdfKonfig;
+
+          this.stammdaten = (konfigListe[0] ?? {}) as unknown as IStammdaten;
           this.mitglieder = mitglieder;
           this.mitgliederGesamt = mitglieder;
-          const memberMap = new Map<number, any>(
-            this.mitglieder.map((m: any) => [Number(m.pkid), m])
+          const memberMap = new Map<number, IMitglied>(
+            this.mitglieder.map((m) => [Number(m.pkid), m])
           );
 
-          this.atstraeger = mains.map(item => {
-            const mitg = memberMap.get(Number(item.mitglied_id)) || {};
+          this.atstraeger = mains.map((item) => {
+            const mitg = memberMap.get(Number(item.mitglied_id));
             return {
               ...item,
-              stbnr: mitg.stbnr,
-              vorname: mitg.vorname,
-              nachname: mitg.nachname,
-              geburtsdatum: mitg.geburtsdatum,
-              hauptberuflich: mitg.hauptberuflich
+              stbnr: mitg?.stbnr ? String(mitg.stbnr) : item.stbnr,
+              vorname: mitg?.vorname ?? item.vorname,
+              nachname: mitg?.nachname ?? item.nachname,
+              geburtsdatum: mitg?.geburtsdatum ?? item.geburtsdatum,
+              hauptberuflich: mitg?.hauptberuflich ?? item.hauptberuflich
             };
           });
 
-          this.mitglieder = this.mitglieder.filter((m: any) => m.hauptberuflich == false);
+          this.mitglieder = this.mitglieder.filter((m) => m.hauptberuflich === false);
 
           this.mitglieder = this.collectionUtilsService.arraySortByKey(this.mitglieder, 'stbnr');
           this.atstraeger = this.collectionUtilsService.arraySortByKey(this.atstraeger, 'stbnr');
           this.dataSource.data = this.atstraeger;
           this.updateTauglichkeitFürAlle();
           this.updateChartData();
-        } catch (e: any) {
-          const fallbackRows = this.normalizeArrayPayload<any>(main as any);
+        } catch (e: unknown) {
+          const fallbackRows = this.normalizeArrayPayload<IATSTraeger>(main);
           this.atstraeger = fallbackRows;
           this.dataSource.data = fallbackRows;
           console.error('FMD initial load failed, showing fallback rows', e);
           this.uiMessageService.erstelleMessage('error', 'FMD konnte nicht vollständig aufbereitet werden. Rohdaten werden angezeigt.');
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       }
     });
@@ -290,34 +323,32 @@ export class FmdComponent implements OnInit, AfterViewInit {
     this.formModul.enable();
   }
 
-  auswahlBearbeiten(element: any): void {
-    if (element.id === 0) {
+  auswahlBearbeiten(element: IATSTraeger): void {
+    if (!element.id || element.id === '0') {
       return;
     }
     const abfrageUrl = `${this.modul}/${element.id}`;
 
-    this.apiHttpService.get(abfrageUrl).subscribe({
-      next: (erg: any) => {
+    this.apiHttpService.get<IATSTraeger>(abfrageUrl).subscribe({
+      next: (erg) => {
         try {
-          const details: IATSTraeger = erg;
-
           this.formModul.enable();
           this.formModul.setValue({
-            id: details.id,
-            mitglied_id: details.mitglied_id,
-            arzt: details.arzt,
-            arzt_typ: details.arzt_typ,
-            letzte_untersuchung: details.letzte_untersuchung,
-            leistungstest: details.leistungstest,
-            leistungstest_art: details.leistungstest_art,
-            notizen: details.notizen,
-            fdisk_aenderung: details.fdisk_aenderung
+            id: erg.id,
+            mitglied_id: erg.mitglied_id,
+            arzt: erg.arzt,
+            arzt_typ: erg.arzt_typ,
+            letzte_untersuchung: erg.letzte_untersuchung,
+            leistungstest: erg.leistungstest,
+            leistungstest_art: erg.leistungstest_art,
+            notizen: erg.notizen,
+            fdisk_aenderung: erg.fdisk_aenderung
           });
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage('error', e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       }
     });
@@ -329,22 +360,22 @@ export class FmdComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    const objekt: any = this.formModul.value;
+    const objekt = this.formModul.value as FmdFormValue;
     const idValue = this.formModul.controls['id'].value;
 
     const mitglied = this.mitglieder.find(m => m.pkid === objekt.mitglied_id);
     const gebDatum = mitglied?.geburtsdatum ?? null;
     const alter = this.berechneAlter(gebDatum);
 
-    if (objekt.letzte_untersuchung != '' && objekt.letzte_untersuchung != null) {
+    if (objekt.letzte_untersuchung !== '' && objekt.letzte_untersuchung !== null) {
       const parts = objekt.letzte_untersuchung.split('.');
       if (parts.length === 3) {
-        const [tag, monat, jahr] = parts.map((n: any) => parseInt(n, 10));
+        const [tag, monat, jahr] = parts.map((n) => parseInt(n, 10));
         if (!isNaN(tag) && !isNaN(monat) && !isNaN(jahr)) {
           const datum = new Date(jahr, monat - 1, tag);
 
-          const match = this.modul_konfig.intervall
-            .find((i: any) => alter >= i.von && alter <= i.bis);
+          const match = (this.modul_konfig.intervall ?? [])
+            .find((i) => alter >= i.von && alter <= i.bis);
 
           if (match) {
             const nextYear = datum.getFullYear() + match.intervall;
@@ -363,7 +394,7 @@ export class FmdComponent implements OnInit, AfterViewInit {
     if (objekt.leistungstest) {
       const partsLS = objekt.leistungstest.split('.');
       if (partsLS.length === 3) {
-        const [, , jahrLS] = partsLS.map((n: any) => parseInt(n, 10));
+        const [, , jahrLS] = partsLS.map((n) => parseInt(n, 10));
         if (!isNaN(jahrLS)) testJahr = jahrLS;
       }
     }
@@ -385,14 +416,14 @@ export class FmdComponent implements OnInit, AfterViewInit {
 
 
     if (!idValue) {
-      this.apiHttpService.post(this.modul, objekt, false).subscribe({
-        next: (erg: any) => {
+      this.apiHttpService.post<IATSTraeger>(this.modul, objekt, false).subscribe({
+        next: (erg) => {
           try {
-            const newTraeger: any = erg;
+            const newTraeger: IATSTraeger = { ...erg };
             const mitg = this.mitglieder.find(m => m.pkid === newTraeger.mitglied_id);
 
             if (mitg) {
-              newTraeger.stbnr = mitg.stbnr;
+              newTraeger.stbnr = String(mitg.stbnr);
               newTraeger.vorname = mitg.vorname;
               newTraeger.nachname = mitg.nachname;
               newTraeger.hauptberuflich = mitg.hauptberuflich;
@@ -416,27 +447,27 @@ export class FmdComponent implements OnInit, AfterViewInit {
             });
             this.formModul.disable();
             this.uiMessageService.erstelleMessage('success', 'ATS Träger gespeichert!');
-          } catch (e: any) {
-            this.uiMessageService.erstelleMessage('error', e);
+          } catch (e: unknown) {
+            this.uiMessageService.erstelleMessage('error', String(e));
           }
         },
-        error: (error: any) => this.authSessionService.errorAnzeigen(error)
+        error: (error: unknown) => this.authSessionService.errorAnzeigen(error)
       });
     } else {
-      this.apiHttpService.patch(this.modul, idValue, objekt, false).subscribe({
-        next: (erg: any) => {
+      this.apiHttpService.patch<IATSTraeger>(this.modul, idValue, objekt, false).subscribe({
+        next: (erg) => {
           try {
-            const updated: any = erg;
+            const updated: IATSTraeger = { ...erg };
             const mitg = this.mitglieder.find(m => m.pkid === updated.mitglied_id);
             if (mitg) {
-              updated.stbnr = mitg.stbnr;
+              updated.stbnr = String(mitg.stbnr);
               updated.vorname = mitg.vorname;
               updated.nachname = mitg.nachname;
               updated.hauptberuflich = mitg.hauptberuflich;
             }
             this.atstraeger = this.atstraeger
               .map(m => m.id === updated.id ? updated : m)
-              .sort((a, b) => a.stbnr - b.stbnr);
+              .sort((a, b) => String(a.stbnr ?? '').localeCompare(String(b.stbnr ?? ''), 'de', { numeric: true }));
 
             this.dataSource.data = this.atstraeger;
 
@@ -455,11 +486,11 @@ export class FmdComponent implements OnInit, AfterViewInit {
             this.updateChartData();
 
             this.uiMessageService.erstelleMessage('success', 'ATS Träger geändert!');
-          } catch (e: any) {
-            this.uiMessageService.erstelleMessage('error', e);
+          } catch (e: unknown) {
+            this.uiMessageService.erstelleMessage('error', String(e));
           }
         },
-        error: (error: any) => this.authSessionService.errorAnzeigen(error)
+        error: (error: unknown) => this.authSessionService.errorAnzeigen(error)
       });
     }
   }
@@ -488,9 +519,9 @@ export class FmdComponent implements OnInit, AfterViewInit {
     }
 
     this.apiHttpService.delete(this.modul, id).subscribe({
-      next: (erg: any) => {
+      next: () => {
         try {
-          this.atstraeger = this.atstraeger.filter((m: any) => m.id !== id);
+          this.atstraeger = this.atstraeger.filter((m) => m.id !== id);
           this.dataSource.data = this.atstraeger;
           this.updateChartData();
 
@@ -508,11 +539,11 @@ export class FmdComponent implements OnInit, AfterViewInit {
           this.formModul.disable();
 
           this.uiMessageService.erstelleMessage('success', 'ATS Träger erfolgreich gelöscht!');
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage('error', e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       }
     });
@@ -594,7 +625,7 @@ export class FmdComponent implements OnInit, AfterViewInit {
     return year < currentYear - 1;
   }
 
-  getYearFromDate(dateStr?: string | Date | null): number {
+  getYearFromDate(dateStr?: unknown): number {
     if (!dateStr) return NaN;
 
     if (dateStr instanceof Date) return dateStr.getFullYear();
@@ -626,7 +657,7 @@ export class FmdComponent implements OnInit, AfterViewInit {
   private setActiveSortForTab(tabIndex: number): void {
     const sortIdx = this.sortIndexByTab[tabIndex];
     const activeSort = sortIdx !== undefined ? this.sorts?.get(sortIdx) : undefined;
-    this.dataSource.sort = (activeSort as MatSort | undefined) ?? (undefined as any);
+    this.dataSource.sort = activeSort;
   }
 
   updateAlterChart(): void {
@@ -650,10 +681,10 @@ export class FmdComponent implements OnInit, AfterViewInit {
 
     this.atstraeger.forEach(traeger => {
       const testStr = traeger.leistungstest;
-      const hasTest = testStr != null && String(testStr).trim() !== '' && testStr !== 'nein';
+      const hasTest = testStr !== null && testStr !== undefined && String(testStr).trim() !== '' && testStr !== 'nein';
 
       const nextStr = traeger.naechste_untersuchung;
-      const hasNext = nextStr != null && String(nextStr).trim() !== '';
+      const hasNext = nextStr !== null && nextStr !== undefined && String(nextStr).trim() !== '';
       const nextYear = hasNext ? Number(nextStr) : NaN;
 
       if (traeger.tauglichkeit === 'tauglich') {
@@ -687,7 +718,7 @@ export class FmdComponent implements OnInit, AfterViewInit {
 
     this.atstraeger.forEach(traeger => {
       const nextStr = traeger.naechste_untersuchung;
-      const hasNext = nextStr != null && String(nextStr).trim() !== '';
+      const hasNext = nextStr !== null && nextStr !== undefined && String(nextStr).trim() !== '';
       const nextYear = hasNext ? Number(nextStr) : NaN;
 
       if (!hasNext || isNaN(nextYear) || nextYear <= currentYear) {
@@ -704,12 +735,12 @@ export class FmdComponent implements OnInit, AfterViewInit {
   private updateFilterPredicateFor(tabIndex: number) {
     const cols = this.columnsByTab[tabIndex] ?? [];
     if (!cols.length) {
-      // Übersicht: alles durchlassen (oder leer)
       this.dataSource.filterPredicate = () => true;
       return;
     }
-    this.dataSource.filterPredicate = (row: any, filter: string) => {
-      const haystack = cols.map(c => String(row?.[c] ?? '').toLowerCase()).join(' ');
+    this.dataSource.filterPredicate = (row: IATSTraeger, filter: string) => {
+      const rowData = row as unknown as Record<string, unknown>;
+      const haystack = cols.map(c => String(rowData[c] ?? '').toLowerCase()).join(' ');
       return haystack.includes(filter);
     };
   }
@@ -728,14 +759,14 @@ export class FmdComponent implements OnInit, AfterViewInit {
         this.updateFilterPredicateFor(index);
         this.dataSource.filter = this.dataSource.filter;
       } else {
-        this.dataSource.paginator = undefined as any;
-        this.dataSource.sort = undefined as any;
+        this.dataSource.paginator = undefined;
+        this.dataSource.sort = undefined;
       }
     });
   }
 
-  isLeistungstestOk(value: any): boolean {
-    if (value == null) return false;
+  isLeistungstestOk(value: unknown): boolean {
+    if (value === null || value === undefined) return false;
     const s = String(value).trim().toLowerCase();
     if (!s || s === 'nein') return false;
 
@@ -746,14 +777,13 @@ export class FmdComponent implements OnInit, AfterViewInit {
     return year >= currentYear - 1; // aktuelles oder letztes Jahr
   }
 
-  printChecklist(element: any): void {
+  printChecklist(element: IATSTraeger): void {
     if (!element?.id) return;
     const idPdfCheckliste = this.pdf_konfig['idFmdDeckblatt'];
     const abfrageUrl = `pdf/templates/${idPdfCheckliste}/render`;
 
-    let heute: any = new Date().toLocaleString('de-DE');
-    heute = heute.split(",");
-    heute = heute[0];
+    let heute = new Date().toLocaleString('de-DE');
+    heute = heute.split(",")[0] ?? heute;
 
     const payload = {
       "druck_datum": heute,
@@ -781,13 +811,13 @@ export class FmdComponent implements OnInit, AfterViewInit {
         const url = URL.createObjectURL(blob);
         window.open(url, '_blank');
       },
-      error: (error: any) => this.authSessionService.errorAnzeigen(error)
+      error: (error: unknown) => this.authSessionService.errorAnzeigen(error)
     });
   }
 
   printOffeneUntersuchugen(): void {
     const today = new Date();
-    let data = this.atstraeger.filter((m: any) => m.naechste_untersuchung == null || Number(m.naechste_untersuchung) <= today.getFullYear());
+    let data = this.atstraeger.filter((m) => m.naechste_untersuchung === null || m.naechste_untersuchung === undefined || Number(m.naechste_untersuchung) <= today.getFullYear());
     data = this.collectionUtilsService.arraySortByKey(data, 'naechste_untersuchung');
     this.printListe(data, "untersuchungen");
   }
@@ -800,8 +830,8 @@ export class FmdComponent implements OnInit, AfterViewInit {
     this.printListe(this.atstraeger, "leistungstest");
   }
 
-  private getYearSafe(value: any): number | null {
-    if (value == null) return null;
+  private getYearSafe(value: unknown): number | null {
+    if (value === null || value === undefined) return null;
 
     // falls du schon Jahreszahlen als "2027" bekommst
     if (typeof value === "number" && Number.isFinite(value)) return value;
@@ -813,23 +843,29 @@ export class FmdComponent implements OnInit, AfterViewInit {
       // "2027" direkt als Jahr
       const asNum = Number(v);
       if (Number.isFinite(asNum) && asNum > 1900 && asNum < 3000) return asNum;
+
+      const d = new Date(value);
+      if (Number.isNaN(d.getTime())) return null;
+      return d.getFullYear();
     }
 
-    const d = new Date(value);
-    if (Number.isNaN(d.getTime())) return null;
-    return d.getFullYear();
+    if (value instanceof Date) {
+      return Number.isNaN(value.getTime()) ? null : value.getFullYear();
+    }
+
+    return null;
   }
 
   printAlleMitglieder(): void {
-    const memberMap = new Map<number, any>(
-      this.atstraeger.map((a: any) => [Number(a.mitglied_id), a])
+    const memberMap = new Map<number, IATSTraeger>(
+      this.atstraeger.map((a) => [Number(a.mitglied_id), a])
     );
 
-    const toBool = (v: any): boolean =>
+    const toBool = (v: unknown): boolean =>
       v === true || v === 1 || v === "1" ||
       (typeof v === "string" && v.trim().toLowerCase() === "true");
 
-    const data = this.mitgliederGesamt.map((m: any) => {
+    const data: MitgliedMitAts[] = this.mitgliederGesamt.map((m) => {
       const ats = memberMap.get(Number(m.pkid));
 
       // BF primär aus Mitglied, sonst aus ATS
@@ -846,12 +882,12 @@ export class FmdComponent implements OnInit, AfterViewInit {
       const leistungstest = ats?.leistungstest ?? null;
 
       const liste_tauglich =
-        tauglichkeit == null ? "" : (tauglichkeit === "tauglich" ? "Ja" : "Nein");
+        tauglichkeit === null || tauglichkeit === undefined ? "" : (tauglichkeit === "tauglich" ? "Ja" : "Nein");
 
       // Arzt: Status + Jahr (wenn vorhanden)
       const arztJahr = this.getYearSafe(naechste_untersuchung);
       let liste_arzt = "";
-      if (arztJahr != null) {
+      if (arztJahr !== null) {
         liste_arzt = arztJahr <= this.currentYear ? `Nicht OK | ${arztJahr}` : `OK | ${arztJahr}`;
       } else {
         // keine Info -> leer lassen (so wolltest du es)
@@ -864,7 +900,7 @@ export class FmdComponent implements OnInit, AfterViewInit {
       const testJahr = this.getYearSafe(leistungstest);
 
       let liste_leistungstest = "";
-      if (leistungstest == null) {
+      if (leistungstest === null || leistungstest === undefined) {
         liste_leistungstest = "";
       } else if (hasNoTest) {
         liste_leistungstest = "Nicht OK";
@@ -888,7 +924,7 @@ export class FmdComponent implements OnInit, AfterViewInit {
         };
       }
 
-      if (liste_ats == "Nein") {
+      if (liste_ats === "Nein") {
         return {
           ...m,
           tauglichkeit,
@@ -918,13 +954,12 @@ export class FmdComponent implements OnInit, AfterViewInit {
     this.printListe(data_sort, "gesamt");
   }
 
-  printListe(data: any, typ: string): void {
+  printListe(data: unknown, typ: string): void {
     const idPdfListe = this.pdf_konfig['idFmdListe'];
     const abfrageUrl = `pdf/templates/${idPdfListe}/render`;
 
-    let heute: any = new Date().toLocaleString('de-DE');
-    heute = heute.split(",");
-    heute = heute[0];
+    let heute = new Date().toLocaleString('de-DE');
+    heute = heute.split(",")[0] ?? heute;
 
     const payload = {
       "druck_datum": heute,
@@ -949,7 +984,7 @@ export class FmdComponent implements OnInit, AfterViewInit {
         const url = URL.createObjectURL(blob);
         window.open(url, '_blank');
       },
-      error: (error: any) => this.authSessionService.errorAnzeigen(error)
+      error: (error: unknown) => this.authSessionService.errorAnzeigen(error)
     });
 
   }

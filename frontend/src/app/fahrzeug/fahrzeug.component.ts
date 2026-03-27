@@ -22,7 +22,7 @@ import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
-import { IMR_UI_COMPONENTS, ImrPaginatorComponent } from "../imr-ui-library";
+import { IMR_UI_COMPONENTS, ImrBreadcrumbItem, ImrPaginatorComponent } from "../imr-ui-library";
 import { DateInputMaskDirective } from '../_directive/date-input-mask.directive';
 
 type RaumEditFG = FormGroup<{
@@ -67,7 +67,7 @@ export class FahrzeugComponent implements OnInit {
   private uiMessageService = inject(UiMessageService);
   private fb = inject(FormBuilder);
 
-  breadcrumb: { label: string; url?: string }[] = [];
+  breadcrumb: ImrBreadcrumbItem[] = [];
   modul = "fahrzeuge";
 
   fahrzeuge: IFahrzeugList[] = [];

@@ -1,14 +1,7 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
-<section class="bericht-page">
-  <header class="page-head">
-    <h1>{{ title }}</h1>
-  </header>
-
-  <imr-card class="imr-card">
-    <div class="imr-card__head">
-      <h2>{{ viewMode === 'list' ? 'Einsätze' : 'Einsatz erfassen' }}</h2>
-    </div>
+<imr-page-layout [title]="title" class="bericht-page">
+  <imr-section-card [title]="viewMode === 'list' ? 'Einsätze' : 'Einsatz erfassen'">
       @if (viewMode === 'list') {
         <section class="drafts-section list-only">
           <imr-top-actions>
@@ -18,11 +11,6 @@
               <span class="permission-inline-note">Anlegen und Bearbeiten von Inhalten ist nur mit Rolle BERICHT moeglich.</span>
             }
           </imr-top-actions>
-
-          <div class="permission-hints m-2">
-            <span><strong>Inhalte/Bilder:</strong> BERICHT</span>
-            <span><strong>Status/Drucken/Löschen:</strong> VERWALTUNG</span>
-          </div>
 
           @if (berichte.length === 0) {
             <p class="empty">Noch keine Einsatzberichte vorhanden.</p>
@@ -99,11 +87,6 @@
         <imr-top-actions>
           <imr-button type="button" color="primary" (click)="zurueckZurListe()">Zur Liste</imr-button>
         </imr-top-actions>
-
-        <div class="permission-hints form-hints m-2">
-          <span><strong>Inhalte/Bilder:</strong> BERICHT</span>
-          <span><strong>Status/Drucken/Löschen:</strong> VERWALTUNG</span>
-        </div>
 
         <imr-accordion class="bericht-accordion m-2" [multi]="false">
           <imr-expansion-panel class="form-section" [class.has-error]="section1HasError">
@@ -547,6 +530,6 @@
         </imr-top-actions>
       </form>
       }
-  </imr-card>
-</section>
+  </imr-section-card>
+</imr-page-layout>
 

@@ -24,14 +24,15 @@ export class AuthSessionService {
         this.clearSessionAndCookies();
         this.router.navigate(['/login']);
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.errorAnzeigen(error);
       },
     });
   }
 
-  errorAnzeigen(response: any): void {
-    const errorObject = response?.error;
+  errorAnzeigen(response: unknown): void {
+    const responseObj = response as { error?: unknown; status?: number };
+    const errorObject = responseObj?.error;
 
     if (errorObject && typeof errorObject === 'object') {
       const msg = Object.values(errorObject)
@@ -43,7 +44,7 @@ export class AuthSessionService {
       }
     }
 
-    if (response?.status === 401) {
+    if (responseObj?.status === 401) {
       this.clearSessionAndCookies();
       this.router.navigate(['/login']);
     }

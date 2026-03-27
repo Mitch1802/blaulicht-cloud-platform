@@ -1,16 +1,8 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
-<section class="atemschutz-geraete-page">
-  <header class="page-head">
-    <h1>Geräte verwalten</h1>
-  </header>
-
-  <mat-card class="imr-card">
-    <div class="imr-card__head">
-      <h2>Geräte verwalten</h2>
-    </div>
-    <imr-card-content>
-        @if (sichtbarkeitModul() == "tableListe")
+<imr-page-layout [title]="title" class="atemschutz-geraete-page">
+  <imr-section-card title="Geräte verwalten">
+        @if (sichtbarkeitModul() === "tableListe")
         {
         <imr-top-actions>
           <imr-button
@@ -30,7 +22,7 @@
           </imr-button>
         </imr-top-actions>
         } 
-        @if (sichtbarkeitModul() == "tablePruefungen") {
+        @if (sichtbarkeitModul() === "tablePruefungen") {
         <imr-top-actions>
           <imr-button
             color="primary"
@@ -42,7 +34,7 @@
         </imr-top-actions>
         }
         <!-- MASKE FORM -->
-        @if (sichtbarkeitModul() == "formModul") {
+        @if (sichtbarkeitModul() === "formModul") {
         <form [formGroup]="formModul" (ngSubmit)="datenSpeichern()" class="edit-form">
           <input hidden type="text"  formControlName="id" />
           <imr-top-actions class="imr-form-actions">
@@ -137,7 +129,7 @@
         }
         <!-- MASKE FORM ENDE -->
         <!-- PRÜFUNG FORM -->
-        @if (sichtbarkeitModul() == "formPruefung") {
+        @if (sichtbarkeitModul() === "formPruefung") {
         <form [formGroup]="formPruefung" (ngSubmit)="datenSpeichernProtokoll()" class="edit-form">
           <input hidden type="text"  formControlName="id" />
           <imr-top-actions class="imr-form-actions">
@@ -276,7 +268,7 @@
         }
         <!-- PRÜFUNG FORM ENDE -->
         <!-- TABELLE MASKEN -->
-        @if (sichtbarkeitModul() == "tableListe")
+        @if (sichtbarkeitModul() === "tableListe")
         {
         <table
           mat-table
@@ -354,7 +346,7 @@
         }
         <!-- TABELLE MASKEN ENDE -->
         <!-- TABELLE MASKEN PRÜFUNGEN -->
-        @if (sichtbarkeitModul() == "tablePruefungen") {
+        @if (sichtbarkeitModul() === "tablePruefungen") {
         <table
           mat-table
           [dataSource]="dataSourcePruefungen"
@@ -367,11 +359,11 @@
           <ng-container matColumnDef="taetigkeit">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Tätigkeit</th>
             <td mat-cell *matCellDef="let element">
-              @if (element.pruefung_10jahre == true) {
+              @if (element.pruefung_10jahre === true) {
                 Prüfung 10 Jahre
-              }@else if (element.pruefung_jaehrlich == true) {
+              }@else if (element.pruefung_jaehrlich === true) {
                 Prüfung Jährlich
-              }@else if (element.preufung_monatlich == true) {
+              }@else if (element.preufung_monatlich === true) {
                 Prüfung Monatlich
               }@else if (element.taetigkeit) {
                 {{ element.taetigkeit }}
@@ -408,8 +400,7 @@
         </table>
         }
         <!-- TABELLE MASKEN PRÜFUNGEN ENDE -->
-    </imr-card-content>
-  </mat-card>
-</section>
+  </imr-section-card>
+</imr-page-layout>
 
 

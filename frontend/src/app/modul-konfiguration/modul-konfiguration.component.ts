@@ -14,7 +14,7 @@ import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
-import { IMR_UI_COMPONENTS } from '../imr-ui-library';
+import { IMR_UI_COMPONENTS, ImrBreadcrumbItem } from '../imr-ui-library';
 import { UiControlErrorMap } from '../imr-ui-library';
 import { MatInput } from '@angular/material/input';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -22,6 +22,11 @@ import { Router } from '@angular/router';
 import { IPdfTemplate } from '../_interface/pdf_template';
 import jugendRegelConfig from '../jugend/config.json';
 import startRegelConfig from '../start/konfig.json';
+
+type ModulEintrag = { id: number; modul: string; konfiguration: Record<string, unknown> };
+type ModulAuswahl = { key: string; label: string };
+type ModulKonfigResponse = { main?: ModulEintrag[] } | ModulEintrag[];
+type PdfTemplatesResponse = { main?: IPdfTemplate[] } | IPdfTemplate[];
 
 @Component({
   selector: 'app-modul-konfiguration',
@@ -46,18 +51,18 @@ export class ModulKonfigurationComponent implements OnInit {
 
   title = 'Modul Konfiguration';
   modul = 'modul_konfiguration';
-  breadcrumb: any[] = [];
+  breadcrumb: ImrBreadcrumbItem[] = [];
 
-  verfuegbareModulListe: any = [
+  verfuegbareModulListe: ModulAuswahl[] = [
     { key: 'start', label: 'Startseite' },
     { key: 'fmd', label: 'FMD' },
     { key: 'jugend', label: 'Jugend' },
     { key: 'pdf', label: 'PDF Templates Zuweisung' },
   ];
 
-  modulListe: any[] = [];
-  private modulByKey = new Map<string, any>();
-  dataSource = new MatTableDataSource<any>([]);
+  modulListe: ModulEintrag[] = [];
+  private modulByKey = new Map<string, ModulEintrag>();
+  dataSource = new MatTableDataSource<ModulEintrag>([]);
   sichtbareSpalten: string[] = ['modul', 'actions'];
 
   private readonly jugendDefaultKonfiguration = jugendRegelConfig;
@@ -147,18 +152,18 @@ export class ModulKonfigurationComponent implements OnInit {
     this.breadcrumb = this.navigationService.ladeBreadcrumb();
 
     // Modul-Konfig laden
-    this.apiHttpService.get(this.modul).subscribe({
-      next: (erg: any) => {
+    this.apiHttpService.get<ModulKonfigResponse>(this.modul).subscribe({
+      next: (erg) => {
         try {
           this.formModul.disable();
-          this.modulListe = erg.main ?? [];
-          this.modulByKey = new Map(this.modulListe.map((x: any) => [x.modul, x]));
+          this.modulListe = Array.isArray(erg) ? erg : (erg.main ?? []);
+          this.modulByKey = new Map(this.modulListe.map((x) => [x.modul, x]));
           this.dataSource.data = this.modulListe;
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage('error', e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
-      error: (error: any) => this.authSessionService.errorAnzeigen(error)
+      error: (error: unknown) => this.authSessionService.errorAnzeigen(error)
     });
 
     // Wenn user im PDF-Form was ändert => JSON-String im formModul.konfiguration mitschreiben
@@ -212,7 +217,7 @@ export class ModulKonfigurationComponent implements OnInit {
       return;
     }
 
-    const objekt: any = this.formModul.value;
+    const objekt = this.formModul.value as { modul: string; konfiguration: string | Record<string, unknown> };
     const idValue = this.formModul.controls['id'].value;
 
     if (objekt.modul === 'pdf') {
@@ -234,38 +239,40 @@ export class ModulKonfigurationComponent implements OnInit {
         { emitEvent: false }
       );
     } else {
-      objekt.konfiguration = JSON.parse(objekt.konfiguration);
+      objekt.konfiguration = typeof objekt.konfiguration === 'string'
+        ? JSON.parse(objekt.konfiguration)
+        : objekt.konfiguration;
     }
 
     if (!idValue) {
-      this.apiHttpService.post(this.modul, objekt, false).subscribe({
-        next: (saved: any) => {
+      this.apiHttpService.post<ModulEintrag>(this.modul, objekt, false).subscribe({
+        next: (saved) => {
           try {
             this.modulByKey.set(saved.modul, saved);
             this.modulListe = [...this.modulListe, saved];
             this.dataSource.data = this.modulListe;
             this.formModul.disable();
             this.uiMessageService.erstelleMessage('success', 'Konfiguration gespeichert!');
-          } catch (e: any) {
-            this.uiMessageService.erstelleMessage('error', e);
+          } catch (e: unknown) {
+            this.uiMessageService.erstelleMessage('error', String(e));
           }
         },
-        error: (error: any) => this.authSessionService.errorAnzeigen(error)
+        error: (error: unknown) => this.authSessionService.errorAnzeigen(error)
       });
     } else {
-      this.apiHttpService.patch(this.modul, idValue, objekt, false).subscribe({
-        next: (saved: any) => {
+      this.apiHttpService.patch<ModulEintrag>(this.modul, idValue, objekt, false).subscribe({
+        next: (saved) => {
           try {
             this.modulByKey.set(saved.modul, saved);
-            this.modulListe = this.modulListe.map((m: any) => m.id === saved.id ? saved : m);
+            this.modulListe = this.modulListe.map((m) => m.id === saved.id ? saved : m);
             this.dataSource.data = this.modulListe;
             this.formModul.disable();
             this.uiMessageService.erstelleMessage('success', 'Konfiguration geändert!');
-          } catch (e: any) {
-            this.uiMessageService.erstelleMessage('error', e);
+          } catch (e: unknown) {
+            this.uiMessageService.erstelleMessage('error', String(e));
           }
         },
-        error: (error: any) => this.authSessionService.errorAnzeigen(error)
+        error: (error: unknown) => this.authSessionService.errorAnzeigen(error)
       });
     }
   }
@@ -280,15 +287,15 @@ export class ModulKonfigurationComponent implements OnInit {
     this.apiHttpService.delete(this.modul, id).subscribe({
       next: () => {
         try {
-          this.modulListe = this.modulListe.filter((m: any) => m.id !== id);
+          this.modulListe = this.modulListe.filter((m) => m.id !== id);
           this.dataSource.data = this.modulListe;
           this.formModul.disable();
           this.uiMessageService.erstelleMessage('success', 'Modul Konfiguration erfolgreich gelöscht!');
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage('error', e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
-      error: (error: any) => this.authSessionService.errorAnzeigen(error)
+      error: (error: unknown) => this.authSessionService.errorAnzeigen(error)
     });
   }
 
@@ -306,7 +313,7 @@ export class ModulKonfigurationComponent implements OnInit {
     this.formModul.disable();
   }
 
-  auswahlBearbeiten(element: any): void {
+  auswahlBearbeiten(element: ModulEintrag): void {
     this.formModul.enable();
     this.formModul.controls['id'].disable();
     this.formModul.patchValue({
@@ -321,7 +328,7 @@ export class ModulKonfigurationComponent implements OnInit {
   }
 
   getModulLabel(key: string): string {
-    return this.verfuegbareModulListe.find((m: any) => m.key === key)?.label ?? key;
+    return this.verfuegbareModulListe.find((m) => m.key === key)?.label ?? key;
   }
 
   // -----------------------
@@ -331,22 +338,22 @@ export class ModulKonfigurationComponent implements OnInit {
     if (this.pdfTemplatesLoaded) return;
 
     // gleicher Endpoint wie in PdfTemplatesComponent: modul = 'pdf/templates'
-    this.apiHttpService.get('pdf/templates').subscribe({
-      next: (erg: any) => {
-        this.pdfTemplates = (erg?.main ?? erg ?? []) as IPdfTemplate[];
+    this.apiHttpService.get<PdfTemplatesResponse>('pdf/templates').subscribe({
+      next: (erg) => {
+        this.pdfTemplates = Array.isArray(erg) ? erg : (erg.main ?? []);
         this.pdfTemplatesLoaded = true;
       },
-      error: (error: any) => this.authSessionService.errorAnzeigen(error),
+      error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
     });
   }
 
-  private initPdfMappingFromConfigObject(cfg: any): void {
+  private initPdfMappingFromConfigObject(cfg: Record<string, unknown>): void {
     this.pdfMappingForm.patchValue({
-      idFmdDeckblatt: cfg?.idFmdDeckblatt ?? null,
-      idFmdListe: cfg?.idFmdListe ?? null,
-      idVerwaltungTombola: cfg?.idVerwaltungTombola ?? null,
-      idVerwaltungRechnung: cfg?.idVerwaltungRechnung ?? null,
-      idEinsatzberichtPdf: cfg?.idEinsatzberichtPdf ?? null,
+      idFmdDeckblatt: this.stringOrNull(cfg['idFmdDeckblatt']),
+      idFmdListe: this.stringOrNull(cfg['idFmdListe']),
+      idVerwaltungTombola: this.stringOrNull(cfg['idVerwaltungTombola']),
+      idVerwaltungRechnung: this.stringOrNull(cfg['idVerwaltungRechnung']),
+      idEinsatzberichtPdf: this.stringOrNull(cfg['idEinsatzberichtPdf']),
     }, { emitEvent: false });
 
     this.syncPdfMappingToKonfigurationControl();
@@ -355,6 +362,13 @@ export class ModulKonfigurationComponent implements OnInit {
   private syncPdfMappingToKonfigurationControl(): void {
     const json = JSON.stringify(this.pdfMappingForm.value ?? {}, null, 2);
     this.formModul.controls['konfiguration'].setValue(json, { emitEvent: false });
+  }
+
+  private stringOrNull(value: unknown): string | null {
+    if (value === null || value === undefined || value === '') {
+      return null;
+    }
+    return String(value);
   }
 
   private getDefaultKonfigurationForModul(modul: string): Record<string, unknown> {

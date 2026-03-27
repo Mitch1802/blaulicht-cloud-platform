@@ -2,12 +2,21 @@ import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { ImrCardComponent } from '../imr-ui-library/imr-card.component';
-import { ImrHeaderComponent } from '../imr-ui-library/imr-header.component';
+import { ImrBreadcrumbItem, ImrHeaderComponent } from '../imr-ui-library/imr-header.component';
 import { ImrIconComponent } from '../imr-ui-library/imr-icon.component';
+import { ImrPageLayoutComponent } from '../imr-ui-library/imr-page-layout.component';
+import { ImrSectionCardComponent } from '../imr-ui-library/imr-section-card.component';
 
 @Component({
     selector: 'app-atemschutz',
-    imports: [ImrHeaderComponent, ImrCardComponent, ImrIconComponent, RouterLink],
+    imports: [
+      ImrHeaderComponent,
+      ImrPageLayoutComponent,
+      ImrSectionCardComponent,
+      ImrCardComponent,
+      ImrIconComponent,
+      RouterLink
+    ],
     templateUrl: './atemschutz.component.html',
     styleUrl: './atemschutz.component.sass'
 })
@@ -15,7 +24,7 @@ export class AtemschutzComponent implements OnInit {
   private navigationService = inject(NavigationService);
   title = 'Atemschutz';
 
-  breadcrumb: any = [];
+  breadcrumb: ImrBreadcrumbItem[] = [];
 
   ngOnInit(): void {
     sessionStorage.setItem('PageNumber', '2');

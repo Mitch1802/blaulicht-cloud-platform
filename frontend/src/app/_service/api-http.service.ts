@@ -76,7 +76,7 @@ export class ApiHttpService {
     return this.withLoading(this.http.get<T>(url));
   }
 
-  post<T = unknown>(modul: string, daten: any, _filesVorhanden?: boolean): Observable<T> {
+  post<T = unknown>(modul: string, daten: unknown, _filesVorhanden?: boolean): Observable<T> {
     const isFD = typeof FormData !== 'undefined' && daten instanceof FormData;
     const headers = this.ladeHeaders(isFD);
     const url = `${this.AppUrl}${modul}/`;
@@ -84,7 +84,7 @@ export class ApiHttpService {
     return this.withLoading(this.http.post<T>(url, daten, { headers }));
   }
 
-  patch<T = unknown>(modul: string, id: any, daten: any, _filesVorhanden?: boolean): Observable<T> {
+  patch<T = unknown>(modul: string, id: string | number, daten: unknown, _filesVorhanden?: boolean): Observable<T> {
     const isFD = typeof FormData !== 'undefined' && daten instanceof FormData;
     const headers = this.ladeHeaders(isFD);
 
@@ -95,14 +95,14 @@ export class ApiHttpService {
     return this.withLoading(this.http.patch<T>(url, daten, { headers }));
   }
 
-  delete<T = unknown>(modul: string, id: any): Observable<T> {
+  delete<T = unknown>(modul: string, id: string | number): Observable<T> {
     const headers = this.ladeHeaders(false);
     const url = `${this.AppUrl}${modul}/${id}/`;
 
     return this.withLoading(this.http.delete<T>(url, { headers }));
   }
 
-  postBlob(modul: string, daten: any): Observable<Blob> {
+  postBlob(modul: string, daten: unknown): Observable<Blob> {
     const isFD = typeof FormData !== 'undefined' && daten instanceof FormData;
     const headers = this.ladeHeaders(isFD).set('Accept', 'application/pdf');
     const url = `${this.AppUrl}${modul}/`;

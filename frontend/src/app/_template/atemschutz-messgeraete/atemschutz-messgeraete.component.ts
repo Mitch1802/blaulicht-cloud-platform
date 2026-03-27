@@ -4,7 +4,7 @@ import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
-import { IMR_UI_COMPONENTS } from '../../imr-ui-library';
+import { IMR_UI_COMPONENTS, ImrBreadcrumbItem } from '../../imr-ui-library';
 import { MatInputModule } from '@angular/material/input';
 import { MatTabsModule } from '@angular/material/tabs';
 import {
@@ -22,6 +22,12 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { IMessgeraet } from 'src/app/_interface/messgeraet';
 import { IMessgeraetProtokoll } from 'src/app/_interface/messgeraet_protokoll';
 import { DateInputMaskDirective } from '../../_directive/date-input-mask.directive';
+
+type AtemschutzRolesResponse = {
+  roles?: unknown;
+  user?: { roles?: unknown };
+  main?: { user?: { roles?: unknown } };
+};
 
 @Component({
   selector: 'app-atemschutz-messgeraete',
@@ -57,7 +63,7 @@ export class AtemschutzMessgeraeteComponent implements OnInit {
   userRoles: string[] = [];
   canEditProtocol = false;
   rolesResolved = false;
-  breadcrumb: any = [];
+  breadcrumb: ImrBreadcrumbItem[] = [];
   dataSource = new MatTableDataSource<IMessgeraet>(this.messgeraete);
   dataSourcePruefungen = new MatTableDataSource<IMessgeraetProtokoll>(
     this.pruefungen
@@ -104,16 +110,16 @@ export class AtemschutzMessgeraeteComponent implements OnInit {
   }
 
   private reloadMessgeraeteKontext(): void {
-    this.apiHttpService.get(this.modul).subscribe({
-      next: (erg: any) => {
+    this.apiHttpService.get<IMessgeraet[]>(this.modul).subscribe({
+      next: (erg: IMessgeraet[]) => {
         try {
           this.messgeraete = erg;
           this.dataSource.data = erg;
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage('error', e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       },
     });
@@ -133,7 +139,7 @@ export class AtemschutzMessgeraeteComponent implements OnInit {
     this.title = this.title_pruefung;
   }
 
-  neuePruefungVonMessgeraet(element: any): void {
+  neuePruefungVonMessgeraet(element: IMessgeraet): void {
     if (this.rolesResolved && !this.canEditProtocol) {
       this.uiMessageService.erstelleMessage('info', 'Nur ADMIN/PROTOKOLL dürfen Protokolle anlegen.');
       return;
@@ -145,14 +151,14 @@ export class AtemschutzMessgeraeteComponent implements OnInit {
     this.formPruefung.controls['geraet_id'].disable();
   }
 
-  auswahlBearbeiten(element: any): void {
-    if (element.id === 0) {
+  auswahlBearbeiten(element: IMessgeraet): void {
+    if (!element.id || element.id === '0') {
       return;
     }
     const abfrageUrl = `${this.modul}/${element.id}`;
 
-    this.apiHttpService.get(abfrageUrl).subscribe({
-      next: (erg: any) => {
+    this.apiHttpService.get<IMessgeraet>(abfrageUrl).subscribe({
+      next: (erg: IMessgeraet) => {
         try {
           const details: IMessgeraet = erg;
 
@@ -165,11 +171,11 @@ export class AtemschutzMessgeraeteComponent implements OnInit {
             barcode: details.barcode,
             baujahr: details.baujahr,
           });
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage('error', e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       },
     });
@@ -180,8 +186,8 @@ export class AtemschutzMessgeraeteComponent implements OnInit {
     this.title = this.title_modul;
   }
 
-  showPruefungen(element: any): void {
-    if (element.id === 0) {
+  showPruefungen(element: IMessgeraet): void {
+    if (!element.id || element.id === '0') {
       return;
     }
     this.title = this.title_pruefung;
@@ -189,30 +195,30 @@ export class AtemschutzMessgeraeteComponent implements OnInit {
     const abfrageUrl = `${this.modul}/protokoll`;
     const param = { geraet_id: element.pkid };
 
-    this.apiHttpService.get(abfrageUrl, param, true).subscribe({
-      next: (erg: any) => {
+    this.apiHttpService.get<IMessgeraetProtokoll[]>(abfrageUrl, param, true).subscribe({
+      next: (erg: IMessgeraetProtokoll[]) => {
         try {
           this.showPruefungTable = true;
           this.pruefungen = erg;
           this.dataSourcePruefungen.data = this.pruefungen;
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage('error', e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       },
     });
   }
 
-  auswahlBearbeitenProtokoll(element: any): void {
-    if (element.id === 0) {
+  auswahlBearbeitenProtokoll(element: IMessgeraetProtokoll): void {
+    if (!element.id || element.id === '0') {
       return;
     }
     const abfrageUrl = `${this.modul}/protokoll/${element.id}`;
 
-    this.apiHttpService.get(abfrageUrl).subscribe({
-      next: (erg: any) => {
+    this.apiHttpService.get<IMessgeraetProtokoll>(abfrageUrl).subscribe({
+      next: (erg: IMessgeraetProtokoll) => {
         try {
           this.showPruefungTable = false;
           this.showPruefungForm = true;
@@ -227,11 +233,11 @@ export class AtemschutzMessgeraeteComponent implements OnInit {
             wartung_jaehrlich: details.wartung_jaehrlich,
             name_pruefer: details.name_pruefer,
           });
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage('error', e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       },
     });
@@ -246,12 +252,12 @@ export class AtemschutzMessgeraeteComponent implements OnInit {
       return;
     }
 
-    const objekt: any = this.formModul.value;
+    const objekt = this.formModul.getRawValue();
     const idValue = this.formModul.controls['id'].value;
 
     if (!idValue) {
-      this.apiHttpService.post(this.modul, objekt, false).subscribe({
-        next: (erg: any) => {
+      this.apiHttpService.post<IMessgeraet>(this.modul, objekt, false).subscribe({
+        next: (erg: IMessgeraet) => {
           try {
             const newMask: IMessgeraet = erg;
             this.messgeraete.push(newMask);
@@ -274,22 +280,22 @@ export class AtemschutzMessgeraeteComponent implements OnInit {
               'success',
               'Messgerät gespeichert!'
             );
-          } catch (e: any) {
-            this.uiMessageService.erstelleMessage('error', e);
+          } catch (e: unknown) {
+            this.uiMessageService.erstelleMessage('error', String(e));
           }
         },
-        error: (error: any) => this.authSessionService.errorAnzeigen(error),
+        error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
       });
     } else {
       this.apiHttpService
-        .patch(this.modul, idValue, objekt, false)
+        .patch<IMessgeraet>(this.modul, idValue, objekt, false)
         .subscribe({
-          next: (erg: any) => {
+          next: (erg: IMessgeraet) => {
             try {
-              const updated: any = erg;
+              const updated = erg;
               this.messgeraete = this.messgeraete
                 .map((m) => (m.id === updated.id ? updated : m))
-                .sort((a, b) => a.inv_nr - b.inv_nr);
+                .sort((a, b) => a.inv_nr.localeCompare(b.inv_nr, 'de', { numeric: true }));
 
               this.dataSource.data = this.messgeraete;
 
@@ -307,11 +313,11 @@ export class AtemschutzMessgeraeteComponent implements OnInit {
                 'success',
                 'Messgerät geändert!'
               );
-            } catch (e: any) {
-              this.uiMessageService.erstelleMessage('error', e);
+            } catch (e: unknown) {
+              this.uiMessageService.erstelleMessage('error', String(e));
             }
           },
-          error: (error: any) => this.authSessionService.errorAnzeigen(error),
+          error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
         });
     }
   }
@@ -324,7 +330,7 @@ export class AtemschutzMessgeraeteComponent implements OnInit {
       );
       return;
     }
-    const objekt: any = this.formPruefung.getRawValue();
+    const objekt = this.formPruefung.getRawValue();
     const idValue = this.formPruefung.controls['id'].value;
 
     if (!idValue) {
@@ -334,9 +340,9 @@ export class AtemschutzMessgeraeteComponent implements OnInit {
       }
 
       this.apiHttpService
-        .post(`${this.modul}/protokoll`, objekt, false)
+        .post<IMessgeraetProtokoll>(`${this.modul}/protokoll`, objekt, false)
         .subscribe({
-          next: (erg: any) => {
+          next: (erg: IMessgeraetProtokoll) => {
             try {
               const newPrufung: IMessgeraetProtokoll = erg;
               this.pruefungen.push(newPrufung);
@@ -362,11 +368,11 @@ export class AtemschutzMessgeraeteComponent implements OnInit {
                 'success',
                 'Protokoll gespeichert!'
               );
-            } catch (e: any) {
-              this.uiMessageService.erstelleMessage('error', e);
+            } catch (e: unknown) {
+              this.uiMessageService.erstelleMessage('error', String(e));
             }
           },
-          error: (error: any) => this.authSessionService.errorAnzeigen(error),
+          error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
         });
     } else {
       if (this.rolesResolved && !this.canEditProtocol) {
@@ -375,14 +381,14 @@ export class AtemschutzMessgeraeteComponent implements OnInit {
       }
 
       this.apiHttpService
-        .patch(`${this.modul}/protokoll`, idValue, objekt, false)
+        .patch<IMessgeraetProtokoll>(`${this.modul}/protokoll`, idValue, objekt, false)
         .subscribe({
-          next: (erg: any) => {
+          next: (erg: IMessgeraetProtokoll) => {
             try {
-              const updated: any = erg;
+              const updated = erg;
               this.pruefungen = this.pruefungen
                 .map((m) => (m.id === updated.id ? updated : m))
-                .sort((a, b) => a.datum - b.datum);
+                .sort((a, b) => a.datum.localeCompare(b.datum));
 
               this.dataSourcePruefungen.data = this.pruefungen;
               this.reloadMessgeraeteKontext();
@@ -401,11 +407,11 @@ export class AtemschutzMessgeraeteComponent implements OnInit {
                 'success',
                 'Protokoll geändert!'
               );
-            } catch (e: any) {
-              this.uiMessageService.erstelleMessage('error', e);
+            } catch (e: unknown) {
+              this.uiMessageService.erstelleMessage('error', String(e));
             }
           },
-          error: (error: any) => this.authSessionService.errorAnzeigen(error),
+          error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
         });
     }
   }
@@ -453,9 +459,9 @@ export class AtemschutzMessgeraeteComponent implements OnInit {
     }
 
     this.apiHttpService.delete(this.modul, id).subscribe({
-      next: (erg: any) => {
+      next: () => {
         try {
-          this.messgeraete = this.messgeraete.filter((m: any) => m.id !== id);
+          this.messgeraete = this.messgeraete.filter((m) => m.id !== id);
           this.dataSource.data = this.messgeraete;
 
           this.formModul.reset({
@@ -472,11 +478,11 @@ export class AtemschutzMessgeraeteComponent implements OnInit {
             'success',
             'Messgerät erfolgreich gelöscht!'
           );
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage('error', e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       },
     });
@@ -498,9 +504,9 @@ export class AtemschutzMessgeraeteComponent implements OnInit {
     }
 
     this.apiHttpService.delete(`${this.modul}/protokoll`, id).subscribe({
-      next: (erg: any) => {
+      next: () => {
         try {
-          this.pruefungen = this.pruefungen.filter((m: any) => m.id !== id);
+          this.pruefungen = this.pruefungen.filter((m) => m.id !== id);
           this.dataSourcePruefungen.data = this.pruefungen;
           this.reloadMessgeraeteKontext();
 
@@ -519,11 +525,11 @@ export class AtemschutzMessgeraeteComponent implements OnInit {
             'success',
             'Protokoll erfolgreich gelöscht!'
           );
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage('error', e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       },
     });
@@ -623,8 +629,8 @@ export class AtemschutzMessgeraeteComponent implements OnInit {
   }
 
   private loadCurrentUserRoles(): void {
-    this.apiHttpService.get('users/self').subscribe({
-      next: (erg: any) => {
+    this.apiHttpService.get<AtemschutzRolesResponse>('users/self').subscribe({
+      next: (erg: AtemschutzRolesResponse) => {
         const roles = this.extractRolesFromResponse(erg);
         if (roles.length > 0) {
           this.applyRoleState(roles);
@@ -637,13 +643,13 @@ export class AtemschutzMessgeraeteComponent implements OnInit {
   }
 
   private loadRolesFromModulKonfiguration(): void {
-    this.apiHttpService.get('modul_konfiguration').subscribe({
-      next: (erg: any) => this.applyRoleState(this.extractRolesFromResponse(erg)),
+    this.apiHttpService.get<AtemschutzRolesResponse>('modul_konfiguration').subscribe({
+      next: (erg: AtemschutzRolesResponse) => this.applyRoleState(this.extractRolesFromResponse(erg)),
       error: () => this.applyRoleState([])
     });
   }
 
-  private extractRolesFromResponse(value: any): string[] {
+  private extractRolesFromResponse(value: AtemschutzRolesResponse): string[] {
     return this.normalizeRoles(value?.roles ?? value?.user?.roles ?? value?.main?.user?.roles);
   }
 
@@ -664,8 +670,8 @@ export class AtemschutzMessgeraeteComponent implements OnInit {
   private normalizeRoles(value: unknown): string[] {
     if (Array.isArray(value)) {
       return value
-        .flatMap((entry: any) =>
-          String(entry?.key ?? entry?.role ?? entry?.name ?? entry)
+        .flatMap((entry: unknown) =>
+          String((typeof entry === 'object' && entry !== null ? (entry as Record<string, unknown>).key ?? (entry as Record<string, unknown>).role ?? (entry as Record<string, unknown>).name : entry) ?? '')
             .split(',')
             .map((part: string) => part.trim().toUpperCase())
         )

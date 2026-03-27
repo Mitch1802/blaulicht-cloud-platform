@@ -1,16 +1,7 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
-<section class="verwaltung-page">
-  <header class="page-head">
-    <h1>{{ title }}</h1>
-  </header>
-
-  <mat-card class="imr-card">
-    <div class="imr-card__head">
-      <h2>Rechnungen & Vorlagen</h2>
-    </div>
-
-    <imr-card-content>
+<imr-page-layout [title]="title" class="verwaltung-page">
+  <imr-section-card title="Rechnungen & Vorlagen">
       <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" class="invoice-tabs">
           <mat-tab label="Rechnung">
             <h3>SevDesk</h3>
@@ -184,8 +175,7 @@
           </mat-tab>
           <mat-tab label="Coming Soon" disabled></mat-tab>
       </mat-tab-group>
-    </imr-card-content>
-  </mat-card>
-</section>
+  </imr-section-card>
+</imr-page-layout>
 
 

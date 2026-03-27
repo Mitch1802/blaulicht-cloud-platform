@@ -1,80 +1,86 @@
 @use '../../theme' as theme
 
-.start-page
-    .welcome
-        position: relative
-        overflow: hidden
-        margin: 0 0 .75rem
-        padding: .95rem 1.05rem
-        border-radius: 0
-        border: 1px solid rgba(theme.$imr-border, .9)
-        background: rgba(theme.$imr-surface, .98)
-        box-shadow: none
+.welcome
+    position: relative
+    overflow: hidden
+    margin: 0 0 .75rem
+    padding: .95rem 1.05rem
+    border-radius: 0
+    border: 1px solid rgba(theme.$imr-border, .9)
+    background: rgba(theme.$imr-surface, .98)
+    box-shadow: none
 
-        &::after
-            display: none
+    &::after
+        display: none
 
-    .welcome-main
-        position: relative
-        z-index: 1
-        display: flex
-        align-items: center
-        justify-content: flex-start
-        gap: .8rem
+.welcome-main
+    position: relative
+    z-index: 1
+    display: flex
+    align-items: center
+    justify-content: flex-start
+    gap: .8rem
 
-        h1
-            margin: 0
-            color: theme.$imr-primary
-            font-size: clamp(1.45rem, 2.4vw, 2.05rem)
-            line-height: 1.05
-
-    .dashboard-shell
-        display: block
-
-    .module-section
-        background: transparent
-        border: 0
-        border-radius: 0
-        padding: 0
-        margin-bottom: .55rem
-
-    .module-grid
-        display: grid
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr))
-        gap: .65rem
-
-    .category-block
-        margin-bottom: .7rem
-        padding: .7rem
-        border-radius: 0
-        border: 1px solid rgba(theme.$imr-border, .86)
-        background: rgba(theme.$imr-surface, .96)
-        box-shadow: none
-        scroll-margin-top: calc(var(--imr-header-height, 52px) + 1.25rem)
-
-        &:last-child
-            margin-bottom: 0
-
-    .category-head
-        display: flex
-        align-items: center
-        justify-content: space-between
-        gap: .75rem
-        margin-bottom: .55rem
-
-    .category-title
+    h1
         margin: 0
-        font-size: .96rem
-        font-weight: 700
         color: theme.$imr-primary
+        font-size: clamp(1.45rem, 2.4vw, 2.05rem)
+        line-height: 1.05
 
-    .module-card-link
-        display: block
-        text-decoration: none
-        color: inherit
+.dashboard-shell
+    display: block
 
-        &:focus-visible
-            outline: none
+.module-section
+    background: transparent
+    border: 0
+    border-radius: 0
+    padding: 0
+    margin-bottom: .55rem
+
+.module-grid
+    display: grid
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr))
+    gap: .65rem
+
+.category-block
+    margin-bottom: .7rem
+    padding: .7rem
+    border-radius: 0
+    border: 1px solid rgba(theme.$imr-border, .86)
+    background: rgba(theme.$imr-surface, .96)
+    box-shadow: none
+    scroll-margin-top: calc(var(--imr-header-height, 52px) + 1.25rem)
+
+    &:last-child
+        margin-bottom: 0
+
+.category-block .category-head
+    display: flex
+    align-items: center
+    justify-content: flex-start
+    gap: .75rem
+    margin: 0 0 .65rem
+    padding: .48rem .72rem
+    border: 1px solid theme.$imr-primary
+    background: theme.$imr-primary
+    min-height: 2.05rem
+
+.category-block .category-title
+    margin: 0
+    font-size: .94rem
+    font-weight: 700
+    color: theme.$imr-surface
+    letter-spacing: .03em
+    text-transform: uppercase
+    line-height: 1
+
+.module-card-link
+    display: block
+    text-decoration: none
+    color: inherit
+
+    &:focus-visible
+        outline: none
 
 // .module-card is passed as cardClass and lands on mat-card inside imr-card's
 // own template. Angular's Emulated ViewEncapsulation scopes each component's
@@ -219,8 +225,9 @@
         .category-block
             padding: .6rem
 
-        .category-head
+        .category-block .category-head
             align-items: flex-start
+            padding: .4rem .55rem
 
         .module-grid
             grid-template-columns: repeat(2, minmax(0, 1fr))

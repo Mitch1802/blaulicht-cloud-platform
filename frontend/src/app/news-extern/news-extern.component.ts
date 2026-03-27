@@ -206,8 +206,8 @@ export class NewsExternComponent implements OnInit, OnDestroy {
   }
 
   private loadData(): void {
-    this.apiHttpService.get(this.modul).subscribe({
-      next: (erg: any) => {
+    this.apiHttpService.get<NewsItem[]>(this.modul).subscribe({
+      next: (erg: NewsItem[]) => {
         try {
           const oldLen = this.daten.length;
           this.resetTransitionState();
@@ -235,16 +235,16 @@ export class NewsExternComponent implements OnInit, OnDestroy {
           }
 
           // externen Kalender laden (unverändert)
-          this.apiHttpService.getURL('https://ff-schwadorf.at/v2025/server/kalender/index.php').subscribe({
-            next: (k: any) => { this.termine = Array.isArray(k) ? k : []; },
-            error: (err: any) => this.authSessionService.errorAnzeigen(err)
+          this.apiHttpService.getURL<TerminItem[]>('https://ff-schwadorf.at/v2025/server/kalender/index.php').subscribe({
+            next: (k: TerminItem[]) => { this.termine = Array.isArray(k) ? k : []; },
+            error: (err: unknown) => this.authSessionService.errorAnzeigen(err)
           });
 
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage('error', e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       }
     });

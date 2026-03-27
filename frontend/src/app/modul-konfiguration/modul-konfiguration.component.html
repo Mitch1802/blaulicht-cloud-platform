@@ -1,14 +1,7 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
-<section class="modul-page">
-  <header class="page-head">
-    <h1>{{ title }}</h1>
-  </header>
-
-  <imr-card class="imr-card">
-    <div class="imr-card__head">
-      <h2>Modul-Einstellungen</h2>
-    </div>
+<imr-page-layout [title]="title" class="modul-page">
+  <imr-section-card title="Modul-Einstellungen">
       <imr-top-actions>
         <imr-button
           color="accent"
@@ -156,5 +149,5 @@
           <tr mat-row *matRowDef="let row; columns: sichtbareSpalten"></tr>
         </table>
       </div>
-  </imr-card>
-</section>
+  </imr-section-card>
+</imr-page-layout>

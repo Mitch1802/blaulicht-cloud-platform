@@ -13,14 +13,14 @@ import { UiMessageService } from 'src/app/_service/ui-message.service';
 import {
   ImrBreadcrumbItem,
   ImrButtonComponent,
-  ImrCardContentComponent,
   ImrFormFieldComponent,
   ImrHeaderComponent,
+  ImrPageLayoutComponent,
+  ImrSectionCardComponent,
   ImrTopActionsComponent,
   UiControlErrorMap,
   UiControlErrorsDirective,
 } from '../imr-ui-library';
-import { MatCardModule } from '@angular/material/card';
 import { MatInput } from '@angular/material/input';
 import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
@@ -86,10 +86,10 @@ type UserUpdatePayload = Omit<UserCreatePayload, 'password1' | 'password2' | 'se
     imports: [
     ImrButtonComponent,
     ImrHeaderComponent,
-    ImrCardContentComponent,
+    ImrPageLayoutComponent,
+    ImrSectionCardComponent,
     ImrFormFieldComponent,
     ImrTopActionsComponent,
-    MatCardModule,
     FormsModule,
     ReactiveFormsModule,
     MatInput,

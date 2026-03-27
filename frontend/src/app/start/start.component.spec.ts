@@ -23,6 +23,14 @@ describe('StartComponent', () => {
   let authSessionServiceSpy: jasmine.SpyObj<AuthSessionService>;
   let navigationServiceSpy: jasmine.SpyObj<NavigationService>;
   let uiMessageServiceSpy: jasmine.SpyObj<UiMessageService>;
+  type KategorieItem = { name: string };
+  type KategorieInput = {
+    icon?: string;
+    modul: string;
+    rolle: string;
+    kategorie: string;
+    routerlink: string;
+  };
 
   beforeEach(async () => {
     apiHttpServiceSpy = jasmine.createSpyObj<ApiHttpService>('ApiHttpService', ['get']);
@@ -63,7 +71,8 @@ describe('StartComponent', () => {
 
   describe('category ordering', () => {
     it('should enforce the fixed category order via categoryOrder', () => {
-      expect(component['categoryOrder']).toEqual([
+      const startComponent = component as unknown as { categoryOrder: string[] };
+      expect(startComponent.categoryOrder).toEqual([
         'Dokumentation',
         'Fachchargen',
         'Verwaltung',
@@ -73,11 +82,16 @@ describe('StartComponent', () => {
     });
 
     it('should sort categories in the required order when building categorized items', () => {
-      // Feed all roles so all items are accessible
-      component['meine_rollen'] = ['ADMIN'];
-      component['categorizedItems'] = (component as any)['buildCategories'](MOCK_ITEMS_UNORDERED);
+      const startComponent = component as unknown as {
+        meine_rollen: string[];
+        categorizedItems: KategorieItem[];
+        buildCategories: (items: KategorieInput[]) => KategorieItem[];
+      };
 
-      const names = component['categorizedItems'].map((c: any) => c.name);
+      startComponent.meine_rollen = ['ADMIN'];
+      startComponent.categorizedItems = startComponent.buildCategories(MOCK_ITEMS_UNORDERED);
+
+      const names = startComponent.categorizedItems.map((c) => c.name);
       expect(names).toEqual(['Dokumentation', 'Fachchargen', 'Verwaltung', 'Administration', 'Geplant']);
     });
 
@@ -87,9 +101,13 @@ describe('StartComponent', () => {
         { modul: 'Y', rolle: 'ADMIN', kategorie: 'Sonstiges', routerlink: '/y' },
         { modul: 'Z', rolle: 'ADMIN', kategorie: 'Dokumentation', routerlink: '/z' },
       ];
-      component['meine_rollen'] = ['ADMIN'];
-      const result = (component as any)['buildCategories'](items);
-      const names = result.map((c: any) => c.name);
+      const startComponent = component as unknown as {
+        meine_rollen: string[];
+        buildCategories: (entries: KategorieInput[]) => KategorieItem[];
+      };
+      startComponent.meine_rollen = ['ADMIN'];
+      const result = startComponent.buildCategories(items);
+      const names = result.map((c) => c.name);
       expect(names.indexOf('Dokumentation')).toBeLessThan(names.indexOf('Sonstiges'));
       expect(names.indexOf('Sonstiges')).toBeLessThan(names.indexOf('Geplant'));
     });
@@ -99,8 +117,11 @@ describe('StartComponent', () => {
         { modul: 'A', rolle: 'ADMIN', kategorie: 'Geplant', routerlink: '/a' },
         { modul: 'B', rolle: 'ADMIN', kategorie: 'Verwaltung', routerlink: '/b' },
       ];
-      const result = (component as any)['buildCategories'](items);
-      const names = result.map((c: any) => c.name);
+      const startComponent = component as unknown as {
+        buildCategories: (entries: KategorieInput[]) => KategorieItem[];
+      };
+      const result = startComponent.buildCategories(items);
+      const names = result.map((c) => c.name);
       expect(names[names.length - 1]).toBe('Geplant');
     });
   });

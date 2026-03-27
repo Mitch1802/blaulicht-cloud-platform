@@ -1,14 +1,7 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
-<section class="pdf-page">
-  <header class="page-head">
-    <h1>{{ title }}</h1>
-  </header>
-
-  <imr-card>
-    <div class="imr-card__head">
-      <h2>Vorlagen verwalten</h2>
-    </div>
+<imr-page-layout [title]="title" class="pdf-page">
+  <imr-section-card title="Vorlagen verwalten">
 
       <imr-top-actions>
         <imr-button
@@ -134,12 +127,12 @@
               <imr-button class="imr-action-btn" color="primary" (click)="test(element)">
                 <imr-icon class="m-0">bug_report</imr-icon>
               </imr-button>
-              @if (element.status == 'DRAFT') {
+              @if (element.status === 'DRAFT') {
                 <imr-button class="imr-action-btn" color="primary" (click)="publish(element)">
                   <imr-icon class="m-0">public</imr-icon>
                 </imr-button>
               }
-              @if (element.status == 'PUBLISHED') {
+              @if (element.status === 'PUBLISHED') {
                 <imr-button class="imr-action-btn" color="primary" (click)="newVersion(element)">
                   <imr-icon class="m-0">upgrade</imr-icon>
                 </imr-button>
@@ -150,5 +143,5 @@
           <tr mat-row *matRowDef="let row; columns: sichtbareSpalten"></tr>
         </table>
       </div>
-  </imr-card>
-</section>
+  </imr-section-card>
+</imr-page-layout>

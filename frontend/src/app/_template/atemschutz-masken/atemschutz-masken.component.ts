@@ -4,7 +4,7 @@ import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
-import { IMR_UI_COMPONENTS } from '../../imr-ui-library';
+import { IMR_UI_COMPONENTS, ImrBreadcrumbItem } from '../../imr-ui-library';
 import { MatInputModule } from '@angular/material/input';
 import {
   AbstractControl,
@@ -20,6 +20,12 @@ import { MatSortModule } from '@angular/material/sort';
 import { IAtemschutzMaske } from 'src/app/_interface/atemschutz_maske';
 import { IAtemschutzMaskeProtokoll } from 'src/app/_interface/atemschutz_maske_protokoll';
 import { DateInputMaskDirective } from '../../_directive/date-input-mask.directive';
+
+type AtemschutzRolesResponse = {
+  roles?: unknown;
+  user?: { roles?: unknown };
+  main?: { user?: { roles?: unknown } };
+};
 
 @Component({
   selector: 'app-atemschutz-masken',
@@ -53,7 +59,7 @@ export class AtemschutzMaskenComponent implements OnInit {
   userRoles: string[] = [];
   canEditProtocol = false;
   rolesResolved = false;
-  breadcrumb: any = [];
+  breadcrumb: ImrBreadcrumbItem[] = [];
   dataSource = new MatTableDataSource<IAtemschutzMaske>(this.masken);
   dataSourcePruefungen = new MatTableDataSource<IAtemschutzMaskeProtokoll>(
     this.pruefungen
@@ -109,16 +115,16 @@ export class AtemschutzMaskenComponent implements OnInit {
     this.formPruefung.disable();
     this.loadCurrentUserRoles();
 
-    this.apiHttpService.get(this.modul).subscribe({
-      next: (erg: any) => {
+    this.apiHttpService.get<IAtemschutzMaske[]>(this.modul).subscribe({
+      next: (erg: IAtemschutzMaske[]) => {
         try {
           this.masken = erg;
           this.dataSource.data = erg;
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage('error', e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       },
     });
@@ -138,7 +144,7 @@ export class AtemschutzMaskenComponent implements OnInit {
     this.title = this.title_pruefung;
   }
 
-  neuePruefungVonMaske(element: any): void {
+  neuePruefungVonMaske(element: IAtemschutzMaske): void {
     if (this.rolesResolved && !this.canEditProtocol) {
       this.uiMessageService.erstelleMessage('info', 'Nur ADMIN/PROTOKOLL dürfen Protokolle anlegen.');
       return;
@@ -150,14 +156,14 @@ export class AtemschutzMaskenComponent implements OnInit {
     this.formPruefung.controls['maske_id'].disable();
   }
 
-  auswahlBearbeiten(element: any): void {
-    if (element.id === 0) {
+  auswahlBearbeiten(element: IAtemschutzMaske): void {
+    if (!element.id || element.id === '0') {
       return;
     }
     const abfrageUrl = `${this.modul}/${element.id}`;
 
-    this.apiHttpService.get(abfrageUrl).subscribe({
-      next: (erg: any) => {
+    this.apiHttpService.get<IAtemschutzMaske>(abfrageUrl).subscribe({
+      next: (erg: IAtemschutzMaske) => {
         try {
           const details: IAtemschutzMaske = erg;
 
@@ -171,11 +177,11 @@ export class AtemschutzMaskenComponent implements OnInit {
             barcode: details.barcode,
             baujahr: details.baujahr,
           });
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage('error', e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       },
     });
@@ -186,8 +192,8 @@ export class AtemschutzMaskenComponent implements OnInit {
     this.title = this.title_modul;
   }
 
-  showPruefungen(element: any): void {
-    if (element.id === 0) {
+  showPruefungen(element: IAtemschutzMaske): void {
+    if (!element.id || element.id === '0') {
       return;
     }
     this.title = this.title_pruefung;
@@ -195,30 +201,30 @@ export class AtemschutzMaskenComponent implements OnInit {
     const abfrageUrl = `${this.modul}/protokoll`;
     const param = { maske_id: element.pkid };
 
-    this.apiHttpService.get(abfrageUrl, param, true).subscribe({
-      next: (erg: any) => {
+    this.apiHttpService.get<IAtemschutzMaskeProtokoll[]>(abfrageUrl, param, true).subscribe({
+      next: (erg: IAtemschutzMaskeProtokoll[]) => {
         try {
           this.showPruefungTable = true;
           this.pruefungen = erg;
           this.dataSourcePruefungen.data = this.pruefungen;
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage('error', e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       },
     });
   }
 
-  auswahlBearbeitenProtokoll(element: any): void {
-    if (element.id === 0) {
+  auswahlBearbeitenProtokoll(element: IAtemschutzMaskeProtokoll): void {
+    if (!element.id || element.id === '0') {
       return;
     }
     const abfrageUrl = `${this.modul}/protokoll/${element.id}`;
 
-    this.apiHttpService.get(abfrageUrl).subscribe({
-      next: (erg: any) => {
+    this.apiHttpService.get<IAtemschutzMaskeProtokoll>(abfrageUrl).subscribe({
+      next: (erg: IAtemschutzMaskeProtokoll) => {
         try {
           this.showPruefungTable = false;
           this.showPruefungForm = true;
@@ -248,11 +254,11 @@ export class AtemschutzMaskenComponent implements OnInit {
           if (this.rolesResolved && !this.canEditProtocol) {
             this.applyNoteOnlyMode();
           }
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage('error', e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       },
     });
@@ -267,12 +273,12 @@ export class AtemschutzMaskenComponent implements OnInit {
       return;
     }
 
-    const objekt: any = this.formModul.value;
+    const objekt = this.formModul.getRawValue();
     const idValue = this.formModul.controls['id'].value;
 
     if (!idValue) {
-      this.apiHttpService.post(this.modul, objekt, false).subscribe({
-        next: (erg: any) => {
+      this.apiHttpService.post<IAtemschutzMaske>(this.modul, objekt, false).subscribe({
+        next: (erg: IAtemschutzMaske) => {
           try {
             const newMask: IAtemschutzMaske = erg;
             this.masken.push(newMask);
@@ -296,22 +302,22 @@ export class AtemschutzMaskenComponent implements OnInit {
               'success',
               'Maske gespeichert!'
             );
-          } catch (e: any) {
-            this.uiMessageService.erstelleMessage('error', e);
+          } catch (e: unknown) {
+            this.uiMessageService.erstelleMessage('error', String(e));
           }
         },
-        error: (error: any) => this.authSessionService.errorAnzeigen(error),
+        error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
       });
     } else {
       this.apiHttpService
-        .patch(this.modul, idValue, objekt, false)
+        .patch<IAtemschutzMaske>(this.modul, idValue, objekt, false)
         .subscribe({
-          next: (erg: any) => {
+          next: (erg: IAtemschutzMaske) => {
             try {
-              const updated: any = erg;
+              const updated = erg;
               this.masken = this.masken
                 .map((m) => (m.id === updated.id ? updated : m))
-                .sort((a, b) => a.inv_nr - b.inv_nr);
+                .sort((a, b) => a.inv_nr.localeCompare(b.inv_nr, 'de', { numeric: true }));
 
               this.dataSource.data = this.masken;
 
@@ -330,11 +336,11 @@ export class AtemschutzMaskenComponent implements OnInit {
                 'success',
                 'Maske geändert!'
               );
-            } catch (e: any) {
-              this.uiMessageService.erstelleMessage('error', e);
+            } catch (e: unknown) {
+              this.uiMessageService.erstelleMessage('error', String(e));
             }
           },
-          error: (error: any) => this.authSessionService.errorAnzeigen(error),
+          error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
         });
     }
   }
@@ -355,11 +361,11 @@ export class AtemschutzMaskenComponent implements OnInit {
         return;
       }
 
-      const objekt: any = this.formPruefung.getRawValue();
+      const objekt = this.formPruefung.getRawValue();
       this.apiHttpService
-        .post(`${this.modul}/protokoll`, objekt, false)
+        .post<IAtemschutzMaskeProtokoll>(`${this.modul}/protokoll`, objekt, false)
         .subscribe({
-          next: (erg: any) => {
+          next: (erg: IAtemschutzMaskeProtokoll) => {
             try {
               const newPrufung: IAtemschutzMaskeProtokoll = erg;
               this.pruefungen.push(newPrufung);
@@ -395,26 +401,26 @@ export class AtemschutzMaskenComponent implements OnInit {
                 'success',
                 'Protokoll gespeichert!'
               );
-            } catch (e: any) {
-              this.uiMessageService.erstelleMessage('error', e);
+            } catch (e: unknown) {
+              this.uiMessageService.erstelleMessage('error', String(e));
             }
           },
-          error: (error: any) => this.authSessionService.errorAnzeigen(error),
+          error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
         });
     } else {
-      const objekt: any = this.canEditProtocol
+      const objekt = this.canEditProtocol
         ? this.formPruefung.getRawValue()
         : { notiz: this.formPruefung.controls['notiz'].value ?? '' };
 
       this.apiHttpService
-        .patch(`${this.modul}/protokoll`, idValue, objekt, false)
+        .patch<IAtemschutzMaskeProtokoll>(`${this.modul}/protokoll`, idValue, objekt, false)
         .subscribe({
-          next: (erg: any) => {
+          next: (erg: IAtemschutzMaskeProtokoll) => {
             try {
-              const updated: any = erg;
+              const updated = erg;
               this.pruefungen = this.pruefungen
                 .map((m) => (m.id === updated.id ? updated : m))
-                .sort((a, b) => a.datum - b.datum);
+                .sort((a, b) => a.datum.localeCompare(b.datum));
 
               this.dataSourcePruefungen.data = this.pruefungen;
 
@@ -443,11 +449,11 @@ export class AtemschutzMaskenComponent implements OnInit {
                 'success',
                 'Protokoll geändert!'
               );
-            } catch (e: any) {
-              this.uiMessageService.erstelleMessage('error', e);
+            } catch (e: unknown) {
+              this.uiMessageService.erstelleMessage('error', String(e));
             }
           },
-          error: (error: any) => this.authSessionService.errorAnzeigen(error),
+          error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
         });
     }
   }
@@ -507,9 +513,9 @@ export class AtemschutzMaskenComponent implements OnInit {
     }
 
     this.apiHttpService.delete(this.modul, id).subscribe({
-      next: (erg: any) => {
+      next: () => {
         try {
-          this.masken = this.masken.filter((m: any) => m.id !== id);
+          this.masken = this.masken.filter((m) => m.id !== id);
           this.dataSource.data = this.masken;
 
           this.formModul.reset({
@@ -527,11 +533,11 @@ export class AtemschutzMaskenComponent implements OnInit {
             'success',
             'Maske erfolgreich gelöscht!'
           );
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage('error', e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       },
     });
@@ -553,9 +559,9 @@ export class AtemschutzMaskenComponent implements OnInit {
     }
 
     this.apiHttpService.delete(`${this.modul}/protokoll`, id).subscribe({
-      next: (erg: any) => {
+      next: () => {
         try {
-          this.pruefungen = this.pruefungen.filter((m: any) => m.id !== id);
+          this.pruefungen = this.pruefungen.filter((m) => m.id !== id);
           this.dataSourcePruefungen.data = this.pruefungen;
 
           this.formPruefung.reset({
@@ -584,11 +590,11 @@ export class AtemschutzMaskenComponent implements OnInit {
             'success',
             'Protokoll erfolgreich gelöscht!'
           );
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage('error', e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       },
     });
@@ -627,8 +633,8 @@ export class AtemschutzMaskenComponent implements OnInit {
   }
 
   private loadCurrentUserRoles(): void {
-    this.apiHttpService.get('users/self').subscribe({
-      next: (erg: any) => {
+    this.apiHttpService.get<AtemschutzRolesResponse>('users/self').subscribe({
+      next: (erg: AtemschutzRolesResponse) => {
         const roles = this.extractRolesFromResponse(erg);
         if (roles.length > 0) {
           this.applyRoleState(roles);
@@ -641,13 +647,13 @@ export class AtemschutzMaskenComponent implements OnInit {
   }
 
   private loadRolesFromModulKonfiguration(): void {
-    this.apiHttpService.get('modul_konfiguration').subscribe({
-      next: (erg: any) => this.applyRoleState(this.extractRolesFromResponse(erg)),
+    this.apiHttpService.get<AtemschutzRolesResponse>('modul_konfiguration').subscribe({
+      next: (erg: AtemschutzRolesResponse) => this.applyRoleState(this.extractRolesFromResponse(erg)),
       error: () => this.applyRoleState([])
     });
   }
 
-  private extractRolesFromResponse(value: any): string[] {
+  private extractRolesFromResponse(value: AtemschutzRolesResponse): string[] {
     return this.normalizeRoles(value?.roles ?? value?.user?.roles ?? value?.main?.user?.roles);
   }
 
@@ -668,8 +674,8 @@ export class AtemschutzMaskenComponent implements OnInit {
   private normalizeRoles(value: unknown): string[] {
     if (Array.isArray(value)) {
       return value
-        .flatMap((entry: any) =>
-          String(entry?.key ?? entry?.role ?? entry?.name ?? entry)
+        .flatMap((entry: unknown) =>
+          String((typeof entry === 'object' && entry !== null ? (entry as Record<string, unknown>).key ?? (entry as Record<string, unknown>).role ?? (entry as Record<string, unknown>).name : entry) ?? '')
             .split(',')
             .map((part: string) => part.trim().toUpperCase())
         )

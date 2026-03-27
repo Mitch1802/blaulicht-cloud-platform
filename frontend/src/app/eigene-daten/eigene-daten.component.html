@@ -1,10 +1,7 @@
 <imr-header [breadcrumb]="breadcrumb"></imr-header>
 
-<section class="eigene-daten-page">
-  <imr-card>
-    <div class="imr-card__head">
-      <h2>{{ title }}</h2>
-    </div>
+<imr-page-layout [title]="title" class="eigene-daten-page">
+  <imr-section-card [title]="title">
     <form [formGroup]="formModul">
       <input hidden type="text" formControlName="id" />
 
@@ -48,5 +45,5 @@
         </div>
       </section>
     </form>
-  </imr-card>
-</section>
+  </imr-section-card>
+</imr-page-layout>

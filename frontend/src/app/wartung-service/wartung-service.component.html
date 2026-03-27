@@ -1,14 +1,7 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
-<section class="wartung-service-page">
-  <header class="page-head">
-    <h1>{{ title }}</h1>
-  </header>
-
-  <imr-card>
-    <div class="imr-card__head">
-      <h2>Anstehende Termine {{ jahr }}</h2>
-    </div>
+<imr-page-layout [title]="title" class="wartung-service-page">
+  <imr-section-card [title]="'Anstehende Termine ' + jahr">
 
       <imr-top-actions class="actions-top">
         <imr-button color="primary" type="button" (click)="reload()">Aktualisieren</imr-button>
@@ -89,5 +82,5 @@
           </table>
         </div>
       }
-  </imr-card>
-</section>
+  </imr-section-card>
+</imr-page-layout>

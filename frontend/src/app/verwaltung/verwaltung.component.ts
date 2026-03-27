@@ -5,14 +5,15 @@ import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
-import { MatCardModule } from '@angular/material/card';
 import {
   ImrButtonComponent,
-  ImrCardContentComponent,
+  ImrBreadcrumbItem,
   ImrFormFieldComponent,
   ImrHeaderComponent,
   ImrListComponent,
   ImrListItemComponent,
+  ImrPageLayoutComponent,
+  ImrSectionCardComponent,
   ImrTopActionsComponent,
   UiControlErrorsDirective,
 } from '../imr-ui-library';
@@ -29,6 +30,34 @@ type RechnungPosition = {
   preis: number;
 };
 
+type SevdeskKontakt = {
+  id: string | number;
+  name: string;
+};
+
+type ModulKonfigurationEintrag = {
+  modul?: string;
+  konfiguration?: Record<string, unknown>;
+};
+
+type VerwaltungResponse = {
+  sevdesk?: { objects?: SevdeskKontakt[] };
+  modul_konfig?: ModulKonfigurationEintrag[];
+  konfig?: IStammdaten[];
+};
+
+type KontaktAddressEintrag = {
+  contact?: { id?: string | number };
+  street?: string;
+  zip?: string;
+  city?: string;
+};
+
+type VerwaltungKontakteResponse = {
+  Contact?: SevdeskKontakt[];
+  ContactAddress?: KontaktAddressEintrag[];
+};
+
 @Component({
   selector: 'app-verwaltung',
   standalone: true,
@@ -36,11 +65,11 @@ type RechnungPosition = {
     CommonModule,
     ImrButtonComponent,
     ImrHeaderComponent,
-    ImrCardContentComponent,
     ImrListComponent,
     ImrListItemComponent,
+    ImrPageLayoutComponent,
+    ImrSectionCardComponent,
     ImrTopActionsComponent,
-    MatCardModule,
     MatTabsModule,
     ImrFormFieldComponent,
     ReactiveFormsModule,
@@ -63,10 +92,10 @@ export class VerwaltungComponent implements OnInit {
   title = 'Verwaltung';
   modul = 'verwaltung';
 
-  breadcrumb: any = [];
-  pdf_konfig: any = {};
+  breadcrumb: ImrBreadcrumbItem[] = [];
+  pdf_konfig: Record<string, unknown> = {};
   stammdaten: IStammdaten | null = null;
-  kontakte: any = [];
+  kontakte: SevdeskKontakt[] = [];
 
   /** erlaubt: 12 | 12,5 | 12,50 | 12.50 */
   private readonly PREIS_REGEX = /^\d+([.,]\d{1,2})?$/;
@@ -119,18 +148,18 @@ export class VerwaltungComponent implements OnInit {
       'sevdeskModul': 'Contact'
     };
 
-    this.apiHttpService.get(this.modul, param).subscribe({
-      next: (erg: any) => {
+    this.apiHttpService.get<VerwaltungResponse>(this.modul, param).subscribe({
+      next: (erg: VerwaltungResponse) => {
         try {
-          this.kontakte = erg.sevdesk.objects ?? [];
-          const templates = erg.modul_konfig.find((m: any) => m.modul === 'pdf');
+          this.kontakte = erg.sevdesk?.objects ?? [];
+          const templates = (erg.modul_konfig ?? []).find((m: ModulKonfigurationEintrag) => m.modul === 'pdf');
           this.pdf_konfig = templates?.konfiguration ?? {};
           this.stammdaten = erg.konfig?.[0] ?? null;
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage('error', e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
-      error: (error: any) => this.authSessionService.errorAnzeigen(error)
+      error: (error: unknown) => this.authSessionService.errorAnzeigen(error)
     });
   }
 
@@ -195,7 +224,7 @@ export class VerwaltungComponent implements OnInit {
   }
 
   printRechnung(): void {
-    if (this.formRechnung.valid == false) return;
+    if (!this.formRechnung.valid) return;
     if (!this.stammdaten) return;
 
     const idVerwaltungRechnung = this.pdf_konfig['idVerwaltungRechnung'];
@@ -244,7 +273,7 @@ export class VerwaltungComponent implements OnInit {
         }
         window.open(URL.createObjectURL(blob), '_blank');
       },
-      error: (error: any) => this.authSessionService.errorAnzeigen(error)
+      error: (error: unknown) => this.authSessionService.errorAnzeigen(error)
     });
   }
 
@@ -252,23 +281,23 @@ export class VerwaltungComponent implements OnInit {
     const kontaktId = this.formAuswahl.controls.name.value;
     if (!kontaktId) return;
 
-    this.apiHttpService.get('verwaltung/kontakte').subscribe({
-      next: (erg: any) => {
+    this.apiHttpService.get<VerwaltungKontakteResponse>('verwaltung/kontakte').subscribe({
+      next: (erg: VerwaltungKontakteResponse) => {
         try {
-          const kontakte = erg['Contact'];
-          const kontaktAdressen = erg['ContactAddress'];
+          const kontakte = erg.Contact ?? [];
+          const kontaktAdressen = erg.ContactAddress ?? [];
 
-          const kontakt = kontakte.find((m: any) => m.id === kontaktId);
-          const kontaktAddresse = kontaktAdressen.find((m: any) => m.contact.id === kontaktId);
-          this.formRechnung.controls.adress_name.setValue(kontakt.name);
-          this.formRechnung.controls.adresse_strasse.setValue(kontaktAddresse.street);
-          this.formRechnung.controls.adresse_plz.setValue(kontaktAddresse.zip);
-          this.formRechnung.controls.adresse_ort.setValue(kontaktAddresse.city);
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage('error', e);
+          const kontakt = kontakte.find((m: SevdeskKontakt) => String(m.id) === kontaktId);
+          const kontaktAddresse = kontaktAdressen.find((m: KontaktAddressEintrag) => String(m.contact?.id ?? '') === kontaktId);
+          this.formRechnung.controls.adress_name.setValue(kontakt?.name ?? '');
+          this.formRechnung.controls.adresse_strasse.setValue(kontaktAddresse?.street ?? '');
+          this.formRechnung.controls.adresse_plz.setValue(kontaktAddresse?.zip ?? '');
+          this.formRechnung.controls.adresse_ort.setValue(kontaktAddresse?.city ?? '');
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
-      error: (error: any) => this.authSessionService.errorAnzeigen(error)
+      error: (error: unknown) => this.authSessionService.errorAnzeigen(error)
     });
     
   }

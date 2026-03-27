@@ -1,14 +1,7 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
-<section class="atemschutz-dienstbuch-page">
-  <header class="page-head">
-    <h1>Dienstbuch verwalten</h1>
-  </header>
-
-  <imr-card>
-    <div class="imr-card__head">
-      <h2>Dienstbuch verwalten</h2>
-    </div>
+<imr-page-layout title="Dienstbuch verwalten" class="atemschutz-dienstbuch-page">
+  <imr-section-card title="Dienstbuch verwalten">
         <hr>
         <div class="app-grid">
             <h4 class="app-col-6 app-col-lg-2 mb-0">{{ jahrHeuer }}:</h4>
@@ -44,9 +37,9 @@
           <ng-container matColumnDef="verwendung_typ">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Typ</th>
             <td mat-cell *matCellDef="let element">
-               @if (element.verwendung_typ =='Ü') {
+               @if (element.verwendung_typ ==='Ü') {
                 Übung
-               }@else if(element.verwendung_typ == 'E') {
+               }@else if(element.verwendung_typ === 'E') {
                 Einsatz
                }
             </td>
@@ -81,7 +74,7 @@
           aria-label="Auswahl Anzahl der sichtbaren Elemente"
         >
         </imr-paginator>
-  </imr-card>
-</section>
+  </imr-section-card>
+</imr-page-layout>
 
 

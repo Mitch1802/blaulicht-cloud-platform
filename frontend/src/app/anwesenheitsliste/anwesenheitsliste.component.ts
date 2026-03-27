@@ -6,7 +6,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatSelectModule } from '@angular/material/select';
-import { IMR_UI_COMPONENTS, ImrPaginatorComponent } from '../imr-ui-library';
+import { IMR_UI_COMPONENTS, ImrBreadcrumbItem, ImrPaginatorComponent } from '../imr-ui-library';
 import { ApiHttpService } from '../_service/api-http.service';
 import { AuthSessionService } from '../_service/auth-session.service';
 import { CollectionUtilsService } from '../_service/collection-utils.service';
@@ -48,7 +48,7 @@ export class AnwesenheitslisteComponent implements OnInit {
   eintraege: IAnwesenheitsliste[] = [];
   mitglieder: IMitglied[] = [];
   private mitgliederMap = new Map<number, IMitglied>();
-  breadcrumb: any = [];
+  breadcrumb: ImrBreadcrumbItem[] = [];
   dataSource = new MatTableDataSource<IAnwesenheitsliste>(this.eintraege);
   sichtbareSpalten: string[] = ['datum', 'titel', 'ort', 'mitglieder', 'actions'];
 
@@ -173,7 +173,7 @@ export class AnwesenheitslisteComponent implements OnInit {
         this.bestehendeFotos = (this.bestehendeFotos || []).filter((entry) => String(entry.id) !== String(foto.id));
         this.uiMessageService.erstelleMessage('success', 'Foto gelöscht.');
       },
-      error: (error: any) => this.authSessionService.errorAnzeigen(error),
+      error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
     });
   }
 
@@ -216,23 +216,23 @@ export class AnwesenheitslisteComponent implements OnInit {
     };
 
     forkJoin({
-      main: this.apiHttpService.get<any[]>(this.modul),
-      context: this.apiHttpService.get<any>(`${this.modul}/context`),
+      main: this.apiHttpService.get<IAnwesenheitsliste[]>(this.modul),
+      context: this.apiHttpService.get<{ mitglieder?: IMitglied[] }>(`${this.modul}/context`),
     }).subscribe({
       next: ({ main, context }) => {
         try {
-          this.mitglieder = (context.mitglieder as IMitglied[]) ?? [];
+          this.mitglieder = context.mitglieder ?? [];
           this.mitglieder = this.collectionUtilsService.arraySortByKey(this.mitglieder, 'stbnr');
           this.mitgliederMap = new Map<number, IMitglied>(this.mitglieder.map((m) => [m.pkid, m]));
 
-          this.eintraege = (main as IAnwesenheitsliste[]).map((item) => this.mapEintragMitMitgliedern(item));
+          this.eintraege = main.map((item) => this.mapEintragMitMitgliedern(item));
           this.sortEintraege();
           this.bindTableControls();
-        } catch (e: any) {
+        } catch (e: unknown) {
           this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       }
     });
@@ -297,8 +297,8 @@ export class AnwesenheitslisteComponent implements OnInit {
     }
 
     const abfrageUrl = `${this.modul}/${element.id}`;
-    this.apiHttpService.get(abfrageUrl).subscribe({
-      next: (erg: any) => {
+    this.apiHttpService.get<IAnwesenheitsliste>(abfrageUrl).subscribe({
+      next: (erg) => {
         try {
           const details: IAnwesenheitsliste = erg;
           this.formModul.enable();
@@ -312,11 +312,11 @@ export class AnwesenheitslisteComponent implements OnInit {
           });
           this.bestehendeFotos = details.fotos || [];
           this.resetFotoUploads();
-        } catch (e: any) {
+        } catch (e: unknown) {
           this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
-      error: (error: any) => this.authSessionService.errorAnzeigen(error)
+      error: (error: unknown) => this.authSessionService.errorAnzeigen(error)
     });
   }
 
@@ -332,34 +332,34 @@ export class AnwesenheitslisteComponent implements OnInit {
     const payload = this.buildFormDataPayload(selectedMitgliedIds);
 
     if (idValue === '') {
-      this.apiHttpService.post(this.modul, payload, true).subscribe({
-        next: (erg: any) => {
+      this.apiHttpService.post<IAnwesenheitsliste>(this.modul, payload, true).subscribe({
+        next: (erg) => {
           try {
-            const neu = this.mapEintragMitMitgliedern(erg as IAnwesenheitsliste);
+            const neu = this.mapEintragMitMitgliedern(erg);
             this.eintraege.push(neu);
             this.sortEintraege();
             this.resetFormNachAktion();
             this.uiMessageService.erstelleMessage('success', 'Eintrag erfolgreich gespeichert!');
-          } catch (e: any) {
+          } catch (e: unknown) {
             this.uiMessageService.erstelleMessage('error', String(e));
           }
         },
-        error: (error: any) => this.authSessionService.errorAnzeigen(error)
+        error: (error: unknown) => this.authSessionService.errorAnzeigen(error)
       });
     } else {
-      this.apiHttpService.patch(this.modul, idValue, payload, true).subscribe({
-        next: (erg: any) => {
+      this.apiHttpService.patch<IAnwesenheitsliste>(this.modul, idValue, payload, true).subscribe({
+        next: (erg) => {
           try {
-            const geaendert = this.mapEintragMitMitgliedern(erg as IAnwesenheitsliste);
+            const geaendert = this.mapEintragMitMitgliedern(erg);
             this.eintraege = this.eintraege.map(item => item.id === geaendert.id ? geaendert : item);
             this.sortEintraege();
             this.resetFormNachAktion();
             this.uiMessageService.erstelleMessage('success', 'Eintrag erfolgreich gespeichert!');
-          } catch (e: any) {
+          } catch (e: unknown) {
             this.uiMessageService.erstelleMessage('error', String(e));
           }
         },
-        error: (error: any) => this.authSessionService.errorAnzeigen(error)
+        error: (error: unknown) => this.authSessionService.errorAnzeigen(error)
       });
     }
   }
@@ -375,13 +375,13 @@ export class AnwesenheitslisteComponent implements OnInit {
         this.resetFormNachAktion();
         this.uiMessageService.erstelleMessage('success', 'Eintrag erfolgreich gelöscht!');
       },
-      error: (error: any) => this.authSessionService.errorAnzeigen(error)
+      error: (error: unknown) => this.authSessionService.errorAnzeigen(error)
     });
   }
 
   abbrechen(): void {
+    this.resetFormNachAktion();
     this.uiMessageService.erstelleMessage('info', 'Änderungen verworfen.');
-    this.router.navigate(['/anwesenheitsliste']);
   }
 
   private resetFormNachAktion(): void {

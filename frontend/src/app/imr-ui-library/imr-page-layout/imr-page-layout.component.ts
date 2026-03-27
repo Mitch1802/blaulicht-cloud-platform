@@ -23,8 +23,11 @@ import { Component, Input } from '@angular/core';
   styleUrl: './imr-page-layout.component.sass',
 })
 export class ImrPageLayoutComponent {
-  /** Pflichtfeld: Seitenüberschrift (wird als <h1> gerendert) */
-  @Input({ required: true }) title = '';
+  /** Optionale Seitenüberschrift (wird als <h1> gerendert) */
+  @Input() title = '';
+
+  /** Zusätzliche CSS-Klassen für den äußeren Seiten-Container */
+  @Input() pageClass = '';
 }
 
 

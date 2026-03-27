@@ -1,14 +1,7 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
-<section class="fmd-page">
-  <header class="page-head">
-    <h1>{{ title }}</h1>
-  </header>
-
-  <imr-card class="imr-card">
-    <div class="imr-card__head">
-      <h2>Atemschutz Verwaltung</h2>
-    </div>
+<imr-page-layout [title]="title" class="fmd-page">
+  <imr-section-card title="Atemschutz Verwaltung">
     @if (hasTable(activeTabIndex)) {
     <imr-top-actions>
       <imr-form-field
@@ -492,5 +485,5 @@
     >
     </imr-paginator>
     }
-  </imr-card>
-</section>
+  </imr-section-card>
+</imr-page-layout>

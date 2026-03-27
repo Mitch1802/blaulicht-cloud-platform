@@ -3,7 +3,7 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatInputModule } from '@angular/material/input';
 import { Observable, of } from 'rxjs';
-import { IMR_UI_COMPONENTS } from '../imr-ui-library';
+import { IMR_UI_COMPONENTS, ImrBreadcrumbItem } from '../imr-ui-library';
 import { ApiHttpService } from 'src/app/_service/api-http.service';
 import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
@@ -30,6 +30,11 @@ interface IEventKategorieOption {
 interface IEventTeilnehmerLevelInput {
   pkid: number;
   level: number | null;
+}
+
+interface IModulKonfigurationEintrag {
+  modul?: string;
+  konfiguration?: unknown;
 }
 
 type JugendRegelTrackKey =
@@ -108,7 +113,7 @@ export class JugendComponent implements OnInit {
   private navigationService = inject(NavigationService);
   private uiMessageService = inject(UiMessageService);
   title = 'Jugend';
-  breadcrumb: any[] = [];
+  breadcrumb: ImrBreadcrumbItem[] = [];
 
   mitglieder: IMitglied[] = [];
   jugendMitglieder: IMitglied[] = [];
@@ -439,7 +444,7 @@ export class JugendComponent implements OnInit {
 
     if (this.isLevelPflichtKategorie(kategorie) && !standXOverride) {
       const teilnehmerOhneErlaubteStufe = teilnehmerIds.find((pkid) => !this.hatErlaubteEventLevel(pkid));
-      if (teilnehmerOhneErlaubteStufe != null) {
+      if (teilnehmerOhneErlaubteStufe !== null && teilnehmerOhneErlaubteStufe !== undefined) {
         this.uiMessageService.erstelleMessage(
           'error',
           'Mindestens ein ausgewähltes Mitglied hat für diese Art keine erlaubte Stufe laut Voraussetzungen.',
@@ -830,7 +835,7 @@ export class JugendComponent implements OnInit {
 
     return teilnehmer
       .map((m) => {
-        const levelText = m.level != null
+        const levelText = m.level !== null && m.level !== undefined
           ? ` - ${isFertigkeitsabzeichen ? this.getFertigkeitsabzeichenLevelLabel(m.level) : this.getStandardLevelLabel(m.level)}`
           : '';
         return `${m.stbnr} ${m.vorname} ${m.nachname} (${this.getRangText(m.dienstgrad)})${levelText}`;
@@ -860,7 +865,7 @@ export class JugendComponent implements OnInit {
 
   private ensureTeilnehmerLevelInRange(): void {
     for (const [pkid, level] of this.teilnehmerLevelByPkid.entries()) {
-      if (level == null) {
+      if (level === null || level === undefined) {
         continue;
       }
 
@@ -924,11 +929,11 @@ export class JugendComponent implements OnInit {
         continue;
       }
 
-      if (regel.min_age != null && age < regel.min_age) {
+      if (regel.min_age !== null && regel.min_age !== undefined && age < regel.min_age) {
         continue;
       }
 
-      if (regel.max_age != null && age > regel.max_age) {
+      if (regel.max_age !== null && regel.max_age !== undefined && age > regel.max_age) {
         continue;
       }
 
@@ -1060,7 +1065,7 @@ export class JugendComponent implements OnInit {
           (item) => String(item?.modul ?? '').trim().toLowerCase() === 'jugend',
         );
 
-        if (!jugendEintrag || typeof jugendEintrag.konfiguration !== 'object' || jugendEintrag.konfiguration == null) {
+        if (!jugendEintrag || typeof jugendEintrag.konfiguration !== 'object' || jugendEintrag.konfiguration === null) {
           this.jugendRegelKonfiguration = this.defaultJugendRegelKonfiguration;
           return;
         }
@@ -1075,15 +1080,15 @@ export class JugendComponent implements OnInit {
     });
   }
 
-  private extractModulKonfigurationListe(payload: unknown): any[] {
+  private extractModulKonfigurationListe(payload: unknown): IModulKonfigurationEintrag[] {
     if (Array.isArray(payload)) {
-      return payload;
+      return payload as IModulKonfigurationEintrag[];
     }
 
     if (payload && typeof payload === 'object') {
       const main = (payload as { main?: unknown }).main;
       if (Array.isArray(main)) {
-        return main;
+        return main as IModulKonfigurationEintrag[];
       }
     }
 
@@ -1146,14 +1151,14 @@ export class JugendComponent implements OnInit {
           ? this.getFertigkeitsabzeichenLevelLabel(currentLevel)
           : this.getStandardLevelLabel(currentLevel);
 
-        if (regel.min_age != null && alter < regel.min_age) {
+        if (regel.min_age !== null && regel.min_age !== undefined && alter < regel.min_age) {
           fehler.push(
             `${definition.label} ${levelText}: Mindestalter ${regel.min_age} Jahre (aktuell ${alter}).`,
           );
           break;
         }
 
-        if (regel.max_age != null && alter > regel.max_age) {
+        if (regel.max_age !== null && regel.max_age !== undefined && alter > regel.max_age) {
           fehler.push(
             `${definition.label} ${levelText}: Hoechstalter ${regel.max_age} Jahre (aktuell ${alter}).`,
           );

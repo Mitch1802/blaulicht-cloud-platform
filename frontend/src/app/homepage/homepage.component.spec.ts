@@ -29,9 +29,9 @@ describe('HomepageComponent', () => {
     uiMessageServiceSpy = jasmine.createSpyObj<UiMessageService>('UiMessageService', ['erstelleMessage']);
 
     navigationServiceSpy.ladeBreadcrumb.and.returnValue([]);
-    collectionUtilsServiceSpy.arraySortByKey.and.callFake((array: any[]) => array);
+    collectionUtilsServiceSpy.arraySortByKey.and.callFake(<T>(array: T[]) => array);
 
-    apiHttpServiceSpy.get.and.callFake(((url: string) => {
+    apiHttpServiceSpy.get.and.callFake((url: string) => {
       if (url === 'homepage/context') {
         return of({ mitglieder: [] });
       }
@@ -39,7 +39,7 @@ describe('HomepageComponent', () => {
         return of({ sections: [] });
       }
       return of([]);
-    }) as any);
+    });
 
     await TestBed.configureTestingModule({
       imports: [HomepageComponent],

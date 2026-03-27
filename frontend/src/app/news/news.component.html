@@ -1,11 +1,7 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
-<section class="news-page">
-  <header class="page-head">
-    <h1>{{title}}</h1>
-  </header>
-
-  <imr-card class="imr-card">
+<imr-page-layout [title]="title" class="news-page">
+  <imr-section-card title="News verwalten">
       <imr-top-actions>
         <imr-button
           color="primary"
@@ -145,12 +141,12 @@
                 <div class="upload-stage-actions">
                   <imr-button type="button" color="primary" class="upload-button" (click)="fotoUpload.click()">{{btnText}}</imr-button>
                   <input hidden #fotoUpload type="file" id="fotoUpload" accept=".jpg,.jpeg,.png" (change)="onFotoSelected($event)" />
-                  @if (fileFound==true) {
+                  @if (fileFound === true) {
                     <imr-button color="primary" type="button" class="preview-open-btn" (click)="openModal()">Bild öffnen</imr-button>
                   }
                 </div>
 
-                @if (fileFound==true) {
+                @if (fileFound === true) {
                   <button type="button" class="image-preview-tile" (click)="openModal()" aria-label="Bildvorschau öffnen">
                     <img [src]="filePfad" [alt]="fileName || 'News Bildvorschau'" />
                   </button>
@@ -204,9 +200,9 @@
                 <ng-container matColumnDef="typ">
                   <th mat-header-cell *matHeaderCellDef mat-sort-header>Typ</th>
                   <td mat-cell *matCellDef="let element" class="type-cell">
-                    <span class="type-pill" [class.is-extern]="element.typ == 'extern'" [attr.aria-label]="element.typ == 'extern' ? 'Extern' : 'Intern'">
-                      <imr-icon>{{ element.typ == 'extern' ? 'public' : 'home' }}</imr-icon>
-                      {{ element.typ == 'extern' ? 'Extern' : 'Intern' }}
+                    <span class="type-pill" [class.is-extern]="element.typ === 'extern'" [attr.aria-label]="element.typ === 'extern' ? 'Extern' : 'Intern'">
+                      <imr-icon>{{ element.typ === 'extern' ? 'public' : 'home' }}</imr-icon>
+                      {{ element.typ === 'extern' ? 'Extern' : 'Intern' }}
                     </span>
                   </td>
                 </ng-container>
@@ -258,8 +254,8 @@
         }
       </section>
       }
-  </imr-card>
-</section>
+  </imr-section-card>
+</imr-page-layout>
 
 
 <!-- The Modal -->

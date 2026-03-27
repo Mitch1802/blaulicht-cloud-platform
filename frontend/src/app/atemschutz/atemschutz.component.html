@@ -1,6 +1,6 @@
 <imr-header [breadcrumb]="breadcrumb"></imr-header>
 
-<section class="start-page atemschutz-page">
+<imr-page-layout pageClass="start-page atemschutz-page">
   <header class="welcome">
     <div class="welcome-main">
       <div>
@@ -10,7 +10,7 @@
   </header>
 
   <div class="dashboard-shell">
-    <section class="module-section">
+    <imr-section-card sectionTitle="Module" cardClass="module-section">
       <section class="category-block">
         <div class="category-head">
           <h3 class="category-title">Module</h3>
@@ -61,6 +61,6 @@
           </a>
         </div>
       </section>
-    </section>
-    </div>
-</section>
+    </imr-section-card>
+  </div>
+</imr-page-layout>

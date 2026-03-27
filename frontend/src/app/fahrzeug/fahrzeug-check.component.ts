@@ -18,7 +18,7 @@ import { CollectionUtilsService } from 'src/app/_service/collection-utils.servic
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { IFahrzeugDetail } from "../_interface/fahrzeug";
-import { IMR_UI_COMPONENTS } from "../imr-ui-library";
+import { IMR_UI_COMPONENTS, ImrBreadcrumbItem } from "../imr-ui-library";
 
 type ResultFG = FormGroup<{
   item_id: FormControl<string>;
@@ -64,7 +64,7 @@ export class FahrzeugCheckComponent implements OnInit {
   private router = inject(Router);
   private fb = inject(FormBuilder);
 
-  breadcrumb: { label: string; url?: string }[] = [];
+  breadcrumb: ImrBreadcrumbItem[] = [];
 
   fahrzeugId = "";
   fahrzeug: IFahrzeugDetail | null = null;
@@ -85,9 +85,9 @@ export class FahrzeugCheckComponent implements OnInit {
   }
 
   private load(): void {
-    this.apiHttpService.get(`fahrzeuge/${this.fahrzeugId}`).subscribe({
-      next: (fz: any) => {
-        this.fahrzeug = fz as IFahrzeugDetail;
+    this.apiHttpService.get<IFahrzeugDetail>(`fahrzeuge/${this.fahrzeugId}`).subscribe({
+      next: (fz) => {
+        this.fahrzeug = fz;
         this.buildForm();
       },
       error: (e) => this.authSessionService.errorAnzeigen(e),

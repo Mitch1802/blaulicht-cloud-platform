@@ -1,6 +1,6 @@
 <imr-header [breadcrumb]="breadcrumb"></imr-header>
 
-<section class="start-page">
+<imr-page-layout pageClass="start-page">
   <header class="welcome">
     <div class="welcome-main">
       <div>
@@ -10,8 +10,7 @@
   </header>
 
   <div class="dashboard-shell">
-
-    <section class="module-section">
+    <imr-section-card sectionTitle="Module" cardClass="module-section">
       @if (categorizedItems.length === 0) {
         <p class="empty">Für deine Rollen sind aktuell keine Module freigeschaltet.</p>
       } @else {
@@ -56,6 +55,6 @@
           </section>
         }
       }
-    </section>
+    </imr-section-card>
   </div>
-</section>
+</imr-page-layout>

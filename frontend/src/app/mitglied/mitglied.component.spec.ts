@@ -27,7 +27,7 @@ describe('MitgliedComponent', () => {
     uiMessageServiceSpy = jasmine.createSpyObj<UiMessageService>('UiMessageService', ['erstelleMessage']);
 
     navigationServiceSpy.ladeBreadcrumb.and.returnValue([]);
-    collectionUtilsServiceSpy.arraySortByKey.and.callFake((array: any[]) => array);
+    collectionUtilsServiceSpy.arraySortByKey.and.callFake(<T>(array: T[]) => array);
     apiHttpServiceSpy.get.and.returnValue(of([]));
 
     await TestBed.configureTestingModule({

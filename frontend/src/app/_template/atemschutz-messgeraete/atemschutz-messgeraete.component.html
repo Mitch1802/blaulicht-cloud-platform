@@ -1,15 +1,8 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
-<section class="atemschutz-messgeraete-page">
-  <header class="page-head">
-    <h1>Messgeräte verwalten</h1>
-  </header>
-
-  <imr-card>
-    <div class="imr-card__head">
-      <h2>Messgeräte verwalten</h2>
-    </div>
-        @if (sichtbarkeitModul() == "tableListe")
+<imr-page-layout [title]="title" class="atemschutz-messgeraete-page">
+  <imr-section-card title="Messgeräte verwalten">
+        @if (sichtbarkeitModul() === "tableListe")
         {
         <imr-top-actions>
           <imr-button
@@ -28,7 +21,7 @@
             Protokoll Eintrag
           </imr-button>
         </imr-top-actions>
-        } @if (sichtbarkeitModul() == "tablePruefungen") {
+        } @if (sichtbarkeitModul() === "tablePruefungen") {
         <imr-top-actions>
           <imr-button
             color="primary"
@@ -40,7 +33,7 @@
         </imr-top-actions>
         }
         <!-- FORM -->
-        @if (sichtbarkeitModul() == "formModul") {
+        @if (sichtbarkeitModul() === "formModul") {
         <form [formGroup]="formModul" (ngSubmit)="datenSpeichern()" class="edit-form">
           <input hidden type="text"  formControlName="id" />
           <imr-top-actions class="imr-form-actions">
@@ -100,7 +93,7 @@
         }
         <!-- MESSGERÄT FORM ENDE -->
         <!-- PRÜFUNG FORM -->
-        @if (sichtbarkeitModul() == "formPruefung") {
+        @if (sichtbarkeitModul() === "formPruefung") {
         <form [formGroup]="formPruefung" (ngSubmit)="datenSpeichernProtokoll()" class="edit-form">
           <input hidden type="text"  formControlName="id" />
           <imr-top-actions class="imr-form-actions">
@@ -181,7 +174,7 @@
         }
         <!-- PRÜFUNG FORM ENDE -->
         <!-- TABELLE MESSGERÄTE -->
-        @if (sichtbarkeitModul() == "tableListe")
+        @if (sichtbarkeitModul() === "tableListe")
         {
         <table
           mat-table
@@ -249,7 +242,7 @@
         }
         <!-- TABELLE MESSGERÄTE ENDE -->
         <!-- TABELLE MESSGERÄTE PRÜFUNGEN -->
-        @if (sichtbarkeitModul() == "tablePruefungen")
+        @if (sichtbarkeitModul() === "tablePruefungen")
         {
         <table
           mat-table
@@ -289,7 +282,7 @@
         </table>
         }
         <!-- TABELLE MESSGERÄTE PRÜFUNGEN ENDE -->
-  </imr-card>
-</section>
+  </imr-section-card>
+</imr-page-layout>
 
 

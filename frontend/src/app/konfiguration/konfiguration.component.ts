@@ -11,7 +11,14 @@ import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
 import { environment } from "src/environments/environment";
 import { Router } from '@angular/router';
-import { IMR_UI_COMPONENTS } from '../imr-ui-library';
+import { IMR_UI_COMPONENTS, ImrBreadcrumbItem } from '../imr-ui-library';
+
+type RolleEintrag = { id: number; key: string; verbose_name: string };
+type BackupEintrag = { name: string };
+type KonfigResponse = { main: IKonfiguration[]; rollen: RolleEintrag[]; backups: string[] };
+type BackupOperationResponse = { msg?: string; backups?: string[] };
+type BackupCleanupItem = { target?: string; orphans?: string[] };
+type BackupCleanupResponse = { summary?: { orphan?: number }; deleted?: number; items?: BackupCleanupItem[] };
 
 @Component({
     selector: 'app-konfiguration',
@@ -26,7 +33,7 @@ export class KonfigurationComponent implements OnInit {
   private navigationService = inject(NavigationService);
   private uiMessageService = inject(UiMessageService);
   router = inject(Router);
-  breadcrumb: any = [];
+  breadcrumb: ImrBreadcrumbItem[] = [];
 
   title = "Rollenverwaltung";
   title2 = "Feuerwehr-Stammdaten";
@@ -34,10 +41,10 @@ export class KonfigurationComponent implements OnInit {
   modul = "users/rolle";
   modul2 = "konfiguration";
 
-  @Output() breadcrumbout = new EventEmitter<any[]>();
+  @Output() breadcrumbout = new EventEmitter<ImrBreadcrumbItem[]>();
 
-  rollen: any = []
-  backups: any = [];
+  rollen: RolleEintrag[] = [];
+  backups: BackupEintrag[] = [];
   backupColumns: string[] = ['name', 'actions'];
   cleanupColumns: string[] = ['target', 'filename'];
   backup_msg = "";
@@ -75,7 +82,7 @@ export class KonfigurationComponent implements OnInit {
       return this.backups;
     }
 
-    return this.backups.filter((backup: any) =>
+    return this.backups.filter((backup) =>
       String(backup?.name ?? '').toLowerCase().includes(query),
     );
   }
@@ -119,8 +126,8 @@ export class KonfigurationComponent implements OnInit {
     this.formRolle.disable();
     this.formKonfig.disable();
 
-    this.apiHttpService.get(this.modul2).subscribe({
-      next: (erg: any) => {
+    this.apiHttpService.get<KonfigResponse>(this.modul2).subscribe({
+      next: (erg) => {
         try {
           this.formRolle.enable();
           this.formKonfig.enable();
@@ -145,11 +152,11 @@ export class KonfigurationComponent implements OnInit {
           }
           this.rollen = erg.rollen;
           this.backups = this.convertBackups(erg.backups);
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage("error", e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage("error", String(e));
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       }
     });
@@ -165,36 +172,36 @@ export class KonfigurationComponent implements OnInit {
     }
 
 
-    this.apiHttpService.post(this.modul, post, false).subscribe({
-      next: (erg: any) => {
+    this.apiHttpService.post<RolleEintrag>(this.modul, post, false).subscribe({
+      next: (erg: RolleEintrag) => {
         try {
           this.formRolle.reset();
-          if (!this.rollen.find((r: any) => r.key === erg.key)) {
+          if (!this.rollen.find((r) => r.key === erg.key)) {
             this.rollen.push(erg);
           }
           this.uiMessageService.erstelleMessage("success","Rolle erfolgreich gespeichert!");
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage("error", e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage("error", String(e));
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       }
     });
   }
 
-  rolleLoeschen(rolle: any): void {
+  rolleLoeschen(rolle: RolleEintrag): void {
     const id = rolle.id;
     this.apiHttpService.delete(this.modul, id).subscribe({
-      next: (erg: any) => {
+      next: () => {
         try {
-          this.rollen = this.rollen.filter((r: any) => r.id !== id);
+          this.rollen = this.rollen.filter((r) => r.id !== id);
           this.uiMessageService.erstelleMessage("success", "Rolle erfolgreich gelöscht!");
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage("error", e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage("error", String(e));
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       }
     });
@@ -205,8 +212,8 @@ export class KonfigurationComponent implements OnInit {
 
     const idValue = this.formKonfig.controls["id"].value;
     if (idValue === '' || idValue === null) {
-      this.apiHttpService.post(this.modul2, object, false).subscribe({
-        next: (erg: any) => {
+      this.apiHttpService.post<IKonfiguration>(this.modul2, object, false).subscribe({
+        next: (erg) => {
           try {
             const details: IKonfiguration = erg;
             this.formKonfig.setValue({
@@ -225,17 +232,17 @@ export class KonfigurationComponent implements OnInit {
               fw_bic: details.fw_bic
             })
             this.uiMessageService.erstelleMessage("success","Konfiguration erfolgreich gespeichert!");
-          } catch (e: any) {
-            this.uiMessageService.erstelleMessage("error", e);
+          } catch (e: unknown) {
+            this.uiMessageService.erstelleMessage("error", String(e));
           }
         },
-        error: (error: any) => {
+        error: (error: unknown) => {
           this.authSessionService.errorAnzeigen(error);
         }
       });
     } else {
-      this.apiHttpService.patch(this.modul2, idValue, object, false).subscribe({
-        next: (erg: any) => {
+      this.apiHttpService.patch<IKonfiguration>(this.modul2, idValue, object, false).subscribe({
+        next: (erg) => {
           try {
             const details: IKonfiguration = erg;
             this.formKonfig.setValue({
@@ -254,26 +261,26 @@ export class KonfigurationComponent implements OnInit {
               fw_bic: details.fw_bic
             })
             this.uiMessageService.erstelleMessage("success","Konfiguration erfolgreich geändert!");
-          } catch (e: any) {
-            this.uiMessageService.erstelleMessage("error", e);
+          } catch (e: unknown) {
+            this.uiMessageService.erstelleMessage("error", String(e));
           }
         },
-        error: (error: any) => {
+        error: (error: unknown) => {
           this.authSessionService.errorAnzeigen(error);
         }
       });
     }
   }
 
-  backupImport(backup_name: any): void {
+  backupImport(backup_name: BackupEintrag): void {
     const object = {
       "backup": backup_name.name
     }
 
-    this.apiHttpService.post("backup/restore", object, false).subscribe({
-      next: (erg: any) => {
+    this.apiHttpService.post<BackupOperationResponse>("backup/restore", object, false).subscribe({
+      next: (erg) => {
         try {
-          this.backup_msg = erg.msg;
+          this.backup_msg = erg.msg ?? '';
           this.uiMessageService.erstelleMessage("success",this.backup_msg);
           sessionStorage.clear();
           document.cookie.split('; ').forEach(cookie => {
@@ -281,34 +288,34 @@ export class KonfigurationComponent implements OnInit {
             document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
           });
           this.router.navigate(['/login']);
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage("error", e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage("error", String(e));
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       }
     });
   }
 
   backupErstellen(): void {
-    this.apiHttpService.post("backup", {}, false).subscribe({
-      next: (erg: any) => {
+    this.apiHttpService.post<BackupOperationResponse>("backup", {}, false).subscribe({
+      next: (erg) => {
         try {
-          this.backup_msg = erg.msg;
-          this.backups = this.convertBackups(erg.backups);
+          this.backup_msg = erg.msg ?? '';
+          this.backups = this.convertBackups(erg.backups ?? []);
           this.uiMessageService.erstelleMessage("success",this.backup_msg);
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage("error", e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage("error", String(e));
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       }
     });
   }
 
-  backupDownload(backup_name: any): void {
+  backupDownload(backup_name: BackupEintrag): void {
     const object = {
       "backup": backup_name.name
     }
@@ -324,28 +331,28 @@ export class KonfigurationComponent implements OnInit {
         a.remove();
         URL.revokeObjectURL(url);
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       }
     });
   }
 
-  backupLoeschen(backup_name: any): void {
+  backupLoeschen(backup_name: BackupEintrag): void {
     const object = {
       "backup": backup_name.name
     }
 
-    this.apiHttpService.post("backup/delete", object, false).subscribe({
-      next: (erg: any) => {
+    this.apiHttpService.post<BackupOperationResponse>("backup/delete", object, false).subscribe({
+      next: (erg) => {
         try {
-          this.backup_msg = erg.msg;
-          this.backups = this.convertBackups(erg.backups);
+          this.backup_msg = erg.msg ?? '';
+          this.backups = this.convertBackups(erg.backups ?? []);
           this.uiMessageService.erstelleMessage("success",this.backup_msg);
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage("error", e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage("error", String(e));
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       }
     });
@@ -363,14 +370,15 @@ export class KonfigurationComponent implements OnInit {
     };
 
     this.apiHttpService.cleanupOrphanMedia(payload).subscribe({
-      next: (erg: any) => {
-        const summary = erg?.summary ?? {};
+      next: (erg) => {
+        const cleanupResponse = erg as BackupCleanupResponse;
+        const summary = cleanupResponse?.summary ?? {};
         const orphanCount = summary.orphan ?? 0;
-        const deletedCount = erg?.deleted ?? 0;
+        const deletedCount = cleanupResponse?.deleted ?? 0;
         this.cleanupSummary = `Ergebnis: ${orphanCount} verwaist gefunden, ${deletedCount} gelöscht.`;
         this.cleanupFiles = [];
 
-        for (const item of (erg?.items ?? [])) {
+        for (const item of (cleanupResponse?.items ?? [])) {
           const target = String(item?.target ?? '');
           for (const orphan of (item?.orphans ?? [])) {
             this.cleanupFiles.push({
@@ -385,7 +393,7 @@ export class KonfigurationComponent implements OnInit {
         this.uiMessageService.erstelleMessage('success', message);
         this.cleanupRunning = false;
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
         this.cleanupRunning = false;
       }
@@ -396,15 +404,14 @@ export class KonfigurationComponent implements OnInit {
     return this.cleanupTargetLabels[target] ?? target;
   }
 
-  convertBackups(backup_array:any ): any {
+  convertBackups(backup_array: string[]): BackupEintrag[] {
     const version = environment.version;
-    let data = [];
+    let data: BackupEintrag[] = [];
     for (let i = 0; i < backup_array.length; i++) {
       const file = backup_array[i];
-      let backup_version = file.split('_');
-      backup_version = backup_version[1];
+      const backup_version = file.split('_')[1];
 
-      if (backup_version == version || backup_version == 'test') {
+      if (backup_version === version || backup_version === 'test') {
         const dict = {
           "name": file,
         }

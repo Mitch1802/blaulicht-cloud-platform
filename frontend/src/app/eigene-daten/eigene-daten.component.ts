@@ -12,19 +12,27 @@ import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
 import {
+  ImrBreadcrumbItem,
   ImrHeaderComponent,
-  ImrCardComponent,
   ImrButtonComponent,
   ImrFormFieldComponent,
+  ImrPageLayoutComponent,
+  ImrSectionCardComponent,
   ImrTopActionsComponent,
   UiControlErrorsDirective,
 } from '../imr-ui-library';
+
+type EigeneDatenResponse = {
+  id: string;
+  email?: string | null;
+};
 
 @Component({
   selector: 'app-eigene-daten',
   imports: [
     ImrHeaderComponent, 
-    ImrCardComponent, 
+    ImrPageLayoutComponent,
+    ImrSectionCardComponent,
     FormsModule, 
     ReactiveFormsModule, 
     MatInputModule,
@@ -44,7 +52,7 @@ export class EigeneDatenComponent implements OnInit {
   title: string = "Eigene Daten";
   modul: string = "users/self";
 
-  breadcrumb: any = [];
+  breadcrumb: ImrBreadcrumbItem[] = [];
 
   formModul = new FormGroup({
     id: new FormControl(''),
@@ -66,8 +74,8 @@ export class EigeneDatenComponent implements OnInit {
     this.breadcrumb = this.navigationService.ladeBreadcrumb();
     this.formModul.disable();
 
-    this.apiHttpService.get(this.modul).subscribe({
-      next: (erg: any) => {
+    this.apiHttpService.get<EigeneDatenResponse>(this.modul).subscribe({
+      next: (erg: EigeneDatenResponse) => {
         try {
           this.formModul.setValue({
             id: erg.id,
@@ -76,11 +84,11 @@ export class EigeneDatenComponent implements OnInit {
             password2: ""
           });
           this.formModul.enable();
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage("error", e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage("error", String(e));
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       }
     });
@@ -89,16 +97,16 @@ export class EigeneDatenComponent implements OnInit {
   emailSpeichern(): void {
     const payload = { email: this.formModul.controls["email"].value };
 
-    this.apiHttpService.patch(this.modul, '', payload, false).subscribe({
-      next: (erg: any) => {
+    this.apiHttpService.patch<EigeneDatenResponse>(this.modul, '', payload, false).subscribe({
+      next: (erg: EigeneDatenResponse) => {
         try {
           this.formModul.patchValue({ email: erg.email || '' });
           this.uiMessageService.erstelleMessage("success", "E-Mail-Adresse erfolgreich geändert!");
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage("error", e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage("error", String(e));
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       }
     });
@@ -123,16 +131,16 @@ export class EigeneDatenComponent implements OnInit {
     }
     const idValue = this.formModul.controls["id"].value!;
     this.apiHttpService.patch("users/change_password", idValue, dict, false).subscribe({
-      next: (erg: any) => {
+      next: () => {
         try {
           this.formModul.controls["password1"].setValue("");
           this.formModul.controls["password2"].setValue("");
           this.uiMessageService.erstelleMessage("success", "Passwort erfolgreich geändert!");
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage("error", e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage("error", String(e));
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       }
     });

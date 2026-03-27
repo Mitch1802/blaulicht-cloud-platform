@@ -1,14 +1,7 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
-<section class="fahrzeug-page">
-  <header class="page-head">
-    <h1>Fahrzeuge verwalten</h1>
-  </header>
-
-  <imr-card class="imr-card">
-    <div class="imr-card__head">
-      <h2>Fahrzeuge & Beladung</h2>
-    </div>
+<imr-page-layout title="Fahrzeuge verwalten" class="fahrzeug-page">
+  <imr-section-card title="Fahrzeuge & Beladung">
       @if (!editorOpen && !inventarEditorOpen) {
         <imr-top-actions class="mb-3">
           <a mat-flat-button color="primary" [routerLink]="['/public/fahrzeuge']" target="_blank" rel="noopener">
@@ -521,6 +514,6 @@
             }
         </imr-card>
       }
-  </imr-card>
-</section>
+  </imr-section-card>
+</imr-page-layout>
 

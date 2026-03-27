@@ -7,7 +7,7 @@ import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
-import { IMR_UI_COMPONENTS, ImrPaginatorComponent } from '../imr-ui-library';
+import { IMR_UI_COMPONENTS, ImrBreadcrumbItem, ImrPaginatorComponent } from '../imr-ui-library';
 import { Router } from '@angular/router';
 import { MatInputModule } from '@angular/material/input';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -35,6 +35,11 @@ type ImportSummary = {
   total_changes: number;
   total_rows: number;
 };
+
+type ImportPreviewResponse = { changes?: ImportChange[]; summary?: ImportSummary };
+type ImportApplyResponse = { summary?: { created: number; updated: number } };
+
+type CsvRawRow = Record<string, string | number | boolean | null | undefined>;
 
 @Component({
     selector: 'app-mitglied',
@@ -75,8 +80,8 @@ export class MitgliedComponent implements OnInit {
   modul = "mitglieder";
 
   mitglieder: IMitglied[] = [];
-  breadcrumb: any = [];
-  importRows: any[] = [];
+  breadcrumb: ImrBreadcrumbItem[] = [];
+  importRows: CsvRawRow[] = [];
   importChanges: ImportChange[] = [];
   importSummary: ImportSummary | null = null;
 
@@ -126,16 +131,16 @@ export class MitgliedComponent implements OnInit {
       return this.getMitgliedFilterText(data).includes(filter);
     };
 
-    this.apiHttpService.get(this.modul).subscribe({
-      next: (erg: any) => {
+    this.apiHttpService.get<IMitglied[]>(this.modul).subscribe({
+      next: (erg) => {
         try {
           this.mitglieder = this.collectionUtilsService.arraySortByKey(erg, 'stbnr');
           this.dataSource.data = this.mitglieder;
-        } catch (e: any) {
+        } catch (e: unknown) {
           this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       }
     });
@@ -148,12 +153,12 @@ export class MitgliedComponent implements OnInit {
     }
     const file = input.files[0];
 
-    Papa.parse<any>(file, {
+    Papa.parse<CsvRawRow>(file, {
       header: true,
       skipEmptyLines: true,
       delimiter: ';',
-      complete: (results: any) => {
-        const parsed: any[] = results.data;
+      complete: (results) => {
+        const parsed = results.data;
 
         if (parsed.length > 0) {
           this.previewImport(parsed);
@@ -167,12 +172,12 @@ export class MitgliedComponent implements OnInit {
     });
   }
 
-  transformArray<T extends Record<string, any>>(
+  transformArray<T extends Record<string, unknown>>(
     inputArray: T[],
     keysToPickAndRename: RenameMap
-  ): Record<string, any>[] {
+  ): Record<string, unknown>[] {
     return inputArray.map(obj => {
-      const transformed: Record<string, any> = {};
+      const transformed: Record<string, unknown> = {};
       for (const [oldKey, newKey] of Object.entries(keysToPickAndRename)) {
         if (oldKey in obj) {
           transformed[newKey] = obj[oldKey];
@@ -187,16 +192,16 @@ export class MitgliedComponent implements OnInit {
     this.dataSource.paginator?.firstPage();
   }
 
-  previewImport(entries: any[]): void {
+  previewImport(entries: CsvRawRow[]): void {
     this.importRows = entries;
     const url = `${this.modul}/import`;
-    this.apiHttpService.post(url, { mode: 'preview', rows: entries }, false).subscribe({
-      next: (erg: any) => {
+    this.apiHttpService.post<ImportPreviewResponse>(url, { mode: 'preview', rows: entries }, false).subscribe({
+      next: (erg: ImportPreviewResponse) => {
         this.importChanges = erg?.changes ?? [];
         this.importSummary = erg?.summary ?? null;
         this.uiMessageService.erstelleMessage('info', `${this.importChanges.length} Änderungen in der Vorschau gefunden.`);
       },
-      error: (error: any) => this.authSessionService.errorAnzeigen(error)
+      error: (error: unknown) => this.authSessionService.errorAnzeigen(error)
     });
   }
 
@@ -207,21 +212,21 @@ export class MitgliedComponent implements OnInit {
     }
 
     const url = `${this.modul}/import`;
-    this.apiHttpService.post(url, { mode: 'apply', rows: this.importRows }, false).subscribe({
-      next: (erg: any) => {
+    this.apiHttpService.post<ImportApplyResponse>(url, { mode: 'apply', rows: this.importRows }, false).subscribe({
+      next: (erg: ImportApplyResponse) => {
         const summary = erg?.summary ?? { created: 0, updated: 0 };
         this.uiMessageService.erstelleMessage('success', `${summary.created} neu, ${summary.updated} aktualisiert.`);
         this.importAbbrechen();
 
-        this.apiHttpService.get(this.modul).subscribe({
-          next: (list: any) => {
+        this.apiHttpService.get<IMitglied[]>(this.modul).subscribe({
+          next: (list) => {
             this.mitglieder = this.collectionUtilsService.arraySortByKey(list, 'stbnr');
             this.dataSource.data = this.mitglieder;
           },
-          error: (error: any) => this.authSessionService.errorAnzeigen(error)
+          error: (error: unknown) => this.authSessionService.errorAnzeigen(error)
         });
       },
-      error: (error: any) => this.authSessionService.errorAnzeigen(error)
+      error: (error: unknown) => this.authSessionService.errorAnzeigen(error)
     });
   }
 
@@ -245,14 +250,14 @@ export class MitgliedComponent implements OnInit {
     };
   }
 
-  auswahlBearbeiten(element: any): void {
-    if (element.id === 0) {
+  auswahlBearbeiten(element: IMitglied): void {
+    if (!element.id || element.id === '0') {
       return;
     }
     const abfrageUrl = `${this.modul}/${element.id}`;
 
-    this.apiHttpService.get(abfrageUrl).subscribe({
-      next: (erg: any) => {
+    this.apiHttpService.get<IMitglied>(abfrageUrl).subscribe({
+      next: (erg) => {
         try {
           const details: IMitglied = erg;
 
@@ -268,11 +273,11 @@ export class MitgliedComponent implements OnInit {
             hauptberuflich: details.hauptberuflich ?? false,
             dienststatus: details.dienststatus ?? 'AKTIV'
           });
-        } catch (e: any) {
+        } catch (e: unknown) {
           this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       }
     });
@@ -290,7 +295,7 @@ export class MitgliedComponent implements OnInit {
     }
 
     this.apiHttpService.delete(this.modul, id).subscribe({
-      next: (erg: any) => {
+      next: () => {
         try {
           this.mitglieder = this.mitglieder.filter(m => m.id !== id);
           this.dataSource.data = this.mitglieder;
@@ -309,11 +314,11 @@ export class MitgliedComponent implements OnInit {
           this.formModul.disable();
 
           this.uiMessageService.erstelleMessage('success', 'Mitglied erfolgreich gelöscht!');
-        } catch (e: any) {
+        } catch (e: unknown) {
           this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       }
     });
@@ -341,12 +346,12 @@ export class MitgliedComponent implements OnInit {
       return;
     }
 
-    const objekt: any = this.formModul.value;
+    const objekt = this.formModul.value as Partial<IMitglied>;
     const idValue = this.formModul.controls['id'].value;
 
     if (!idValue) {
-      this.apiHttpService.post(this.modul, objekt, false).subscribe({
-        next: (erg: any) => {
+      this.apiHttpService.post<IMitglied>(this.modul, objekt, false).subscribe({
+        next: (erg) => {
           try {
             this.mitglieder.push(erg);
             this.mitglieder = this.collectionUtilsService.arraySortByKey(this.mitglieder, 'stbnr');
@@ -366,15 +371,15 @@ export class MitgliedComponent implements OnInit {
             this.formModul.disable();
 
             this.uiMessageService.erstelleMessage('success', 'Mitglied erfolgreich gespeichert!');
-          } catch (e: any) {
+          } catch (e: unknown) {
             this.uiMessageService.erstelleMessage('error', String(e));
           }
         },
-        error: (error: any) => this.authSessionService.errorAnzeigen(error)
+        error: (error: unknown) => this.authSessionService.errorAnzeigen(error)
       });
     } else {
-      this.apiHttpService.patch(this.modul, idValue, objekt, false).subscribe({
-        next: (erg: any) => {
+      this.apiHttpService.patch<IMitglied>(this.modul, idValue, objekt, false).subscribe({
+        next: (erg) => {
           try {
             this.mitglieder = this.mitglieder.map(m =>
               m.id === erg.id ? erg : m
@@ -395,11 +400,11 @@ export class MitgliedComponent implements OnInit {
             this.formModul.disable();
 
             this.uiMessageService.erstelleMessage('success', 'Mitglied erfolgreich geändert!');
-          } catch (e: any) {
+          } catch (e: unknown) {
             this.uiMessageService.erstelleMessage('error', String(e));
           }
         },
-        error: (error: any) => this.authSessionService.errorAnzeigen(error)
+        error: (error: unknown) => this.authSessionService.errorAnzeigen(error)
       });
     }
   }

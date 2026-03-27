@@ -2,7 +2,15 @@
 import { RouterLink } from '@angular/router';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 
-import { ImrButtonComponent, ImrCardComponent, ImrHeaderComponent, ImrIconComponent, ImrTopActionsComponent } from '../imr-ui-library';
+import {
+  ImrButtonComponent,
+  ImrBreadcrumbItem,
+  ImrHeaderComponent,
+  ImrIconComponent,
+  ImrPageLayoutComponent,
+  ImrSectionCardComponent,
+  ImrTopActionsComponent,
+} from '../imr-ui-library';
 import { IWartungServiceEintrag, IWartungServiceResponse, IWartungServiceSummary } from '../_interface/wartung_service';
 import { ApiHttpService } from 'src/app/_service/api-http.service';
 import { AuthSessionService } from 'src/app/_service/auth-session.service';
@@ -15,7 +23,8 @@ import { UiMessageService } from 'src/app/_service/ui-message.service';
   imports: [
     ImrButtonComponent,
     ImrHeaderComponent,
-    ImrCardComponent,
+    ImrPageLayoutComponent,
+    ImrSectionCardComponent,
     ImrIconComponent,
     ImrTopActionsComponent,
     MatTableModule,
@@ -33,7 +42,7 @@ export class WartungServiceComponent implements OnInit {
   readonly modul = 'wartung_service';
   readonly title = 'Wartung/Service';
 
-  breadcrumb: any[] = [];
+  breadcrumb: ImrBreadcrumbItem[] = [];
   jahr = new Date().getFullYear();
   heute = '';
   summary: IWartungServiceSummary = {
@@ -67,7 +76,7 @@ export class WartungServiceComponent implements OnInit {
         };
         this.dataSource.data = Array.isArray(erg?.main) ? erg.main : [];
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       },
     });

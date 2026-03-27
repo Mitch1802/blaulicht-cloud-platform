@@ -27,13 +27,13 @@ describe('AnwesenheitslisteComponent', () => {
     uiMessageServiceSpy = jasmine.createSpyObj<UiMessageService>('UiMessageService', ['erstelleMessage']);
 
     navigationServiceSpy.ladeBreadcrumb.and.returnValue([]);
-    collectionUtilsServiceSpy.arraySortByKey.and.callFake((array: any[]) => array);
-    apiHttpServiceSpy.get.and.callFake(((url: string) => {
+    collectionUtilsServiceSpy.arraySortByKey.and.callFake(<T>(array: T[]) => array);
+    apiHttpServiceSpy.get.and.callFake((url: string) => {
       if (url === 'anwesenheitsliste/context') {
         return of({ mitglieder: [] });
       }
       return of([]);
-    }) as any);
+    });
 
     await TestBed.configureTestingModule({
       imports: [AnwesenheitslisteComponent],

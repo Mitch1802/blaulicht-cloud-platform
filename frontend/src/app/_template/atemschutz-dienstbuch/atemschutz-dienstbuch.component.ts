@@ -5,10 +5,12 @@ import { CollectionUtilsService } from 'src/app/_service/collection-utils.servic
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
 import {
-  ImrCardComponent,
   ImrFormFieldComponent,
+  ImrBreadcrumbItem,
   ImrHeaderComponent,
+  ImrPageLayoutComponent,
   ImrPaginatorComponent,
+  ImrSectionCardComponent,
 } from '../../imr-ui-library';
 import { IAtemschutzGeraetProtokoll } from 'src/app/_interface/atemschutz_geraet_protokoll';
 import { IMitglied } from 'src/app/_interface/mitglied';
@@ -16,11 +18,23 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatInputModule } from '@angular/material/input';
 
+type DienstbuchResponse = {
+  protokoll?: IAtemschutzGeraetProtokoll[];
+  mitglieder?: IMitglied[];
+};
+
+type ProtokollMitgliedRow = IAtemschutzGeraetProtokoll & {
+  stbnr: number | null;
+  vorname: string;
+  nachname: string;
+};
+
 @Component({
   selector: 'app-atemschutz-dienstbuch',
   imports: [
     ImrHeaderComponent,
-    ImrCardComponent,
+    ImrPageLayoutComponent,
+    ImrSectionCardComponent,
     ImrFormFieldComponent,
     ImrPaginatorComponent,
     MatTableModule,
@@ -39,7 +53,7 @@ export class AtemschutzDienstbuchComponent implements OnInit {
   title = "Dienstbuch verwalten";
   modul = "atemschutz/geraete/dienstbuch";
 
-  breadcrumb: any = [];
+  breadcrumb: ImrBreadcrumbItem[] = [];
   jahrHeuer: number = new Date().getFullYear();
   dauerHeuer: number = 0;
   jahrLetztesJahr: number = this.jahrHeuer - 1;
@@ -47,11 +61,11 @@ export class AtemschutzDienstbuchComponent implements OnInit {
 
   protokoll: IAtemschutzGeraetProtokoll[] = [];
   mitglieder: IMitglied[] = [];
-  list_protokoll_mitglieder: any[] = [];
+  list_protokoll_mitglieder: ProtokollMitgliedRow[] = [];
 
-  pageOptions: any[] = [10, 50, 100]
+  pageOptions: number[] = [10, 50, 100]
   sichtbareSpalten: string[] = ['datum', 'verwendung_typ', 'verwendung_min', 'stbnr', 'vorname', 'nachname'];
-  dataSource = new MatTableDataSource<any>(this.list_protokoll_mitglieder);
+  dataSource = new MatTableDataSource<ProtokollMitgliedRow>(this.list_protokoll_mitglieder);
 
   @ViewChild(ImrPaginatorComponent, { static: false }) paginator?: ImrPaginatorComponent;
   @ViewChildren(MatSort) sorts?: QueryList<MatSort>;
@@ -61,8 +75,8 @@ export class AtemschutzDienstbuchComponent implements OnInit {
     sessionStorage.setItem("Page3", "ATM_DB");
     this.breadcrumb = this.navigationService.ladeBreadcrumb();
 
-    this.apiHttpService.get(this.modul).subscribe({
-      next: (erg: any) => {
+    this.apiHttpService.get<DienstbuchResponse>(this.modul).subscribe({
+      next: (erg: DienstbuchResponse) => {
         try {
           this.protokoll = Array.isArray(erg.protokoll) ? erg.protokoll : [];
           this.mitglieder = Array.isArray(erg.mitglieder) ? erg.mitglieder : [];
@@ -81,7 +95,9 @@ export class AtemschutzDienstbuchComponent implements OnInit {
           // Nur die gefilterten Protokolle joinen
           this.list_protokoll_mitglieder = gefilterteProtokolle.map((p: IAtemschutzGeraetProtokoll) => {
             const mitglied =
-              p.mitglied_id != null ? mitgliederMap.get(p.mitglied_id) : undefined;
+              p.mitglied_id !== null && p.mitglied_id !== undefined
+                ? mitgliederMap.get(p.mitglied_id)
+                : undefined;
 
             return {
               ...p,
@@ -96,11 +112,11 @@ export class AtemschutzDienstbuchComponent implements OnInit {
           this.dataSource.sort = this.sorts?.first ?? null;
 
           this.summenBerechnen(this.protokoll);
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage("error", e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage("error", String(e));
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       }
     });
@@ -116,9 +132,9 @@ export class AtemschutzDienstbuchComponent implements OnInit {
       const y = new Date(l.datum).getFullYear();
       const d = l.verwendung_min;
 
-      if (y == this.jahrHeuer) {
+      if (y === this.jahrHeuer) {
         this.dauerHeuer += d;
-      }else if (y == this.jahrLetztesJahr) {
+      }else if (y === this.jahrLetztesJahr) {
         this.dauerLetztesJahr += d;
       }
     }

@@ -1,26 +1,31 @@
 import { Injectable } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
 
+type GenericObject = object;
+type SelectItem = { pkid: string | number; kuerzel: string; name: string };
+
 @Injectable({
   providedIn: 'root',
 })
 export class CollectionUtilsService {
-  arraySortByKey(array: any[], key: any): any[] {
-    array.sort((a: any, b: any) => (a[key] === b[key] ? 0 : +(a[key] > b[key]) || -1));
+  arraySortByKey<T extends GenericObject>(array: T[], key: keyof T | string): T[] {
+    array.sort((a, b) => this.compareValues(this.readValue(a, String(key)), this.readValue(b, String(key))));
     return array;
   }
 
-  arraySortByKeyDesc(array: any[], key: any): any[] {
-    array.sort((a: any, b: any) => (a[key] === b[key] ? 0 : +(a[key] < b[key]) || -1));
+  arraySortByKeyDesc<T extends GenericObject>(array: T[], key: keyof T | string): T[] {
+    array.sort((a, b) => this.compareValues(this.readValue(b, String(key)), this.readValue(a, String(key))));
     return array;
   }
 
-  sucheArrayInArray(gesamtArray: any[], teilArray: any[], vergleichKey: string): any[] {
-    const arrayNeu = [];
+  sucheArrayInArray<T extends GenericObject, U extends GenericObject>(gesamtArray: T[], teilArray: U[], vergleichKey: string): T[] {
+    const arrayNeu: T[] = [];
     for (let i = 0; i < gesamtArray.length; i += 1) {
       let count = 0;
       for (let x = 0; x < teilArray.length; x += 1) {
-        if (gesamtArray[i][vergleichKey] === teilArray[x][vergleichKey]) {
+        const left = this.readValue(gesamtArray[i], vergleichKey);
+        const right = this.readValue(teilArray[x], vergleichKey);
+        if (left === right) {
           count += 1;
         }
       }
@@ -31,12 +36,12 @@ export class CollectionUtilsService {
     return arrayNeu;
   }
 
-  sucheNumberArrayInObjectArray(gesamtArray: any[], teilArray: any[], gesamtArrayKey: string): any[] {
-    const arrayNeu = [];
+  sucheNumberArrayInObjectArray<T extends GenericObject>(gesamtArray: T[], teilArray: Array<string | number>, gesamtArrayKey: string): T[] {
+    const arrayNeu: T[] = [];
     for (let i = 0; i < gesamtArray.length; i += 1) {
       let count = 0;
       for (let x = 0; x < teilArray.length; x += 1) {
-        if (gesamtArray[i][gesamtArrayKey] === teilArray[x]) {
+        if (this.readValue(gesamtArray[i], gesamtArrayKey) === teilArray[x]) {
           count += 1;
         }
       }
@@ -47,12 +52,12 @@ export class CollectionUtilsService {
     return arrayNeu;
   }
 
-  vergleicheZweiArrays(array1: any[], array2: any[], vergleichKey: string): any[] {
+  vergleicheZweiArrays<T extends GenericObject>(array1: T[], array2: T[], vergleichKey: string): T[] {
     const arrayNeu = array1;
     for (let i = 0; i < array2.length; i += 1) {
       let count = 0;
       for (let x = 0; x < arrayNeu.length; x += 1) {
-        if (array2[i][vergleichKey] === arrayNeu[x][vergleichKey]) {
+        if (this.readValue(array2[i], vergleichKey) === this.readValue(arrayNeu[x], vergleichKey)) {
           count += 1;
         }
       }
@@ -63,13 +68,13 @@ export class CollectionUtilsService {
     return arrayNeu;
   }
 
-  addItemFromSelectToList(control: AbstractControl, arrayGesamt: any[], array: any[]): void {
+  addItemFromSelectToList(control: AbstractControl, arrayGesamt: SelectItem[], array: SelectItem[]): void {
     const selectedId = control.value;
     if (selectedId !== '0') {
       if (array.length > 0) {
         let count = 0;
         for (let i = 0; i < array.length; i += 1) {
-          if (selectedId === array[i]) {
+          if (selectedId === array[i].pkid) {
             count += 1;
           }
         }
@@ -103,7 +108,7 @@ export class CollectionUtilsService {
     }
   }
 
-  addItemFromListToSelect(pkid: string, arrayGesamt: any[], array: any[]): void {
+  addItemFromListToSelect(pkid: string | number, arrayGesamt: SelectItem[], array: SelectItem[]): void {
     for (let i = 0; i < array.length; i += 1) {
       if (pkid === array[i].pkid) {
         arrayGesamt.push({ pkid: array[i].pkid, kuerzel: array[i].kuerzel, name: array[i].name });
@@ -113,29 +118,47 @@ export class CollectionUtilsService {
     this.arraySortByKey(arrayGesamt, 'kuerzel');
   }
 
-  addFeldInArray(arrayGesamt: any[], array: any[], feldName: string, joinKey: string): any[] {
-    const map = new Map(arrayGesamt.map((item) => [item[joinKey], item[feldName]]));
+  addFeldInArray<T extends GenericObject>(arrayGesamt: T[], array: T[], feldName: string, joinKey: string): T[] {
+    const map = new Map(arrayGesamt.map((item) => [this.readValue(item, joinKey), this.readValue(item, feldName)]));
 
     return array.map((item) => {
-      const key = item[joinKey];
+      const key = this.readValue(item, joinKey);
       if (map.has(key)) {
-        return { ...item, [feldName]: map.get(key) };
+        return { ...(item as Record<string, unknown>), [feldName]: map.get(key) } as T;
       }
       return item;
     });
   }
 
-  addAllFieldsToNumberArray(arrayGesamt: any[], array: any[]): any[] {
-    const dataNew = [];
+  addAllFieldsToNumberArray<T extends GenericObject>(arrayGesamt: T[], array: Array<string | number>): T[] {
+    const dataNew: T[] = [];
     for (let i = 0; i < array.length; i += 1) {
       const pkid = array[i];
       for (let x = 0; x < arrayGesamt.length; x += 1) {
-        if (pkid === arrayGesamt[x].pkid) {
+        if (pkid === this.readValue(arrayGesamt[x], 'pkid')) {
           dataNew.push(arrayGesamt[x]);
         }
       }
     }
 
     return dataNew;
+  }
+
+  private compareValues(a: unknown, b: unknown): number {
+    if (a === b) {
+      return 0;
+    }
+
+    const left = typeof a === 'number' ? a : String(a ?? '');
+    const right = typeof b === 'number' ? b : String(b ?? '');
+
+    return left > right ? 1 : -1;
+  }
+
+  private readValue(item: unknown, key: string): unknown {
+    if (!item || typeof item !== 'object') {
+      return undefined;
+    }
+    return (item as Record<string, unknown>)[key];
   }
 }

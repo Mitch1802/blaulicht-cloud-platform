@@ -9,7 +9,7 @@ import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { A11yModule } from '@angular/cdk/a11y';
 import { MatInputModule } from '@angular/material/input';
-import { IMR_UI_COMPONENTS, ImrPaginatorComponent } from '../imr-ui-library';
+import { IMR_UI_COMPONENTS, ImrBreadcrumbItem, ImrPaginatorComponent } from '../imr-ui-library';
 import { forkJoin } from 'rxjs';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSort, MatSortModule } from '@angular/material/sort';
@@ -51,7 +51,7 @@ export class NewsComponent implements OnInit {
   title = 'News Verwaltung';
   modul = 'news/intern';
   modulTemplates = 'news/templates';
-  breadcrumb: any[] = [];
+  breadcrumb: ImrBreadcrumbItem[] = [];
 
   newsArray: INews[] = [];
   newsDataSource = new MatTableDataSource<INews>([]);
@@ -99,19 +99,19 @@ export class NewsComponent implements OnInit {
     this.isEditMode = false;
 
     forkJoin({
-      newsResponse: this.apiHttpService.get(this.modul),
-      templateResponse: this.apiHttpService.get(this.modulTemplates),
+      newsResponse: this.apiHttpService.get<INews[]>(this.modul),
+      templateResponse: this.apiHttpService.get<INewsTemplate[]>(this.modulTemplates),
     }).subscribe({
-      next: ({ newsResponse, templateResponse }: any) => {
+      next: ({ newsResponse, templateResponse }) => {
         try {
-          this.newsArray = this.convertNewsDate(newsResponse) as INews[];
+          this.newsArray = this.convertNewsDate(newsResponse);
           this.newsDataSource.data = this.newsArray;
-          this.templateArray = this.sortTemplates(templateResponse as INewsTemplate[]);
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage('error', e);
+          this.templateArray = this.sortTemplates(templateResponse);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
       }
     });
@@ -165,7 +165,7 @@ export class NewsComponent implements OnInit {
         this.formModul.patchValue({ template_id: '', template_name: '' });
         this.uiMessageService.erstelleMessage('success', 'Vorlage gelöscht.');
       },
-      error: (error: any) => this.authSessionService.errorAnzeigen(error),
+      error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
     });
   }
 
@@ -190,25 +190,25 @@ export class NewsComponent implements OnInit {
     };
 
     const request$ = templateId
-      ? this.apiHttpService.patch(this.modulTemplates, templateId, payload, false)
-      : this.apiHttpService.post(this.modulTemplates, payload, false);
+      ? this.apiHttpService.patch<INewsTemplate>(this.modulTemplates, templateId, payload, false)
+      : this.apiHttpService.post<INewsTemplate>(this.modulTemplates, payload, false);
 
     request$.subscribe({
-      next: (erg: any) => {
+      next: (erg) => {
         const savedId = String(erg?.id || templateId || '');
-        this.apiHttpService.get(this.modulTemplates).subscribe({
-          next: (templates: any) => {
-            this.templateArray = this.sortTemplates(templates as INewsTemplate[]);
+        this.apiHttpService.get<INewsTemplate[]>(this.modulTemplates).subscribe({
+          next: (templates) => {
+            this.templateArray = this.sortTemplates(templates);
             this.formModul.patchValue({
               template_id: savedId,
               template_name: String(erg?.name || name),
             });
             this.uiMessageService.erstelleMessage('success', templateId ? 'Vorlage aktualisiert.' : 'Vorlage gespeichert.');
           },
-          error: (error: any) => this.authSessionService.errorAnzeigen(error),
+          error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
         });
       },
-      error: (error: any) => this.authSessionService.errorAnzeigen(error),
+      error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
     });
   }
 
@@ -219,24 +219,26 @@ export class NewsComponent implements OnInit {
   }
 
   /** Server-Datum ins gewünschte Anzeigeformat bringen */
-  convertNewsDate(data: any): any[] {
-    for (let i = 0; i < data.length; i++) {
-      const created_at = String(data[i].created_at).split('T');
-      const created_at_date = created_at[0];
-      const created_at_time = created_at[1]?.split(':') ?? [];
-      data[i].created_at = created_at_date + '_' + created_at_time[0] + ':' + created_at_time[1];
+  convertNewsDate(data: INews[]): INews[] {
+    return data.map((item) => {
+      const createdAt = String(item.created_at).split('T');
+      const createdDate = createdAt[0];
+      const createdTime = createdAt[1]?.split(':') ?? [];
 
-      const updated_at = String(data[i].updated_at).split('T');
-      const updated_at_date = updated_at[0];
-      const updated_at_time = updated_at[1]?.split(':') ?? [];
-      data[i].updated_at = updated_at_date + '_' + updated_at_time[0] + ':' + updated_at_time[1];
-    }
-    return data;
+      const updatedAt = String(item.updated_at).split('T');
+      const updatedDate = updatedAt[0];
+      const updatedTime = updatedAt[1]?.split(':') ?? [];
+
+      return {
+        ...item,
+        created_at: `${createdDate}_${createdTime[0] ?? ''}:${createdTime[1] ?? ''}`,
+        updated_at: `${updatedDate}_${updatedTime[0] ?? ''}:${updatedTime[1] ?? ''}`,
+      };
+    });
   }
 
-  private normalizeNewsItem(item: any): INews {
-    const normalized = this.convertNewsDate([item])[0];
-    return normalized as INews;
+  private normalizeNewsItem(item: INews): INews {
+    return this.convertNewsDate([item])[0] as INews;
   }
 
   getNewsExcerpt(text: string | undefined): string {
@@ -256,45 +258,44 @@ export class NewsComponent implements OnInit {
     this.auswahlLoeschen(id);
   }
 
-  auswahlLoeschen(id: any): void {
-    if (id === 0) {
+  auswahlLoeschen(id: string | number): void {
+    if (!id || id === '0' || id === 0) {
       return;
     }
     this.apiHttpService.delete(this.modul, id).subscribe({
-      next: (erg: any) => {
+      next: () => {
         try {
-          this.newsArray = this.newsArray.filter(n => n.id !== id);
+          this.newsArray = this.newsArray.filter(n => n.id !== String(id));
           this.newsDataSource.data = this.newsArray;
           this.resetFormNachAktion();
           this.uiMessageService.erstelleMessage('success', 'News erfolgreich gelöscht!');
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage('error', e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
-      error: (error: any) => this.authSessionService.errorAnzeigen(error)
+      error: (error: unknown) => this.authSessionService.errorAnzeigen(error)
     });
   }
 
-  auswahlBearbeiten(element: any): void {
-    if (element.id === 0) {
+  auswahlBearbeiten(element: INews): void {
+    if (!element.id || element.id === '0') {
       return;
     }
     const abfrageUrl = `${this.modul}/${element.id}`;
-    this.apiHttpService.get(abfrageUrl).subscribe({
-      next: (erg: any) => {
+    this.apiHttpService.get<INews>(abfrageUrl).subscribe({
+      next: (erg) => {
         try {
-          let details: INews = erg;
+          const details: INews = erg;
           this.formModul.enable();
           this.isEditMode = true;
           this.btnUploadStatus = true;
 
-          // UI-Status für bestehendes Bild
-          if ((details as any).foto_url) {
+          if (details.foto_url) {
             this.btnText = 'Bild ersetzen';
-            const parts = (details as any).foto_url.split('/');
-            this.fileName = parts[parts.length - 1];
+            const parts = details.foto_url.split('/');
+            this.fileName = parts[parts.length - 1] ?? '';
             this.fileFound = true;
-            this.filePfad = (details as any).foto_url;
+            this.filePfad = details.foto_url;
           } else {
             this.btnText = 'Bild auswählen';
             this.fileName = '';
@@ -303,7 +304,7 @@ export class NewsComponent implements OnInit {
           }
 
           this.formModul.setValue({
-            id: details.id!,
+            id: details.id,
             template_id: '',
             template_name: '',
             title: details.title,
@@ -312,11 +313,11 @@ export class NewsComponent implements OnInit {
             foto_url: ''
           });
           this.setzeSelectZurueck();
-        } catch (e: any) {
-          this.uiMessageService.erstelleMessage('error', e);
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
-      error: (error: any) => this.authSessionService.errorAnzeigen(error)
+      error: (error: unknown) => this.authSessionService.errorAnzeigen(error)
     });
   }
 
@@ -358,35 +359,35 @@ export class NewsComponent implements OnInit {
         fd.append('typ', typ);
         fd.append('foto', file, file.name || 'upload.png');
 
-        this.apiHttpService.post(this.modul, fd, true).subscribe({
-          next: (erg: any) => {
+        this.apiHttpService.post<INews>(this.modul, fd, true).subscribe({
+          next: (erg) => {
             try {
               const normalized = this.normalizeNewsItem(erg);
               this.newsArray.push(normalized);
               this.newsDataSource.data = this.newsArray;
               this.resetFormNachAktion();
               this.uiMessageService.erstelleMessage('success', 'News erfolgreich gespeichert!');
-            } catch (e: any) {
-              this.uiMessageService.erstelleMessage('error', e);
+            } catch (e: unknown) {
+              this.uiMessageService.erstelleMessage('error', String(e));
             }
           },
-          error: (error: any) => this.authSessionService.errorAnzeigen(error)
+          error: (error: unknown) => this.authSessionService.errorAnzeigen(error)
         });
       } else {
         // JSON ohne Bild
-        this.apiHttpService.post(this.modul, { title, text, typ }, false).subscribe({
-          next: (erg: any) => {
+        this.apiHttpService.post<INews>(this.modul, { title, text, typ }, false).subscribe({
+          next: (erg) => {
             try {
               const normalized = this.normalizeNewsItem(erg);
               this.newsArray.push(normalized);
               this.newsDataSource.data = this.newsArray;
               this.resetFormNachAktion();
               this.uiMessageService.erstelleMessage('success', 'News erfolgreich gespeichert!');
-            } catch (e: any) {
-              this.uiMessageService.erstelleMessage('error', e);
+            } catch (e: unknown) {
+              this.uiMessageService.erstelleMessage('error', String(e));
             }
           },
-          error: (error: any) => this.authSessionService.errorAnzeigen(error)
+          error: (error: unknown) => this.authSessionService.errorAnzeigen(error)
         });
       }
     } else {
@@ -398,41 +399,41 @@ export class NewsComponent implements OnInit {
         fd.append('typ', typ);
         fd.append('foto', file, file.name || 'upload.png');
 
-        this.apiHttpService.patch(this.modul, idValue, fd, true).subscribe({
-          next: (erg: any) => {
+        this.apiHttpService.patch<INews>(this.modul, idValue, fd, true).subscribe({
+          next: (erg) => {
             try {
               const normalized = this.normalizeNewsItem(erg);
               this.newsArray = this.newsArray.map(n => (n.id === normalized.id ? normalized : n));
               this.newsDataSource.data = this.newsArray;
               this.resetFormNachAktion();
               this.uiMessageService.erstelleMessage('success', 'News erfolgreich geändert!');
-            } catch (e: any) {
-              this.uiMessageService.erstelleMessage('error', e);
+            } catch (e: unknown) {
+              this.uiMessageService.erstelleMessage('error', String(e));
             }
           },
-          error: (error: any) => this.authSessionService.errorAnzeigen(error)
+          error: (error: unknown) => this.authSessionService.errorAnzeigen(error)
         });
       } else {
         // Nur Text/Titel ändern (JSON)
-        this.apiHttpService.patch(this.modul, idValue, { title, text, typ }, false).subscribe({
-          next: (erg: any) => {
+        this.apiHttpService.patch<INews>(this.modul, idValue, { title, text, typ }, false).subscribe({
+          next: (erg) => {
             try {
               const normalized = this.normalizeNewsItem(erg);
               this.newsArray = this.newsArray.map(n => (n.id === normalized.id ? normalized : n));
               this.newsDataSource.data = this.newsArray;
               this.resetFormNachAktion();
               this.uiMessageService.erstelleMessage('success', 'News erfolgreich geändert!');
-            } catch (e: any) {
-              this.uiMessageService.erstelleMessage('error', e);
+            } catch (e: unknown) {
+              this.uiMessageService.erstelleMessage('error', String(e));
             }
           },
-          error: (error: any) => this.authSessionService.errorAnzeigen(error)
+          error: (error: unknown) => this.authSessionService.errorAnzeigen(error)
         });
       }
     }
   }
 
-  onFotoSelected(event: Event): void {
+  onFotoSelected(_event: Event): void {
     const file = this.getSelectedFile();
     if (this.selectedPreviewUrl) {
       URL.revokeObjectURL(this.selectedPreviewUrl);

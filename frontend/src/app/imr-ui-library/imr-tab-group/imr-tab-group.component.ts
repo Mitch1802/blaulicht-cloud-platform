@@ -22,7 +22,7 @@ import { ImrTabComponent } from '../imr-tab/imr-tab.component'
   standalone: true,
   imports: [CommonModule, MatTabsModule],
 })
-export class ImrTabGroupComponent {
+export class ImrTabGroupComponent implements AfterContentInit, OnDestroy {
   @ContentChildren(ImrTabComponent) tabs!: QueryList<ImrTabComponent>
   @Input() selectedIndex = 0
   @Output() selectedIndexChange = new EventEmitter<number>()

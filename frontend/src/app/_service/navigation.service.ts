@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
+import { ImrBreadcrumbItem } from '../imr-ui-library';
 
 @Injectable({
   providedIn: 'root',
@@ -7,8 +8,8 @@ import { environment } from 'src/environments/environment';
 export class NavigationService {
   readonly Author = 'Ing. M. Reichenauer';
 
-  ladeBreadcrumb(): any[] {
-    const list: any[] = [];
+  ladeBreadcrumb(): ImrBreadcrumbItem[] {
+    const list: ImrBreadcrumbItem[] = [];
     const pageNumber = Number.parseInt(sessionStorage.getItem('PageNumber') ?? '0', 10);
 
     const page1 = sessionStorage.getItem('Page1') ?? '';
@@ -41,7 +42,7 @@ export class NavigationService {
     return list;
   }
 
-  erstelleBreadcrumbLink(pagename: string, active: boolean): any {
+  erstelleBreadcrumbLink(pagename: string, _active: boolean): ImrBreadcrumbItem {
     let link = '';
     const page = String(pagename ?? '').replace(' ', '');
     let kuerzel = '';
@@ -115,11 +116,10 @@ export class NavigationService {
     }
 
     return {
-      name: pagename,
+      label: pagename,
       link,
       number: 0,
       kuerzel,
-      active,
     };
   }
 

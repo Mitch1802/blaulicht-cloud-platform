@@ -1,14 +1,8 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
-<section class="config-page">
-  <header class="page-head">
-    <h1>Konfiguration</h1>
-  </header>
+<imr-page-layout title="Konfiguration" class="config-page">
 
-  <imr-card>
-    <div class="imr-card__head">
-      <h2>{{ title }}</h2>
-    </div>
+  <imr-section-card [title]="title">
 
       <form [formGroup]="formRolle" (ngSubmit)="rolleSpeichern()" class="role-form">
         <imr-top-actions>
@@ -36,12 +30,9 @@
           }
         </imr-chip-set>
       </form>
-  </imr-card>
+  </imr-section-card>
 
-  <imr-card>
-    <div class="imr-card__head">
-      <h2>{{ title2 }}</h2>
-    </div>
+  <imr-section-card [title]="title2">
 
       <form [formGroup]="formKonfig" (ngSubmit)="konfigSpeichern()">
         <input hidden type="text"  formControlName="id" />
@@ -119,12 +110,9 @@
           </div>
         </section>
       </form>
-  </imr-card>
+  </imr-section-card>
 
-  <imr-card>
-    <div class="imr-card__head">
-      <h2>{{ title3 }}</h2>
-    </div>
+  <imr-section-card [title]="title3">
 
       <p class="backup-warning">
         <imr-icon>warning</imr-icon>
@@ -217,12 +205,9 @@
           <div class="table-empty-copy">Erstelle ein erstes Backup, um Wiederherstellungen zu ermöglichen.</div>
         </div>
       }
-  </imr-card>
+  </imr-section-card>
 
-  <imr-card>
-    <div class="imr-card__head">
-      <h2>Dateibereinigung</h2>
-    </div>
+  <imr-section-card title="Dateibereinigung">
 
       <section class="cleanup-section">
         <p class="cleanup-intro">
@@ -321,7 +306,7 @@
           </div>
         }
       </section>
-  </imr-card>
-</section>
+  </imr-section-card>
+</imr-page-layout>
 
 

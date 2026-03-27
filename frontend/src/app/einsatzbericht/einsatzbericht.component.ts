@@ -1,7 +1,7 @@
 ﻿import { Component, DestroyRef, OnInit, ViewChild, inject } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, FormGroupDirective, NgForm, ReactiveFormsModule, Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { IMR_UI_COMPONENTS } from '../imr-ui-library';
+import { IMR_UI_COMPONENTS, ImrBreadcrumbItem } from '../imr-ui-library';
 import { ApiHttpService } from 'src/app/_service/api-http.service';
 import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
@@ -66,6 +66,51 @@ type EinsatzberichtDto = {
   created_at?: string;
 };
 
+type EinsatzberichteContextItem = {
+  pkid?: number | string;
+  name?: string;
+  bezeichnung?: string;
+  stbnr?: string;
+  vorname?: string;
+  nachname?: string;
+};
+
+type EinsatzberichteContextResponse = {
+  fahrzeuge?: EinsatzberichteContextItem[];
+  mitglieder?: EinsatzberichteContextItem[];
+  mitalarmiert_stellen?: EinsatzberichteContextItem[];
+  modul_konfig?: Array<{ modul?: string; konfiguration?: Record<string, unknown> }>;
+  konfig?: Array<Record<string, unknown>>;
+};
+
+type UserSelfResponse = {
+  roles?: string[];
+  is_superuser?: boolean;
+};
+
+type EinsatzberichteListResponse = EinsatzberichtDto[] | { data?: EinsatzberichtDto[]; results?: EinsatzberichtDto[] };
+
+type BlaulichtsmsResponse = {
+  mapped?: {
+    alarmstichwort?: string;
+    einsatzart?: string;
+    einsatzadresse?: string;
+    alarmierende_stelle?: unknown;
+    mitglieder_ids?: number[];
+    einsatz_datum?: string;
+    ausgerueckt?: string;
+  };
+  raw?: {
+    geolocation?: {
+      address?: string;
+    };
+  };
+};
+
+type SaveEinsatzberichtResponse = {
+  id?: string;
+};
+
 @Component({
   standalone: true,
   selector: 'app-einsatzbericht',
@@ -99,7 +144,7 @@ export class EinsatzberichtComponent implements OnInit {
   }
 
   title = 'Einsatzbericht';
-  breadcrumb: any[] = [];
+  breadcrumb: ImrBreadcrumbItem[] = [];
 
   bestehendeFotos: EinsatzberichtFotoDto[] = [];
   private filePreviewUrlMap = new Map<File, string>();
@@ -163,8 +208,8 @@ export class EinsatzberichtComponent implements OnInit {
   canManageStatus = false;
   canPrintBericht = false;
 
-  private stammdaten: any = {};
-  private pdf_konfig: any = {};
+  private stammdaten: Record<string, unknown> = {};
+  private pdf_konfig: Record<string, unknown> = {};
 
   statusOptionen = [
     { key: 'ENTWURF', label: 'Entwurf' },
@@ -246,7 +291,6 @@ export class EinsatzberichtComponent implements OnInit {
   }
 
   get filteredFahrzeugOptionen(): FahrzeugOption[] {
-    const selected = new Set(this.formBericht.controls.fahrzeuge.value);
     const search = this.fahrzeugSuche.value.trim().toLowerCase();
     const selectedIds = this.formBericht.controls.fahrzeuge.value;
     const idToFahrzeug = new Map(this.fahrzeugOptionen.map((f) => [f.id, f]));
@@ -319,7 +363,6 @@ export class EinsatzberichtComponent implements OnInit {
   }
 
   get filteredMitalarmiertOptionen(): MitalarmiertStelleOption[] {
-    const selected = new Set(this.formBericht.controls.mitalarmiert.value);
     const search = this.mitalarmiertSuche.value.trim().toLowerCase();
     const selectedIds = this.formBericht.controls.mitalarmiert.value;
     const idToOption = new Map(this.mitalarmiertOptionen.map((o) => [o.id, o]));
@@ -506,7 +549,7 @@ export class EinsatzberichtComponent implements OnInit {
         this.bestehendeFotos = this.bestehendeFotos.filter((entry) => String(entry.id) !== String(foto.id));
         this.uiMessageService.erstelleMessage('success', 'Foto gelöscht.');
       },
-      error: (error: any) => this.authSessionService.errorAnzeigen(error),
+      error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
     });
   }
 
@@ -568,32 +611,32 @@ export class EinsatzberichtComponent implements OnInit {
 
     this.updateConditionalValidation();
 
-    this.apiHttpService.get<any>('einsatzberichte/context').subscribe({
-      next: (context: any) => {
-        this.fahrzeugOptionen = (context?.fahrzeuge ?? []).map((item: any) => ({
+    this.apiHttpService.get<EinsatzberichteContextResponse>('einsatzberichte/context').subscribe({
+      next: (context) => {
+        this.fahrzeugOptionen = (context?.fahrzeuge ?? []).map((item) => ({
           id: Number(item.pkid),
           label: item.name ?? item.bezeichnung ?? `Fahrzeug ${item.pkid}`,
         }));
 
-        this.mitgliedOptionen = (context?.mitglieder ?? []).map((item: any) => ({
+        this.mitgliedOptionen = (context?.mitglieder ?? []).map((item) => ({
           id: Number(item.pkid),
           label: `${item.stbnr ?? ''} ${item.vorname ?? ''} ${item.nachname ?? ''}`.trim(),
         }));
 
-        this.mitalarmiertOptionen = (context?.mitalarmiert_stellen ?? []).map((item: any) => ({
+        this.mitalarmiertOptionen = (context?.mitalarmiert_stellen ?? []).map((item) => ({
           id: Number(item.pkid),
           label: item.name ?? `Stelle ${item.pkid}`,
         }));
 
-        const pdfKonfig = (context?.modul_konfig ?? []).find((m: any) => m.modul === 'pdf');
+        const pdfKonfig = (context?.modul_konfig ?? []).find((m) => m.modul === 'pdf');
         this.pdf_konfig = pdfKonfig?.konfiguration ?? {};
         this.stammdaten = context?.konfig?.[0] ?? {};
       },
-      error: (error: any) => this.authSessionService.errorAnzeigen(error),
+      error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
     });
 
-    this.apiHttpService.get<any>('users/self').subscribe({
-      next: (user: any) => {
+    this.apiHttpService.get<UserSelfResponse>('users/self').subscribe({
+      next: (user) => {
         const roles: string[] = Array.isArray(user?.roles) ? user.roles : [];
         const isSuperuser = !!user?.is_superuser;
         this.canEditBerichte = isSuperuser || roles.includes('ADMIN') || roles.includes('BERICHT');
@@ -618,13 +661,13 @@ export class EinsatzberichtComponent implements OnInit {
   }
 
   ladeBerichte(): void {
-    this.apiHttpService.get<any>('einsatzberichte').subscribe({
-      next: (response: any) => {
+    this.apiHttpService.get<EinsatzberichteListResponse>('einsatzberichte').subscribe({
+      next: (response) => {
         const data = Array.isArray(response) ? response : (response?.data ?? response?.results ?? []);
         this.berichte = data as EinsatzberichtDto[];
         this.dataSource.data = this.berichte;
       },
-      error: (error: any) => this.authSessionService.errorAnzeigen(error),
+      error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
     });
   }
 
@@ -666,8 +709,8 @@ export class EinsatzberichtComponent implements OnInit {
 
   uebernehmeLetztenEinsatz(): void {
     this.neuerEntwurf();
-    this.apiHttpService.get<any>('einsatzberichte/blaulichtsms/letzter').subscribe({
-      next: (response: any) => {
+    this.apiHttpService.get<BlaulichtsmsResponse>('einsatzberichte/blaulichtsms/letzter').subscribe({
+      next: (response) => {
         const mapped = response?.mapped ?? {};
 
         const alarmtext = String(mapped.alarmstichwort ?? '').trim();
@@ -705,7 +748,7 @@ export class EinsatzberichtComponent implements OnInit {
           this.uiMessageService.erstelleMessage('success', 'Letzter Alarm von BlaulichtSMS übernommen.');
         }
       },
-      error: (error: any) => this.authSessionService.errorAnzeigen(error),
+      error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
     });
   }
 
@@ -1264,7 +1307,7 @@ export class EinsatzberichtComponent implements OnInit {
         this.uiMessageService.erstelleMessage('success', `Status auf ${neuerStatus} gesetzt.`);
         this.ladeBerichte();
       },
-      error: (error: any) => this.authSessionService.errorAnzeigen(error),
+      error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
     });
   }
 
@@ -1284,7 +1327,7 @@ export class EinsatzberichtComponent implements OnInit {
         this.uiMessageService.erstelleMessage('success', 'Einsatzbericht gelöscht.');
         this.ladeBerichte();
       },
-      error: (error: any) => this.authSessionService.errorAnzeigen(error),
+      error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
     });
   }
 
@@ -1410,17 +1453,17 @@ export class EinsatzberichtComponent implements OnInit {
     this.versicherungFiles.forEach((foto) => fd.append('fotos_versicherung', foto));
 
     const request$ = berichtId
-      ? this.apiHttpService.patch('einsatzberichte', berichtId, fd, true)
-      : this.apiHttpService.post('einsatzberichte', fd, true);
+      ? this.apiHttpService.patch<SaveEinsatzberichtResponse>('einsatzberichte', berichtId, fd, true)
+      : this.apiHttpService.post<SaveEinsatzberichtResponse>('einsatzberichte', fd, true);
 
     request$.subscribe({
-      next: (saved: any) => {
+      next: (saved) => {
         this.formBericht.controls.id.setValue(saved?.id ?? berichtId ?? '');
         this.uiMessageService.erstelleMessage('success', 'Einsatzbericht gespeichert.');
         this.ladeBerichte();
         this.viewMode = 'list';
       },
-      error: (error: any) => this.authSessionService.errorAnzeigen(error),
+      error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
     });
   }
 
@@ -1495,7 +1538,7 @@ export class EinsatzberichtComponent implements OnInit {
       return;
     }
 
-    const templateId = this.pdf_konfig['idEinsatzberichtPdf'];
+    const templateId = String(this.pdf_konfig['idEinsatzberichtPdf'] ?? '');
     if (!templateId) {
       this.uiMessageService.erstelleMessage('error', 'Kein PDF-Template konfiguriert. Bitte unter modul_konfiguration den Schlüssel "idEinsatzberichtPdf" eintragen.');
       return;
@@ -1518,13 +1561,13 @@ export class EinsatzberichtComponent implements OnInit {
 
     const payload = {
       druck_datum: heute,
-      fw_name: this.stammdaten.fw_name ?? '',
-      fw_nummer: this.stammdaten.fw_nummer ?? '',
-      fw_street: this.stammdaten.fw_street ?? '',
-      fw_plz: this.stammdaten.fw_plz ?? '',
-      fw_ort: this.stammdaten.fw_ort ?? '',
-      fw_email: this.stammdaten.fw_email ?? '',
-      fw_telefon: this.stammdaten.fw_telefon ?? '',
+      fw_name: String(this.stammdaten['fw_name'] ?? ''),
+      fw_nummer: String(this.stammdaten['fw_nummer'] ?? ''),
+      fw_street: String(this.stammdaten['fw_street'] ?? ''),
+      fw_plz: String(this.stammdaten['fw_plz'] ?? ''),
+      fw_ort: String(this.stammdaten['fw_ort'] ?? ''),
+      fw_email: String(this.stammdaten['fw_email'] ?? ''),
+      fw_telefon: String(this.stammdaten['fw_telefon'] ?? ''),
       status: element.status ?? '',
       einsatz_datum: this.formatListDateTime(element.einsatz_datum) || element.einsatz_datum || '',
       alarmstichwort: element.alarmstichwort ?? '',
@@ -1559,7 +1602,7 @@ export class EinsatzberichtComponent implements OnInit {
         const url = URL.createObjectURL(blob);
         window.open(url, '_blank');
       },
-      error: (error: any) => this.authSessionService.errorAnzeigen(error),
+      error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
     });
   }
 }
