@@ -333,6 +333,7 @@ export class JugendComponent implements OnInit {
           this.showEventForm = false;
           this.teilnehmerLevelByPkid.clear();
           this.loadEvents();
+          this.loadAusbildung();
         },
         error: (error) => this.authSessionService.errorAnzeigen(error),
       });
@@ -345,6 +346,7 @@ export class JugendComponent implements OnInit {
         this.showEventForm = false;
         this.teilnehmerLevelByPkid.clear();
         this.loadEvents();
+        this.loadAusbildung();
       },
       error: (error) => this.authSessionService.errorAnzeigen(error),
     });

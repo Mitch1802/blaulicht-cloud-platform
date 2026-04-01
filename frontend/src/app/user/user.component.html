@@ -2,9 +2,9 @@
 
 <imr-page-layout [title]="title" class="user-page">
   <imr-section-card title="Benutzer verwalten">
-      <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" class="user-tabs">
+      <imr-tab-group class="user-tabs">
 
-        <mat-tab label="Benutzer">
+        <imr-tab label="Benutzer">
           @if (formModul.disabled) {
           <imr-top-actions>
             <imr-button color="accent" (click)="neueDetails()" type="button">
@@ -217,9 +217,9 @@
               </imr-button>
             }
           </form>
-        </mat-tab>
+        </imr-tab>
 
-        <mat-tab label="Rollenübersicht">
+        <imr-tab label="Rollenübersicht">
           <imr-top-actions class="rollen-matrix-actions">
             <imr-button color="accent" type="button" (click)="rollenMatrixSpeichern()">
               Rollen speichern
@@ -262,9 +262,9 @@
               </tr>
             </table>
           </div>
-        </mat-tab>
+        </imr-tab>
 
-      </mat-tab-group>
+      </imr-tab-group>
   </imr-section-card>
 </imr-page-layout>
 
