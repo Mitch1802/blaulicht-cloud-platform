@@ -177,6 +177,78 @@
         font-size: .78rem
         color: #b45a00
 
+    .mitglied-detail-view
+        display: flex
+        flex-direction: column
+        gap: .85rem
+        padding-top: .5rem
+
+    .mt-2
+        margin-top: .5rem
+
+    .level-detail-list
+        display: flex
+        flex-direction: column
+        gap: .35rem
+
+    .level-detail-item
+        display: flex
+        align-items: center
+        justify-content: space-between
+        padding: .35rem .6rem
+        border: 1px solid rgba(theme.$imr-primary, .12)
+        background: rgba(#fff, .7)
+        font-size: .88rem
+        opacity: .55
+
+        &.level-achieved
+            opacity: 1
+            border-color: rgba(theme.$imr-primary, .3)
+            background: rgba(theme.$imr-primary, .06)
+
+        &.level-detail-item--label
+            opacity: 1
+
+    .level-detail-name
+        font-weight: 500
+
+    .level-detail-date
+        font-size: .82rem
+        color: rgba(#000, .62)
+        text-align: right
+
+    .mitglied-events-list
+        display: flex
+        flex-direction: column
+        gap: .3rem
+
+    .mitglied-event-row
+        display: grid
+        grid-template-columns: auto 1fr auto
+        gap: .6rem
+        align-items: center
+        padding: .3rem .6rem
+        border: 1px solid rgba(theme.$imr-primary, .12)
+        background: rgba(#fff, .7)
+        font-size: .88rem
+
+    .mitglied-event-datum
+        font-weight: 500
+        min-width: 80px
+
+    .mitglied-event-kategorie
+        color: rgba(#000, .7)
+
+    .mitglied-event-alter
+        font-size: .8rem
+        color: rgba(#000, .55)
+        text-align: right
+
+    .teilnehmer-alter-hint
+        font-size: .78rem
+        color: rgba(#000, .55)
+        margin-left: .3rem
+
     .imr-table-wrap
         margin-top: .5rem
 
@@ -221,3 +293,10 @@
         .level-edit-meta
             width: 100%
             justify-content: flex-start
+
+        .mitglied-event-row
+            grid-template-columns: 1fr
+            gap: .2rem
+
+        .mitglied-event-alter
+            text-align: left
