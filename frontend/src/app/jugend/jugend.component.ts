@@ -2,7 +2,6 @@
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatInputModule } from '@angular/material/input';
-import { Observable, of } from 'rxjs';
 import { IMR_UI_COMPONENTS, ImrBreadcrumbItem } from '../imr-ui-library';
 import { ApiHttpService } from 'src/app/_service/api-http.service';
 import { AuthSessionService } from 'src/app/_service/auth-session.service';
@@ -60,28 +59,6 @@ interface IJugendRegelKonfiguration {
   letzte_aktualisierung?: string;
   hinweis?: string;
   regeln?: Partial<Record<JugendRegelTrackKey, IJugendTrackRegeln>>;
-}
-
-type MitgliedLevelControlKey =
-  | 'erprobung_level'
-  | 'wissentest_level'
-  | 'fertigkeit_melder_level'
-  | 'fertigkeit_fwtechnik_level'
-  | 'fertigkeit_sicher_zu_wasser_level';
-
-type MitgliedDatumControlKey =
-  | 'erprobung_datum'
-  | 'wissentest_datum'
-  | 'fertigkeit_melder_datum'
-  | 'fertigkeit_fwtechnik_datum'
-  | 'fertigkeit_sicher_zu_wasser_datum';
-
-interface IMitgliedRegelDefinition {
-  track: JugendRegelTrackKey;
-  label: string;
-  levelControl: MitgliedLevelControlKey;
-  dateControl: MitgliedDatumControlKey;
-  fertigkeit: boolean;
 }
 
 type IJugendFertigkeitsDatumKey =
@@ -186,80 +163,8 @@ export class JugendComponent implements OnInit {
 
   private jugendRegelKonfiguration: IJugendRegelKonfiguration = this.defaultJugendRegelKonfiguration;
 
-  private readonly tokenLabelMap: Record<string, string> = {
-    erprobung_1: 'Erprobung Stufe 1',
-    erprobung_2: 'Erprobung Stufe 2',
-    erprobung_3: 'Erprobung Stufe 3',
-    erprobung_4: 'Erprobung Stufe 4',
-    erprobung_5: 'Erprobung Stufe 5',
-    wissentest_1: 'Wissentest Stufe 1',
-    wissentest_2: 'Wissentest Stufe 2',
-    wissentest_3: 'Wissentest Stufe 3',
-    wissentest_4: 'Wissentest Stufe 4',
-    wissentest_5: 'Wissentest Stufe 5',
-    fertigkeit_melder_1: 'Fertigkeitsabzeichen Melder Spiel',
-    fertigkeit_melder_2: 'Fertigkeitsabzeichen Melder',
-    fertigkeit_fwtechnik_1: 'Fertigkeitsabzeichen FW-Technik Spiel',
-    fertigkeit_fwtechnik_2: 'Fertigkeitsabzeichen FW-Technik',
-    fertigkeit_sicher_zu_wasser_1: 'Fertigkeitsabzeichen Sicher zu Wasser Spiel',
-    fertigkeit_sicher_zu_wasser_2: 'Fertigkeitsabzeichen Sicher zu Wasser',
-  };
-
-  private readonly mitgliedRegelDefinitionen: ReadonlyArray<IMitgliedRegelDefinition> = [
-    {
-      track: 'erprobung',
-      label: 'Erprobung',
-      levelControl: 'erprobung_level',
-      dateControl: 'erprobung_datum',
-      fertigkeit: false,
-    },
-    {
-      track: 'wissentest',
-      label: 'Wissentest',
-      levelControl: 'wissentest_level',
-      dateControl: 'wissentest_datum',
-      fertigkeit: false,
-    },
-    {
-      track: 'fertigkeit_melder',
-      label: 'Fertigkeitsabzeichen Melder',
-      levelControl: 'fertigkeit_melder_level',
-      dateControl: 'fertigkeit_melder_datum',
-      fertigkeit: true,
-    },
-    {
-      track: 'fertigkeit_fwtechnik',
-      label: 'Fertigkeitsabzeichen FW-Technik',
-      levelControl: 'fertigkeit_fwtechnik_level',
-      dateControl: 'fertigkeit_fwtechnik_datum',
-      fertigkeit: true,
-    },
-    {
-      track: 'fertigkeit_sicher_zu_wasser',
-      label: 'Fertigkeitsabzeichen Sicher zu Wasser',
-      levelControl: 'fertigkeit_sicher_zu_wasser_level',
-      dateControl: 'fertigkeit_sicher_zu_wasser_datum',
-      fertigkeit: true,
-    },
-  ];
-
-  showMitgliedForm = false;
+  showMitgliedDetail = false;
   showEventForm = false;
-
-  formMitglied = new FormGroup({
-    id: new FormControl<string>(''),
-    dienststatus: new FormControl<'JUGEND' | 'AKTIV'>('JUGEND', { nonNullable: true }),
-    erprobung_level: new FormControl<number>(0, { nonNullable: true }),
-    erprobung_datum: new FormControl<string>('', { nonNullable: true }),
-    wissentest_level: new FormControl<number>(0, { nonNullable: true }),
-    wissentest_datum: new FormControl<string>('', { nonNullable: true }),
-    fertigkeit_melder_level: new FormControl<number>(0, { nonNullable: true }),
-    fertigkeit_melder_datum: new FormControl<string>('', { nonNullable: true }),
-    fertigkeit_fwtechnik_level: new FormControl<number>(0, { nonNullable: true }),
-    fertigkeit_fwtechnik_datum: new FormControl<string>('', { nonNullable: true }),
-    fertigkeit_sicher_zu_wasser_level: new FormControl<number>(0, { nonNullable: true }),
-    fertigkeit_sicher_zu_wasser_datum: new FormControl<string>('', { nonNullable: true }),
-  });
 
   formEvent = new FormGroup({
     id: new FormControl<string>(''),
@@ -321,40 +226,9 @@ export class JugendComponent implements OnInit {
     });
   }
 
-  editMitglied(element: IMitglied): void {
-    this.showMitgliedForm = true;
-    this.showEventForm = false;
-    this.teilnehmerLevelByPkid.clear();
+  viewMitglied(element: IMitglied): void {
+    this.showMitgliedDetail = true;
     this.selectedMitglied = element;
-
-    const ausbildung = this.getAusbildungByMitglied(element);
-
-    this.formMitglied.setValue({
-      id: element.id,
-      dienststatus: this.normalizeStatus(element.dienststatus),
-      erprobung_level: this.getErprobungLevelValue(ausbildung),
-      erprobung_datum: this.getErprobungLevelDatumValue(ausbildung),
-      wissentest_level: this.getWissentestLevelValue(ausbildung),
-      wissentest_datum: this.getWissentestLevelDatumValue(ausbildung),
-      fertigkeit_melder_level: this.getFertigkeitsabzeichenLevelValue(ausbildung, 'melder_spiel_datum', 'melder_datum'),
-      fertigkeit_melder_datum: this.getFertigkeitsabzeichenDatumValue(ausbildung, 'melder_spiel_datum', 'melder_datum'),
-      fertigkeit_fwtechnik_level: this.getFertigkeitsabzeichenLevelValue(ausbildung, 'fwtechnik_spiel_datum', 'fwtechnik_datum'),
-      fertigkeit_fwtechnik_datum: this.getFertigkeitsabzeichenDatumValue(
-        ausbildung,
-        'fwtechnik_spiel_datum',
-        'fwtechnik_datum',
-      ),
-      fertigkeit_sicher_zu_wasser_level: this.getFertigkeitsabzeichenLevelValue(
-        ausbildung,
-        'sicher_zu_wasser_spiel_datum',
-        'sicher_zu_wasser_datum',
-      ),
-      fertigkeit_sicher_zu_wasser_datum: this.getFertigkeitsabzeichenDatumValue(
-        ausbildung,
-        'sicher_zu_wasser_spiel_datum',
-        'sicher_zu_wasser_datum',
-      ),
-    });
   }
 
   neuesEvent(): void {
@@ -391,40 +265,6 @@ export class JugendComponent implements OnInit {
     this.synchronisiereTitelMitKategorie();
 
     this.onEventTeilnehmerAuswahlGeaendert();
-  }
-
-  speichernMitglied(): void {
-    const id = this.formMitglied.controls.id.value;
-    const selectedMitglied = this.selectedMitglied;
-    if (!id || !selectedMitglied) {
-      return;
-    }
-
-    const voraussetzungsFehler = this.pruefeMitgliedVoraussetzungen(selectedMitglied);
-    if (voraussetzungsFehler.length > 0) {
-      this.uiMessageService.erstelleMessage('error', voraussetzungsFehler.join('\n'));
-      return;
-    }
-
-    const payload = {
-      dienststatus: this.formMitglied.controls.dienststatus.value,
-    };
-
-    this.apiHttpService.patch('jugend/mitglieder', id, payload, false).subscribe({
-      next: () => {
-        this.speichereJugendAusbildung(selectedMitglied).subscribe({
-          next: () => {
-            this.uiMessageService.erstelleMessage('success', 'Jugend-Mitglied aktualisiert.');
-            this.showMitgliedForm = false;
-            this.selectedMitglied = null;
-            this.loadMitglieder();
-            this.loadAusbildung();
-          },
-          error: (error) => this.authSessionService.errorAnzeigen(error),
-        });
-      },
-      error: (error) => this.authSessionService.errorAnzeigen(error),
-    });
   }
 
   speichernEvent(): void {
@@ -526,8 +366,8 @@ export class JugendComponent implements OnInit {
     });
   }
 
-  mitgliedFormAbbrechen(): void {
-    this.showMitgliedForm = false;
+  mitgliedDetailZurueck(): void {
+    this.showMitgliedDetail = false;
     this.selectedMitglied = null;
   }
 
@@ -773,16 +613,68 @@ export class JugendComponent implements OnInit {
   }
 
   getAlter(m: IMitglied): number {
+    return this.getAlterAtDate(m, new Date());
+  }
+
+  getAlterAtDate(m: IMitglied, referenceDate: Date): number {
     const birth = this.parseDate(m.geburtsdatum);
     if (!birth) return 0;
 
-    const today = new Date();
-    let age = today.getFullYear() - birth.getFullYear();
-    const monthDiff = today.getMonth() - birth.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+    let age = referenceDate.getFullYear() - birth.getFullYear();
+    const monthDiff = referenceDate.getMonth() - birth.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && referenceDate.getDate() < birth.getDate())) {
       age -= 1;
     }
     return age;
+  }
+
+  getAlterBeimEvent(m: IMitglied, eventDatum: string): number {
+    if (typeof eventDatum !== 'string' || eventDatum.trim() === '') {
+      return this.getAlter(m);
+    }
+    const ref = this.parseDate(eventDatum) ?? new Date();
+    return this.getAlterAtDate(m, ref);
+  }
+
+  isDatumFilled(): boolean {
+    const datum = this.formEvent.controls.datum.value;
+    return typeof datum === 'string' && datum.trim() !== '';
+  }
+
+  onTabChange(index: number): void {
+    if (index === 0) {
+      this.showMitgliedDetail = false;
+      this.selectedMitglied = null;
+    } else {
+      this.showEventForm = false;
+      this.teilnehmerLevelByPkid.clear();
+    }
+  }
+
+  getMitgliedEvents(m: IMitglied): IJugendEvent[] {
+    return this.events.filter((e) => (e.teilnehmer ?? []).some((t) => t.pkid === m.pkid));
+  }
+
+  isErprobungLevelErreicht(m: IMitglied, level: number): boolean {
+    const ausbildung = this.getAusbildungByMitglied(m);
+    if (!ausbildung) return false;
+    const key = `erprobung_lv${level}` as keyof IJugendAusbildung;
+    return ausbildung[key] === true;
+  }
+
+  isWissentestLevelErreicht(m: IMitglied, level: number): boolean {
+    const ausbildung = this.getAusbildungByMitglied(m);
+    if (!ausbildung) return false;
+    const key = `wissentest_lv${level}` as keyof IJugendAusbildung;
+    return ausbildung[key] === true;
+  }
+
+  getAusbildungLevelDatum(m: IMitglied, prefix: 'erprobung' | 'wissentest', level: number): string {
+    const ausbildung = this.getAusbildungByMitglied(m);
+    if (!ausbildung) return '';
+    const key = `${prefix}_lv${level}_datum` as keyof IJugendAusbildung;
+    const val = ausbildung[key];
+    return typeof val === 'string' ? val : '';
   }
 
   getUeberstellungHinweis(m: IMitglied): string {
@@ -914,7 +806,9 @@ export class JugendComponent implements OnInit {
       return [];
     }
 
-    const age = this.getAlter(mitglied);
+    const eventDatum = this.formEvent.controls.datum.value;
+    const referenceDate = eventDatum ? (this.parseDate(eventDatum) ?? new Date()) : new Date();
+    const age = this.getAlterAtDate(mitglied, referenceDate);
     const erreichteTokens = this.getErreichteTokensFuerMitglied(mitglied);
     const maxLevel = this.getMaxLevelForKategorie(kategorie);
     if (this.isVoraussetzungenOverrideAktiv()) {
@@ -1130,187 +1024,12 @@ export class JugendComponent implements OnInit {
     };
   }
 
-  private pruefeMitgliedVoraussetzungen(mitglied: IMitglied): string[] {
-    const alter = this.getAlter(mitglied);
-    const geplanteTokens = this.baueGeplanteTokenSetAusForm();
-    const fehler: string[] = [];
-
-    for (const definition of this.mitgliedRegelDefinitionen) {
-      const level = Number(this.formMitglied.controls[definition.levelControl].value ?? 0);
-      if (level <= 0) {
-        continue;
-      }
-
-      for (let currentLevel = 1; currentLevel <= level; currentLevel += 1) {
-        const regel = this.getRegelForLevel(definition.track, currentLevel);
-        if (!regel) {
-          continue;
-        }
-
-        const levelText = definition.fertigkeit
-          ? this.getFertigkeitsabzeichenLevelLabel(currentLevel)
-          : this.getStandardLevelLabel(currentLevel);
-
-        if (regel.min_age !== null && regel.min_age !== undefined && alter < regel.min_age) {
-          fehler.push(
-            `${definition.label} ${levelText}: Mindestalter ${regel.min_age} Jahre (aktuell ${alter}).`,
-          );
-          break;
-        }
-
-        if (regel.max_age !== null && regel.max_age !== undefined && alter > regel.max_age) {
-          fehler.push(
-            `${definition.label} ${levelText}: Hoechstalter ${regel.max_age} Jahre (aktuell ${alter}).`,
-          );
-          break;
-        }
-
-        const missing = (regel.requires_all ?? []).filter((token) => !geplanteTokens.has(token));
-        if (missing.length > 0) {
-          const fehlendeTexte = missing.map((token) => this.tokenLabelMap[token] ?? token).join(', ');
-          fehler.push(`${definition.label} ${levelText}: Voraussetzung fehlt (${fehlendeTexte}).`);
-          break;
-        }
-      }
-    }
-
-    return fehler;
-  }
-
-  private baueGeplanteTokenSetAusForm(): Set<string> {
-    const tokens = new Set<string>();
-
-    for (const definition of this.mitgliedRegelDefinitionen) {
-      const maxLevel = Number(this.formMitglied.controls[definition.levelControl].value ?? 0);
-      for (let currentLevel = 1; currentLevel <= maxLevel; currentLevel += 1) {
-        tokens.add(this.buildRegelToken(definition.track, currentLevel));
-      }
-    }
-
-    return tokens;
-  }
-
   private buildRegelToken(track: JugendRegelTrackKey, level: number): string {
     return `${track}_${level}`;
   }
 
   private getRegelForLevel(track: JugendRegelTrackKey, level: number): IJugendLevelRegel | undefined {
     return this.jugendRegelKonfiguration.regeln?.[track]?.[String(level) as '1' | '2' | '3' | '4' | '5'];
-  }
-
-  private speichereJugendAusbildung(mitglied: IMitglied): Observable<unknown> {
-    const existingAusbildung = this.getAusbildungByMitglied(mitglied);
-    const erprobungLevel = this.formMitglied.controls.erprobung_level.value;
-    const erprobungDatum = this.formMitglied.controls.erprobung_datum.value;
-    const wissentestLevel = this.formMitglied.controls.wissentest_level.value;
-    const wissentestDatum = this.formMitglied.controls.wissentest_datum.value;
-    const melderLevel = this.formMitglied.controls.fertigkeit_melder_level.value;
-    const melderDatum = this.formMitglied.controls.fertigkeit_melder_datum.value;
-    const fwTechnikLevel = this.formMitglied.controls.fertigkeit_fwtechnik_level.value;
-    const fwTechnikDatum = this.formMitglied.controls.fertigkeit_fwtechnik_datum.value;
-    const sicherZuWasserLevel = this.formMitglied.controls.fertigkeit_sicher_zu_wasser_level.value;
-    const sicherZuWasserDatum = this.formMitglied.controls.fertigkeit_sicher_zu_wasser_datum.value;
-
-    const hatIrgendeinLevel =
-      erprobungLevel > 0
-      || wissentestLevel > 0
-      || melderLevel > 0
-      || fwTechnikLevel > 0
-      || sicherZuWasserLevel > 0;
-
-    if (!existingAusbildung && !hatIrgendeinLevel) {
-      return of(null);
-    }
-
-    const payload: Record<string, unknown> = {
-      mitglied: mitglied.pkid,
-      ...this.baueErprobungOderWissentestPayload('erprobung', erprobungLevel, erprobungDatum, existingAusbildung),
-      ...this.baueErprobungOderWissentestPayload('wissentest', wissentestLevel, wissentestDatum, existingAusbildung),
-      ...this.baueFertigkeitsabzeichenPayload(
-        'melder_spiel_datum',
-        'melder_datum',
-        melderLevel,
-        melderDatum,
-        existingAusbildung,
-      ),
-      ...this.baueFertigkeitsabzeichenPayload(
-        'fwtechnik_spiel_datum',
-        'fwtechnik_datum',
-        fwTechnikLevel,
-        fwTechnikDatum,
-        existingAusbildung,
-      ),
-      ...this.baueFertigkeitsabzeichenPayload(
-        'sicher_zu_wasser_spiel_datum',
-        'sicher_zu_wasser_datum',
-        sicherZuWasserLevel,
-        sicherZuWasserDatum,
-        existingAusbildung,
-      ),
-    };
-
-    if (existingAusbildung?.id) {
-      return this.apiHttpService.patch('jugend/ausbildung', existingAusbildung.id, payload, false);
-    }
-
-    return this.apiHttpService.post('jugend/ausbildung', payload, false);
-  }
-
-  private baueErprobungOderWissentestPayload(
-    prefix: 'erprobung' | 'wissentest',
-    level: number,
-    selectedDate: string,
-    existingAusbildung: IJugendAusbildung | undefined,
-  ): Record<string, boolean | string | null> {
-    const payload: Record<string, boolean | string | null> = {};
-    const defaultDate = this.toIsoDateOrFallback(selectedDate, this.heuteIsoDatum());
-    const boundedLevel = Math.max(0, Math.min(level, 5));
-
-    for (let index = 1; index <= 5; index += 1) {
-      const levelField = `${prefix}_lv${index}`;
-      const dateField = `${prefix}_lv${index}_datum`;
-      const aktiv = index <= boundedLevel;
-
-      payload[levelField] = aktiv;
-      if (aktiv) {
-        const existingDate = existingAusbildung?.[dateField as keyof IJugendAusbildung];
-        payload[dateField] = typeof existingDate === 'string' ? existingDate : defaultDate;
-      } else {
-        payload[dateField] = null;
-      }
-    }
-
-    return payload;
-  }
-
-  private baueFertigkeitsabzeichenPayload(
-    spielField: IJugendFertigkeitsDatumKey,
-    abzeichenField: IJugendFertigkeitsDatumKey,
-    level: number,
-    selectedDate: string,
-    existingAusbildung: IJugendAusbildung | undefined,
-  ): Record<string, string | null> {
-    const payload: Record<string, string | null> = {};
-    const defaultDate = this.toIsoDateOrFallback(selectedDate, this.heuteIsoDatum());
-    const boundedLevel = Math.max(0, Math.min(level, 2));
-
-    if (boundedLevel === 0) {
-      payload[spielField] = null;
-      payload[abzeichenField] = null;
-      return payload;
-    }
-
-    const existingSpiel = existingAusbildung?.[spielField];
-    payload[spielField] = typeof existingSpiel === 'string' ? existingSpiel : defaultDate;
-
-    if (boundedLevel >= 2) {
-      const existingAbzeichen = existingAusbildung?.[abzeichenField];
-      payload[abzeichenField] = typeof existingAbzeichen === 'string' ? existingAbzeichen : defaultDate;
-    } else {
-      payload[abzeichenField] = null;
-    }
-
-    return payload;
   }
 
   private getErprobungLevelValue(ausbildung: IJugendAusbildung | undefined): number {
@@ -1331,71 +1050,6 @@ export class JugendComponent implements OnInit {
     if (ausbildung.wissentest_lv2) return 2;
     if (ausbildung.wissentest_lv1) return 1;
     return 0;
-  }
-
-  private getFertigkeitsabzeichenLevelValue(
-    ausbildung: IJugendAusbildung | undefined,
-    spielField: IJugendFertigkeitsDatumKey,
-    abzeichenField: IJugendFertigkeitsDatumKey,
-  ): number {
-    if (!ausbildung) return 0;
-    if (ausbildung[abzeichenField]) return 2;
-    if (ausbildung[spielField]) return 1;
-    return 0;
-  }
-
-  private getErprobungLevelDatumValue(ausbildung: IJugendAusbildung | undefined): string {
-    return this.getPrefixLevelDatumValue(ausbildung, 'erprobung', this.getErprobungLevelValue(ausbildung));
-  }
-
-  private getWissentestLevelDatumValue(ausbildung: IJugendAusbildung | undefined): string {
-    return this.getPrefixLevelDatumValue(ausbildung, 'wissentest', this.getWissentestLevelValue(ausbildung));
-  }
-
-  private getPrefixLevelDatumValue(
-    ausbildung: IJugendAusbildung | undefined,
-    prefix: 'erprobung' | 'wissentest',
-    level: number,
-  ): string {
-    if (!ausbildung || level <= 0) {
-      return '';
-    }
-
-    for (let currentLevel = level; currentLevel >= 1; currentLevel -= 1) {
-      const key = `${prefix}_lv${currentLevel}_datum` as keyof IJugendAusbildung;
-      const datum = ausbildung[key];
-      if (typeof datum === 'string') {
-        return this.toIsoDateOrFallback(datum, '');
-      }
-    }
-
-    return '';
-  }
-
-  private getFertigkeitsabzeichenDatumValue(
-    ausbildung: IJugendAusbildung | undefined,
-    spielField: IJugendFertigkeitsDatumKey,
-    abzeichenField: IJugendFertigkeitsDatumKey,
-  ): string {
-    if (!ausbildung) {
-      return '';
-    }
-
-    const abzeichen = ausbildung[abzeichenField];
-    if (typeof abzeichen === 'string') {
-      return this.toIsoDateOrFallback(abzeichen, '');
-    }
-
-    const spiel = ausbildung[spielField];
-    if (typeof spiel === 'string') {
-      return this.toIsoDateOrFallback(spiel, '');
-    }
-
-    return '';
-  }
-
-  private heuteIsoDatum(): string {
-    return new Date().toISOString().slice(0, 10);
   }
 
   private toIsoDateOrFallback(value: string | null | undefined, fallback: string): string {

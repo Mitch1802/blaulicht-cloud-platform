@@ -1,306 +1,175 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <imr-page-layout [title]="title" class="jugend-page">
-  <imr-section-card title="Jugend-Mitglieder">
+  <imr-tab-group (selectedIndexChange)="onTabChange($event)">
 
-      @if (showMitgliedForm) {
-        <form [formGroup]="formMitglied" (ngSubmit)="speichernMitglied()" class="edit-form mitglied-edit-form">
+    <!-- Tab 1: Mitglieder -->
+    <imr-tab label="Mitglieder">
+
+      @if (showMitgliedDetail && selectedMitglied) {
+        <div class="mitglied-detail-view">
           <imr-top-actions class="imr-form-actions">
-            <imr-button color="accent" type="submit">Daten speichern</imr-button>
-            <imr-button color="primary" type="button" (click)="mitgliedFormAbbrechen()">Abbrechen</imr-button>
+            <imr-button color="primary" type="button" (click)="mitgliedDetailZurueck()">Zurück</imr-button>
           </imr-top-actions>
 
-          <section class="mitglied-summary" [hidden]="!selectedMitglied">
+          <section class="mitglied-summary">
             <div class="summary-title">
-              <h3>{{ selectedMitglied ? getVollerName(selectedMitglied) : '-' }}</h3>
+              <h3>{{ getVollerName(selectedMitglied) }}</h3>
               <p>
-                Stbnr {{ selectedMitglied?.stbnr }}
+                Stbnr {{ selectedMitglied.stbnr }}
                 ·
-                {{ selectedMitglied ? getStatusText(selectedMitglied) : '-' }}
+                {{ getStatusText(selectedMitglied) }}
+                ·
+                {{ getAlter(selectedMitglied) }} Jahre
               </p>
             </div>
 
             <div class="summary-badges">
-              <span class="summary-badge">Erprobung: {{ selectedMitglied ? getErprobungLevelText(selectedMitglied) : '-' }}</span>
-              <span class="summary-badge">Wissentest: {{ selectedMitglied ? getWissentestLevelText(selectedMitglied) : '-' }}</span>
-              <span class="summary-badge">Melder: {{ selectedMitglied ? getFertigkeitsabzeichenMelderText(selectedMitglied) : '-' }}</span>
-              <span class="summary-badge">FW-Technik: {{ selectedMitglied ? getFertigkeitsabzeichenFwTechnikText(selectedMitglied) : '-' }}</span>
-              <span class="summary-badge">Sicher zu Wasser: {{ selectedMitglied ? getFertigkeitsabzeichenSicherZuWasserText(selectedMitglied) : '-' }}</span>
+              <span class="summary-badge">Erprobung: {{ getErprobungLevelText(selectedMitglied) }}</span>
+              <span class="summary-badge">Wissentest: {{ getWissentestLevelText(selectedMitglied) }}</span>
+              <span class="summary-badge">Melder: {{ getFertigkeitsabzeichenMelderText(selectedMitglied) }}</span>
+              <span class="summary-badge">FW-Technik: {{ getFertigkeitsabzeichenFwTechnikText(selectedMitglied) }}</span>
+              <span class="summary-badge">Sicher zu Wasser: {{ getFertigkeitsabzeichenSicherZuWasserText(selectedMitglied) }}</span>
+            </div>
+
+            <div class="inline-hinweis mt-2">
+              <strong>Überstellung:</strong>
+              {{ getUeberstellungHinweis(selectedMitglied) }}
             </div>
           </section>
 
           <section class="edit-group">
-            <h3>Grunddaten</h3>
-
-            <section class="app-grid imr-form-grid form-grid-tight">
-              <div class="app-col-12 app-col-lg-4 mb-3">
-                <imr-form-field class="imr-full-width" label="Status">
-                  <imr-select formControlName="dienststatus">
-                    <imr-option value="JUGEND">Jugend</imr-option>
-                    <imr-option value="AKTIV">Aktiv</imr-option>
-                  </imr-select>
-                </imr-form-field>
-              </div>
-
-              <div class="app-col-12 app-col-lg-8 mb-3" [hidden]="!selectedMitglied">
-                <div class="inline-hinweis">
-                  <strong>Überstellung:</strong>
-                  {{ selectedMitglied ? getUeberstellungHinweis(selectedMitglied) : '-' }}
+            <h3>Erprobung</h3>
+            <div class="level-detail-list">
+              @for (lvl of [1, 2, 3, 4, 5]; track lvl) {
+                <div class="level-detail-item" [class.level-achieved]="isErprobungLevelErreicht(selectedMitglied, lvl)">
+                  <span class="level-detail-name">{{ getStandardLevelLabel(lvl) }}</span>
+                  <span class="level-detail-date">
+                    {{ isErprobungLevelErreicht(selectedMitglied, lvl)
+                       ? (getAusbildungLevelDatum(selectedMitglied, 'erprobung', lvl) || '–')
+                       : '–' }}
+                  </span>
                 </div>
-              </div>
-            </section>
+              }
+            </div>
           </section>
 
           <section class="edit-group">
-            <h3>Erprobung und Wissentest</h3>
-
-            <div class="level-edit-list">
-              <details class="level-edit-panel">
-                <summary class="level-edit-panel-header">
-                  <div class="level-edit-label">
-                    <strong>Erprobung</strong>
-                    <span>Stufen 1 bis 5</span>
-                  </div>
-                  <div class="level-edit-meta">
-                    <span class="level-edit-chip">{{ getStandardLevelLabel(formMitglied.controls.erprobung_level.value) }}</span>
-                    <span class="level-edit-chip">
-                      {{ formMitglied.controls.erprobung_datum.value || 'kein Datum' }}
-                    </span>
-                  </div>
-                </summary>
-
-                <div class="level-edit-panel-content">
-                  <section class="app-grid imr-form-grid form-grid-tight">
-                    <div class="app-col-12 app-col-lg-6 mb-3">
-                      <imr-form-field class="imr-full-width level-edit-field" label="Level">
-                        <imr-select formControlName="erprobung_level">
-                          @for (level of getErprobungLevelOptionen(); track level) {
-                            <imr-option [value]="level">{{ getStandardLevelDropdownLabel(level) }}</imr-option>
-                          }
-                        </imr-select>
-                      </imr-form-field>
-                    </div>
-
-                    <div class="app-col-12 app-col-lg-6 mb-3">
-                      <imr-form-field class="imr-full-width level-edit-field" label="Datum">
-                        <input matInput type="date" formControlName="erprobung_datum" appDateInputMask="iso" />
-                      </imr-form-field>
-                    </div>
-                  </section>
+            <h3>Wissentest</h3>
+            <div class="level-detail-list">
+              @for (lvl of [1, 2, 3, 4, 5]; track lvl) {
+                <div class="level-detail-item" [class.level-achieved]="isWissentestLevelErreicht(selectedMitglied, lvl)">
+                  <span class="level-detail-name">{{ getStandardLevelLabel(lvl) }}</span>
+                  <span class="level-detail-date">
+                    {{ isWissentestLevelErreicht(selectedMitglied, lvl)
+                       ? (getAusbildungLevelDatum(selectedMitglied, 'wissentest', lvl) || '–')
+                       : '–' }}
+                  </span>
                 </div>
-              </details>
-
-              <details class="level-edit-panel">
-                <summary class="level-edit-panel-header">
-                  <div class="level-edit-label">
-                    <strong>Wissentest</strong>
-                    <span>Stufen 1 bis 5</span>
-                  </div>
-                  <div class="level-edit-meta">
-                    <span class="level-edit-chip">{{ getStandardLevelLabel(formMitglied.controls.wissentest_level.value) }}</span>
-                    <span class="level-edit-chip">
-                      {{ formMitglied.controls.wissentest_datum.value || 'kein Datum' }}
-                    </span>
-                  </div>
-                </summary>
-
-                <div class="level-edit-panel-content">
-                  <section class="app-grid imr-form-grid form-grid-tight">
-                    <div class="app-col-12 app-col-lg-6 mb-3">
-                      <imr-form-field class="imr-full-width level-edit-field" label="Level">
-                        <imr-select formControlName="wissentest_level">
-                          @for (level of getWissentestLevelOptionen(); track level) {
-                            <imr-option [value]="level">{{ getStandardLevelDropdownLabel(level) }}</imr-option>
-                          }
-                        </imr-select>
-                      </imr-form-field>
-                    </div>
-
-                    <div class="app-col-12 app-col-lg-6 mb-3">
-                      <imr-form-field class="imr-full-width level-edit-field" label="Datum">
-                        <input matInput type="date" formControlName="wissentest_datum" appDateInputMask="iso" />
-                      </imr-form-field>
-                    </div>
-                  </section>
-                </div>
-              </details>
+              }
             </div>
           </section>
 
           <section class="edit-group">
             <h3>Fertigkeitsabzeichen</h3>
-
-            <div class="level-edit-list">
-              <details class="level-edit-panel">
-                <summary class="level-edit-panel-header">
-                  <div class="level-edit-label">
-                    <strong>Melder</strong>
-                    <span>Spiel und Abzeichen</span>
-                  </div>
-                  <div class="level-edit-meta">
-                    <span class="level-edit-chip">{{ getFertigkeitsabzeichenLevelLabel(formMitglied.controls.fertigkeit_melder_level.value) }}</span>
-                    <span class="level-edit-chip">
-                      {{ formMitglied.controls.fertigkeit_melder_datum.value || 'kein Datum' }}
-                    </span>
-                  </div>
-                </summary>
-
-                <div class="level-edit-panel-content">
-                  <section class="app-grid imr-form-grid form-grid-tight">
-                    <div class="app-col-12 app-col-lg-6 mb-3">
-                      <imr-form-field class="imr-full-width level-edit-field" label="Level">
-                        <imr-select formControlName="fertigkeit_melder_level">
-                          @for (level of getFertigkeitsabzeichenLevelOptionen(); track level) {
-                            <imr-option [value]="level">{{ getFertigkeitsabzeichenLevelDropdownLabel(level) }}</imr-option>
-                          }
-                        </imr-select>
-                      </imr-form-field>
-                    </div>
-
-                    <div class="app-col-12 app-col-lg-6 mb-3">
-                      <imr-form-field class="imr-full-width level-edit-field" label="Datum">
-                        <input matInput type="date" formControlName="fertigkeit_melder_datum" appDateInputMask="iso" />
-                      </imr-form-field>
-                    </div>
-                  </section>
-                </div>
-              </details>
-
-              <details class="level-edit-panel">
-                <summary class="level-edit-panel-header">
-                  <div class="level-edit-label">
-                    <strong>FW-Technik</strong>
-                    <span>Spiel und Abzeichen</span>
-                  </div>
-                  <div class="level-edit-meta">
-                    <span class="level-edit-chip">{{ getFertigkeitsabzeichenLevelLabel(formMitglied.controls.fertigkeit_fwtechnik_level.value) }}</span>
-                    <span class="level-edit-chip">
-                      {{ formMitglied.controls.fertigkeit_fwtechnik_datum.value || 'kein Datum' }}
-                    </span>
-                  </div>
-                </summary>
-
-                <div class="level-edit-panel-content">
-                  <section class="app-grid imr-form-grid form-grid-tight">
-                    <div class="app-col-12 app-col-lg-6 mb-3">
-                      <imr-form-field class="imr-full-width level-edit-field" label="Level">
-                        <imr-select formControlName="fertigkeit_fwtechnik_level">
-                          @for (level of getFertigkeitsabzeichenLevelOptionen(); track level) {
-                            <imr-option [value]="level">{{ getFertigkeitsabzeichenLevelDropdownLabel(level) }}</imr-option>
-                          }
-                        </imr-select>
-                      </imr-form-field>
-                    </div>
-
-                    <div class="app-col-12 app-col-lg-6 mb-3">
-                      <imr-form-field class="imr-full-width level-edit-field" label="Datum">
-                        <input matInput type="date" formControlName="fertigkeit_fwtechnik_datum" appDateInputMask="iso" />
-                      </imr-form-field>
-                    </div>
-                  </section>
-                </div>
-              </details>
-
-              <details class="level-edit-panel">
-                <summary class="level-edit-panel-header">
-                  <div class="level-edit-label">
-                    <strong>Sicher zu Wasser</strong>
-                    <span>Spiel und Abzeichen</span>
-                  </div>
-                  <div class="level-edit-meta">
-                    <span class="level-edit-chip">{{ getFertigkeitsabzeichenLevelLabel(formMitglied.controls.fertigkeit_sicher_zu_wasser_level.value) }}</span>
-                    <span class="level-edit-chip">
-                      {{ formMitglied.controls.fertigkeit_sicher_zu_wasser_datum.value || 'kein Datum' }}
-                    </span>
-                  </div>
-                </summary>
-
-                <div class="level-edit-panel-content">
-                  <section class="app-grid imr-form-grid form-grid-tight">
-                    <div class="app-col-12 app-col-lg-6 mb-3">
-                      <imr-form-field class="imr-full-width level-edit-field" label="Level">
-                        <imr-select formControlName="fertigkeit_sicher_zu_wasser_level">
-                          @for (level of getFertigkeitsabzeichenLevelOptionen(); track level) {
-                            <imr-option [value]="level">{{ getFertigkeitsabzeichenLevelDropdownLabel(level) }}</imr-option>
-                          }
-                        </imr-select>
-                      </imr-form-field>
-                    </div>
-
-                    <div class="app-col-12 app-col-lg-6 mb-3">
-                      <imr-form-field class="imr-full-width level-edit-field" label="Datum">
-                        <input matInput type="date" formControlName="fertigkeit_sicher_zu_wasser_datum" appDateInputMask="iso" />
-                      </imr-form-field>
-                    </div>
-                  </section>
-                </div>
-              </details>
+            <div class="level-detail-list">
+              <div class="level-detail-item level-detail-item--label">
+                <span class="level-detail-name"><strong>Melder</strong></span>
+                <span class="level-detail-date">{{ getFertigkeitsabzeichenMelderText(selectedMitglied) }}</span>
+              </div>
+              <div class="level-detail-item level-detail-item--label">
+                <span class="level-detail-name"><strong>FW-Technik</strong></span>
+                <span class="level-detail-date">{{ getFertigkeitsabzeichenFwTechnikText(selectedMitglied) }}</span>
+              </div>
+              <div class="level-detail-item level-detail-item--label">
+                <span class="level-detail-name"><strong>Sicher zu Wasser</strong></span>
+                <span class="level-detail-date">{{ getFertigkeitsabzeichenSicherZuWasserText(selectedMitglied) }}</span>
+              </div>
             </div>
           </section>
-        </form>
+
+          @if (getMitgliedEvents(selectedMitglied).length > 0) {
+            <section class="edit-group">
+              <h3>Teilgenommene Events</h3>
+              <div class="mitglied-events-list">
+                @for (event of getMitgliedEvents(selectedMitglied); track event.id) {
+                  <div class="mitglied-event-row">
+                    <span class="mitglied-event-datum">{{ event.datum }}</span>
+                    <span class="mitglied-event-kategorie">{{ getEventKategorieText(event) }}</span>
+                    <span class="mitglied-event-alter">
+                      Alter bei Event: {{ getAlterBeimEvent(selectedMitglied, event.datum) }}
+                    </span>
+                  </div>
+                }
+              </div>
+            </section>
+          }
+        </div>
       }
 
-      @if (!showMitgliedForm) {
-      <div class="imr-table-wrap">
-        <table mat-table [dataSource]="dataSourceJugend">
-          <ng-container matColumnDef="stbnr">
-            <th mat-header-cell *matHeaderCellDef>Stbnr.</th>
-            <td mat-cell *matCellDef="let element">{{ element.stbnr }}</td>
-          </ng-container>
+      @if (!showMitgliedDetail) {
+        <div class="imr-table-wrap">
+          <table mat-table [dataSource]="dataSourceJugend">
+            <ng-container matColumnDef="stbnr">
+              <th mat-header-cell *matHeaderCellDef>Stbnr.</th>
+              <td mat-cell *matCellDef="let element">{{ element.stbnr }}</td>
+            </ng-container>
 
-          <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef>Name</th>
-            <td mat-cell *matCellDef="let element">{{ getVollerName(element) }}</td>
-          </ng-container>
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef>Name</th>
+              <td mat-cell *matCellDef="let element">{{ getVollerName(element) }}</td>
+            </ng-container>
 
-          <ng-container matColumnDef="status">
-            <th mat-header-cell *matHeaderCellDef>Status</th>
-            <td mat-cell *matCellDef="let element">{{ getStatusText(element) }}</td>
-          </ng-container>
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Status</th>
+              <td mat-cell *matCellDef="let element">{{ getStatusText(element) }}</td>
+            </ng-container>
 
-          <ng-container matColumnDef="abzeichen">
-            <th mat-header-cell *matHeaderCellDef>Abzeichen</th>
-            <td mat-cell *matCellDef="let element">{{ getAbzeichenText(element) }}</td>
-          </ng-container>
+            <ng-container matColumnDef="abzeichen">
+              <th mat-header-cell *matHeaderCellDef>Abzeichen</th>
+              <td mat-cell *matCellDef="let element">{{ getAbzeichenText(element) }}</td>
+            </ng-container>
 
-          <ng-container matColumnDef="ausbildung">
-            <th mat-header-cell *matHeaderCellDef>Ausbildung</th>
-            <td mat-cell *matCellDef="let element">{{ getAusbildungText(element) }}</td>
-          </ng-container>
+            <ng-container matColumnDef="ausbildung">
+              <th mat-header-cell *matHeaderCellDef>Ausbildung</th>
+              <td mat-cell *matCellDef="let element">{{ getAusbildungText(element) }}</td>
+            </ng-container>
 
-          <ng-container matColumnDef="alter">
-            <th mat-header-cell *matHeaderCellDef>Alter</th>
-            <td mat-cell *matCellDef="let element">{{ getAlter(element) }}</td>
-          </ng-container>
+            <ng-container matColumnDef="alter">
+              <th mat-header-cell *matHeaderCellDef>Alter</th>
+              <td mat-cell *matCellDef="let element">{{ getAlter(element) }}</td>
+            </ng-container>
 
-          <ng-container matColumnDef="ueberstellung">
-            <th mat-header-cell *matHeaderCellDef>Überstellung Aktivstand</th>
-            <td mat-cell *matCellDef="let element">{{ getUeberstellungSpalteText(element) }}</td>
-          </ng-container>
+            <ng-container matColumnDef="ueberstellung">
+              <th mat-header-cell *matHeaderCellDef>Überstellung Aktivstand</th>
+              <td mat-cell *matCellDef="let element">{{ getUeberstellungSpalteText(element) }}</td>
+            </ng-container>
 
-          <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef>Aktionen</th>
-            <td mat-cell *matCellDef="let element" class="imr-action-cell">
-              <imr-button class="imr-action-btn" color="primary" (click)="editMitglied(element)">
-                <imr-icon class="m-0">edit</imr-icon>
-              </imr-button>
-            </td>
-          </ng-container>
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Aktionen</th>
+              <td mat-cell *matCellDef="let element" class="imr-action-cell">
+                <imr-button class="imr-action-btn" color="primary" (click)="viewMitglied(element)">
+                  <imr-icon class="m-0">visibility</imr-icon>
+                </imr-button>
+              </td>
+            </ng-container>
 
-          <tr mat-header-row *matHeaderRowDef="sichtbareSpaltenJugend"></tr>
-          <tr mat-row *matRowDef="let row; columns: sichtbareSpaltenJugend"></tr>
-        </table>
-      </div>
+            <tr mat-header-row *matHeaderRowDef="sichtbareSpaltenJugend"></tr>
+            <tr mat-row *matRowDef="let row; columns: sichtbareSpaltenJugend"></tr>
+          </table>
+        </div>
       }
-  </imr-section-card>
+    </imr-tab>
 
-  @if (!showMitgliedForm) {
-  <div class="mt-3">
-    <imr-section-card title="Jugend-Events">
+    <!-- Tab 2: Events -->
+    <imr-tab label="Events">
 
-      <imr-top-actions class="actions-top">
-        <imr-button color="accent" type="button" (click)="neuesEvent()">Neues Event</imr-button>
-      </imr-top-actions>
+      @if (!showEventForm) {
+        <imr-top-actions class="actions-top">
+          <imr-button color="accent" type="button" (click)="neuesEvent()">Neues Event</imr-button>
+        </imr-top-actions>
+      }
+
       @if (showEventForm) {
         <form [formGroup]="formEvent" (ngSubmit)="speichernEvent()" class="edit-form">
           <imr-top-actions class="imr-form-actions">
@@ -318,7 +187,7 @@
 
             <div class="app-col-12 app-col-lg-6 mb-3">
               <imr-form-field class="imr-full-width" hintLabel="* Pflichtfeld" label="Art">
-                <imr-select formControlName="kategorie" (selectionChange)="onEventKategorieGeaendert()">
+                <imr-select formControlName="kategorie" [disabled]="!isDatumFilled()" (selectionChange)="onEventKategorieGeaendert()">
                   @for (option of eventKategorien; track option.value) {
                     <imr-option [value]="option.value">{{ option.label }}</imr-option>
                   }
@@ -328,7 +197,7 @@
 
             <div class="app-col-12 app-col-lg-12 mb-3">
               <imr-form-field class="imr-full-width" label="Teilnehmer">
-                <imr-select formControlName="teilnehmer_ids" multiple (selectionChange)="onEventTeilnehmerAuswahlGeaendert()">
+                <imr-select formControlName="teilnehmer_ids" multiple [disabled]="!isDatumFilled()" (selectionChange)="onEventTeilnehmerAuswahlGeaendert()">
                   @for (member of sortedJugendMitglieder; track member.pkid) {
                     <imr-option [value]="member.pkid">{{ getMitgliedMitRangText(member) }}</imr-option>
                   }
@@ -357,7 +226,12 @@
 
                   @for (member of getAusgewaehlteEventMitglieder(); track member.pkid) {
                     <div class="teilnehmer-level-row">
-                      <div class="teilnehmer-name">{{ getMitgliedMitRangText(member) }}</div>
+                      <div class="teilnehmer-name">
+                        {{ getMitgliedMitRangText(member) }}
+                        <span class="teilnehmer-alter-hint">
+                          (Alter bei Event: {{ getAlterBeimEvent(member, formEvent.controls.datum.value) }})
+                        </span>
+                      </div>
                       <imr-form-field class="teilnehmer-level-field" label="Level">
                         <imr-select
                           [disabled]="getLevelOptionenForMitglied(member).length === 0"
@@ -382,7 +256,7 @@
 
             <div class="app-col-12 app-col-lg-12 mb-3">
               <imr-form-field class="imr-full-width" label="Ort">
-                <input matInput formControlName="ort" />
+                <input matInput formControlName="ort" [disabled]="!isDatumFilled()" />
               </imr-form-field>
             </div>
           </section>
@@ -390,40 +264,38 @@
       }
 
       @if (!showEventForm) {
-      <div class="imr-table-wrap">
-        <table mat-table [dataSource]="dataSourceEvents">
-          <ng-container matColumnDef="datum">
-            <th mat-header-cell *matHeaderCellDef>Datum</th>
-            <td mat-cell *matCellDef="let element">{{ element.datum }}</td>
-          </ng-container>
+        <div class="imr-table-wrap">
+          <table mat-table [dataSource]="dataSourceEvents">
+            <ng-container matColumnDef="datum">
+              <th mat-header-cell *matHeaderCellDef>Datum</th>
+              <td mat-cell *matCellDef="let element">{{ element.datum }}</td>
+            </ng-container>
 
-          <ng-container matColumnDef="kategorie">
-            <th mat-header-cell *matHeaderCellDef>Art</th>
-            <td mat-cell *matCellDef="let element">{{ getEventKategorieText(element) }}</td>
-          </ng-container>
+            <ng-container matColumnDef="kategorie">
+              <th mat-header-cell *matHeaderCellDef>Art</th>
+              <td mat-cell *matCellDef="let element">{{ getEventKategorieText(element) }}</td>
+            </ng-container>
 
-          <ng-container matColumnDef="teilnehmer">
-            <th mat-header-cell *matHeaderCellDef>Teilnehmer</th>
-            <td mat-cell *matCellDef="let element">{{ getEventTeilnehmerText(element) }}</td>
-          </ng-container>
+            <ng-container matColumnDef="teilnehmer">
+              <th mat-header-cell *matHeaderCellDef>Teilnehmer</th>
+              <td mat-cell *matCellDef="let element">{{ getEventTeilnehmerText(element) }}</td>
+            </ng-container>
 
-          <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef>Aktionen</th>
-            <td mat-cell *matCellDef="let element" class="imr-action-cell">
-              <imr-button class="imr-action-btn" color="primary" (click)="editEvent(element)">
-                <imr-icon class="m-0">edit</imr-icon>
-              </imr-button>
-            </td>
-          </ng-container>
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Aktionen</th>
+              <td mat-cell *matCellDef="let element" class="imr-action-cell">
+                <imr-button class="imr-action-btn" color="primary" (click)="editEvent(element)">
+                  <imr-icon class="m-0">edit</imr-icon>
+                </imr-button>
+              </td>
+            </ng-container>
 
-          <tr mat-header-row *matHeaderRowDef="sichtbareSpaltenEvents"></tr>
-          <tr mat-row *matRowDef="let row; columns: sichtbareSpaltenEvents"></tr>
-        </table>
-      </div>
+            <tr mat-header-row *matHeaderRowDef="sichtbareSpaltenEvents"></tr>
+            <tr mat-row *matRowDef="let row; columns: sichtbareSpaltenEvents"></tr>
+          </table>
+        </div>
       }
-    </imr-section-card>
-  </div>
-  }
+    </imr-tab>
+
+  </imr-tab-group>
 </imr-page-layout>
-
-
