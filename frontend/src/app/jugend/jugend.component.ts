@@ -629,13 +629,16 @@ export class JugendComponent implements OnInit {
   }
 
   getAlterBeimEvent(m: IMitglied, eventDatum: string): number {
+    if (typeof eventDatum !== 'string' || eventDatum.trim() === '') {
+      return this.getAlter(m);
+    }
     const ref = this.parseDate(eventDatum) ?? new Date();
     return this.getAlterAtDate(m, ref);
   }
 
   isDatumFilled(): boolean {
     const datum = this.formEvent.controls.datum.value;
-    return datum !== null && datum !== undefined && datum.trim() !== '';
+    return typeof datum === 'string' && datum.trim() !== '';
   }
 
   onTabChange(index: number): void {
