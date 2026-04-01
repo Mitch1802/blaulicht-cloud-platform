@@ -17,6 +17,8 @@ import {
   ImrHeaderComponent,
   ImrPageLayoutComponent,
   ImrSectionCardComponent,
+  ImrTabComponent,
+  ImrTabGroupComponent,
   ImrTopActionsComponent,
   UiControlErrorMap,
   UiControlErrorsDirective,
@@ -29,7 +31,6 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTabsModule } from '@angular/material/tabs';
 
 type RoleDefinition = {
   id?: number;
@@ -90,6 +91,8 @@ type UserUpdatePayload = Omit<UserCreatePayload, 'password1' | 'password2' | 'se
     ImrSectionCardComponent,
     ImrFormFieldComponent,
     ImrTopActionsComponent,
+    ImrTabGroupComponent,
+    ImrTabComponent,
     FormsModule,
     ReactiveFormsModule,
     MatInput,
@@ -100,7 +103,6 @@ type UserUpdatePayload = Omit<UserCreatePayload, 'password1' | 'password2' | 'se
     MatPaginatorModule,
     MatSort,
     MatIconModule,
-    MatTabsModule
 ]
 })
 export class UserComponent implements OnInit {
