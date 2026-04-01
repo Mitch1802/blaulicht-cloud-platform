@@ -8,6 +8,7 @@ from core_apps.mitglieder.models import Mitglied
 
 from .models import JugendAusbildung, JugendEvent
 from .serializers import JugendAusbildungSerializer, JugendEventSerializer, JugendMitgliedSerializer
+from .services import rebuild_ausbildung_for_mitglieder
 
 
 class JugendMitgliedViewSet(ModelViewSet):
@@ -77,3 +78,8 @@ class JugendEventViewSet(ModelViewSet):
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ["datum", "titel", "created_at"]
     ordering = ["-datum", "titel"]
+
+    def perform_destroy(self, instance):
+        betroffene_mitglied_pkids = list(instance.teilnahmen.values_list("mitglied__pkid", flat=True))
+        super().perform_destroy(instance)
+        rebuild_ausbildung_for_mitglieder(betroffene_mitglied_pkids)

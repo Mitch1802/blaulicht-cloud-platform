@@ -174,6 +174,195 @@ class JugendApiTests(EndpointSmokeMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("teilnehmer_levels", response.data)
 
+    def test_event_delete_rolls_back_wissentest_level(self):
+        self.client.force_authenticate(user=self.user_jugend)
+        payload = {
+            "titel": "Wissentest April",
+            "datum": "03.04.2026",
+            "ort": "Feuerwehrhaus",
+            "kategorie": "WISSENSTEST",
+            "teilnehmer_ids": [self.jugend_mitglied.pkid],
+            "teilnehmer_levels": [
+                {
+                    "pkid": self.jugend_mitglied.pkid,
+                    "level": 3,
+                }
+            ],
+        }
+
+        create_response = self.request_method("post", "jugend/events/", data=payload)
+        self.assertEqual(create_response.status_code, status.HTTP_201_CREATED)
+
+        event_id = create_response.data.get("id")
+        delete_response = self.request_method("delete", f"jugend/events/{event_id}/")
+        self.assertEqual(delete_response.status_code, status.HTTP_204_NO_CONTENT)
+
+        ausbildung = JugendAusbildung.objects.get(mitglied=self.jugend_mitglied)
+        self.assertFalse(ausbildung.wissentest_lv1)
+        self.assertFalse(ausbildung.wissentest_lv2)
+        self.assertFalse(ausbildung.wissentest_lv3)
+        self.assertIsNone(ausbildung.wissentest_lv1_datum)
+        self.assertIsNone(ausbildung.wissentest_lv2_datum)
+        self.assertIsNone(ausbildung.wissentest_lv3_datum)
+
+    def test_event_delete_rebuilds_from_remaining_events(self):
+        self.client.force_authenticate(user=self.user_jugend)
+
+        erstes_payload = {
+            "titel": "Wissentest Mai",
+            "datum": "01.05.2026",
+            "ort": "Feuerwehrhaus",
+            "kategorie": "WISSENSTEST",
+            "teilnehmer_ids": [self.jugend_mitglied.pkid],
+            "teilnehmer_levels": [
+                {
+                    "pkid": self.jugend_mitglied.pkid,
+                    "level": 2,
+                }
+            ],
+        }
+        zweites_payload = {
+            "titel": "Wissentest Juni",
+            "datum": "01.06.2026",
+            "ort": "Feuerwehrhaus",
+            "kategorie": "WISSENSTEST",
+            "teilnehmer_ids": [self.jugend_mitglied.pkid],
+            "teilnehmer_levels": [
+                {
+                    "pkid": self.jugend_mitglied.pkid,
+                    "level": 4,
+                }
+            ],
+        }
+
+        first_create = self.request_method("post", "jugend/events/", data=erstes_payload)
+        self.assertEqual(first_create.status_code, status.HTTP_201_CREATED)
+
+        second_create = self.request_method("post", "jugend/events/", data=zweites_payload)
+        self.assertEqual(second_create.status_code, status.HTTP_201_CREATED)
+
+        first_event_id = first_create.data.get("id")
+        delete_response = self.request_method("delete", f"jugend/events/{first_event_id}/")
+        self.assertEqual(delete_response.status_code, status.HTTP_204_NO_CONTENT)
+
+        ausbildung = JugendAusbildung.objects.get(mitglied=self.jugend_mitglied)
+        self.assertTrue(ausbildung.wissentest_lv1)
+        self.assertTrue(ausbildung.wissentest_lv2)
+        self.assertTrue(ausbildung.wissentest_lv3)
+        self.assertTrue(ausbildung.wissentest_lv4)
+        self.assertFalse(ausbildung.wissentest_lv5)
+        self.assertEqual(str(ausbildung.wissentest_lv1_datum), "2026-06-01")
+        self.assertEqual(str(ausbildung.wissentest_lv4_datum), "2026-06-01")
+
+    def test_event_rejects_already_reached_level(self):
+        self.client.force_authenticate(user=self.user_jugend)
+        JugendAusbildung.objects.create(
+            mitglied=self.jugend_mitglied,
+            wissentest_lv1=True,
+            wissentest_lv2=True,
+            wissentest_lv3=True,
+            wissentest_lv4=True,
+        )
+
+        payload = {
+            "titel": "Wissentest Juli",
+            "datum": "01.07.2026",
+            "ort": "Feuerwehrhaus",
+            "kategorie": "WISSENSTEST",
+            "teilnehmer_ids": [self.jugend_mitglied.pkid],
+            "teilnehmer_levels": [
+                {
+                    "pkid": self.jugend_mitglied.pkid,
+                    "level": 4,
+                }
+            ],
+        }
+
+        response = self.request_method("post", "jugend/events/", data=payload)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("teilnehmer_levels", response.data)
+
+    def test_event_update_removing_member_rebuilds_ausbildung(self):
+        self.client.force_authenticate(user=self.user_jugend)
+        weiteres_jugend_mitglied = Mitglied.objects.create(
+            stbnr=3003,
+            vorname="Z",
+            nachname="Mitglied",
+            dienstgrad="JFM",
+            svnr="9012",
+            geburtsdatum=date(2011, 5, 1),
+            dienststatus=Mitglied.Dienststatus.JUGEND,
+        )
+
+        create_payload = {
+            "titel": "Wissentest August",
+            "datum": "01.08.2026",
+            "ort": "Feuerwehrhaus",
+            "kategorie": "WISSENSTEST",
+            "teilnehmer_ids": [self.jugend_mitglied.pkid, weiteres_jugend_mitglied.pkid],
+            "teilnehmer_levels": [
+                {"pkid": self.jugend_mitglied.pkid, "level": 3},
+                {"pkid": weiteres_jugend_mitglied.pkid, "level": 2},
+            ],
+        }
+
+        create_response = self.request_method("post", "jugend/events/", data=create_payload)
+        self.assertEqual(create_response.status_code, status.HTTP_201_CREATED)
+        event_id = create_response.data.get("id")
+
+        update_payload = {
+            "teilnehmer_ids": [self.jugend_mitglied.pkid],
+            "teilnehmer_levels": [{"pkid": self.jugend_mitglied.pkid, "level": 4}],
+        }
+        update_response = self.request_method("patch", f"jugend/events/{event_id}/", data=update_payload)
+        self.assertEqual(update_response.status_code, status.HTTP_200_OK)
+
+        ausbildung_verbleibend = JugendAusbildung.objects.get(mitglied=self.jugend_mitglied)
+        self.assertTrue(ausbildung_verbleibend.wissentest_lv4)
+
+        ausbildung_entfernt = JugendAusbildung.objects.get(mitglied=weiteres_jugend_mitglied)
+        self.assertFalse(ausbildung_entfernt.wissentest_lv1)
+        self.assertFalse(ausbildung_entfernt.wissentest_lv2)
+        self.assertIsNone(ausbildung_entfernt.wissentest_lv1_datum)
+        self.assertIsNone(ausbildung_entfernt.wissentest_lv2_datum)
+
+    def test_event_update_adding_member_sets_ausbildung(self):
+        self.client.force_authenticate(user=self.user_jugend)
+        weiteres_jugend_mitglied = Mitglied.objects.create(
+            stbnr=3004,
+            vorname="N",
+            nachname="Mitglied",
+            dienstgrad="JFM",
+            svnr="3456",
+            geburtsdatum=date(2011, 6, 1),
+            dienststatus=Mitglied.Dienststatus.JUGEND,
+        )
+
+        create_payload = {
+            "titel": "Wissentest September",
+            "datum": "01.09.2026",
+            "ort": "Feuerwehrhaus",
+            "kategorie": "WISSENSTEST",
+            "teilnehmer_ids": [self.jugend_mitglied.pkid],
+            "teilnehmer_levels": [{"pkid": self.jugend_mitglied.pkid, "level": 2}],
+        }
+        create_response = self.request_method("post", "jugend/events/", data=create_payload)
+        self.assertEqual(create_response.status_code, status.HTTP_201_CREATED)
+        event_id = create_response.data.get("id")
+
+        update_payload = {
+            "teilnehmer_ids": [self.jugend_mitglied.pkid, weiteres_jugend_mitglied.pkid],
+            "teilnehmer_levels": [{"pkid": weiteres_jugend_mitglied.pkid, "level": 3}],
+        }
+        update_response = self.request_method("patch", f"jugend/events/{event_id}/", data=update_payload)
+        self.assertEqual(update_response.status_code, status.HTTP_200_OK)
+
+        ausbildung_neu = JugendAusbildung.objects.get(mitglied=weiteres_jugend_mitglied)
+        self.assertTrue(ausbildung_neu.wissentest_lv1)
+        self.assertTrue(ausbildung_neu.wissentest_lv2)
+        self.assertTrue(ausbildung_neu.wissentest_lv3)
+        self.assertFalse(ausbildung_neu.wissentest_lv4)
+
     def test_model_str(self):
         event = JugendEvent.objects.create(titel="Probe", datum=date(2026, 3, 1), ort="Haus")
         ausbildung = JugendAusbildung.objects.create(mitglied=self.jugend_mitglied)

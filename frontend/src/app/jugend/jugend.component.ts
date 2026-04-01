@@ -812,9 +812,11 @@ export class JugendComponent implements OnInit {
     const referenceDate = eventDatum ? (this.parseDate(eventDatum) ?? new Date()) : new Date();
     const age = this.getAlterAtDate(mitglied, referenceDate);
     const erreichteTokens = this.getErreichteTokensFuerMitglied(mitglied);
+    const bereitsErreichtesLevel = this.getBereitsErreichtesLevelFuerKategorie(mitglied, kategorie);
     const maxLevel = this.getMaxLevelForKategorie(kategorie);
     if (this.isVoraussetzungenOverrideAktiv()) {
-      return Array.from({ length: maxLevel }, (_, idx) => idx + 1);
+      return Array.from({ length: maxLevel }, (_, idx) => idx + 1)
+        .filter((level) => level > bereitsErreichtesLevel);
     }
     const erlaubte: number[] = [];
 
@@ -842,7 +844,45 @@ export class JugendComponent implements OnInit {
       erlaubte.push(level);
     }
 
-    return erlaubte;
+    return erlaubte.filter((level) => level > bereitsErreichtesLevel);
+  }
+
+  private getBereitsErreichtesLevelFuerKategorie(
+    mitglied: IMitglied,
+    kategorie: JugendEventKategorie,
+  ): number {
+    const ausbildung = this.getAusbildungByMitglied(mitglied);
+    if (!ausbildung) {
+      return 0;
+    }
+
+    if (kategorie === 'ERPROBUNG') {
+      return this.getErprobungLevelValue(ausbildung);
+    }
+
+    if (kategorie === 'WISSENSTEST') {
+      return this.getWissentestLevelValue(ausbildung);
+    }
+
+    if (kategorie === 'FERTIGKEITSABZEICHEN_MELDER') {
+      if (ausbildung.melder_datum) return 2;
+      if (ausbildung.melder_spiel_datum) return 1;
+      return 0;
+    }
+
+    if (kategorie === 'FERTIGKEITSABZEICHEN_FWTECHNIK') {
+      if (ausbildung.fwtechnik_datum) return 2;
+      if (ausbildung.fwtechnik_spiel_datum) return 1;
+      return 0;
+    }
+
+    if (kategorie === 'FERTIGKEITSABZEICHEN_SICHER_ZU_WASSER') {
+      if (ausbildung.sicher_zu_wasser_datum) return 2;
+      if (ausbildung.sicher_zu_wasser_spiel_datum) return 1;
+      return 0;
+    }
+
+    return 0;
   }
 
   private getTrackForKategorie(kategorie: JugendEventKategorie): JugendRegelTrackKey | null {

@@ -4,6 +4,7 @@ from rest_framework import serializers
 from core_apps.mitglieder.models import Mitglied
 
 from .models import JugendAusbildung, JugendEvent, JugendEventTeilnahme
+from .services import rebuild_ausbildung_for_mitglieder
 
 
 class JugendAusbildungSerializer(serializers.ModelSerializer):
@@ -119,6 +120,36 @@ class JugendEventSerializer(serializers.ModelSerializer):
                     }
                 )
 
+        if kategorie is not None and teilnehmer_levels is not None:
+            ausbildung_by_pkid = {
+                ausbildung.mitglied.pkid: ausbildung
+                for ausbildung in JugendAusbildung.objects.select_related("mitglied").filter(
+                    mitglied__pkid__in=[int(item["pkid"]) for item in teilnehmer_levels]
+                )
+            }
+
+            invalid_already_reached = []
+            for item in teilnehmer_levels:
+                level = item.get("level")
+                if level is None:
+                    continue
+
+                pkid = int(item["pkid"])
+                ausbildung = ausbildung_by_pkid.get(pkid)
+                current_level = self._get_current_level_for_category(ausbildung, kategorie)
+                if int(level) <= current_level:
+                    invalid_already_reached.append(pkid)
+
+            if invalid_already_reached:
+                raise serializers.ValidationError(
+                    {
+                        "teilnehmer_levels": (
+                            "Bereits erreichte Level dürfen nicht erneut gesetzt werden. "
+                            "Bitte nur ein höheres, noch nicht erreichtes Level auswählen."
+                        )
+                    }
+                )
+
         return attrs
 
     def get_teilnehmer(self, obj):
@@ -157,12 +188,13 @@ class JugendEventSerializer(serializers.ModelSerializer):
             teilnehmer_levels=teilnehmer_levels,
             reset_missing_levels=True,
         )
-        self._apply_ausbildungs_level_update(event, teilnehmer_levels)
+        rebuild_ausbildung_for_mitglieder(teilnehmer_ids)
 
         return event
 
     @transaction.atomic
     def update(self, instance, validated_data):
+        previous_teilnehmer_ids = list(instance.teilnahmen.values_list("mitglied__pkid", flat=True))
         teilnehmer_ids = validated_data.pop("teilnehmer_ids", None)
         teilnehmer_levels = validated_data.pop("teilnehmer_levels", None)
 
@@ -187,8 +219,8 @@ class JugendEventSerializer(serializers.ModelSerializer):
             reset_missing_levels=teilnehmer_levels is not None,
         )
 
-        if teilnehmer_levels:
-            self._apply_ausbildungs_level_update(instance, teilnehmer_levels)
+        betroffene_teilnehmer_ids = set(previous_teilnehmer_ids) | set(current_teilnehmer_ids)
+        rebuild_ausbildung_for_mitglieder(betroffene_teilnehmer_ids)
 
         return instance
 
@@ -327,3 +359,42 @@ class JugendEventSerializer(serializers.ModelSerializer):
             ),
         }
         return mapping.get(kategorie)
+
+    def _get_current_level_for_category(self, ausbildung, kategorie):
+        if ausbildung is None:
+            return 0
+
+        if kategorie == JugendEvent.Kategorie.ERPROBUNG:
+            for level in range(5, 0, -1):
+                if bool(getattr(ausbildung, f"erprobung_lv{level}")):
+                    return level
+            return 0
+
+        if kategorie == JugendEvent.Kategorie.WISSENSTEST:
+            for level in range(5, 0, -1):
+                if bool(getattr(ausbildung, f"wissentest_lv{level}")):
+                    return level
+            return 0
+
+        if kategorie == JugendEvent.Kategorie.FERTIGKEITSABZEICHEN_MELDER:
+            if ausbildung.melder_datum:
+                return 2
+            if ausbildung.melder_spiel_datum:
+                return 1
+            return 0
+
+        if kategorie == JugendEvent.Kategorie.FERTIGKEITSABZEICHEN_FWTECHNIK:
+            if ausbildung.fwtechnik_datum:
+                return 2
+            if ausbildung.fwtechnik_spiel_datum:
+                return 1
+            return 0
+
+        if kategorie == JugendEvent.Kategorie.FERTIGKEITSABZEICHEN_SICHER_ZU_WASSER:
+            if ausbildung.sicher_zu_wasser_datum:
+                return 2
+            if ausbildung.sicher_zu_wasser_spiel_datum:
+                return 1
+            return 0
+
+        return 0

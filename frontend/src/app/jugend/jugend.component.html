@@ -179,13 +179,13 @@
           </imr-top-actions>
 
           <section class="app-grid imr-form-grid">
-            <div class="app-col-12 app-col-lg-6 mb-3">
+            <div class="app-col-12 app-col-lg-6">
               <imr-form-field class="imr-full-width" hintLabel="* Pflichtfeld" label="Datum">
                 <input matInput formControlName="datum" appDateInputMask="dmy" placeholder="TT.MM.YYYY" />
               </imr-form-field>
             </div>
 
-            <div class="app-col-12 app-col-lg-6 mb-3">
+            <div class="app-col-12 app-col-lg-6">
               <imr-form-field class="imr-full-width" hintLabel="* Pflichtfeld" label="Art">
                 <imr-select formControlName="kategorie" [disabled]="!isDatumFilled()" (selectionChange)="onEventKategorieGeaendert()">
                   @for (option of eventKategorien; track option.value) {
@@ -195,7 +195,21 @@
               </imr-form-field>
             </div>
 
-            <div class="app-col-12 app-col-lg-12 mb-3">
+            <div class="app-col-12 app-col-lg-12">
+              <imr-checkbox formControlName="stand_x_override" (change)="onStandXOverrideGeaendert()">
+                Voraussetzungen für dieses Event außer Kraft setzen
+              </imr-checkbox>
+            </div>
+
+            @if (isVoraussetzungenOverrideAktiv()) {
+              <div class="app-col-12 app-col-lg-12">
+                <div class="override-hinweis">
+                  Level können unabhängig von den Voraussetzungen vergeben werden.
+                </div>
+              </div>
+            }
+
+            <div class="app-col-12 app-col-lg-12">
               <imr-form-field class="imr-full-width" label="Teilnehmer">
                 <imr-select formControlName="teilnehmer_ids" multiple [disabled]="!isDatumFilled()" (selectionChange)="onEventTeilnehmerAuswahlGeaendert()">
                   @for (member of sortedJugendMitglieder; track member.pkid) {
@@ -205,22 +219,8 @@
               </imr-form-field>
             </div>
 
-            <div class="app-col-12 app-col-lg-12 mb-1">
-              <imr-checkbox formControlName="stand_x_override" (change)="onStandXOverrideGeaendert()">
-                Stand X: Voraussetzungen für dieses Event außer Kraft setzen
-              </imr-checkbox>
-            </div>
-
-            @if (isVoraussetzungenOverrideAktiv()) {
-              <div class="app-col-12 app-col-lg-12 mb-3">
-                <div class="override-hinweis">
-                  Stand X ist aktiv. Level können unabhängig von den Voraussetzungen vergeben werden.
-                </div>
-              </div>
-            }
-
             @if (getAusgewaehlteEventMitglieder().length > 0) {
-              <div class="app-col-12 app-col-lg-12 mb-3">
+              <div class="app-col-12 app-col-lg-12">
                 <div class="teilnehmer-level-card">
                   <h3>Erreichtes Level pro Mitglied</h3>
 
@@ -254,7 +254,7 @@
               </div>
             }
 
-            <div class="app-col-12 app-col-lg-12 mb-3">
+            <div class="app-col-12 app-col-lg-12">
               <imr-form-field class="imr-full-width" label="Ort">
                 <input matInput formControlName="ort" [disabled]="!isDatumFilled()" />
               </imr-form-field>
