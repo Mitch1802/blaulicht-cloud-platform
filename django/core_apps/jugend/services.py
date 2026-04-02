@@ -107,6 +107,7 @@ def _rebuild_prefix_levels(
             teilnahmen=teilnahmen,
             kategorie=kategorie,
             min_level=level,
+            exact_level=True,
         )
         should_be_set = first_date is not None
 
@@ -158,11 +159,14 @@ def _get_first_event_date(
     teilnahmen: QuerySet[JugendEventTeilnahme],
     kategorie: str,
     min_level: int,
+    *,
+    exact_level: bool = False,
 ) -> date | None:
+    level_filter = {"level": min_level} if exact_level else {"level__gte": min_level}
     item = (
         teilnahmen.filter(
             event__kategorie=kategorie,
-            level__gte=min_level,
+            **level_filter,
         )
         .order_by("event__datum", "event__pkid")
         .first()

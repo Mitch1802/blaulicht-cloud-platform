@@ -373,6 +373,24 @@ export class JugendComponent implements OnInit {
     this.selectedMitglied = null;
   }
 
+  isJugendMitglied(m: IMitglied | null): boolean {
+    return m !== null && this.normalizeStatus(m.dienststatus) === 'JUGEND';
+  }
+
+  ueberstellen(m: IMitglied | null): void {
+    if (!m || !this.isJugendMitglied(m)) {
+      return;
+    }
+    this.apiHttpService.patch('jugend/mitglieder', m.id, { dienststatus: 'AKTIV' }, false).subscribe({
+      next: () => {
+        this.uiMessageService.erstelleMessage('success', `${this.getVollerName(m)} wurde in den Aktivstand überstellt.`);
+        this.mitgliedDetailZurueck();
+        this.loadMitglieder();
+      },
+      error: (error) => this.authSessionService.errorAnzeigen(error),
+    });
+  }
+
   eventFormAbbrechen(): void {
     this.showEventForm = false;
     this.teilnehmerLevelByPkid.clear();

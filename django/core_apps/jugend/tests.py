@@ -122,8 +122,8 @@ class JugendApiTests(EndpointSmokeMixin, APITestCase):
         self.assertEqual(create_response.data["teilnehmer"][0].get("level"), 3)
 
         ausbildung = JugendAusbildung.objects.get(mitglied=self.jugend_mitglied)
-        self.assertTrue(ausbildung.wissentest_lv1)
-        self.assertTrue(ausbildung.wissentest_lv2)
+        self.assertFalse(ausbildung.wissentest_lv1)
+        self.assertFalse(ausbildung.wissentest_lv2)
         self.assertTrue(ausbildung.wissentest_lv3)
         self.assertFalse(ausbildung.wissentest_lv4)
 
@@ -246,12 +246,12 @@ class JugendApiTests(EndpointSmokeMixin, APITestCase):
         self.assertEqual(delete_response.status_code, status.HTTP_204_NO_CONTENT)
 
         ausbildung = JugendAusbildung.objects.get(mitglied=self.jugend_mitglied)
-        self.assertTrue(ausbildung.wissentest_lv1)
-        self.assertTrue(ausbildung.wissentest_lv2)
-        self.assertTrue(ausbildung.wissentest_lv3)
+        self.assertFalse(ausbildung.wissentest_lv1)
+        self.assertFalse(ausbildung.wissentest_lv2)
+        self.assertFalse(ausbildung.wissentest_lv3)
         self.assertTrue(ausbildung.wissentest_lv4)
         self.assertFalse(ausbildung.wissentest_lv5)
-        self.assertEqual(str(ausbildung.wissentest_lv1_datum), "2026-06-01")
+        self.assertIsNone(ausbildung.wissentest_lv1_datum)
         self.assertEqual(str(ausbildung.wissentest_lv4_datum), "2026-06-01")
 
     def test_event_rejects_already_reached_level(self):
@@ -358,8 +358,8 @@ class JugendApiTests(EndpointSmokeMixin, APITestCase):
         self.assertEqual(update_response.status_code, status.HTTP_200_OK)
 
         ausbildung_neu = JugendAusbildung.objects.get(mitglied=weiteres_jugend_mitglied)
-        self.assertTrue(ausbildung_neu.wissentest_lv1)
-        self.assertTrue(ausbildung_neu.wissentest_lv2)
+        self.assertFalse(ausbildung_neu.wissentest_lv1)
+        self.assertFalse(ausbildung_neu.wissentest_lv2)
         self.assertTrue(ausbildung_neu.wissentest_lv3)
         self.assertFalse(ausbildung_neu.wissentest_lv4)
 
