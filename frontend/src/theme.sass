@@ -45,3 +45,47 @@ $imr-text:           #263238
 $imr-text-muted:     #7a8086
 $imr-page-max-width: 1600px
 
+=imr-admin-page-shell
+	max-width: $imr-page-max-width
+	margin: 0 auto
+	padding: 1rem 1rem 2rem
+
+	.imr-top-actions
+		display: flex
+		align-items: center
+		flex-wrap: wrap
+		gap: .8rem
+		margin: .25rem 0 .8rem
+
+	.imr-form-actions
+		display: flex
+		flex-wrap: wrap
+		gap: .6rem
+		margin-bottom: .8rem
+
+	.edit-form
+		margin-top: .2rem
+
+	.imr-form-grid
+		margin-top: .2rem
+
+	.imr-full-width
+		width: 100%
+
+	.imr-table-wrap
+		overflow-x: auto
+		margin-top: .35rem
+
+		table
+			width: 100%
+
+=imr-admin-page-mobile($breakpoint: 768px)
+	@media (max-width: $breakpoint)
+		padding: .75rem .75rem 1.5rem
+
+		.imr-top-actions,
+		.imr-form-actions
+			button,
+			a[mat-flat-button]
+				width: 100%
+

@@ -12,11 +12,11 @@
           </imr-form-field>
         </div>
 
-        <div class="app-col-12">
-          <imr-top-actions>
-          <imr-button [disabled]="formModul.disabled" (click)="emailSpeichern()">
-            E-Mail speichern
-          </imr-button>
+        <div class="app-col-12 app-col-lg-4 field-action-col">
+          <imr-top-actions class="field-action-row">
+            <imr-button [disabled]="formModul.disabled" (click)="emailSpeichern()">
+              E-Mail speichern
+            </imr-button>
           </imr-top-actions>
         </div>
       </section>
@@ -36,11 +36,11 @@
 
         </div>
 
-        <div class="app-col-12">
-          <imr-top-actions>
-          <imr-button [disabled]="formModul.disabled || !passwortAendernErlaubt" (click)="passwortAendern()">
-            Passwort ändern
-          </imr-button>
+        <div class="app-col-12 app-col-lg-4 field-action-col">
+          <imr-top-actions class="field-action-row">
+            <imr-button [disabled]="formModul.disabled || !passwortAendernErlaubt" (click)="passwortAendern()">
+              Passwort ändern
+            </imr-button>
           </imr-top-actions>
         </div>
       </section>

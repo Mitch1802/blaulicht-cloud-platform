@@ -1,1 +1,15 @@
-// Intentionally minimal: styles are centralized in frontend/src/imr-catalog.sass
+@use '../../../theme' as theme
+
+.atemschutz-dienstbuch-page
+	+theme.imr-admin-page-shell
+	+theme.imr-admin-page-mobile(768px)
+
+	hr
+		margin: .65rem 0
+		border: 0
+		border-top: 1px solid rgba(theme.$imr-border, .9)
+
+	h4,
+	p
+		margin: 0
+

@@ -1,7 +1,8 @@
 @use '../../theme' as theme
 
 .fmd-page
-    @extend .imr-section !optional
+    +theme.imr-admin-page-shell
+    +theme.imr-admin-page-mobile(768px)
 
     .imr-card
         border-radius: 0
@@ -16,9 +17,6 @@
         width: 100%
         padding: 1rem
 
-    table
-        width: 100%
-
     .red-cell
         background-color: rgba(theme.$imr-error, .16)
         color: theme.$imr-error
@@ -29,13 +27,3 @@
 
     .mat-mdc-header-row
         font-weight: 600
-
-@media (max-width: 768px)
-    .fmd-page
-        padding: .75rem .75rem 1.5rem
-
-        .page-head
-            margin-bottom: 1rem
-
-            h1
-                font-size: 1.4rem

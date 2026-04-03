@@ -229,7 +229,7 @@ export class NewsExternComponent implements OnInit, OnDestroy {
             this.currentItem = this.daten[this.currentIndex];
           }
 
-          // (optional) Rotations-Timer neu starten, falls Dauer geändert/erste Daten
+          // Rotations-Timer aktiv halten (z. B. nach Refresh oder Datenwechsel)
           if (!this.rotateSub || oldLen === 0 || oldLen !== this.daten.length) {
             this.startRotateTimer();
           }
@@ -237,7 +237,11 @@ export class NewsExternComponent implements OnInit, OnDestroy {
           // externen Kalender laden (unverändert)
           this.apiHttpService.getURL<TerminItem[]>('https://ff-schwadorf.at/v2025/server/kalender/index.php').subscribe({
             next: (k: TerminItem[]) => { this.termine = Array.isArray(k) ? k : []; },
-            error: (err: unknown) => this.authSessionService.errorAnzeigen(err)
+            error: (_err: unknown) => {
+              // Externe Terminquelle ist optional; bei Fehlern Feed weiter anzeigen
+              // und keine irreführende Snackbar (z. B. "true") auslösen.
+              this.termine = [];
+            }
           });
 
         } catch (e: unknown) {

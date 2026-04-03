@@ -55,6 +55,7 @@ type CheckRoomView = {
     MatInputModule,
   ],
   templateUrl: "./fahrzeug-check.component.html",
+  styleUrl: "./fahrzeug-check.component.sass",
 })
 export class FahrzeugCheckComponent implements OnInit {
   private apiHttpService = inject(ApiHttpService);

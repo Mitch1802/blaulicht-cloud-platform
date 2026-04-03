@@ -25,6 +25,7 @@
             placeholder="Suchen..."
           />
         </imr-form-field>
+        <div class="imr-table-wrap">
         <table
           mat-table
           [dataSource]="dataSource"
@@ -67,6 +68,7 @@
           <tr mat-header-row *matHeaderRowDef="sichtbareSpalten"></tr>
           <tr mat-row *matRowDef="let row; columns: sichtbareSpalten"></tr>
         </table>
+        </div>
 
         <imr-paginator
           [pageSizeOptions]="pageOptions"

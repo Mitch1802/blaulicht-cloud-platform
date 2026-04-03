@@ -1,16 +1,11 @@
 ﻿<imr-page-layout pageClass="news-extern-page">
   <div class="newsfeed-shell">
     <header class="newsfeed-head">
-      <p class="feed-kicker">Live-Newsfeed</p>
       <h1>{{ title }}</h1>
-      <p class="feed-copy">Öffentliche Meldungen der Feuerwehr Schwadorf mit automatischer Rotation und aktueller Terminübersicht.</p>
-
-      <div class="feed-meta">
-        <span class="feed-meta-chip">Wechsel alle {{ dauer_artikel_in_sek }} Sekunden</span>
-      </div>
     </header>
 
-    <imr-card class="newsfeed-stage">
+    <div class="newsfeed-content">
+      <imr-card class="newsfeed-stage">
         @if (currentItem) {
           <div
             class="newsfeed-feature-stage"
@@ -31,31 +26,9 @@
               }
 
               <div class="feature-content">
-                <div class="feature-top">
-                  <span class="feature-position">{{ currentNewsPosition }}</span>
-                  <div class="feature-progress" [attr.aria-label]="currentNewsPosition">
-                    <span [style.width.%]="currentNewsProgressPercent"></span>
-                  </div>
-
-                  @if (hasMultipleNews) {
-                    <div class="feature-autoplay" aria-label="Fortschritt bis zum nächsten automatischen Wechsel">
-                      <span class="feature-autoplay-label">Auto-Wechsel</span>
-                      <div class="feature-autoplay-track" aria-hidden="true">
-                        <span [style.width.%]="autoplayProgressPercent"></span>
-                      </div>
-                    </div>
-                  }
-                </div>
-
                 <h2>{{ currentItem.title }}</h2>
                 <p>{{ currentItem.text }}</p>
 
-                @if (hasMultipleNews) {
-                  <div class="feature-nav">
-                    <imr-button variant="stroked" type="button" (click)="showPrevious()">Vorheriger Beitrag</imr-button>
-                    <imr-button color="primary" type="button" (click)="showNext()">Nächster Beitrag</imr-button>
-                  </div>
-                }
               </div>
             </article>
 
@@ -72,13 +45,6 @@
                 }
 
                 <div class="feature-content">
-                  <div class="feature-top">
-                    <span class="feature-position">{{ currentNewsPosition }}</span>
-                    <div class="feature-progress" [attr.aria-label]="currentNewsPosition">
-                      <span [style.width.%]="currentNewsProgressPercent"></span>
-                    </div>
-                  </div>
-
                   <h2>{{ incomingItem.title }}</h2>
                   <p>{{ incomingItem.text }}</p>
                 </div>
@@ -91,25 +57,26 @@
             <p>Sobald neue Beiträge veröffentlicht sind, erscheinen sie hier automatisch.</p>
           </section>
         }
-    </imr-card>
+      </imr-card>
 
-    <section class="termine-panel">
-      <div class="termine-head">
-        <h2>Nächste Termine</h2>
-      </div>
-
-      @if (termineCount > 0) {
-        <div class="termine-grid">
-          @for (event of termine; track event) {
-            <article class="termin-item">
-              <p class="termin-date">{{ event.start }}</p>
-              <p class="termin-title">{{ event.summary }}</p>
-            </article>
-          }
+      <section class="termine-panel">
+        <div class="termine-head">
+          <h2>Nächste Termine</h2>
         </div>
-      } @else {
-        <p class="termine-empty">Aktuell keine Termine verfügbar.</p>
-      }
-    </section>
+
+        @if (termineCount > 0) {
+          <div class="termine-grid">
+            @for (event of termine; track event) {
+              <article class="termin-item">
+                <p class="termin-date">{{ event.start }}</p>
+                <p class="termin-title">{{ event.summary }}</p>
+              </article>
+            }
+          </div>
+        } @else {
+          <p class="termine-empty">Aktuell keine Termine verfügbar.</p>
+        }
+      </section>
+    </div>
   </div>
 </imr-page-layout>

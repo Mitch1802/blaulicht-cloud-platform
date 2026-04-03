@@ -10,7 +10,7 @@
         <div class="mitglied-detail-view">
           <imr-top-actions class="imr-form-actions">
             <imr-button color="primary" type="button" (click)="mitgliedDetailZurueck()">Zurück</imr-button>
-            @if (isJugendMitglied(selectedMitglied)) {
+            @if (kannUeberstelltWerden(selectedMitglied)) {
               <imr-button color="accent" type="button" (click)="ueberstellen(selectedMitglied)">Überstellen</imr-button>
             }
           </imr-top-actions>

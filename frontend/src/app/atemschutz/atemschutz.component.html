@@ -1,39 +1,24 @@
 <imr-header [breadcrumb]="breadcrumb"></imr-header>
 
-<imr-page-layout pageClass="start-page atemschutz-page">
-  <header class="welcome">
-    <div class="welcome-main">
-      <div>
-        <h1>{{ title }}</h1>
-      </div>
+<imr-page-layout [title]="title" pageClass="start-page atemschutz-page">
+  <imr-section-card title="Atemschutz">
+    <div class="module-grid">
+      @for (item of moduleCards; track item.routerLink) {
+        <a
+          class="module-card-link"
+          [routerLink]="item.routerLink"
+          [attr.aria-label]="'Modul öffnen: ' + item.titel"
+        >
+          <imr-card cardClass="module-card" [wrapContent]="false">
+            <div class="module-icon-shell">
+              <imr-icon class="module-icon" [inline]="true">{{ item.icon }}</imr-icon>
+            </div>
+            <div class="module-card-body">
+              <div class="module-title">{{ item.titel }}</div>
+            </div>
+          </imr-card>
+        </a>
+      }
     </div>
-  </header>
-
-  <div class="dashboard-shell">
-    <imr-section-card sectionTitle="Module" cardClass="module-section">
-      <section class="category-block">
-        <div class="category-head">
-          <h3 class="category-title">Module</h3>
-        </div>
-        <div class="module-grid">
-          @for (item of moduleCards; track item.routerLink) {
-            <a
-              class="module-card-link"
-              [routerLink]="item.routerLink"
-              [attr.aria-label]="'Modul öffnen: ' + item.titel"
-            >
-              <imr-card cardClass="module-card" [wrapContent]="false">
-                <div class="module-icon-shell">
-                  <imr-icon class="module-icon" [inline]="true">{{ item.icon }}</imr-icon>
-                </div>
-                <div class="module-card-body">
-                  <div class="module-title">{{ item.titel }}</div>
-                </div>
-              </imr-card>
-            </a>
-          }
-        </div>
-      </section>
-    </imr-section-card>
-  </div>
+  </imr-section-card>
 </imr-page-layout>

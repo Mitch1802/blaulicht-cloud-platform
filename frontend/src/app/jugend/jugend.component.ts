@@ -377,8 +377,18 @@ export class JugendComponent implements OnInit {
     return m !== null && this.normalizeStatus(m.dienststatus) === 'JUGEND';
   }
 
+  kannUeberstelltWerden(m: IMitglied | null): boolean {
+    if (!m) {
+      return false;
+    }
+    if (this.normalizeStatus(m.dienststatus) !== 'JUGEND') {
+      return false;
+    }
+    return this.getAlter(m) >= 15;
+  }
+
   ueberstellen(m: IMitglied | null): void {
-    if (!m || !this.isJugendMitglied(m)) {
+    if (!m || !this.kannUeberstelltWerden(m)) {
       return;
     }
     this.apiHttpService.patch('jugend/mitglieder', m.id, { dienststatus: 'AKTIV' }, false).subscribe({

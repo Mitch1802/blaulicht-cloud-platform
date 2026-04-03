@@ -25,9 +25,8 @@
 	resize: vertical
 
 .pdf-page
-	max-width: theme.$imr-page-max-width
-	margin: 0 auto
-	padding: 1rem 1rem 2rem
+	+theme.imr-admin-page-shell
+	+theme.imr-admin-page-mobile(768px)
 
 	.page-head
 		margin: 0 0 1.5rem
@@ -41,55 +40,16 @@
 	.imr-card
 		border-radius: 0
 
-	.imr-top-actions
-		display: flex
-		gap: .8rem
-		align-items: center
-		flex-wrap: wrap
-		margin: .25rem 0 .8rem
-
 	.status-filter
 		width: 220px
 
-	.edit-form
-		margin-top: .2rem
-
-	.imr-form-actions
-		display: flex
-		flex-wrap: wrap
-		gap: .6rem
-		margin-bottom: .8rem
-
-	.imr-form-grid
-		margin-top: .2rem
-
-	.imr-full-width
-		width: 100%
-
-	.imr-table-wrap
-		overflow-x: auto
-		margin-top: .35rem
-
-		table
-			width: 100%
-
 @media (max-width: 768px)
 	.pdf-page
-		padding: .75rem .75rem 1.5rem
-
 		.page-head
 			margin-bottom: 1rem
 
 			h1
 				font-size: 1.4rem
 
-		.imr-top-actions
-			button
-				width: 100%
-
 		.status-filter
 			width: 100%
-
-		.imr-form-actions
-			button
-				width: 100%

@@ -60,20 +60,22 @@
         </section>
       </imr-tab>
       <imr-tab label="ATS Träger">
+        @if (formModul.disabled) {
         <imr-top-actions>
           <imr-button
             color="accent"
-            [hidden]="!formModul.disabled"
             (click)="neueDetails()"
             type="button"
           >
             Hinzufügen
           </imr-button>
         </imr-top-actions>
+        }
         <form
           [formGroup]="formModul"
           (ngSubmit)="datenSpeichern()"
           [hidden]="formModul.disabled"
+          class="edit-form"
         >
           <input
             hidden
@@ -81,24 +83,36 @@
             
             formControlName="id"
           />
-          <imr-button
-            color="accent"
-            [hidden]="!formModul.valid"
-            type="submit"
-          >
-            Daten speichern
-          </imr-button>
-          <imr-button
-            color="primary"
-            [hidden]="formModul.disabled"
-            type="button"
-            (click)="abbrechen()"
-          >
-            Abbrechen
-          </imr-button>
-          <section class="app-grid mt-2 mx-0">
+          <imr-top-actions class="imr-form-actions">
+            <imr-button
+              color="accent"
+              [hidden]="!formModul.valid"
+              type="submit"
+            >
+              Daten speichern
+            </imr-button>
+            <imr-button
+              color="primary"
+              [hidden]="formModul.disabled"
+              type="button"
+              (click)="abbrechen()"
+            >
+              Abbrechen
+            </imr-button>
+            <imr-button
+              color="warn"
+              class="imr-delete-btn"
+              [hidden]="!formModul.controls['id'].value"
+              type="button"
+              (click)="datenLoeschen()"
+            >
+              Daten löschen
+            </imr-button>
+          </imr-top-actions>
+
+          <section class="app-grid imr-form-grid">
             <div class="app-col-12 app-col-lg-8 mb-3">
-              <imr-form-field label="Mitglied auswählen">
+              <imr-form-field class="imr-full-width" label="Mitglied auswählen">
                 <imr-select formControlName="mitglied_id">
                   @for (opt of dropdownMitglieder; track opt) {
                   <imr-option [value]="opt.pkid">
@@ -110,7 +124,7 @@
               </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3">
-              <imr-form-field label="FDISK Update">
+              <imr-form-field class="imr-full-width" label="FDISK Update">
                 <input
                   matInput
                   type="text"
@@ -132,7 +146,7 @@
               </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3">
-              <imr-form-field label="Arzttyp auswählen">
+              <imr-form-field class="imr-full-width" label="Arzttyp auswählen">
                 <imr-select formControlName="arzt_typ">
                   @for (opt of arzttypen; track opt) {
                   <imr-option [value]="opt"> {{ opt }}</imr-option>
@@ -141,12 +155,12 @@
               </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-8 mb-3">
-              <imr-form-field label="Behandelnder Arzt">
+              <imr-form-field class="imr-full-width" label="Behandelnder Arzt">
                 <input matInput type="text" formControlName="arzt" />
               </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3">
-              <imr-form-field label="Letzte Untersuchung">
+              <imr-form-field class="imr-full-width" label="Letzte Untersuchung">
                 <input
                   matInput
                   type="text"
@@ -158,7 +172,7 @@
                 (formModul.controls['letzte_untersuchung'].hasError('pattern'))
                 {
                 <imr-error
-                  >Ung�ltiges Format. Bitte TT.MM.YYYY eingeben.</imr-error
+                  >Ungültiges Format. Bitte TT.MM.YYYY eingeben.</imr-error
                 >
                 } @if
                 (formModul.controls['letzte_untersuchung'].hasError('dateInvalid'))
@@ -168,7 +182,7 @@
               </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3">
-              <imr-form-field label="Leistungstest">
+              <imr-form-field class="imr-full-width" label="Leistungstest">
                 <input
                   matInput
                   type="text"
@@ -177,7 +191,7 @@
               </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3">
-              <imr-form-field label="Leistungstest Art">
+              <imr-form-field class="imr-full-width" label="Leistungstest Art">
                 <imr-select formControlName="leistungstest_art">
                   @for (opt of leistungstestarten; track opt) {
                   <imr-option [value]="opt"> {{ opt }}</imr-option>
@@ -186,26 +200,16 @@
               </imr-form-field>
             </div>
             <div class="app-col-12 app-col-lg-12 mb-3">
-              <imr-form-field label="Notizen">
+              <imr-form-field class="imr-full-width" label="Notizen">
                 <input matInput type="text" formControlName="notizen" />
               </imr-form-field>
             </div>
           </section>
-
-          <imr-button
-            color="warn"
-            class="imr-delete-btn"
-            [hidden]="!formModul.controls['id'].value"
-            type="button"
-            (click)="datenLoeschen()"
-          >
-            Daten löschen
-          </imr-button>
         </form>
+        <div class="imr-table-wrap" [hidden]="!formModul.disabled">
         <table
           mat-table
           [dataSource]="dataSource"
-          [hidden]="!formModul.disabled"
           matSort
         >
           <ng-container matColumnDef="stbnr">
@@ -255,8 +259,10 @@
             *matRowDef="let row; columns: sichtbareSpaltenATS"
           ></tr>
         </table>
+        </div>
       </imr-tab>
       <imr-tab label="Untersuchungen">
+        <div class="imr-table-wrap">
         <table
           mat-table
           [dataSource]="dataSource"
@@ -299,7 +305,7 @@
           </ng-container>
           <ng-container matColumnDef="naechste_untersuchung">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>
-              N�chste Untersuchung
+              Nächste Untersuchung
             </th>
             <td mat-cell *matCellDef="let element">
               {{ element.naechste_untersuchung }}
@@ -319,8 +325,10 @@
             "
           ></tr>
         </table>
+        </div>
       </imr-tab>
       <imr-tab label="Leistungstest">
+        <div class="imr-table-wrap">
         <table
           mat-table
           [dataSource]="dataSource"
@@ -377,8 +385,10 @@
             [class.green-cell]="isLeistungstestOk(row.leistungstest)"
           ></tr>
         </table>
+        </div>
       </imr-tab>
       <imr-tab label="Tauglichkeit">
+        <div class="imr-table-wrap">
         <table
           mat-table
           [dataSource]="dataSource"
@@ -426,6 +436,7 @@
             [class.green-cell]="row.tauglichkeit === 'tauglich'"
           ></tr>
         </table>
+        </div>
       </imr-tab>
       <imr-tab label="Export">
         <div class="app-container p-3 export-wrap">
