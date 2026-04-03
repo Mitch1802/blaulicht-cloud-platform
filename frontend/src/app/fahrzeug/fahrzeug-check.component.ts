@@ -11,6 +11,7 @@ import {
 import { ActivatedRoute, Router } from "@angular/router";
 
 import { MatInputModule } from "@angular/material/input";
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 import { ApiHttpService } from 'src/app/_service/api-http.service';
 import { AuthSessionService } from 'src/app/_service/auth-session.service';
@@ -50,6 +51,7 @@ type CheckRoomView = {
     ...IMR_UI_COMPONENTS,
     CommonModule,
     ReactiveFormsModule,
+    MatFormFieldModule,
     MatInputModule,
   ],
   templateUrl: "./fahrzeug-check.component.html",

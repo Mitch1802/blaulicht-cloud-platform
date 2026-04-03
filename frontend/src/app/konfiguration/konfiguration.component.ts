@@ -68,8 +68,26 @@ export class KonfigurationComponent implements OnInit {
     return String(value ?? '').trim().toLowerCase();
   }
 
+  private normalizeRoleValue(value: string | null | undefined): string {
+    return String(value ?? '').trim().toUpperCase();
+  }
+
   get roleCount(): number {
     return Array.isArray(this.rollen) ? this.rollen.length : 0;
+  }
+
+  get customRollen(): RolleEintrag[] {
+    return this.rollen.filter((rolle) => rolle.key !== 'ADMIN' && rolle.key !== 'MITGLIED');
+  }
+
+  get canSaveRole(): boolean {
+    const rawValue = this.formRolle.controls['rolle'].value;
+    const nextRole = this.normalizeRoleValue(rawValue);
+    if (!nextRole) {
+      return false;
+    }
+
+    return !this.rollen.some((rolle) => this.normalizeRoleValue(rolle.key) === nextRole);
   }
 
   get hasConfigRecord(): boolean {
@@ -163,8 +181,10 @@ export class KonfigurationComponent implements OnInit {
   }
 
   rolleSpeichern(): void {
-    const object = this.formRolle.value;
-    const rolle_neu = object.rolle;
+    const rolle_neu = this.normalizeRoleValue(this.formRolle.controls['rolle'].value);
+    if (!rolle_neu || !this.canSaveRole) {
+      return;
+    }
 
     const post = {
       "key": rolle_neu,

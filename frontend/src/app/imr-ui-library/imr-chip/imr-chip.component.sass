@@ -6,25 +6,27 @@
 
 .mat-mdc-chip,
 .mat-mdc-standard-chip
-    --mdc-chip-container-height: var(--imr-control-height)
+    --mdc-chip-container-height: auto
     --mdc-chip-container-shape-radius: 0px
     --mat-chip-container-shape-radius: 0px
     border-radius: 0 !important
-    height: var(--imr-control-height)
     min-height: var(--imr-control-height)
+    height: auto
     border: 1px solid var(--imr-control-border)
     background: var(--imr-control-bg)
-    color: theme.$imr-primary-deep
+    color: theme.$imr-primary
     box-shadow: none
     transition: var(--imr-control-transition)
+    overflow: hidden
 
     .mdc-evolution-chip__cell,
     .mdc-evolution-chip__action,
     .mdc-evolution-chip__action--primary,
     .mdc-evolution-chip__action--trailing
-        height: var(--imr-control-height)
         min-height: var(--imr-control-height)
+        height: auto
         border-radius: 0 !important
+        align-items: center
 
     .mdc-evolution-chip__action::before,
     .mdc-evolution-chip__action::after
@@ -43,17 +45,34 @@
         background: transparent !important
         border-radius: 0 !important
 
+    .mat-mdc-chip-remove,
+    [matChipRemove],
+    .mdc-evolution-chip__action--trailing
+        display: inline-flex
+        align-items: center
+        justify-content: center
+
+    [matChipRemove]
+        height: 100%
+        line-height: 1
+
+        imr-icon,
+        .mat-icon
+            display: inline-flex
+            align-items: center
+            justify-content: center
+            width: 18px
+            height: 18px
+            line-height: 18px
+            font-size: 18px
+            vertical-align: middle
+
     .mdc-evolution-chip__text-label,
     .mat-mdc-chip-action-label
         color: inherit
         font-weight: 600
         letter-spacing: .2px
-
-    &:hover
-        transform: none
-        background: #f7f7f7
-        border-color: rgba(theme.$imr-primary, .4)
-        box-shadow: none
+        line-height: 1.2
 
     &:focus-within
         outline: 2px solid rgba(theme.$imr-primary, .55)

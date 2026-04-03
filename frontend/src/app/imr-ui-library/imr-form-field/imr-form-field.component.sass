@@ -4,6 +4,16 @@
     display: block
     width: 100%
 
+.imr-form-field-fallback-control
+    position: absolute
+    width: 0
+    height: 0
+    min-height: 0
+    padding: 0
+    border: 0
+    opacity: 0
+    pointer-events: none
+
 // Material Form-Field overrides
 mat-form-field,
 .mat-mdc-form-field
@@ -16,14 +26,28 @@ mat-form-field,
 // ::ng-deep nötig, da MDC-interne Elemente nicht im eigenen Template sind
 // und Angular's View Encapsulation sie sonst nicht erreicht
 :host ::ng-deep
+    .mat-mdc-form-field:has(textarea.mat-mdc-input-element)
+        --mat-form-field-container-height: auto
+        --mat-form-field-container-vertical-padding: 0
+
     .mat-mdc-text-field-wrapper
         min-height: var(--imr-control-height)
         border-radius: 0 !important
         transition: background-color .16s ease, box-shadow .16s ease, border-color .16s ease
 
-    .mdc-text-field--outlined,
-    .mdc-text-field--filled
+    .mat-mdc-text-field-wrapper:has(textarea.mat-mdc-input-element)
+        min-height: 0
+        height: auto
+
+    .mdc-text-field--outlined:not(.mdc-text-field--textarea),
+    .mdc-text-field--filled:not(.mdc-text-field--textarea)
         height: var(--imr-control-height)
+        border-radius: 0 !important
+
+    .mdc-text-field--textarea
+        height: auto
+        min-height: 0
+        align-items: stretch
         border-radius: 0 !important
 
     .mdc-notched-outline__leading,
@@ -33,6 +57,16 @@ mat-form-field,
     .mat-mdc-form-field-flex
         min-height: var(--imr-control-height)
 
+    .mat-mdc-form-field-flex:has(textarea.mat-mdc-input-element)
+        min-height: 0
+        height: auto
+        align-items: stretch
+
+    .mdc-text-field--textarea .mat-mdc-form-field-flex
+        min-height: 0
+        height: auto
+        align-items: stretch
+
     .mat-mdc-form-field-type-mat-select .mat-mdc-form-field-flex
         align-items: center
 
@@ -40,6 +74,18 @@ mat-form-field,
         min-height: calc(var(--imr-control-height) - 2px)
         padding-top: .45rem
         padding-bottom: .45rem
+
+    .mat-mdc-form-field-infix:has(textarea.mat-mdc-input-element)
+        min-height: 0
+        height: auto
+        padding-top: .6rem
+        padding-bottom: .5rem
+
+    .mdc-text-field--textarea .mat-mdc-form-field-infix
+        min-height: 0
+        height: auto
+        padding-top: .6rem
+        padding-bottom: .5rem
 
     .mat-mdc-form-field-type-mat-select .mat-mdc-form-field-infix
         display: flex
@@ -81,6 +127,11 @@ mat-form-field,
 
     textarea.mat-mdc-input-element
         max-height: none
+        min-height: 0
+        height: auto
+        line-height: 1.35
+        resize: vertical
+        box-sizing: border-box
 
     .mat-mdc-select-arrow-wrapper
         align-self: stretch

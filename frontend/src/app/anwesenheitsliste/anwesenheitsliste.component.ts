@@ -3,6 +3,7 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatSelectModule } from '@angular/material/select';
@@ -22,6 +23,7 @@ import { DateInputMaskDirective } from '../_directive/date-input-mask.directive'
     FormsModule,
     ReactiveFormsModule,
     ...IMR_UI_COMPONENTS,
+    MatFormFieldModule,
     MatInputModule,
     MatTableModule,
     MatSortModule,

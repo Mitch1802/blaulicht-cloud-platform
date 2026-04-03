@@ -77,9 +77,10 @@
                 }
               </div>
 
-              <textarea hidden matInput formControlName="konfiguration"></textarea>
+              <textarea hidden formControlName="konfiguration"></textarea>
             } @else {
-              <imr-form-field appearance="outline" class="imr-full-width html-source-field" subscriptSizing="dynamic" label="Konfiguration (JSON)">
+              <mat-form-field appearance="outline" class="imr-full-width html-source-field" subscriptSizing="dynamic">
+                <mat-label>Konfiguration (JSON)</mat-label>
                 <textarea
                   matInput
                   class="html-source-input"
@@ -88,7 +89,7 @@
                   placeholder="{ 'key': 'value' }"
                   [uiControlErrors]="konfigurationErrorMap"
                 ></textarea>
-              </imr-form-field>
+              </mat-form-field>
 
               @if (isJugendModulAusgewaehlt()) {
                 <section class="jugend-hilfe-box">

@@ -14,7 +14,9 @@
   } @else if (hasHeader) {
     <mat-expansion-panel-header>
       <mat-panel-title><ng-content select="imr-panel-title"></ng-content></mat-panel-title>
-      <mat-panel-description><ng-content select="imr-panel-description"></ng-content></mat-panel-description>
+      @if (hasDescription) {
+        <mat-panel-description><ng-content select="imr-panel-description"></ng-content></mat-panel-description>
+      }
     </mat-expansion-panel-header>
   }
   <ng-content></ng-content>

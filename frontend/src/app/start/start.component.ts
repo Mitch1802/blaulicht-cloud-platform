@@ -81,7 +81,7 @@ export class StartComponent implements OnInit {
           const user = erg?.user;
           this.meine_rollen = this.normalizeRoles(user?.roles);
           this.username = user?.username ?? '';
-          this.display_name = user?.display_name || this.username;
+          this.display_name = 'Hallo ' + (user?.display_name || this.username) + '!';
 
           const main = Array.isArray(erg?.main) ? erg.main : [];
           const konfigs = main.find((m: StartModulEintrag) => m.modul === 'start');

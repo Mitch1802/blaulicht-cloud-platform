@@ -1,79 +1,5 @@
 @use '../../theme' as theme
 
-.welcome
-    position: relative
-    overflow: hidden
-    margin: 0 0 .75rem
-    padding: .95rem 1.05rem
-    border-radius: 0
-    border: 1px solid rgba(theme.$imr-border, .9)
-    background: rgba(theme.$imr-surface, .98)
-    box-shadow: none
-
-    &::after
-        display: none
-
-.welcome-main
-    position: relative
-    z-index: 1
-    display: flex
-    align-items: center
-    justify-content: flex-start
-    gap: .8rem
-
-    h1
-        margin: 0
-        color: theme.$imr-primary
-        font-size: clamp(1.45rem, 2.4vw, 2.05rem)
-        line-height: 1.05
-
-.dashboard-shell
-    display: block
-
-.module-section
-    background: transparent
-    border: 0
-    border-radius: 0
-    padding: 0
-    margin-bottom: .55rem
-
-.module-grid
-    display: grid
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr))
-    gap: .5rem
-    padding: 0 .5rem .5rem .5rem
-
-.category-block
-    margin-bottom: .5rem
-    border-radius: 0
-    border: 1px solid rgba(theme.$imr-border, .86)
-    background: rgba(theme.$imr-surface, .96)
-    box-shadow: none
-    scroll-margin-top: calc(var(--imr-header-height, 52px) + 1.25rem)
-
-    &:last-child
-        margin-bottom: 0
-
-.category-block .category-head
-    display: flex
-    align-items: center
-    justify-content: flex-start
-    gap: .5rem
-    margin: 0 0 .5rem
-    padding: .48rem .72rem
-    border: 1px solid theme.$imr-primary
-    background: theme.$imr-primary
-    min-height: 2.05rem
-
-.category-block .category-title
-    margin: 0
-    font-size: .94rem
-    font-weight: 700
-    color: theme.$imr-surface
-    letter-spacing: .03em
-    text-transform: uppercase
-    line-height: 1
-
 .module-card-link
     display: block
     text-decoration: none
@@ -82,11 +8,22 @@
     &:focus-visible
         outline: none
 
-// .module-card is passed as cardClass and lands on mat-card inside imr-card's
-// own template. Angular's Emulated ViewEncapsulation scopes each component's
-// CSS to its own template, so start component selectors cannot reach mat-card
-// across the boundary — ::ng-deep is required here.
+.module-grid
+    display: grid
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr))
+    gap: .5rem
+    padding: .5rem
+
 :host ::ng-deep
+    imr-section-card
+        box-shadow: none
+
+    imr-section-card > mat-card
+        margin-top: 1rem
+
+    .imr-card__head h2
+        text-transform: uppercase
+
     .module-card
         min-height: 148px
         padding: .85rem .75rem .78rem
@@ -95,14 +32,10 @@
         justify-content: flex-start
         flex-direction: column
         text-align: center
-        position: relative
         color: theme.$imr-primary
         overflow: hidden
-        border-radius: 0
         border: 1px solid rgba(theme.$imr-border, .92)
-        background: rgba(theme.$imr-surface, 1)
         box-shadow: none
-        transition: background-color .15s ease, border-color .15s ease
 
         &::after
             content: ''
@@ -125,16 +58,8 @@
     .module-card-link:focus-visible .module-card
         outline: 2px solid rgba(theme.$imr-primary, .55)
         outline-offset: 2px
-
-    .module-card.admin-only
-        background: rgba(theme.$imr-warning, .07)
-        border-color: rgba(theme.$imr-warning, .75)
-        color: theme.$imr-primary
-
-        &:hover
-            box-shadow: none
-
-    .admin-badge
+    
+    .badge
         position: absolute
         top: .35rem
         right: .35rem
@@ -143,6 +68,19 @@
         letter-spacing: .04em
         padding: .12rem .38rem
         border-radius: 0
+
+    .module-card.admin-only
+        background: rgba(theme.$imr-warning, .1)
+        border-color: rgba(theme.$imr-warning, 1)
+        color: theme.$imr-primary
+
+        &:after
+            background: rgba(theme.$imr-warning, .75)
+
+        &:hover
+            box-shadow: none
+
+    .admin-badge 
         background: rgba(theme.$imr-warning, .9)
         color: theme.$imr-primary
 
@@ -162,14 +100,6 @@
             box-shadow: none
 
     .planned-badge
-        position: absolute
-        top: .35rem
-        right: .35rem
-        font-size: .58rem
-        font-weight: 700
-        letter-spacing: .04em
-        padding: .12rem .38rem
-        border-radius: 0
         background: rgba(theme.$imr-border, .9)
         color: theme.$imr-text
 
@@ -215,16 +145,6 @@
 
 @media (max-width: 768px)
     .start-page
-        .welcome
-            padding: .85rem
-
-        .welcome-main
-            flex-direction: column
-            align-items: stretch
-
-        .category-block .category-head
-            align-items: flex-start
-
         .module-grid
             grid-template-columns: repeat(2, minmax(0, 1fr))
             gap: .4rem

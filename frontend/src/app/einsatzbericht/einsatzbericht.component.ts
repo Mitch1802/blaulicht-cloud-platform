@@ -8,6 +8,7 @@ import { CollectionUtilsService } from 'src/app/_service/collection-utils.servic
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { ErrorStateMatcher } from '@angular/material/core';
@@ -117,6 +118,7 @@ type SaveEinsatzberichtResponse = {
   imports: [
     ReactiveFormsModule,
     ...IMR_UI_COMPONENTS,
+    MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
     MatAutocompleteModule,
@@ -129,6 +131,8 @@ type SaveEinsatzberichtResponse = {
   styleUrl: './einsatzbericht.component.sass'
 })
 export class EinsatzberichtComponent implements OnInit {
+  private readonly BMA_FEHL_TAEUSCHUNGSALARM_NONE = '__NONE__';
+
   private apiHttpService = inject(ApiHttpService);
   private authSessionService = inject(AuthSessionService);
   private collectionUtilsService = inject(CollectionUtilsService);
@@ -242,7 +246,7 @@ export class EinsatzberichtComponent implements OnInit {
     technischKategorie: new FormControl<string>('', { nonNullable: true }),
     bmaMeldergruppe: new FormControl<string>('', { nonNullable: true }),
     bmaMelder: new FormControl<string>('', { nonNullable: true }),
-    bmaFehlTauschungsalarm: new FormControl<string>('', { nonNullable: true }),
+    bmaFehlTauschungsalarm: new FormControl<string>(this.BMA_FEHL_TAEUSCHUNGSALARM_NONE, { nonNullable: true }),
     mitalarmiert: new FormControl<number[]>([], { nonNullable: true }),
     fahrzeuge: new FormControl<number[]>([], { nonNullable: true }),
     mitglieder: new FormControl<number[]>([], { nonNullable: true }),
@@ -269,10 +273,14 @@ export class EinsatzberichtComponent implements OnInit {
   }
 
   get isBMA(): boolean {
-    return /\bbma\b/i.test(this.formBericht.controls.alarmstichwort.value);
+    return /\bgefahrenmeldeanlage\b/i.test(this.formBericht.controls.alarmstichwort.value);
   }
 
-  bmaFehlTauschungsalarmOptionen = ['Fehlalarm', 'Täuschungsalarm'];
+  bmaFehlTauschungsalarmOptionen = [
+    { value: this.BMA_FEHL_TAEUSCHUNGSALARM_NONE, label: 'Kein Fehl-/Täuschungsalarm' },
+    { value: 'Fehlalarm', label: 'Fehlalarm' },
+    { value: 'Täuschungsalarm', label: 'Täuschungsalarm' },
+  ];
 
   get sortedFahrzeugOptionen(): FahrzeugOption[] {
     const selectedIds = this.formBericht.controls.fahrzeuge.value;
@@ -676,6 +684,10 @@ export class EinsatzberichtComponent implements OnInit {
     this.matPaginator?.firstPage();
   }
 
+  get visibleBerichte(): EinsatzberichtDto[] {
+    return this.dataSource.filteredData;
+  }
+
   neuerEntwurf(): void {
     this.viewMode = 'form';
     this.formBericht.reset({
@@ -696,7 +708,7 @@ export class EinsatzberichtComponent implements OnInit {
       technischKategorie: '',
       bmaMeldergruppe: '',
       bmaMelder: '',
-      bmaFehlTauschungsalarm: '',
+      bmaFehlTauschungsalarm: this.BMA_FEHL_TAEUSCHUNGSALARM_NONE,
       mitalarmiert: [],
       fahrzeuge: [],
       mitglieder: [],
@@ -1273,7 +1285,7 @@ export class EinsatzberichtComponent implements OnInit {
       technischKategorie: bericht.technisch_kategorie || '',
       bmaMeldergruppe: bericht.bma_meldergruppe || '',
       bmaMelder: bericht.bma_melder || '',
-      bmaFehlTauschungsalarm: bericht.bma_fehl_tauschungsalarm || '',
+      bmaFehlTauschungsalarm: this.toBmaFehlTaeuschungsalarmSelectValue(bericht.bma_fehl_tauschungsalarm),
       mitalarmiert: this.resolveMitalarmiertSelectValue(bericht.mitalarmiert),
       fahrzeuge: bericht.fahrzeuge || [],
       mitglieder: bericht.mitglieder || [],
@@ -1443,7 +1455,7 @@ export class EinsatzberichtComponent implements OnInit {
     fd.append('technisch_kategorie', form.technischKategorie || '');
     fd.append('bma_meldergruppe', this.isBMA ? (form.bmaMeldergruppe || '') : '');
     fd.append('bma_melder', this.isBMA ? (form.bmaMelder || '') : '');
-    fd.append('bma_fehl_tauschungsalarm', this.isBMA ? (form.bmaFehlTauschungsalarm || '') : '');
+    fd.append('bma_fehl_tauschungsalarm', this.isBMA ? this.toBmaFehlTaeuschungsalarmApiValue(form.bmaFehlTauschungsalarm) : '');
     form.mitalarmiert.forEach((stelleId) => fd.append('mitalarmiert', String(stelleId)));
 
     form.fahrzeuge.forEach((fahrzeugId) => fd.append('fahrzeuge', String(fahrzeugId)));
@@ -1509,9 +1521,11 @@ export class EinsatzberichtComponent implements OnInit {
       if (bmaMelder.value) {
         bmaMelder.setValue('', { emitEvent: false });
       }
-      if (bmaFehlTauschungsalarm.value) {
-        bmaFehlTauschungsalarm.setValue('', { emitEvent: false });
+      if (bmaFehlTauschungsalarm.value !== this.BMA_FEHL_TAEUSCHUNGSALARM_NONE) {
+        bmaFehlTauschungsalarm.setValue(this.BMA_FEHL_TAEUSCHUNGSALARM_NONE, { emitEvent: false });
       }
+    } else if (!bmaFehlTauschungsalarm.value) {
+      bmaFehlTauschungsalarm.setValue(this.BMA_FEHL_TAEUSCHUNGSALARM_NONE, { emitEvent: false });
     }
 
     brandKategorie.updateValueAndValidity({ emitEvent: false });
@@ -1526,6 +1540,19 @@ export class EinsatzberichtComponent implements OnInit {
         .filter((entry) => Number.isFinite(entry) && entry > 0);
     }
     return [];
+  }
+
+  private toBmaFehlTaeuschungsalarmSelectValue(value: string | null | undefined): string {
+    const normalized = String(value ?? '').trim();
+    return normalized || this.BMA_FEHL_TAEUSCHUNGSALARM_NONE;
+  }
+
+  private toBmaFehlTaeuschungsalarmApiValue(value: string | null | undefined): string {
+    const normalized = String(value ?? '').trim();
+    if (!normalized || normalized === this.BMA_FEHL_TAEUSCHUNGSALARM_NONE) {
+      return '';
+    }
+    return normalized;
   }
 
   private resolveMitalarmiertSelectValue(value: unknown): number[] {

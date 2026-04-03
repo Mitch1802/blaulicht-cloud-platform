@@ -121,9 +121,10 @@
                 <input matInput type="date" formControlName="service_naechstes_am" appDateInputMask="iso" />
               </imr-form-field>
 
-              <imr-form-field class="imr-full-width" label="Beschreibung">
+              <mat-form-field appearance="outline" class="imr-full-width" subscriptSizing="dynamic">
+                <mat-label>Beschreibung</mat-label>
                 <textarea matInput rows="3" formControlName="beschreibung"></textarea>
-              </imr-form-field>
+              </mat-form-field>
 
               <div class="photo-block imr-full-width">
                 <p class="photo-label">Fahrzeugfoto</p>

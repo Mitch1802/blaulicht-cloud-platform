@@ -1,60 +1,45 @@
 <imr-header [breadcrumb]="breadcrumb"></imr-header>
 
-<imr-page-layout pageClass="start-page">
-  <header class="welcome">
-    <div class="welcome-main">
-      <div>
-        <h1>Hallo {{ display_name }}!</h1>
-      </div>
-    </div>
-  </header>
-
-  <div class="dashboard-shell">
-    <imr-section-card sectionTitle="Module" cardClass="module-section">
-      @if (categorizedItems.length === 0) {
-        <p class="empty">Für deine Rollen sind aktuell keine Module freigeschaltet.</p>
-      } @else {
-        @for (category of categorizedItems; track category.name) {
-          <section class="category-block" [attr.id]="getCategoryAnchorId(category.name)">
-            <div class="category-head">
-              <h3 class="category-title">{{ category.name }}</h3>
-            </div>
-            <div class="module-grid">
-              @for (item of category.items; track item) {
-                @if (isPlannedItem(item)) {
-                  <imr-card cardClass="module-card planned" [wrapContent]="false" aria-disabled="true">
-                    <span class="planned-badge">GEPLANT</span>
-                    <div class="module-icon-shell">
-                      <imr-icon class="module-icon" [inline]="true">{{ item.icon }}</imr-icon>
-                    </div>
-                    <div class="module-card-body">
-                      <div class="module-title" [matTooltip]="item.modul" matTooltipPosition="above">{{ item.modul }}</div>
-                    </div>
-                  </imr-card>
-                } @else {
-                  <a
-                    class="module-card-link"
-                    [routerLink]="item.routerlink"
-                    [attr.aria-label]="'Modul öffnen: ' + item.modul"
-                  >
-                    <imr-card [cardClass]="'module-card' + (isAdminOnly(item) ? ' admin-only' : '')" [wrapContent]="false">
-                      @if (isAdminOnly(item)) {
-                        <span class="admin-badge">ADMIN</span>
-                      }
-                      <div class="module-icon-shell">
-                        <imr-icon class="module-icon" [inline]="true">{{ item.icon }}</imr-icon>
-                      </div>
-                      <div class="module-card-body">
-                        <div class="module-title" [matTooltip]="item.modul" matTooltipPosition="above">{{ item.modul }}</div>
-                      </div>
-                    </imr-card>
-                  </a>
-                }
-              }
-            </div>
-          </section>
-        }
-      }
-    </imr-section-card>
-  </div>
+<imr-page-layout [title]="display_name" pageClass="start-page">
+  @if (categorizedItems.length === 0) {
+    <imr-section-card title="Für deine Rollen sind aktuell keine Module freigeschaltet!"></imr-section-card>
+  }@else {
+    @for (category of categorizedItems; track category.name) {
+      <imr-section-card [title]="category.name">
+        <div class="module-grid">
+          @for (item of category.items; track item) {
+            @if (isPlannedItem(item)) {
+              <imr-card cardClass="module-card planned" [wrapContent]="false" aria-disabled="true">
+                <span class="badge planned-badge">GEPLANT</span>
+                <div class="module-icon-shell">
+                  <imr-icon class="module-icon" [inline]="true">{{ item.icon }}</imr-icon>
+                </div>
+                <div class="module-card-body">
+                  <div class="module-title">{{ item.modul }}</div>
+                </div>
+              </imr-card>
+            } @else {
+              <a
+                class="module-card-link"
+                [routerLink]="item.routerlink"
+                [attr.aria-label]="'Modul öffnen: ' + item.modul"
+              >
+                <imr-card [cardClass]="'module-card' + (isAdminOnly(item) ? ' admin-only' : '')" [wrapContent]="false">
+                  @if (isAdminOnly(item)) {
+                    <span class="badge admin-badge">ADMIN</span>
+                  }
+                  <div class="module-icon-shell">
+                    <imr-icon class="module-icon" [inline]="true">{{ item.icon }}</imr-icon>
+                  </div>
+                  <div class="module-card-body">
+                    <div class="module-title">{{ item.modul }}</div>
+                  </div>
+                </imr-card>
+              </a>
+            }
+          }
+        </div>
+      </imr-section-card>
+    }
+  }
 </imr-page-layout>

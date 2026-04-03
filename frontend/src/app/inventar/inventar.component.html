@@ -151,9 +151,10 @@
             </div>
             }
             <div class="app-col-12 app-col-lg-12 mb-3">
-              <imr-form-field class="imr-full-width" label="Notiz">
+              <mat-form-field appearance="outline" class="imr-full-width" subscriptSizing="dynamic">
+                <mat-label>Notiz</mat-label>
                 <textarea matInput formControlName="notiz" rows="5"></textarea>
-              </imr-form-field>
+              </mat-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
               <imr-button type="button" color="primary" class="upload-button" (click)="fotoUpload.click()">{{ btnText }}</imr-button>

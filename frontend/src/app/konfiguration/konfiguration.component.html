@@ -3,37 +3,43 @@
 <imr-page-layout title="Konfiguration" class="config-page">
 
   <imr-section-card [title]="title">
-
+      <section class="config-section role-section">
+        <div class="config-section-body">
       <form [formGroup]="formRolle" (ngSubmit)="rolleSpeichern()" class="role-form">
-        <imr-top-actions>
+        <div class="role-entry-row">
+          <imr-form-field class="imr-full-width" label="Neue Rolle">
+            <input matInput type="text" formControlName="rolle" placeholder="z. B. JUGENDWART" uiControlErrors />
+          </imr-form-field>
+
           <imr-button
             color="accent"
-            [disabled]="!formRolle.valid"
+            [disabled]="!canSaveRole"
             type="submit"
           >
             Rolle speichern
           </imr-button>
-        </imr-top-actions>
+        </div>
 
-        <imr-form-field class="imr-full-width" label="Rolle">
-          <input matInput type="text" formControlName="rolle" uiControlErrors />
-        </imr-form-field>
-
-        <imr-chip-set class="imr-chips">
-          @for (rolle of rollen; track rolle) {
-            @if (rolle.key !== 'ADMIN' && rolle.key !== 'MITGLIED') {
+        @if (customRollen.length === 0) {
+          <p class="role-empty">Noch keine Rollen vorhanden.</p>
+        } @else {
+          <imr-chip-set class="imr-chips">
+            @for (rolle of customRollen; track rolle.id) {
               <imr-chip [removable]="true" (removed)="rolleLoeschen(rolle)">
                 {{ rolle.key }}
                 <imr-chip-remove><imr-icon>cancel</imr-icon></imr-chip-remove>
               </imr-chip>
             }
-          }
-        </imr-chip-set>
+          </imr-chip-set>
+        }
       </form>
+        </div>
+      </section>
   </imr-section-card>
 
   <imr-section-card [title]="title2">
-
+      <section class="config-section masterdata-section">
+        <div class="config-section-body">
       <form [formGroup]="formKonfig" (ngSubmit)="konfigSpeichern()">
         <input hidden type="text"  formControlName="id" />
 
@@ -110,10 +116,13 @@
           </div>
         </section>
       </form>
+        </div>
+      </section>
   </imr-section-card>
 
   <imr-section-card [title]="title3">
-
+      <section class="config-section backup-section">
+        <header class="config-section-head">
       <p class="backup-warning">
         <imr-icon>warning</imr-icon>
         Nach jedem Wiederherstellen wird man automatisch abgemeldet.
@@ -124,6 +133,9 @@
         <span><imr-icon>get_app</imr-icon> Herunterladen</span>
         <span><imr-icon>delete</imr-icon> Löschen</span>
       </div>
+        </header>
+
+        <div class="config-section-body">
 
       <imr-top-actions class="actions-top">
         <imr-button
@@ -191,6 +203,42 @@
           <tr mat-row *matRowDef="let row; columns: backupColumns"></tr>
         </table>
       </div>
+      <div class="backup-mobile-list">
+        @for (element of filteredBackups; track element.name) {
+          <article class="table-mobile-card">
+            <div class="table-mobile-main">{{ element.name }}</div>
+            <div class="table-mobile-actions">
+              <imr-button
+                class="imr-action-btn"
+                color="primary"
+                type="button"
+                (click)="backupImport(element)"
+                ariaLabel="Backup wiederherstellen"
+              >
+                <imr-icon>settings_backup_restore</imr-icon>
+              </imr-button>
+              <imr-button
+                class="imr-action-btn"
+                color="primary"
+                type="button"
+                (click)="backupDownload(element)"
+                ariaLabel="Backup herunterladen"
+              >
+                <imr-icon>get_app</imr-icon>
+              </imr-button>
+              <imr-button
+                class="imr-action-btn"
+                color="warn"
+                type="button"
+                (click)="backupLoeschen(element)"
+                ariaLabel="Backup löschen"
+              >
+                <imr-icon>delete</imr-icon>
+              </imr-button>
+            </div>
+          </article>
+        }
+      </div>
       @if (filteredBackups.length === 0) {
         <div class="table-empty-state compact">
           <imr-icon class="table-empty-icon">search_off</imr-icon>
@@ -205,10 +253,13 @@
           <div class="table-empty-copy">Erstelle ein erstes Backup, um Wiederherstellungen zu ermöglichen.</div>
         </div>
       }
+        </div>
+      </section>
   </imr-section-card>
 
   <imr-section-card title="Dateibereinigung">
-
+      <section class="config-section cleanup-root-section">
+        <div class="config-section-body">
       <section class="cleanup-section">
         <p class="cleanup-intro">
           Hier können verwaiste Dateien zuerst analysiert und anschließend dauerhaft gelöscht werden.
@@ -290,6 +341,16 @@
               <tr mat-row *matRowDef="let row; columns: cleanupColumns"></tr>
             </table>
           </div>
+          <div class="cleanup-mobile-list">
+            @for (element of filteredCleanupFiles; track element.filename) {
+              <article class="table-mobile-card">
+                <div class="table-mobile-meta">
+                  <span class="table-status-badge">{{ element.targetLabel }}</span>
+                </div>
+                <div class="table-mobile-main cleanup-filename">{{ element.filename }}</div>
+              </article>
+            }
+          </div>
 
           @if (filteredCleanupFiles.length === 0) {
             <div class="table-empty-state compact">
@@ -305,6 +366,8 @@
             <div class="table-empty-copy">Der gewählte Bereich ist aktuell sauber.</div>
           </div>
         }
+      </section>
+        </div>
       </section>
   </imr-section-card>
 </imr-page-layout>

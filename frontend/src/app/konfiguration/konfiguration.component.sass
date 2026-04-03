@@ -1,42 +1,44 @@
 @use '../../theme' as theme
 
 .config-page
-    .imr-card
-        margin-bottom: 1.1rem
-        border-radius: 0 !important
-        border: 1px solid rgba(theme.$imr-border, .9)
-        background-color: rgba(theme.$imr-surface, .92)
-        overflow: hidden
+    .config-section
+        border: 1px solid rgba(theme.$imr-border, .95)
+        border-radius: 0
+        background: rgba(theme.$imr-surface, .86)
 
-    .imr-card.mat-mdc-card,
-    .imr-card.mdc-card
-        border-radius: 0 !important
+    .config-section-head
+        padding: .55rem .7rem
+        border-bottom: 1px solid rgba(theme.$imr-border, .7)
+        background: rgba(theme.$imr-surface-variant, .6)
+
+    .config-section-body
+        padding: .65rem .7rem .7rem
 
     .role-form
         display: grid
-        grid-template-columns: 1fr auto
-        gap: .8rem
+        gap: .65rem
         align-items: start
 
-    .imr-chips
-        grid-column: 1 / -1
-        margin-top: .1rem
+    .role-entry-row
+        display: grid
+        grid-template-columns: minmax(0, 1fr) auto
+        gap: .55rem
+        align-items: start
 
-    .mat-mdc-chip
-        min-height: var(--imr-control-height)
-        height: var(--imr-control-height)
-        border-radius: 0 !important
-        border: 1px solid var(--imr-control-border)
-        background: var(--imr-control-bg)
-        color: theme.$imr-primary-deep
+        button
+            min-width: 168px
 
-    .mat-mdc-chip .mat-mdc-chip-action,
-    .mat-mdc-chip .mdc-evolution-chip__action
-        min-height: var(--imr-control-height)
 
-    .mat-mdc-chip .mat-mdc-chip-remove,
-    .mat-mdc-chip [matChipRemove]
-        border-radius: 0 !important
+    .role-list-head
+        margin: .1rem 0 0
+        color: theme.$imr-primary
+        font-size: 1rem
+        font-weight: 600
+
+    .role-empty
+        margin: .15rem 0 0
+        color: theme.$imr-text-muted
+
 
     .mat-mdc-form-field .mat-mdc-text-field-wrapper
         min-height: var(--imr-control-height)
@@ -58,20 +60,50 @@
         display: inline-flex
         align-items: center
         gap: .4rem
-        margin: .2rem 0 .7rem
+        margin: 0
         color: theme.$imr-error
 
     .backup-legend
         display: flex
         flex-wrap: wrap
         gap: .8rem 1.2rem
-        margin-bottom: .85rem
+        margin-top: .55rem
 
         span
             display: inline-flex
             align-items: center
             gap: .3rem
             opacity: .85
+
+    .backup-mobile-list,
+    .cleanup-mobile-list
+        display: none
+        gap: .55rem
+        margin-top: .4rem
+
+    .table-mobile-card
+        border: 0
+        border-left: 2px solid rgba(theme.$imr-border, .95)
+        border-radius: 0
+        background: rgba(theme.$imr-surface, .82)
+        padding: .6rem .65rem
+        display: grid
+        gap: .45rem
+
+    .table-mobile-main
+        font-weight: 600
+        word-break: break-word
+
+    .table-mobile-meta
+        display: flex
+        align-items: center
+        gap: .45rem
+
+    .table-mobile-actions
+        display: flex
+        flex-wrap: nowrap
+        align-items: center
+        gap: .35rem
 
     .imr-table-wrap
         margin-top: .4rem
@@ -129,7 +161,15 @@
 
 @media (max-width: 768px)
     .config-page
+        .config-section-head,
+        .config-section-body
+            padding-left: .55rem
+            padding-right: .55rem
+
         .role-form
+            grid-template-columns: 1fr
+
+        .role-entry-row
             grid-template-columns: 1fr
 
             button[type="submit"]
@@ -156,6 +196,14 @@
                 td.mat-mdc-cell
                     padding-left: .45rem
                     padding-right: .45rem
+
+        .backup-table-wrap,
+        .cleanup-table-wrap
+            display: none
+
+        .backup-mobile-list,
+        .cleanup-mobile-list
+            display: grid
 
         .cleanup-actions
             gap: .45rem

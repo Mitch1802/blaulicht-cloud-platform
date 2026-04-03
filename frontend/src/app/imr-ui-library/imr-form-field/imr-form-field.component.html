@@ -12,6 +12,17 @@
           }
         </mat-label>
       }
+
+      @if (!hasProjectedControl) {
+        <input
+          matInput
+          class="imr-form-field-fallback-control"
+          aria-hidden="true"
+          tabindex="-1"
+          [disabled]="true"
+        />
+      }
+
       <ng-content></ng-content>
       @if (hint) {
         <mat-hint>{{ hint }}</mat-hint>

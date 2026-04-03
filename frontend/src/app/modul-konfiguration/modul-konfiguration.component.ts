@@ -17,6 +17,7 @@ import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { IMR_UI_COMPONENTS, ImrBreadcrumbItem } from '../imr-ui-library';
 import { UiControlErrorMap } from '../imr-ui-library';
 import { MatInput } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { IPdfTemplate } from '../_interface/pdf_template';
@@ -34,6 +35,7 @@ type PdfTemplatesResponse = { main?: IPdfTemplate[] } | IPdfTemplate[];
     FormsModule,
     ReactiveFormsModule,
     ...IMR_UI_COMPONENTS,
+    MatFormFieldModule,
     MatInput,
     MatTableModule,
   ],

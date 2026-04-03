@@ -13,6 +13,7 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatCardModule } from "@angular/material/card";
 import { MatExpansionModule } from "@angular/material/expansion";
 import { MatInputModule } from "@angular/material/input";
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSort, MatSortModule } from "@angular/material/sort";
 import { MatTableDataSource, MatTableModule } from "@angular/material/table";
 
@@ -53,6 +54,7 @@ type ItemDraftFG = FormGroup<{
     MatExpansionModule,
     MatTableModule,
     MatSortModule,
+    MatFormFieldModule,
     MatInputModule,
     DateInputMaskDirective,
   ],

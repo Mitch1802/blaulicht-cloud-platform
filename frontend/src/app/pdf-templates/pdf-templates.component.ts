@@ -16,6 +16,7 @@ import { CollectionUtilsService } from 'src/app/_service/collection-utils.servic
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { Router } from '@angular/router';
 import {
   ImrButtonComponent,
@@ -52,6 +53,7 @@ type PdfTemplateApiItem = IPdfTemplate & {
     ImrSelectComponent,
     ImrOptionComponent,
     ImrTopActionsComponent,
+    MatFormFieldModule,
     MatInputModule,
     MatTableModule,
     MatSortModule,

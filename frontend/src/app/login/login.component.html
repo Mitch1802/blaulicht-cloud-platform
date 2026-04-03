@@ -2,12 +2,10 @@
   <imr-card class="login-card">
     <img class="login-logo" mat-card-image src="../../assets/images/logo.svg" alt="Logo" />
       <form class="login-form" [formGroup]="form" (ngSubmit)="anmelden()">
-        <p>
-          <imr-form-field label="Benutzername">
-            <input matInput formControlName="user" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" autofocus uiControlErrors>
-          </imr-form-field>
-        </p>
-        <imr-form-field label="Passwort">
+        <imr-form-field label="Benutzername" class="mb-3">
+          <input matInput formControlName="user" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" autofocus uiControlErrors>
+        </imr-form-field>
+        <imr-form-field label="Passwort" class="mb-3">
           <input matInput formControlName="pwd" [type]="showPassword ? 'text' : 'password'" autocomplete="current-password" uiControlErrors>
           <imr-suffix>
             <imr-button
