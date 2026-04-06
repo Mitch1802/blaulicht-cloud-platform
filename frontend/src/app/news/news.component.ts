@@ -491,7 +491,7 @@ export class NewsComponent implements OnInit {
   }
 
   newsfeedOeffnen(): void {
-    window.open('https://blaulichtcloud.at/newsfeed', '_blank');
+    window.open('/newsfeed', '_blank');
   }
 
   applyFilter(value: string): void {

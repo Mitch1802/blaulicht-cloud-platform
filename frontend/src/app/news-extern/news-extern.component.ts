@@ -1,4 +1,4 @@
-﻿import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+﻿import { ChangeDetectorRef, Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { IMR_UI_COMPONENTS } from '../imr-ui-library';
 import { Router } from '@angular/router';
 import { interval, Subscription, timer } from 'rxjs';
@@ -27,6 +27,7 @@ type TerminItem = {
   styleUrls: ['./news-extern.component.sass']
 })
 export class NewsExternComponent implements OnInit, OnDestroy {
+  private cdr = inject(ChangeDetectorRef);
   private apiHttpService = inject(ApiHttpService);
   private authSessionService = inject(AuthSessionService);
   private collectionUtilsService = inject(CollectionUtilsService);
@@ -38,7 +39,7 @@ export class NewsExternComponent implements OnInit, OnDestroy {
   modul = 'news/public';
 
   // Anzeige-Einstellungen
-  dauer_artikel_in_sek = 10;      // Rotationsdauer
+  dauer_artikel_in_sek = 20;      // Rotationsdauer
   refresh_in_min = 60;             // wie oft Daten neu laden
 
   daten: NewsItem[] = [];
@@ -48,11 +49,11 @@ export class NewsExternComponent implements OnInit, OnDestroy {
   transitionDirection: 'forward' | 'backward' = 'forward';
   transitionInProgress = false;
   transitionActive = false;
-  autoplayProgressPercent = 0;
+  currentImageLoading = false;
+  incomingImageLoading = false;
 
   private rotateSub?: Subscription;
   private refreshSub?: Subscription;
-  private progressSub?: Subscription;
   private transitionStartTimeout?: ReturnType<typeof setTimeout>;
   private transitionEndTimeout?: ReturnType<typeof setTimeout>;
   private readonly transitionDurationMs = 420;
@@ -87,10 +88,7 @@ export class NewsExternComponent implements OnInit, OnDestroy {
     // 1) initial laden
     this.loadData();
 
-    // 2) Rotations-Timer starten
-    this.startRotateTimer();
-
-    // 3) Refresh-Timer: sofort feuern (0) und dann alle X Minuten erneut laden
+    // 2) Refresh-Timer: nach X Minuten erneut laden
     this.refreshSub = timer(this.refresh_in_min * 60_000, this.refresh_in_min * 60_000).subscribe({
       next: () => this.loadData(),
       error: (e) => this.authSessionService.errorAnzeigen(e)
@@ -110,31 +108,22 @@ export class NewsExternComponent implements OnInit, OnDestroy {
     this.stopRotateTimer();
 
     if (!this.hasMultipleNews) {
-      this.autoplayProgressPercent = 0;
       return;
     }
 
     this.rotateDurationMs = Math.max(1, this.dauer_artikel_in_sek) * 1000;
     this.rotateCycleStartedAtMs = Date.now();
-    this.autoplayProgressPercent = 0;
-
-    this.progressSub = interval(100).subscribe(() => {
-      const elapsed = Date.now() - this.rotateCycleStartedAtMs;
-      this.autoplayProgressPercent = Math.max(0, Math.min(100, (elapsed / this.rotateDurationMs) * 100));
-    });
 
     this.rotateSub = interval(this.rotateDurationMs).subscribe(() => {
       this.navigateByStep(1, false);
       this.rotateCycleStartedAtMs = Date.now();
-      this.autoplayProgressPercent = 0;
+      this.cdr.detectChanges();
     });
   }
 
   private stopRotateTimer(): void {
     this.rotateSub?.unsubscribe();
     this.rotateSub = undefined;
-    this.progressSub?.unsubscribe();
-    this.progressSub = undefined;
   }
 
   private navigateByStep(step: 1 | -1, restartTimer: boolean): void {
@@ -161,21 +150,26 @@ export class NewsExternComponent implements OnInit, OnDestroy {
 
     this.clearTransitionTimers();
     this.incomingItem = this.daten[targetIndex];
+    this.incomingImageLoading = !!this.incomingItem?.foto_url;
     this.transitionDirection = direction;
     this.transitionInProgress = true;
     this.transitionActive = false;
 
     this.transitionStartTimeout = setTimeout(() => {
       this.transitionActive = true;
+      this.cdr.detectChanges();
     }, 20);
 
     this.transitionEndTimeout = setTimeout(() => {
       this.currentIndex = targetIndex;
       this.currentItem = this.incomingItem;
+      this.currentImageLoading = this.incomingImageLoading;
       this.incomingItem = null;
+      this.incomingImageLoading = false;
       this.transitionActive = false;
       this.transitionInProgress = false;
       this.clearTransitionTimers();
+      this.cdr.detectChanges();
     }, this.transitionDurationMs);
   }
 
@@ -193,8 +187,22 @@ export class NewsExternComponent implements OnInit, OnDestroy {
   private resetTransitionState(): void {
     this.clearTransitionTimers();
     this.incomingItem = null;
+    this.incomingImageLoading = false;
     this.transitionActive = false;
     this.transitionInProgress = false;
+  }
+
+  onImageLoaded(target: 'current' | 'incoming'): void {
+    if (target === 'current') {
+      this.currentImageLoading = false;
+    } else {
+      this.incomingImageLoading = false;
+    }
+    this.cdr.detectChanges();
+  }
+
+  onImageLoadError(target: 'current' | 'incoming'): void {
+    this.onImageLoaded(target);
   }
 
   showPrevious(): void {
@@ -215,9 +223,10 @@ export class NewsExternComponent implements OnInit, OnDestroy {
           this.daten = Array.isArray(erg) ? erg : [];
           // Index gültig halten
           if (this.daten.length === 0) {
+            this.stopRotateTimer();
             this.currentIndex = 0;
             this.currentItem = null;
-            this.autoplayProgressPercent = 0;
+            this.currentImageLoading = false;
           } else {
             if (oldLen === 0) {
               // erstes Laden: bei 0 beginnen
@@ -227,15 +236,13 @@ export class NewsExternComponent implements OnInit, OnDestroy {
               this.currentIndex = this.currentIndex % this.daten.length;
             }
             this.currentItem = this.daten[this.currentIndex];
-          }
-
-          // Rotations-Timer aktiv halten (z. B. nach Refresh oder Datenwechsel)
-          if (!this.rotateSub || oldLen === 0 || oldLen !== this.daten.length) {
+            this.currentImageLoading = !!this.currentItem?.foto_url;
             this.startRotateTimer();
+            this.cdr.detectChanges();
           }
 
           // externen Kalender laden (unverändert)
-          this.apiHttpService.getURL<TerminItem[]>('https://ff-schwadorf.at/v2025/server/kalender/index.php').subscribe({
+          this.apiHttpService.getURL<TerminItem[]>('https://ff-schwadorf.at/v2026/server/kalender/index.php').subscribe({
             next: (k: TerminItem[]) => { this.termine = Array.isArray(k) ? k : []; },
             error: (_err: unknown) => {
               // Externe Terminquelle ist optional; bei Fehlern Feed weiter anzeigen

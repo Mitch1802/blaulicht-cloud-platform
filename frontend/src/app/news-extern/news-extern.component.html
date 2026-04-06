@@ -5,7 +5,7 @@
     </header>
 
     <div class="newsfeed-content">
-      <imr-card class="newsfeed-stage">
+      <section class="newsfeed-stage">
         @if (currentItem) {
           <div
             class="newsfeed-feature-stage"
@@ -17,7 +17,17 @@
             <article class="newsfeed-feature newsfeed-feature-current">
               @if (currentItem.foto_url) {
                 <figure class="feature-media">
-                  <img [src]="currentItem.foto_url" [alt]="currentItem.title" />
+                  <img
+                    [src]="currentItem.foto_url"
+                    [alt]="currentItem.title"
+                    (load)="onImageLoaded('current')"
+                    (error)="onImageLoadError('current')"
+                  />
+                  @if (currentImageLoading) {
+                    <div class="feature-media-loading" aria-hidden="true">
+                      <span class="feature-media-spinner"></span>
+                    </div>
+                  }
                 </figure>
               } @else {
                 <div class="feature-media feature-media-placeholder" aria-hidden="true">
@@ -36,7 +46,17 @@
               <article class="newsfeed-feature newsfeed-feature-incoming" aria-hidden="true">
                 @if (incomingItem.foto_url) {
                   <figure class="feature-media">
-                    <img [src]="incomingItem.foto_url" [alt]="incomingItem.title" />
+                    <img
+                      [src]="incomingItem.foto_url"
+                      [alt]="incomingItem.title"
+                      (load)="onImageLoaded('incoming')"
+                      (error)="onImageLoadError('incoming')"
+                    />
+                    @if (incomingImageLoading) {
+                      <div class="feature-media-loading" aria-hidden="true">
+                        <span class="feature-media-spinner"></span>
+                      </div>
+                    }
                   </figure>
                 } @else {
                   <div class="feature-media feature-media-placeholder" aria-hidden="true">
@@ -57,7 +77,7 @@
             <p>Sobald neue Beiträge veröffentlicht sind, erscheinen sie hier automatisch.</p>
           </section>
         }
-      </imr-card>
+      </section>
 
       <section class="termine-panel">
         <div class="termine-head">
