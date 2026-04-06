@@ -3,9 +3,10 @@
 <imr-page-layout [title]="title" class="fmd-page">
   <imr-section-card title="Atemschutz Verwaltung">
     @if (hasTable(activeTabIndex)) {
-    <imr-top-actions>
+    <div class="table-toolbar">
       <imr-form-field
-        class="mb-2 filter-field-compact"
+        class="filter-field"
+        appearance="outline"
         label="Filter"
       >
         <input
@@ -15,7 +16,7 @@
           placeholder="Suchen..."
         />
       </imr-form-field>
-    </imr-top-actions>
+    </div>
     }
 
     <imr-tab-group (selectedIndexChange)="onTabChange($event)">

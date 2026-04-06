@@ -7,7 +7,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from "@angular/forms";
-import { RouterModule } from "@angular/router";
+import { Router, RouterModule } from "@angular/router";
 
 import { MatButtonModule } from "@angular/material/button";
 import { MatCardModule } from "@angular/material/card";
@@ -68,13 +68,14 @@ export class FahrzeugComponent implements OnInit {
   private navigationService = inject(NavigationService);
   private uiMessageService = inject(UiMessageService);
   private fb = inject(FormBuilder);
+  private router = inject(Router);
 
   breadcrumb: ImrBreadcrumbItem[] = [];
   modul = "fahrzeuge";
 
   fahrzeuge: IFahrzeugList[] = [];
   dataSource = new MatTableDataSource<IFahrzeugList>([]);
-  sichtbareSpalten: string[] = ["name", "bezeichnung", "actions"];
+  sichtbareSpalten: string[] = ["name", "actions"];
   fahrzeugFilter = '';
   editorOpen = false;
   inventarEditorOpen = false;
@@ -131,7 +132,7 @@ export class FahrzeugComponent implements OnInit {
 
   private configureFahrzeugFilter(): void {
     this.dataSource.filterPredicate = (row: IFahrzeugList, filter: string) => {
-      const haystack = `${row.name ?? ''} ${row.bezeichnung ?? ''}`.toLowerCase();
+      const haystack = `${row.name ?? ''}`.toLowerCase();
       return haystack.includes(filter);
     };
   }
@@ -156,19 +157,7 @@ export class FahrzeugComponent implements OnInit {
   }
 
   private updateVisibleColumns(): void {
-    const width = typeof window !== "undefined" ? window.innerWidth : 1200;
-
-    if (width < 576) {
-      this.sichtbareSpalten = ["name", "actions"];
-      return;
-    }
-
-    if (width < 992) {
-      this.sichtbareSpalten = ["name", "bezeichnung", "actions"];
-      return;
-    }
-
-    this.sichtbareSpalten = ["name", "bezeichnung", "actions"];
+    this.sichtbareSpalten = ["name", "actions"];
   }
 
   private loadList(): void {
@@ -264,6 +253,10 @@ export class FahrzeugComponent implements OnInit {
 
   openInventarFromList(row: IFahrzeugList): void {
     this.openInventarEditor(row.id);
+  }
+
+  openCheckFromList(row: IFahrzeugList): void {
+    this.router.navigate(["/fahrzeuge", row.id, "check"]);
   }
 
   openInventarFromEditor(): void {

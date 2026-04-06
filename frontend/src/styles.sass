@@ -50,3 +50,26 @@
     display: flex
     flex-direction: column
     gap: .25rem
+
+.table-toolbar
+    display: flex
+    align-items: center
+    justify-content: space-between
+    gap: .5rem
+    margin: 0 0 .5rem
+
+    .filter-field,
+    > .mat-mdc-form-field,
+    > mat-form-field
+        width: min(360px, 100%)
+        margin: 0
+
+@media only screen and (max-width: 700px)
+    .table-toolbar
+        flex-direction: column
+        align-items: stretch
+
+        .filter-field,
+        > .mat-mdc-form-field,
+        > mat-form-field
+            width: 100%

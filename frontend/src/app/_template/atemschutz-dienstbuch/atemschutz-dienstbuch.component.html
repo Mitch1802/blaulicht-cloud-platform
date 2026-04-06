@@ -14,17 +14,20 @@
             </p>
           </div>
         <hr>
-        <imr-form-field
-          appearance="outline"
-          fieldClass="mt-2 table-filter-compact"
-         label="Filter">
-          <input
-            matInput
-            #filterInput
-            (input)="applyFilter(filterInput.value)"
-            placeholder="Suchen..."
-          />
-        </imr-form-field>
+        <div class="table-toolbar">
+          <imr-form-field
+            class="filter-field"
+            appearance="outline"
+            label="Filter"
+          >
+            <input
+              matInput
+              #filterInput
+              (input)="applyFilter(filterInput.value)"
+              placeholder="Suchen..."
+            />
+          </imr-form-field>
+        </div>
         <div class="imr-table-wrap">
         <table
           mat-table
