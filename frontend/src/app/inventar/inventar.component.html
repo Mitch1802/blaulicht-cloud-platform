@@ -35,7 +35,7 @@
             type="button"
             (click)="abbrechen()"
             >
-            Abbrechen
+            Zurück
             </imr-button>
             <imr-button
               color="warn"
@@ -179,9 +179,11 @@
       </form>
 
       <div class="imr-table-wrap" [hidden]="!formModul.disabled">
-        <imr-form-field label="Suchen">
-          <input matInput #input (keyup)="applyFilter(input.value)" />
-        </imr-form-field>
+        <div class="table-toolbar">
+          <imr-form-field class="filter-field" appearance="outline" label="Suchen">
+            <input matInput #input (keyup)="applyFilter(input.value)" placeholder="Bezeichnung oder Lagerort" />
+          </imr-form-field>
+        </div>
 
         <table
           mat-table
@@ -205,15 +207,26 @@
             <td mat-cell *matCellDef="let element">{{ getLeihstatusText(element) }}</td>
           </ng-container>
           <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef>Aktionen</th>
+            <th mat-header-cell *matHeaderCellDef class="table-actions-head">Aktionen</th>
             <td mat-cell *matCellDef="let element" class="imr-action-cell">
               <imr-button
                 class="imr-action-btn"
                 color="primary"
                 type="button"
+                (click)="auswahlBearbeiten(element)"
+                matTooltip="Artikel bearbeiten"
+                ariaLabel="Artikel bearbeiten"
+              >
+                <imr-icon class="m-0">edit</imr-icon>
+              </imr-button>
+              <imr-button
+                class="imr-action-btn"
+                color="accent"
+                type="button"
                 (click)="openAusborgenModal(element)"
                 [disabled]="getVerfuegbarFuerInventar(element) <= 0"
                 matTooltip="Direkt ausborgen"
+                ariaLabel="Direkt ausborgen"
               >
                 <imr-icon class="m-0">assignment_returned</imr-icon>
               </imr-button>
@@ -224,21 +237,23 @@
                 (click)="openRueckgabeModal(element)"
                 [disabled]="getAktiveVerleihungenAnzahl(element) <= 0"
                 matTooltip="Direkt Rueckgabe buchen"
+                ariaLabel="Direkt Rueckgabe buchen"
               >
                 <imr-icon class="m-0">assignment_turned_in</imr-icon>
-              </imr-button>
-              <imr-button
-                class="imr-action-btn"
-                color="primary"
-                type="button"
-                (click)="auswahlBearbeiten(element)"
-              >
-                <imr-icon class="m-0">edit</imr-icon>
               </imr-button>
             </td>
           </ng-container>
           <tr mat-header-row *matHeaderRowDef="sichtbareSpalten"></tr>
           <tr mat-row *matRowDef="let row; columns: sichtbareSpalten"></tr>
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell table-empty-cell" [attr.colspan]="sichtbareSpalten.length">
+              <div class="table-empty-state compact">
+                <imr-icon class="table-empty-icon">inventory_2</imr-icon>
+                <span class="table-empty-title">Keine Inventarartikel gefunden</span>
+                <span class="table-empty-copy">Bitte Filter anpassen oder neuen Artikel anlegen.</span>
+              </div>
+            </td>
+          </tr>
         </table>
 
         <imr-paginator
@@ -293,7 +308,7 @@
 
       <imr-top-actions class="imr-transaction-actions">
         <imr-button color="primary" type="button" (click)="closeAusborgenModal()">
-          Abbrechen
+          Zurück
         </imr-button>
         <imr-button color="accent" type="submit">
           Ausborgen speichern
@@ -355,7 +370,7 @@
 
       <imr-top-actions class="imr-transaction-actions">
         <imr-button color="primary" type="button" (click)="closeRueckgabeModal()">
-          Abbrechen
+          Zurück
         </imr-button>
         <imr-button color="warn" type="submit">
           Rueckgabe speichern

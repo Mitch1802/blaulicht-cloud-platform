@@ -23,7 +23,6 @@ import { CollectionUtilsService } from 'src/app/_service/collection-utils.servic
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { MatInputModule } from '@angular/material/input';
-import { Router } from '@angular/router';
 import { IMR_UI_COMPONENTS, ImrBreadcrumbItem, ImrPaginatorComponent } from '../imr-ui-library';
 import { FormatService } from '../helpers/format.service';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -63,7 +62,6 @@ export class InventarComponent implements OnInit, AfterViewInit {
   private navigationService = inject(NavigationService);
   private uiMessageService = inject(UiMessageService);
   formatService = inject(FormatService);
-  router = inject(Router);
   destroyRef = inject(DestroyRef);
 
   title = 'Inventar verwalten';
@@ -701,8 +699,8 @@ export class InventarComponent implements OnInit, AfterViewInit {
   }
 
   abbrechen(): void {
-    this.uiMessageService.erstelleMessage('info', 'Inventar nicht gespeichert!');
-    this.router.navigate(['/inventar']);
+    this.resetFormNachAktion();
+    this.uiMessageService.erstelleMessage('info', 'Inventar nicht gespeichert.');
   }
 
   neueDetails(): void {

@@ -4,12 +4,14 @@
   <imr-section-card title="Rechnungen & Vorlagen">
       <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" class="invoice-tabs">
           <mat-tab label="Rechnung">
-            <h3>SevDesk</h3>
+            <section class="verwaltung-block">
+            <h3 class="section-title">SevDesk</h3>
             <form
               [formGroup]="formAuswahl"
               (ngSubmit)="sevdeskKontaktUebernehmen()"
+              class="verwaltung-form"
             >
-              <imr-top-actions>
+              <imr-top-actions class="imr-form-actions">
                 <imr-button
                   color="primary"
                   type="submit"
@@ -32,12 +34,14 @@
                 </div>
               </section>
             </form>
-            <hr />
-            <form [formGroup]="formRechnung" (ngSubmit)="printRechnung()">
-              <imr-top-actions>
+            </section>
+
+            <section class="verwaltung-block">
+            <h3 class="section-title">Rechnungsdaten</h3>
+            <form [formGroup]="formRechnung" (ngSubmit)="printRechnung()" class="verwaltung-form">
+              <imr-top-actions class="imr-form-actions">
                 <imr-button
                   color="primary"
-                  class="m-3"
                   (click)="formRechnungReset()"
                   type="button"
                 >
@@ -45,14 +49,12 @@
                 </imr-button>
                 <imr-button
                   color="accent"
-                  class="m-3"
                   type="submit"
                 >
                   Drucken
                 </imr-button>
               </imr-top-actions>
-              <hr />
-              <h3>Rechnungsdaten</h3>
+
               <section class="app-grid mt-2 mx-0">
                 <div class="app-col-12 app-col-lg-12 mb-3">
                   <imr-form-field label="Name">
@@ -113,16 +115,18 @@
                 </div>
               </section>
             </form>
-            <hr class="mb-3" />
-            <h3>Positionen</h3>
+            </section>
+
+            <section class="verwaltung-block">
+            <h3 class="section-title">Positionen</h3>
             <form
               [formGroup]="formRechnungPositionen"
               (ngSubmit)="addPosition()"
+              class="verwaltung-form"
             >
-              <imr-top-actions>
+              <imr-top-actions class="imr-form-actions">
                 <imr-button
                   color="accent"
-                  class="m-3"
                   type="submit"
                 >
                   Hinzufügen
@@ -149,8 +153,8 @@
                 </div>
               </section>
             </form>
-            <section>
-              <imr-list>
+            <section class="position-list-wrap">
+              <imr-list class="position-list">
                 @for (
                   pos of formRechnung.controls.positionen.value;
                   track $index;
@@ -172,6 +176,7 @@
                   </imr-list-item>
                 }
               </imr-list>
+            </section>
             </section>
           </mat-tab>
           <mat-tab label="Coming Soon" disabled></mat-tab>

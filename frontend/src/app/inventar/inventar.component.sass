@@ -103,3 +103,70 @@
     margin: .2rem 0 0
     font-size: .92rem
     color: rgba(theme.$imr-primary-dark, .84)
+
+.imr-transaction-backdrop
+    position: fixed
+    inset: 0
+    z-index: 1350
+    display: grid
+    place-items: center
+    padding: 1rem
+    background: rgba(theme.$imr-primary-dark, .56)
+    backdrop-filter: blur(2px)
+
+.imr-transaction-dialog
+    width: min(560px, 100%)
+    max-height: calc(100vh - 2rem)
+    overflow: auto
+    border: 1px solid rgba(theme.$imr-border, .9)
+    background: rgba(theme.$imr-surface, .99)
+    box-shadow: 0 20px 40px rgba(0, 0, 0, .22)
+    padding: .95rem
+
+.imr-transaction-head
+    display: flex
+    align-items: center
+    justify-content: space-between
+    gap: .6rem
+    margin-bottom: .45rem
+
+    h3
+        margin: 0
+        color: theme.$imr-primary
+        font-size: 1.02rem
+
+.imr-transaction-meta
+    margin: 0 0 .3rem
+    font-size: .9rem
+    color: rgba(theme.$imr-primary-dark, .86)
+
+.imr-transaction-form
+    display: grid
+    gap: .65rem
+    margin-top: .55rem
+
+.imr-transaction-note
+    margin: -.2rem 0 .15rem
+    font-size: .86rem
+    color: rgba(theme.$imr-text-muted, .95)
+
+.imr-transaction-actions
+    margin-top: .15rem
+    justify-content: flex-end
+    gap: .55rem
+
+    > *
+        min-width: 9.5rem
+
+@media only screen and (max-width: 700px)
+    .imr-transaction-backdrop
+        padding: .45rem
+
+    .imr-transaction-dialog
+        width: 100%
+        max-height: calc(100vh - .9rem)
+        padding: .8rem
+
+    .imr-transaction-actions
+        > *
+            width: 100%

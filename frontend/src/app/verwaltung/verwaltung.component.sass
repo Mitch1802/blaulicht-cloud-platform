@@ -4,44 +4,55 @@
     +theme.imr-admin-page-shell
     +theme.imr-admin-page-mobile(768px)
 
-    .page-head
-        margin: 0 0 1.5rem
-
-        h1
-            margin: 0
-            color: theme.$imr-primary
-            font-size: clamp(1.5rem, 2.4vw, 2.1rem)
-            line-height: 1.2
-
-    .imr-card
-        border-radius: 0
-
     .invoice-tabs
         margin-top: .2rem
-
-        h3
-            margin: .8rem 0 .6rem
-            color: theme.$imr-primary
-            font-size: 1.05rem
 
         mat-form-field
             width: 100%
 
-        button
-            margin: .35rem .45rem .35rem 0
-
         mat-list-item
             border-bottom: 1px solid rgba(theme.$imr-border, .9)
 
+    .verwaltung-block
+        margin-top: 1rem
+        padding-top: .75rem
+        border-top: 1px solid rgba(theme.$imr-border, .8)
+
+        &:first-child
+            margin-top: .35rem
+            padding-top: 0
+            border-top: 0
+
+    .section-title
+        margin: 0 0 .75rem
+        color: theme.$imr-primary
+        font-size: 1.05rem
+        font-weight: 700
+
+    .verwaltung-form
+        margin: 0
+
+    .imr-form-actions
+        margin: 0 0 .65rem
+
+    .position-list-wrap
+        margin-top: .35rem
+        border: 1px solid rgba(theme.$imr-border, .86)
+        background: rgba(theme.$imr-surface, .9)
+
+    .position-list
+        display: block
+
+    :host ::ng-deep .position-list .mat-mdc-list-item,
+    :host ::ng-deep .position-list .mdc-list-item
+        min-height: 44px
+
 @media (max-width: 768px)
     .verwaltung-page
-        .page-head
-            margin-bottom: 1rem
+        .verwaltung-block
+            margin-top: .8rem
+            padding-top: .55rem
 
-            h1
-                font-size: 1.4rem
-
-        .invoice-tabs
-            button
+        .imr-form-actions
+            > *
                 width: 100%
-                margin-right: 0
