@@ -1,5 +1,6 @@
 ﻿import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { ApiHttpService } from 'src/app/_service/api-http.service';
 import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
@@ -224,14 +225,31 @@ export class VerwaltungComponent implements OnInit {
   }
 
   printRechnung(): void {
-    if (!this.formRechnung.valid) return;
-    if (!this.stammdaten) return;
+    if (this.formRechnung.invalid) {
+      this.formRechnung.markAllAsTouched();
+      this.uiMessageService.erstelleMessage('error', 'Rechnung unvollständig. Bitte alle Pflichtfelder inkl. mindestens einer Position ausfüllen.');
+      return;
+    }
 
-    const idVerwaltungRechnung = this.pdf_konfig['idVerwaltungRechnung'];
+    if (!this.stammdaten) {
+      this.uiMessageService.erstelleMessage('error', 'Stammdaten nicht geladen. Bitte Seite neu laden und erneut versuchen.');
+      return;
+    }
+
+    const idVerwaltungRechnung = String(this.pdf_konfig['idVerwaltungRechnung'] ?? '').trim();
+    if (!idVerwaltungRechnung) {
+      this.uiMessageService.erstelleMessage('error', 'Kein PDF-Template konfiguriert. Bitte unter modul_konfiguration den Schlüssel "idVerwaltungRechnung" setzen.');
+      return;
+    }
+
     const abfrageUrl = `pdf/templates/${idVerwaltungRechnung}/render`;
 
     const heute = new Date().toLocaleDateString('de-DE');
     const pos = this.formRechnung.controls.positionen.value;
+    if (!Array.isArray(pos) || pos.length === 0) {
+      this.uiMessageService.erstelleMessage('error', 'Mindestens eine Rechnungsposition ist erforderlich.');
+      return;
+    }
 
     const betrag_total = pos.reduce((sum, p) => sum + p.preis, 0);
 
@@ -265,16 +283,65 @@ export class VerwaltungComponent implements OnInit {
       invoice_total_betrag: betrag_total.toFixed(2)
     };
 
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      this.uiMessageService.erstelleMessage('error', 'Popup blockiert. Bitte Popups für diese Seite erlauben und erneut drucken.');
+      return;
+    }
+
     this.apiHttpService.postBlob(abfrageUrl, payload).subscribe({
       next: (blob: Blob) => {
         if (!blob || blob.size === 0) {
+          printWindow.close();
           this.uiMessageService.erstelleMessage('error', 'PDF ist leer (0 Bytes).');
           return;
         }
-        window.open(URL.createObjectURL(blob), '_blank');
+        const pdfUrl = URL.createObjectURL(blob);
+        printWindow.location.href = pdfUrl;
       },
-      error: (error: unknown) => this.authSessionService.errorAnzeigen(error)
+      error: (error: unknown) => {
+        printWindow.close();
+        this.handlePrintError(error);
+      }
     });
+  }
+
+  private handlePrintError(error: unknown): void {
+    void this.resolvePrintErrorMessage(error).then((message) => {
+      if (message) {
+        this.uiMessageService.erstelleMessage('error', message);
+        return;
+      }
+      this.authSessionService.errorAnzeigen(error);
+    });
+  }
+
+  private async resolvePrintErrorMessage(error: unknown): Promise<string> {
+    if (!(error instanceof HttpErrorResponse)) {
+      return '';
+    }
+
+    const payload = error.error;
+    if (payload instanceof Blob) {
+      const text = (await payload.text()).trim();
+      if (!text) {
+        return `Druck fehlgeschlagen (HTTP ${error.status || 'unbekannt'}).`;
+      }
+
+      try {
+        const parsed = JSON.parse(text) as Record<string, unknown>;
+        const msg = Object.values(parsed).map((v) => String(v)).join('\n').trim();
+        return msg || `Druck fehlgeschlagen (HTTP ${error.status || 'unbekannt'}).`;
+      } catch {
+        return text.slice(0, 400);
+      }
+    }
+
+    if (typeof payload === 'string' && payload.trim() !== '') {
+      return payload.trim();
+    }
+
+    return '';
   }
 
   sevdeskKontaktUebernehmen(): void {
