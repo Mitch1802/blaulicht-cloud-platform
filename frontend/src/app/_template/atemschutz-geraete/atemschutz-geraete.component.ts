@@ -7,6 +7,7 @@ import { UiMessageService } from 'src/app/_service/ui-message.service';
 import {
   ImrButtonComponent,
   ImrBreadcrumbItem,
+  ImrCheckboxComponent,
   ImrFormFieldComponent,
   ImrHeaderComponent,
   ImrPageLayoutComponent,
@@ -24,7 +25,6 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { IAtemschutzGeraet } from 'src/app/_interface/atemschutz_geraet';
 import { MatIcon } from '@angular/material/icon';
 import { MatOption, MatSelect } from '@angular/material/select';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { IAtemschutzGeraetProtokoll } from 'src/app/_interface/atemschutz_geraet_protokoll';
 import { IMitglied } from 'src/app/_interface/mitglied';
 import { DateInputMaskDirective } from '../../_directive/date-input-mask.directive';
@@ -44,6 +44,7 @@ type AtemschutzGeraeteKontextResponse = { main: IAtemschutzGeraet[]; fmd: FmdAte
     MatTabsModule,
     FormsModule,
     ReactiveFormsModule,
+    ImrCheckboxComponent,
     ImrFormFieldComponent,
     UiControlErrorsDirective,
     MatSelect,
@@ -54,7 +55,6 @@ type AtemschutzGeraeteKontextResponse = { main: IAtemschutzGeraet[]; fmd: FmdAte
     MatSortModule,
     MatPaginatorModule,
     MatIcon,
-    MatCheckboxModule,
     DateInputMaskDirective,
   ],
   templateUrl: './atemschutz-geraete.component.html',
