@@ -9,7 +9,7 @@ Sie stellt wiederverwendbare Angular-Komponenten bereit, die auf **Material Desi
 
 ## Architektur
 
-```
+```text
 frontend/src/
 ├── theme.sass              # Material Design 3 Theme – nur Hauptfarben
 ├── imr-catalog.sass        # IMR Design-Tokens + Komponenten-Stile + Material-Overrides
@@ -105,6 +105,7 @@ Alle Werte sind als CSS-Variable verfügbar:
 ### 3. `styles.sass` – Variablen und Legacy-Klassen
 
 Die globale Styles-Datei:
+
 - importiert `imr-catalog.sass`
 - setzt die Basis-Font-Family
 - enthält nur noch notwendige Alias-Regeln für verbleibende generische Klassen
@@ -132,24 +133,14 @@ Feature-Komponenten müssen nur noch die IMR-Komponenten verwenden:
 
 ### `<imr-page-layout>`
 
-Standardisierter Seiten-Container mit Überschrift und optionalem Header-Action-Slot.
+Standardisierter Seiten-Container mit Überschrift.
 
-| Input | Typ | Pflicht | Beschreibung |
-|-------|-----|---------|--------------|
-| `title` | `string` | ✅ | Seitenüberschrift (wird als `<h1>` gerendert) |
+- `title` (`string`, Pflicht): Seitenüberschrift (wird als `<h1>` gerendert)
 
-**Content-Slots:**
-
-| Slot | Beschreibung |
-|------|--------------|
-| `[imrPageActions]` | Buttons/Aktionen rechts neben der Überschrift |
-| _(default)_ | Seiteninhalt |
+**Content-Bereich:** Standard-Slot (`default`) für den Seiteninhalt.
 
 ```html
 <imr-page-layout title="Anwesenheitsliste">
-  <div imrPageActions>
-    <button mat-flat-button color="primary">Neu erstellen</button>
-  </div>
   <imr-section-card title="Listen">
     <!-- ... -->
   </imr-section-card>
@@ -160,24 +151,16 @@ Standardisierter Seiten-Container mit Überschrift und optionalem Header-Action-
 
 ### `<imr-section-card>`
 
-Card-Komponente für Modul-Bereiche. Kapselt `mat-card` mit einheitlichem Kopfbereich.
+Karten-Komponente für Modul-Bereiche. Kapselt `mat-card` mit einheitlichem Kopfbereich.
 
-| Input | Typ | Pflicht | Beschreibung |
-|-------|-----|---------|--------------|
-| `title` | `string` | ❌ | Kartentitel (wird als `<h2>` gerendert). Ohne Titel kein Kopfbereich. |
+| Input   | Typ      | Pflicht | Beschreibung                                                          |
+| ------- | -------- | ------- | --------------------------------------------------------------------- |
+| `title` | `string` | Nein    | Kartentitel (wird als `<h2>` gerendert). Ohne Titel kein Kopfbereich. |
 
-**Content-Slots:**
-
-| Slot | Beschreibung |
-|------|--------------|
-| `[imrCardActions]` | Aktionen im Kopfbereich rechts neben dem Titel |
-| _(default)_ | Karteninhalt |
+**Content-Bereich:** Standard-Slot (`default`) für den Karteninhalt.
 
 ```html
 <imr-section-card title="Mitglieder verwalten">
-  <div imrCardActions>
-    <button mat-flat-button color="accent">Hinzufügen</button>
-  </div>
   <!-- Karteninhalt -->
 </imr-section-card>
 ```
@@ -188,9 +171,9 @@ Card-Komponente für Modul-Bereiche. Kapselt `mat-card` mit einheitlichem Kopfbe
 
 Haupt-Header der Anwendung (Toolbar + Breadcrumb).
 
-| Input | Typ | Pflicht | Beschreibung |
-|-------|-----|---------|--------------|
-| `breadcrumb` | `ImrBreadcrumbItem[]` | ❌ | Breadcrumb-Einträge für die Navigation |
+| Input        | Typ                   | Pflicht | Beschreibung                           |
+| ------------ | --------------------- | ------- | -------------------------------------- |
+| `breadcrumb` | `ImrBreadcrumbItem[]` | ❌      | Breadcrumb-Einträge für die Navigation |
 
 **`ImrBreadcrumbItem` Interface:**
 
@@ -300,28 +283,26 @@ Container für `mat-chip` Gruppen mit einheitlichem Spacing und Styling.
 
 Für Fälle, in denen kein Komponenten-Wrapper benötigt wird:
 
-| IMR-Klasse | Beschreibung |
-|------------|--------------|
-| `imr-page` | Seiten-Container (max-width, padding) |
-| `imr-page__head` | Seiten-Kopfbereich |
-| `imr-card` | Card mit IMR-Styling |
-| `imr-card__head` | Card-Kopfbereich |
-| `imr-card__content` | Card-Inhaltsbereich |
-| `imr-top-actions` | Obere Aktionsleiste |
-| `imr-form-actions` | Formular-Aktionsleiste |
-| `imr-form` | Formular-Container |
-| `imr-form-grid` | Formular-Grid |
-| `imr-two-col-md` | 2-Spalten-Layout ab 768px |
-| `imr-full-width` | 100% Breite |
-| `imr-table-wrap` | Tabellen-Container (scrollbar) |
-| `imr-action-cell` | Aktionszelle in Tabellen |
-| `imr-action-btn` | Kleiner Aktions-Button in Tabellen |
-| `imr-delete-btn` | Löschaktion im Formular- oder Card-Footer |
-| `imr-chips` | Chip-Container |
-| `imr-breadcrumb` | Breadcrumb-Navigation |
-| `imr-lending-panel` | Leihe-Panel (Inventar) |
-| `imr-transaction-*` | Buchungs-Dialog-Elemente |
-| `imr-form-section` | Formular-Abschnitt-Card |
+- `imr-page`: Seiten-Container (max-width, padding)
+- `imr-page__head`: Seiten-Kopfbereich
+- `imr-card`: Card mit IMR-Styling
+- `imr-card__head`: Karten-Kopfbereich
+- `imr-card__content`: Card-Inhaltsbereich
+- `imr-top-actions`: Obere Aktionsleiste
+- `imr-form-actions`: Formular-Aktionsleiste
+- `imr-form`: Formular-Container
+- `imr-form-grid`: Formular-Grid
+- `imr-two-col-md`: 2-Spalten-Layout ab 768px
+- `imr-full-width`: 100% Breite
+- `imr-table-wrap`: Tabellen-Container (scrollbar)
+- `imr-action-cell`: Aktionszelle in Tabellen
+- `imr-action-btn`: Kleiner Aktions-Button in Tabellen
+- `imr-delete-btn`: Löschaktion im Formular- oder Card-Footer
+- `imr-chips`: Chip-Container
+- `imr-breadcrumb`: Breadcrumb-Navigation
+- `imr-lending-panel`: Leihe-Panel (Inventar)
+- `imr-transaction-*`: Buchungs-Dialog-Elemente
+- `imr-form-section`: Formular-Abschnitt-Card
 
 ---
 
@@ -345,26 +326,22 @@ import { IMR_UI_COMPONENTS } from '../imr-ui-library';
 
 ---
 
-## Migration von ui-* auf imr-*
+## Migration von ui-\* auf imr-\*
 
 Die alte `ui-library` wurde entfernt. Verwende in neuen und bestehenden
 Templates ausschließlich `imr-*` Komponenten und Klassen.
 
-| Alt | Neu (IMR) |
-|-----|-----------|
-| `<ui-page-layout>` | `<imr-page-layout>` |
-| `<ui-section-card>` | `<imr-section-card>` |
-| `.ui-page` | `.imr-page` |
-| `.ui-card` | `.imr-card` |
-| `.ui-top-actions` | `.imr-top-actions` |
-| `.ui-actions` | `.imr-form-actions` |
-| `.ui-table-wrap` | `.imr-table-wrap` |
-| `.ui-chips` | `.imr-chips` |
+- `<ui-page-layout>` -> `<imr-page-layout>`
+- `<ui-section-card>` -> `<imr-section-card>`
+- `.ui-page` -> `.imr-page`
+- `.ui-card` -> `.imr-card`
+- `.ui-top-actions` -> `.imr-top-actions`
+- `.ui-actions` -> `.imr-form-actions`
+- `.ui-table-wrap` -> `.imr-table-wrap`
+- `.ui-chips` -> `.imr-chips`
 
 Die `ui-*` Klassen werden nicht mehr per Global-Styles mitgemappt und müssen
 vor Nutzung auf die entsprechenden `imr-*` Klassen umgestellt werden.
-| `[uiPageActions]` | `[imrPageActions]` |
-| `[uiCardActions]` | `[imrCardActions]` |
 
 ---
 

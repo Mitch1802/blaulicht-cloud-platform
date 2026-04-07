@@ -4,14 +4,11 @@ import { Component, Input } from '@angular/core';
  * `<imr-page-layout>`
  *
  * Standardisierter Seiten-Container der IMR UI Library.
- * Stellt den Seitenrahmen mit Überschrift und optionalem Header-Action-Slot bereit.
+ * Stellt den Seitenrahmen mit Überschrift bereit.
  *
  * @example
  * ```html
  * <imr-page-layout title="Meine Seite">
- *   <div imrPageActions>
- *     <button mat-flat-button color="primary">Neu</button>
- *   </div>
  *   <!-- Seiteninhalt -->
  * </imr-page-layout>
  * ```

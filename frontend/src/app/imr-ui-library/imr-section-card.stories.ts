@@ -18,15 +18,12 @@ const meta: Meta<ImrSectionCardComponent> = {
         component: `
 **\`<imr-section-card>\`** ist die einheitliche Card-Struktur für Modulbereiche.
 
-Sie kapselt \`mat-card\` mit standardisiertem Kopfbereich (Titel + optionale Aktionen)
+Sie kapselt \`mat-card\` mit standardisiertem Kopfbereich
 und einem Content-Bereich. Das komplette Styling kommt aus \`imr-catalog.sass\`.
 
 ### Verwendung
 \`\`\`html
 <imr-section-card title="Benutzer verwalten">
-  <div imrCardActions>
-    <button mat-flat-button color="accent">Hinzufügen</button>
-  </div>
   <!-- Karteninhalt -->
 </imr-section-card>
 \`\`\`
@@ -68,16 +65,14 @@ export const Default: Story = {
   }),
 };
 
-export const MitActionsUndTabelle: Story = {
+export const MitTopActionsUndTabelle: Story = {
   args: { title: 'Datensätze verwalten' },
   render: (args) => ({
     props: args,
     template: `
       <imr-section-card [title]="title">
-        <div imrCardActions>
-          <button mat-flat-button color="primary">Hinzufügen</button>
-        </div>
         <imr-top-actions>
+          <button mat-flat-button color="primary">Hinzufügen</button>
           <mat-form-field>
             <mat-label>Suchen</mat-label>
             <input matInput />

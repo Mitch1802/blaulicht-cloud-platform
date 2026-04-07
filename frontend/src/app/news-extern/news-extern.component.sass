@@ -86,7 +86,7 @@
         padding: 1rem
         border: 1px solid rgba(theme.$imr-border, .86)
         background: rgba(theme.$imr-surface, .98)
-        box-shadow: 0 10px 24px rgba(theme.$imr-primary-dark, .08)
+        box-shadow: 0 10px 24px rgba(theme.$imr-primary, .08)
         overflow: hidden
 
     .newsfeed-stage > *
@@ -155,7 +155,7 @@
         align-self: start
         margin: 0
         border: 1px solid rgba(theme.$imr-border, .9)
-        background: rgba(theme.$imr-primary-light, .2)
+        background: rgba(theme.$imr-primary, .2)
         overflow: hidden
         min-height: 0
 
@@ -195,7 +195,7 @@
             font-size: clamp(2rem, 5vw, 3.2rem)
             font-weight: 700
             letter-spacing: .12em
-            color: rgba(theme.$imr-primary-deep, .48)
+            color: rgba(theme.$imr-primary, .48)
 
     .feature-content
         grid-column: 2
@@ -214,7 +214,7 @@
         letter-spacing: .08em
         text-transform: uppercase
         font-weight: 700
-        color: rgba(theme.$imr-primary-deep, .64)
+        color: rgba(theme.$imr-primary, .64)
 
     .feature-progress
         height: 6px
@@ -224,7 +224,7 @@
         span
             display: block
             height: 100%
-            background: linear-gradient(90deg, theme.$imr-primary 0%, theme.$imr-primary-deep 100%)
+            background: theme.$imr-primary
             transition: width .2s ease
 
     .feature-content h2
@@ -237,7 +237,7 @@
         margin: 0
         font-size: clamp(1rem, 1.7vw, 1.22rem)
         line-height: 1.58
-        color: rgba(theme.$imr-primary-deep, .82)
+        color: rgba(theme.$imr-primary, .82)
         white-space: pre-wrap
         min-height: 0
         overflow: hidden
@@ -262,18 +262,18 @@
         display: grid
         gap: .35rem
         padding: 1rem
-        border: 1px dashed rgba(theme.$imr-primary, .38)
-        background: rgba(theme.$imr-primary-light, .12)
+        border: 1px dashed theme.$imr-primary
+        background: theme.$imr-primary
 
         h2,
         p
             margin: 0
 
         h2
-            color: theme.$imr-primary-deep
+            color: theme.$imr-primary
 
         p
-            color: rgba(theme.$imr-primary-deep, .72)
+            color: theme.$imr-primary
 
     .termine-panel
         position: relative
@@ -288,7 +288,7 @@
         border: 1px solid rgba(theme.$imr-border, .9)
         background: rgba(theme.$imr-surface, .95)
         backdrop-filter: blur(8px)
-        box-shadow: 0 10px 22px rgba(theme.$imr-primary-dark, .1)
+        box-shadow: 0 10px 22px rgba(theme.$imr-primary, .1)
         overflow: auto
 
     .termine-head
@@ -300,7 +300,7 @@
         h2
             margin: 0
             font-size: clamp(1.1rem, 2.4vw, 1.65rem)
-            color: theme.$imr-primary-deep
+            color: theme.$imr-primary
 
     .termine-grid
         display: grid
@@ -328,13 +328,13 @@
         font-weight: 700
         letter-spacing: .04em
         text-transform: uppercase
-        color: rgba(theme.$imr-primary-deep, .64)
+        color: rgba(theme.$imr-primary, .64)
         white-space: nowrap
         flex: 0 0 auto
 
     .termin-title
         font-size: .88rem
-        color: rgba(theme.$imr-primary-deep, .84)
+        color: rgba(theme.$imr-primary, .84)
         white-space: nowrap
         overflow: hidden
         text-overflow: ellipsis
@@ -343,7 +343,7 @@
 
     .termine-empty
         margin: 0
-        color: rgba(theme.$imr-primary-deep, .72)
+        color: rgba(theme.$imr-primary, .72)
 
 @media (max-width: 960px)
     :host ::ng-deep .news-extern-page

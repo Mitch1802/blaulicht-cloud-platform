@@ -16,8 +16,7 @@ const meta: Meta<ImrPageLayoutComponent> = {
         component: `
 **\`<imr-page-layout>\`** ist der standardisierte Seiten-Container der IMR UI Library.
 
-Er stellt den äußeren Rahmen einer Seite mit Überschrift (h1) und einem optionalen
-Header-Action-Slot (\`imrPageActions\`) bereit.
+Er stellt den äußeren Rahmen einer Seite mit Überschrift (h1) bereit.
 
 Das gesamte Styling (max-width, Padding, Typografie) ist in \`imr-catalog.sass\` definiert
 und wird automatisch über CSS-Variablen angewendet.
@@ -25,9 +24,6 @@ und wird automatisch über CSS-Variablen angewendet.
 ### Verwendung
 \`\`\`html
 <imr-page-layout title="Meine Seite">
-  <div imrPageActions>
-    <button mat-flat-button color="primary">Neu</button>
-  </div>
   <!-- Seiteninhalt -->
 </imr-page-layout>
 \`\`\`
@@ -60,18 +56,14 @@ export const Default: Story = {
   }),
 };
 
-export const MitHeaderActions: Story = {
+export const MitTitelUndInhalt: Story = {
   args: { title: 'Anwesenheitsliste' },
   render: (args) => ({
     props: args,
     template: `
       <imr-page-layout [title]="title">
-        <div imrPageActions style="display:flex; gap:.5rem; align-items:center;">
-          <button mat-flat-button color="primary" type="button">Neu erstellen</button>
-          <button mat-flat-button color="accent" type="button">Export</button>
-        </div>
         <div style="padding: 1rem; border: 1px dashed #c7cdd8; border-radius: .5rem; background: rgba(255,255,255,.6)">
-          Inhalt mit Actions im Header-Bereich.
+          Inhalt mit Seitenkopf ohne dedizierten Action-Slot.
         </div>
       </imr-page-layout>
     `,

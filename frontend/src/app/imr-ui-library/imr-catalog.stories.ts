@@ -68,16 +68,10 @@ export const Listenseite: StoryObj = {
   render: () => ({
     template: `
       <imr-page-layout title="Mitglieder">
-        <div imrPageActions>
-          <button mat-flat-button color="accent">Exportieren</button>
-        </div>
-
         <imr-section-card title="Mitglieder verwalten">
-          <div imrCardActions>
-            <button mat-flat-button color="primary">Hinzufügen</button>
-          </div>
-
           <imr-top-actions>
+            <button mat-flat-button color="accent">Exportieren</button>
+            <button mat-flat-button color="primary">Hinzufügen</button>
             <mat-form-field style="max-width:280px">
               <mat-label>Filter</mat-label>
               <input matInput placeholder="Suchen..." />

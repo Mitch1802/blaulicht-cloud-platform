@@ -37,9 +37,6 @@ imr-card-content .mat-mdc-card-content
 :root
     // -- Farben --------------------------------------------------------------
     --imr-primary:            #{theme.$imr-primary}
-    --imr-primary-dark:       #{theme.$imr-primary-dark}
-    --imr-primary-deep:       #{theme.$imr-primary-deep}
-    --imr-primary-soft:       #{theme.$imr-primary-light}
     --imr-accent:             #{theme.$imr-secondary}
     --imr-accent-soft:        #{theme.$imr-secondary-light}
     --imr-error:              #{theme.$imr-error}
@@ -127,7 +124,7 @@ a
     color: theme.$imr-primary
 
     &:hover
-        color: theme.$imr-primary-dark
+        color: theme.$imr-primary
 
 img, svg, canvas, video
     max-width: 100%
@@ -142,7 +139,7 @@ p
     cursor: default
 
 h1
-    color: theme.$imr-primary-dark
+    color: theme.$imr-primary
 
 .footer
     color: theme.$imr-text-muted
@@ -232,7 +229,7 @@ mat-card-content > button.imr-delete-btn[mat-flat-button]
     align-items: center
     justify-content: center
     padding: 1rem
-    background: rgba(theme.$imr-primary-dark, .5)
+    background: rgba(theme.$imr-primary, .5)
     backdrop-filter: blur(6px)
 
 .imr-transaction-dialog
@@ -264,8 +261,8 @@ mat-card-content > button.imr-delete-btn[mat-flat-button]
     padding: .7rem .8rem
     border-radius: 0
     border: 1px solid rgba(theme.$imr-border, .8)
-    background: rgba(theme.$imr-primary-light, .14)
-    color: rgba(theme.$imr-primary-dark, .9)
+    background: rgba(theme.$imr-primary, .14)
+    color: rgba(theme.$imr-primary, .9)
 
 .imr-transaction-form
     margin-top: .85rem
@@ -276,7 +273,7 @@ mat-card-content > button.imr-delete-btn[mat-flat-button]
     border-radius: 0
     background: rgba(theme.$imr-surface-variant, .4)
     font-size: .9rem
-    color: rgba(theme.$imr-primary-dark, .84)
+    color: rgba(theme.$imr-primary, .84)
 
 .imr-transaction-actions
     display: flex
