@@ -1,78 +1,107 @@
 @use '../../../theme' as theme
 
+
+
 .imr-section
-	max-width: var(--imr-page-max-width)
-	margin: 0 auto 
-	padding: var(--imr-page-padding)
+	background-color: theme.$imr-primary
 
 .imr-section__head
-	margin: 0 0 1rem
+	background-color: theme.$imr-primary
 
-	h1
-		margin: 0
-		color: theme.$imr-primary
-		font-size: clamp(1.5rem, 2.4vw, 2.1rem)
-		line-height: 1.2
+	h2
+		text-transform: uppercase
+		color: #fff
 
-// Backward compatibility for existing IMR page helpers
-.imr-page
-	@extend .imr-section !optional
+.imr-section__content
+	padding: 1rem	
 
-.imr-page__head
-	@extend .imr-section__head !optional
 
-// Legacy aliases: keep old app classes mapped to IMR section utilities
-section[class$='-page'],
-.anwesenheitsliste-page,
-.fmd-page,
-.eigene-daten-page
-	@extend .imr-section !optional
 
-.page-head
-	@extend .imr-section__head !optional
 
-.top-actions,
-.actions-row,
-.actions-top
-	@extend .imr-top-actions !optional
 
-.edit-form
-	@extend .imr-form !optional
 
-// Form section utility exposed by IMR UI library
-.imr-form-section
-	border-radius: 0
-	border: 1px solid rgba(theme.$imr-border, .9)
-	background: theme.$imr-surface
 
-.imr-form-section-title
-	color: theme.$imr-primary
-	font-weight: 600
 
-.imr-form-section-subtitle
-	color: theme.$imr-text-muted
 
-.imr-form-section-body
-	padding-top: .35rem
 
-.form-section
-	@extend .imr-form-section
 
-.form-section-title
-	@extend .imr-form-section-title
 
-.form-section-subtitle
-	@extend .imr-form-section-subtitle
 
-.form-section-body
-	@extend .imr-form-section-body
 
-@media only screen and (max-width: 700px)
-	.imr-section
-		padding: var(--imr-page-padding-mobile)
 
-	.imr-section__head
-		margin-bottom: 1rem
+// .imr-section
+// 	max-width: var(--imr-page-max-width)
+// 	margin: 0 auto 
+// 	padding: var(--imr-page-padding)
 
-		h1
-			font-size: 1.4rem
+// .imr-section__head
+// 	margin: 0 0 1rem
+
+// 	h1
+// 		margin: 0
+// 		color: theme.$imr-primary
+// 		font-size: clamp(1.5rem, 2.4vw, 2.1rem)
+// 		line-height: 1.2
+
+// // Backward compatibility for existing IMR page helpers
+// .imr-page
+// 	@extend .imr-section !optional
+
+// .imr-page__head
+// 	@extend .imr-section__head !optional
+
+// // Legacy aliases: keep old app classes mapped to IMR section utilities
+// section[class$='-page'],
+// .anwesenheitsliste-page,
+// .fmd-page,
+// .eigene-daten-page
+// 	@extend .imr-section !optional
+
+// .page-head
+// 	@extend .imr-section__head !optional
+
+// .top-actions,
+// .actions-row,
+// .actions-top
+// 	@extend .imr-top-actions !optional
+
+// .edit-form
+// 	@extend .imr-form !optional
+
+// // Form section utility exposed by IMR UI library
+// .imr-form-section
+// 	border-radius: 0
+// 	border: 1px solid rgba(theme.$imr-border, .9)
+// 	background: theme.$imr-surface
+
+// .imr-form-section-title
+// 	color: theme.$imr-primary
+// 	font-weight: 600
+
+// .imr-form-section-subtitle
+// 	color: theme.$imr-text-muted
+
+// .imr-form-section-body
+// 	padding-top: .35rem
+
+// .form-section
+// 	@extend .imr-form-section
+
+// .form-section-title
+// 	@extend .imr-form-section-title
+
+// .form-section-subtitle
+// 	@extend .imr-form-section-subtitle
+
+// .form-section-body
+// 	@extend .imr-form-section-body
+
+// @media only screen and (max-width: 700px)
+// 	.imr-section
+// 		padding: var(--imr-page-padding-mobile)
+
+// 	.imr-section__head
+// 		margin-bottom: 1rem
+
+// 		h1
+// 			font-size: 1.4rem

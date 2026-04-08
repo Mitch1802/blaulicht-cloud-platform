@@ -1,1 +1,10 @@
-<ng-content></ng-content>
+    <div class="imr-section">
+      @if (title) {
+        <div class="imr-section__head">
+          <h2>{{ title }}</h2>
+        </div>
+      }
+      <imr-section-content contentClass="imr-section__content">
+        <ng-content></ng-content>
+      </imr-section-content>
+    </div>

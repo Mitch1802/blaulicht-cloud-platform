@@ -9,12 +9,6 @@ import { ImrCardContentComponent } from '../imr-card-content.component';
  * Kapselt eine `mat-card` mit standardisiertem Kopfbereich
  * und einem Content-Bereich.
  *
- * @example
- * ```html
- * <imr-section-card title="Mitglieder verwalten">
- *   <!-- Karteninhalt -->
- * </imr-section-card>
- * ```
  */
 @Component({
   selector: 'imr-section-card',
