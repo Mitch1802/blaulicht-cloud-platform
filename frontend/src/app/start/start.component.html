@@ -9,7 +9,7 @@
         <div class="app-grid">
           @for (item of category.items; track item) {
             @if (isPlannedItem(item)) {
-              <imr-card cardClass="module-card planned" [wrapContent]="false" aria-disabled="true">
+              <imr-card cardClass="module-card planned app-col-12 app-col-lg-4" [wrapContent]="false" aria-disabled="true">
                 <span class="badge planned-badge">GEPLANT</span>
                 <div class="module-icon-shell">
                   <imr-icon class="module-icon" [inline]="true">{{ item.icon }}</imr-icon>
@@ -20,7 +20,7 @@
               </imr-card>
             } @else {
               <a
-                class="module-card-link"
+                class="module-card-link app-col-12 app-col-lg-4"
                 [routerLink]="item.routerlink"
                 [attr.aria-label]="'Modul öffnen: ' + item.modul"
               >
