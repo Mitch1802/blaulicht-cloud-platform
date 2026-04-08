@@ -17,8 +17,9 @@ import {
   ImrButtonComponent,
   ImrFormFieldComponent,
   ImrPageLayoutComponent,
-  ImrSectionCardComponent,
-  ImrTopActionsComponent,
+  ImrSectionComponent,
+  // ImrSectionCardComponent,
+  // ImrTopActionsComponent,
   UiControlErrorsDirective,
 } from '../imr-ui-library';
 
@@ -32,13 +33,14 @@ type EigeneDatenResponse = {
   imports: [
     ImrHeaderComponent, 
     ImrPageLayoutComponent,
-    ImrSectionCardComponent,
+    // ImrSectionCardComponent,
     FormsModule, 
     ReactiveFormsModule, 
     MatInputModule,
     ImrFormFieldComponent,
-    ImrTopActionsComponent,
+    // ImrTopActionsComponent,
     UiControlErrorsDirective,
+    ImrSectionComponent,
     ImrButtonComponent,
   ],
   templateUrl: './eigene-daten.component.html',
