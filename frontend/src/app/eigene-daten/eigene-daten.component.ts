@@ -18,8 +18,6 @@ import {
   ImrFormFieldComponent,
   ImrPageLayoutComponent,
   ImrSectionComponent,
-  // ImrSectionCardComponent,
-  // ImrTopActionsComponent,
   UiControlErrorsDirective,
 } from '../imr-ui-library';
 
@@ -33,12 +31,10 @@ type EigeneDatenResponse = {
   imports: [
     ImrHeaderComponent, 
     ImrPageLayoutComponent,
-    // ImrSectionCardComponent,
     FormsModule, 
     ReactiveFormsModule, 
     MatInputModule,
     ImrFormFieldComponent,
-    // ImrTopActionsComponent,
     UiControlErrorsDirective,
     ImrSectionComponent,
     ImrButtonComponent,
