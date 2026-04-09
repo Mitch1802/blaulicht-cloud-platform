@@ -10,6 +10,11 @@ const catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
 const allowedMat = new Set(catalog.matElements || []);
 const allowedClasses = new Set(catalog.layoutClasses || []);
 const allowedActionIcons = new Set((catalog.actionIcons || []).map((icon) => String(icon).trim()).filter(Boolean));
+const allowedActionColors = new Set(
+  (catalog.actionColors || ['primary', 'warn'])
+    .map((color) => String(color).trim().toLowerCase())
+    .filter(Boolean),
+);
 
 const htmlFiles = [];
 const walk = (dir) => {
@@ -39,7 +44,7 @@ const actionIconViolations = [];
 const actionIconAllowlistViolations = [];
 
 const matRegex = /<(mat-[a-z0-9-]+)/gi;
-const classRegex = /class\s*=\s*"([^"]+)"/gi;
+const classRegex = /class\s*=\s*(["'])([\s\S]*?)\1/gi;
 
 for (const file of htmlFiles) {
   const content = fs.readFileSync(file, 'utf8');
@@ -49,7 +54,7 @@ for (const file of htmlFiles) {
   }
 
   for (const match of content.matchAll(classRegex)) {
-    const classes = match[1]
+    const classes = match[2]
       .split(/\s+/)
       .map((cls) => cls.trim())
       .filter(Boolean);
@@ -65,15 +70,15 @@ for (const file of htmlFiles) {
 
   for (const block of actionBlocks) {
     const tdTagMatch =
-      block.match(/<td[^>]*mat-cell[^>]*\*matCellDef=\"let element\"[^>]*>/i) ||
-      block.match(/<td[^>]*\*matCellDef=\"let element\"[^>]*mat-cell[^>]*>/i);
+      block.match(/<td[^>]*mat-cell[^>]*\*matCellDef\s*=\s*(["'])let\s+[^"']+\1[^>]*>/i) ||
+      block.match(/<td[^>]*\*matCellDef\s*=\s*(["'])let\s+[^"']+\1[^>]*mat-cell[^>]*>/i);
 
     if (!tdTagMatch) {
       continue;
     }
 
     const tdTag = tdTagMatch[0];
-    const hasStandardActionClass = /class\s*=\s*"[^"]*\bimr-action-cell\b[^"]*"/i.test(tdTag);
+    const hasStandardActionClass = /class\s*=\s*(["'])[^"']*\bimr-action-cell\b[^"']*\1/i.test(tdTag);
 
     if (!hasStandardActionClass) {
       actionColumnViolations.push(path.relative(root, file));
@@ -87,9 +92,9 @@ for (const file of htmlFiles) {
         continue;
       }
 
-      const colorMatch = buttonBlock.match(/\bcolor\s*=\s*"([^"]+)"/i);
-      const color = colorMatch ? colorMatch[1].toLowerCase() : '';
-      if (!['primary', 'warn'].includes(color)) {
+      const colorMatch = buttonBlock.match(/\bcolor\s*=\s*(["'])([^"']+)\1/i);
+      const color = colorMatch ? colorMatch[2].toLowerCase() : '';
+      if (!allowedActionColors.has(color)) {
         actionColorViolations.push({
           file: path.relative(root, file),
           snippet: buttonBlock.replace(/\s+/g, ' ').trim(),
@@ -127,12 +132,12 @@ for (const file of htmlFiles) {
       continue;
     }
 
-    const classMatch = tag.match(/class\s*=\s*"([^"]*)"/i);
+    const classMatch = tag.match(/class\s*=\s*(["'])([^"']*)\1/i);
     if (!classMatch) {
       continue;
     }
 
-    const classList = classMatch[1].split(/\s+/).filter(Boolean);
+    const classList = classMatch[2].split(/\s+/).filter(Boolean);
     const hasSpacingUtility = classList.some((cls) => /^(m|p)(t|b|s|e|x|y)-/.test(cls));
     if (!hasSpacingUtility) {
       continue;
@@ -179,7 +184,8 @@ if (
     }
   }
   if (actionColorViolations.length) {
-    console.error('\nActions-Buttons mit nicht erlaubter Farbe (erlaubt: primary, warn):');
+    const allowedColorsText = [...allowedActionColors].join(', ') || '(keine)';
+    console.error(`\nActions-Buttons mit nicht erlaubter Farbe (erlaubt laut Katalog: ${allowedColorsText}):`);
     for (const violation of actionColorViolations) {
       console.error(` - ${violation.file}: ${violation.snippet}`);
     }

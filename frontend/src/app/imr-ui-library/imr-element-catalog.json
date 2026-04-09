@@ -14,6 +14,7 @@
     "mat-expansion-panel",
     "mat-expansion-panel-header",
     "mat-form-field",
+    "mat-hint",
     "mat-icon",
     "mat-label",
     "mat-list",
@@ -71,10 +72,17 @@
     "delete",
     "edit",
     "get_app",
+    "inventory_2",
     "picture_as_pdf",
     "public",
     "remove_red_eye",
     "settings_backup_restore",
-    "upgrade"
+    "upgrade",
+    "visibility"
+  ],
+  "actionColors": [
+    "primary",
+    "warn",
+    "accent"
   ]
 }
