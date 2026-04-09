@@ -1,58 +1,58 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <imr-page-layout [title]="title" class="atemschutz-messgeraete-page">
-  <imr-section-card title="Messgeräte verwalten">
+  <imr-card title="Messgeräte verwalten">
         @if (sichtbarkeitModul() === "tableListe")
         {
-        <imr-top-actions>
-          <imr-button
+        <div>
+          <button mat-flat-button
             color="accent"
             (click)="neueDetails()"
             type="button"
           >
             Hinzufügen
-          </imr-button>
-          <imr-button
+          </button>
+          <button mat-flat-button
             color="accent"
             (click)="neuePruefung()"
             [hidden]="rolesResolved && !canEditProtocol"
             type="button"
           >
             Protokoll Eintrag
-          </imr-button>
-        </imr-top-actions>
+          </button>
+        </div>
         } @if (sichtbarkeitModul() === "tablePruefungen") {
-        <imr-top-actions>
-          <imr-button
+        <div>
+          <button mat-flat-button
             color="primary"
             (click)="showMessgeraete()"
             type="button"
           >
             Zurück
-          </imr-button>
-        </imr-top-actions>
+          </button>
+        </div>
         }
         <!-- FORM -->
         @if (sichtbarkeitModul() === "formModul") {
         <form [formGroup]="formModul" (ngSubmit)="datenSpeichern()" class="edit-form">
           <input hidden type="text"  formControlName="id" />
-          <imr-top-actions class="imr-form-actions">
-            <imr-button
+          <div class="imr-form-actions">
+            <button mat-flat-button
               color="accent"
               [hidden]="!formModul.valid"
               type="submit"
             >
               Daten speichern
-            </imr-button>
-            <imr-button
+            </button>
+            <button mat-flat-button
               color="primary"
               [hidden]="formModul.disabled"
               type="button"
               (click)="abbrechen()"
             >
               Zurück
-            </imr-button>
-            <imr-button
+            </button>
+            <button mat-flat-button
               color="warn"
               class="imr-delete-btn"
               [hidden]="!formModul.controls['id'].value"
@@ -60,33 +60,40 @@
               (click)="datenLoeschen()"
             >
               Daten löschen
-            </imr-button>
-          </imr-top-actions>
+            </button>
+          </div>
           <section class="app-grid imr-form-grid">
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <imr-form-field hintLabel="* Pflichtfeld" label="Inventar Nummer">
+              <mat-form-field>
+                <mat-label>Inventar Nummer</mat-label>
+                <mat-hint>* Pflichtfeld</mat-hint>
                 <input matInput type="text" formControlName="inv_nr" uiControlErrors />
-              </imr-form-field>
+              </mat-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <imr-form-field hintLabel="* Pflichtfeld" label="Bezeichnung">
+              <mat-form-field>
+                <mat-label>Bezeichnung</mat-label>
+                <mat-hint>* Pflichtfeld</mat-hint>
                 <input matInput type="text" formControlName="bezeichnung" uiControlErrors />
-              </imr-form-field>
+              </mat-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <imr-form-field label="Eigentümer">
+              <mat-form-field>
+                <mat-label>Eigentümer</mat-label>
                 <input matInput type="text" formControlName="eigentuemer" />
-              </imr-form-field>
+              </mat-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <imr-form-field label="Barcode">
+              <mat-form-field>
+                <mat-label>Barcode</mat-label>
                 <input matInput type="text" formControlName="barcode" />
-              </imr-form-field>
+              </mat-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <imr-form-field label="Baujahr">
+              <mat-form-field>
+                <mat-label>Baujahr</mat-label>
                 <input matInput type="text" formControlName="baujahr" />
-              </imr-form-field>
+              </mat-form-field>
             </div>
           </section>
         </form>
@@ -96,22 +103,22 @@
         @if (sichtbarkeitModul() === "formPruefung") {
         <form [formGroup]="formPruefung" (ngSubmit)="datenSpeichernProtokoll()" class="edit-form">
           <input hidden type="text"  formControlName="id" />
-          <imr-top-actions class="imr-form-actions">
-            <imr-button
+          <div class="imr-form-actions">
+            <button mat-flat-button
               color="accent"
               type="submit"
             >
               Daten speichern
-            </imr-button>
-            <imr-button
+            </button>
+            <button mat-flat-button
               color="primary"
               [hidden]="formPruefung.disabled"
               type="button"
               (click)="pruefungAbbrechen()"
             >
               Zurück
-            </imr-button>
-            <imr-button
+            </button>
+            <button mat-flat-button
               color="warn"
               class="imr-delete-btn"
               [hidden]="!formPruefung.controls['id'].value || !canEditProtocol"
@@ -119,20 +126,24 @@
               (click)="datenProtokollLoeschen()"
             >
               Daten löschen
-            </imr-button>
-          </imr-top-actions>
+            </button>
+          </div>
           <section class="app-grid imr-form-grid">
             <div class="app-col-12 app-col-lg-12 mb-3">
-              <imr-form-field hintLabel="* Pflichtfeld" label="Messgerät">
-                <imr-select formControlName="geraet_id" uiControlErrors>
+              <mat-form-field>
+                <mat-label>Messgerät</mat-label>
+                <mat-hint>* Pflichtfeld</mat-hint>
+                <mat-select formControlName="geraet_id" uiControlErrors>
                   @for (opt of messgeraete; track opt) {
-                  <imr-option [value]="opt.pkid"> {{ opt.inv_nr }} - {{ opt.bezeichnung }} </imr-option>
+                  <mat-option [value]="opt.pkid"> {{ opt.inv_nr }} - {{ opt.bezeichnung }} </mat-option>
                   }
-                </imr-select>
-              </imr-form-field>
+                </mat-select>
+              </mat-form-field>
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3">
-              <imr-form-field hintLabel="* Pflichtfeld" label="Datum">
+              <mat-form-field>
+                <mat-label>Datum</mat-label>
+                <mat-hint>* Pflichtfeld</mat-hint>
                 <input
                   matInput
                   type="text"
@@ -141,33 +152,35 @@
                   placeholder="TT.MM.YYYY"
                 />
                 @if (formPruefung.controls['datum'].hasError('pattern')) {
-                <imr-error
-                  >Ungültiges Format. Bitte TT.MM.YYYY eingeben.</imr-error
+                <mat-error
+                  >Ungültiges Format. Bitte TT.MM.YYYY eingeben.</mat-error
                 >
                 } @if (formPruefung.controls['datum'].hasError('dateInvalid')) {
-                <imr-error>Kein existierendes Datum!</imr-error>
+                <mat-error>Kein existierendes Datum!</mat-error>
                 }
-              </imr-form-field>
+              </mat-form-field>
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3 checkbox-field checkbox-triplet">
-              <imr-checkbox formControlName="kalibrierung"
-                >Kalibrierung</imr-checkbox
+              <mat-checkbox formControlName="kalibrierung"
+                >Kalibrierung</mat-checkbox
               >
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3 checkbox-field checkbox-triplet">
-              <imr-checkbox formControlName="kontrolle_woechentlich"
-                >Kontrolle Wöchentlich</imr-checkbox
+              <mat-checkbox formControlName="kontrolle_woechentlich"
+                >Kontrolle Wöchentlich</mat-checkbox
               >
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3 checkbox-field checkbox-triplet">
-              <imr-checkbox formControlName="wartung_jaehrlich"
-                >Wartung Jährlich</imr-checkbox
+              <mat-checkbox formControlName="wartung_jaehrlich"
+                >Wartung Jährlich</mat-checkbox
               >
             </div>
             <div class="app-col-12 app-col-lg-12 mb-3">
-              <imr-form-field hintLabel="* Pflichtfeld" label="Name Prüfer">
+              <mat-form-field>
+                <mat-label>Name Prüfer</mat-label>
+                <mat-hint>* Pflichtfeld</mat-hint>
                 <input matInput type="text" formControlName="name_pruefer" uiControlErrors />
-              </imr-form-field>
+              </mat-form-field>
             </div>
           </section>
         </form>
@@ -213,28 +226,28 @@
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef>Aktionen</th>
             <td mat-cell *matCellDef="let element" class="imr-action-cell">
-              <imr-button
+              <button mat-flat-button
                 class="imr-action-btn"
                 color="primary"
                 (click)="auswahlBearbeiten(element)"
               >
-                <imr-icon class="m-0">edit</imr-icon>
-              </imr-button>
-              <imr-button
+                <mat-icon class="m-0">edit</mat-icon>
+              </button>
+              <button mat-flat-button
                 class="imr-action-btn"
                 color="primary"
                 (click)="neuePruefungVonMessgeraet(element)"
                 [hidden]="rolesResolved && !canEditProtocol"
               >
-                <imr-icon class="m-0">checklist</imr-icon>
-              </imr-button>
-              <imr-button
+                <mat-icon class="m-0">checklist</mat-icon>
+              </button>
+              <button mat-flat-button
                 class="imr-action-btn"
                 color="primary"
                 (click)="showPruefungen(element)"
               >
-                <imr-icon class="m-0">assignment</imr-icon>
-              </imr-button>
+                <mat-icon class="m-0">assignment</mat-icon>
+              </button>
             </td>
           </ng-container>
           <tr mat-header-row *matHeaderRowDef="sichtbareSpalten"></tr>
@@ -268,13 +281,13 @@
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef>Aktionen</th>
             <td mat-cell *matCellDef="let element" class="imr-action-cell">
-              <imr-button
+              <button mat-flat-button
                 class="imr-action-btn"
                 color="primary"
                 (click)="auswahlBearbeitenProtokoll(element)"
               >
-                <imr-icon class="m-0">remove_red_eye</imr-icon>
-              </imr-button>
+                <mat-icon class="m-0">remove_red_eye</mat-icon>
+              </button>
             </td>
           </ng-container>
           <tr mat-header-row *matHeaderRowDef="sichtbareSpaltenPruefungen"></tr>
@@ -286,7 +299,10 @@
         </div>
         }
         <!-- TABELLE MESSGERÄTE PRÜFUNGEN ENDE -->
-  </imr-section-card>
+  </imr-card>
 </imr-page-layout>
+
+
+
 
 

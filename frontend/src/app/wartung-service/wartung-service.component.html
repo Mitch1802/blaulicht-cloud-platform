@@ -1,11 +1,11 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <imr-page-layout [title]="title" class="wartung-service-page">
-  <imr-section-card [title]="'Anstehende Termine ' + jahr">
+  <imr-card [title]="'Anstehende Termine ' + jahr">
 
-      <imr-top-actions class="actions-top">
-        <imr-button color="primary" type="button" (click)="reload()">Aktualisieren</imr-button>
-      </imr-top-actions>
+      <div class="actions-top">
+        <button mat-flat-button color="primary" type="button" (click)="reload()">Aktualisieren</button>
+      </div>
       <div class="summary-grid">
         <article class="summary-card">
           <h3>Gesamt</h3>
@@ -65,15 +65,15 @@
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef>Aktionen</th>
               <td mat-cell *matCellDef="let element" class="imr-action-cell">
-                <imr-button
+                <button mat-flat-button
                   class="imr-action-btn"
                   color="primary"
                   type="button"
                   [routerLink]="element.link"
-                  ariaLabel="Eintrag öffnen"
+                  aria-label="Eintrag öffnen"
                 >
-                  <imr-icon class="m-0">remove_red_eye</imr-icon>
-                </imr-button>
+                  <mat-icon class="m-0">remove_red_eye</mat-icon>
+                </button>
               </td>
             </ng-container>
 
@@ -82,5 +82,7 @@
           </table>
         </div>
       }
-  </imr-section-card>
+  </imr-card>
 </imr-page-layout>
+
+

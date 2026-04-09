@@ -4,17 +4,13 @@
   <imr-section title="Vorlagen verwalten">
 
     @if (tableVisible) {
-      <imr-top-actions>
-        <imr-button
-          color="accent"
-          [hidden]="!formModul.disabled"
-          (click)="neueDetails()"
-          type="button"
-        >
+      <div class="imr-top-actions">
+        <button mat-flat-button color="accent" [hidden]="!formModul.disabled" (click)="neueDetails()" type="button">
           Hinzufügen
-        </imr-button>
+        </button>
 
-        <imr-form-field label="Status" class="status-filter">
+        <mat-form-field class="status-filter">
+          <mat-label>Status</mat-label>
           <mat-select
             [(ngModel)]="statusFilter"
             [ngModelOptions]="{ standalone: true }"
@@ -25,8 +21,8 @@
             <mat-option value="PUBLISHED">Published</mat-option>
             <mat-option value="ARCHIVED">Archived</mat-option>
           </mat-select>
-        </imr-form-field>
-      </imr-top-actions>
+        </mat-form-field>
+      </div>
     }
 
       <form
@@ -39,50 +35,37 @@
         <input hidden type="text"  formControlName="version" />
         <input hidden type="text"  formControlName="status" />
 
-        <imr-top-actions>
-          <imr-button
-            color="accent"
-            [hidden]="readonlyMode || !formModul.valid"
-            type="submit"
-          >
+        <div class="imr-top-actions">
+          <button mat-flat-button color="accent" [hidden]="readonlyMode || !formModul.valid" type="submit">
             Daten speichern
-          </imr-button>
-          <imr-button
-            color="primary"
-            [hidden]="formModul.disabled"
-            type="button"
-            (click)="abbrechen()"
-          >
+          </button>
+          <button mat-flat-button color="primary" [hidden]="formModul.disabled" type="button" (click)="abbrechen()">
             Abbrechen
-          </imr-button>
-          <imr-button
-            color="warn"
-            class="imr-delete-btn"
-            [hidden]="!formModul.controls['id'].value"
-            type="button"
-            (click)="datenLoeschen()"
-          >
+          </button>
+          <button mat-flat-button color="warn" class="imr-delete-btn" [hidden]="!formModul.controls['id'].value" type="button" (click)="datenLoeschen()">
             Daten löschen
-          </imr-button>
-        </imr-top-actions>
+          </button>
+        </div>
 
         <div class="app-grid">
           <div class="app-col-12 app-col-lg-6 mb-3">
-            <imr-form-field label="Typ / Modul">
+            <mat-form-field>
+              <mat-label>Typ / Modul</mat-label>
               <mat-select formControlName="typ" uiControlErrors>
                 @for (opt of typModul; track opt) {
                   <mat-option [value]="opt"> {{ opt }} </mat-option>
                 }
               </mat-select>
-            </imr-form-field>
+            </mat-form-field>
           </div>
           <div class="app-col-12 app-col-lg-6 mb-3">
-            <imr-form-field label="Bezeichnung">
+            <mat-form-field>
+              <mat-label>Bezeichnung</mat-label>
               <input matInput type="text" formControlName="bezeichnung" uiControlErrors />
-            </imr-form-field>
+            </mat-form-field>
           </div>
           <div class="app-col-12 app-col-lg-12 mb-3">
-            <imr-form-field class="imr-full-width html-source-field">
+            <mat-form-field class="imr-full-width html-source-field">
               <mat-label>HTML Code</mat-label>
               <textarea
                 matInput
@@ -90,7 +73,7 @@
                 formControlName="source"
                 rows="18"
               ></textarea>
-            </imr-form-field>
+            </mat-form-field>
           </div>
         </div>
       </form>
@@ -122,21 +105,21 @@
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef>Aktionen</th>
             <td mat-cell *matCellDef="let element" class="imr-action-cell">
-              <imr-button class="imr-action-btn" color="primary" (click)="auswahlBearbeiten(element)">
-                <imr-icon class="m-0">edit</imr-icon>
-              </imr-button>
-              <imr-button class="imr-action-btn" color="primary" (click)="test(element)">
-                <imr-icon class="m-0">bug_report</imr-icon>
-              </imr-button>
+              <button mat-icon-button class="imr-action-btn" color="primary" type="button" (click)="auswahlBearbeiten(element)">
+                <mat-icon class="m-0">edit</mat-icon>
+              </button>
+              <button mat-icon-button class="imr-action-btn" color="primary" type="button" (click)="test(element)">
+                <mat-icon class="m-0">bug_report</mat-icon>
+              </button>
               @if (element.status === 'DRAFT') {
-                <imr-button class="imr-action-btn" color="primary" (click)="publish(element)">
-                  <imr-icon class="m-0">public</imr-icon>
-                </imr-button>
+                <button mat-icon-button class="imr-action-btn" color="primary" type="button" (click)="publish(element)">
+                  <mat-icon class="m-0">public</mat-icon>
+                </button>
               }
               @if (element.status === 'PUBLISHED') {
-                <imr-button class="imr-action-btn" color="primary" (click)="newVersion(element)">
-                  <imr-icon class="m-0">upgrade</imr-icon>
-                </imr-button>
+                <button mat-icon-button class="imr-action-btn" color="primary" type="button" (click)="newVersion(element)">
+                  <mat-icon class="m-0">upgrade</mat-icon>
+                </button>
               }
             </td>
           </ng-container>
@@ -146,3 +129,5 @@
       </div>
   </imr-section>
 </imr-page-layout>
+
+

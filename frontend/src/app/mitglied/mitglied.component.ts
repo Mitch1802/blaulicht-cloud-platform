@@ -7,9 +7,20 @@ import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
-import { IMR_UI_COMPONENTS, ImrBreadcrumbItem, ImrPaginatorComponent } from '../imr-ui-library';
+import {
+  ImrBreadcrumbItem,
+  ImrCardComponent,
+  ImrHeaderComponent,
+  ImrPageLayoutComponent,
+} from '../imr-ui-library';
 import { Router } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSelectModule } from '@angular/material/select';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import * as Papa from 'papaparse';
 import { MatSort } from '@angular/material/sort';
@@ -44,10 +55,18 @@ type CsvRawRow = Record<string, string | number | boolean | null | undefined>;
 @Component({
     selector: 'app-mitglied',
     imports: [
-    ...IMR_UI_COMPONENTS,
+  ImrCardComponent,
+  ImrHeaderComponent,
+  ImrPageLayoutComponent,
     FormsModule,
     ReactiveFormsModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatFormFieldModule,
+    MatIconModule,
     MatInputModule,
+    MatPaginatorModule,
+    MatSelectModule,
     MatTableModule,
     MatSort,
     DateInputMaskDirective,
@@ -66,8 +85,8 @@ export class MitgliedComponent implements OnInit {
 
   dataSource = new MatTableDataSource<IMitglied>([]);
 
-  @ViewChild(ImrPaginatorComponent) set matPaginator(p: ImrPaginatorComponent | undefined) {
-    if (p) this.dataSource.paginator = p.paginator;
+  @ViewChild(MatPaginator) set matPaginator(p: MatPaginator | undefined) {
+    if (p) this.dataSource.paginator = p;
   }
 
   @ViewChild(MatSort) set matSort(s: MatSort | undefined) {

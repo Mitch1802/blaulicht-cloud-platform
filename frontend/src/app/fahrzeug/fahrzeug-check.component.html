@@ -1,49 +1,54 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <imr-page-layout title="Fahrzeug Check" class="fahrzeug-check-page">
-  <imr-section-card [title]="'Fahrzeug Check – ' + (fahrzeug?.name || '')">
+  <imr-section [title]="'Fahrzeug Check – ' + (fahrzeug?.name || '')">
 
         <form [formGroup]="form" >
-          <imr-form-field label="Titel">
+          <mat-form-field>
+            <mat-label>Titel</mat-label>
             <input matInput formControlName="title" placeholder="z. B. Tagescheck" />
-          </imr-form-field>
+          </mat-form-field>
 
           <mat-form-field appearance="outline" class="imr-full-width" subscriptSizing="dynamic">
             <mat-label>Allgemeine Notiz</mat-label>
             <textarea matInput rows="2" formControlName="notiz"></textarea>
           </mat-form-field>
 
-          <imr-divider></imr-divider>
+          <mat-divider></mat-divider>
 
           <div formArrayName="results" >
             @for (raum of raeumeView; track raum.name) {
-              <imr-card cardClass="p-2">
+              <div class="p-2 border">
                 <h3 class="m-0 mb-2">{{ raum.name }}</h3>
 
                 @for (item of raum.items; track item.index) {
                   <div class="app-grid mb-2" [formGroupName]="item.index">
                     <div class="app-col-12 app-col-md-6">
-                      <imr-checkbox formControlName="checked">
+                      <mat-checkbox formControlName="checked">
                         {{ item.name }} (Soll: {{ item.menge }} {{ item.einheit }})
-                      </imr-checkbox>
+                      </mat-checkbox>
                     </div>
 
                     <div class="app-col-12 app-col-md-6">
-                      <imr-form-field label="Notiz">
+                      <mat-form-field>
+                        <mat-label>Notiz</mat-label>
                         <input matInput formControlName="notiz" placeholder="Optional" />
-                      </imr-form-field>
+                      </mat-form-field>
                     </div>
                   </div>
                 }
-              </imr-card>
+              </div>
             }
           </div>
 
-          <imr-top-actions class="imr-form-actions">
-            <imr-button color="accent" type="button" (click)="submit()">
+          <div class="imr-top-actions imr-form-actions">
+            <button mat-flat-button color="accent" type="button" (click)="submit()">
               Checkliste speichern
-            </imr-button>
-          </imr-top-actions>
+            </button>
+          </div>
         </form>
-  </imr-section-card>
+  </imr-section>
 </imr-page-layout>
+
+
+

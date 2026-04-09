@@ -2,12 +2,20 @@
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatSelectModule } from '@angular/material/select';
-import { IMR_UI_COMPONENTS, ImrBreadcrumbItem, ImrPaginatorComponent } from '../imr-ui-library';
+import {
+  ImrBreadcrumbItem,
+  ImrCardComponent,
+  ImrHeaderComponent,
+  ImrPageLayoutComponent,
+} from '../imr-ui-library';
 import { ApiHttpService } from '../_service/api-http.service';
 import { AuthSessionService } from '../_service/auth-session.service';
 import { CollectionUtilsService } from '../_service/collection-utils.service';
@@ -22,9 +30,14 @@ import { DateInputMaskDirective } from '../_directive/date-input-mask.directive'
   imports: [
     FormsModule,
     ReactiveFormsModule,
-    ...IMR_UI_COMPONENTS,
+    ImrCardComponent,
+    ImrHeaderComponent,
+    ImrPageLayoutComponent,
+    MatButtonModule,
     MatFormFieldModule,
+    MatIconModule,
     MatInputModule,
+    MatPaginatorModule,
     MatTableModule,
     MatSortModule,
     MatSelectModule,
@@ -34,7 +47,7 @@ import { DateInputMaskDirective } from '../_directive/date-input-mask.directive'
   styleUrl: './anwesenheitsliste.component.sass',
 })
 export class AnwesenheitslisteComponent implements OnInit {
-  @ViewChild(ImrPaginatorComponent) paginator?: ImrPaginatorComponent;
+  @ViewChild(MatPaginator) paginator?: MatPaginator;
   @ViewChild(MatSort) sort?: MatSort;
 
   private apiHttpService = inject(ApiHttpService);
@@ -242,7 +255,7 @@ export class AnwesenheitslisteComponent implements OnInit {
 
   private bindTableControls(): void {
     if (this.sort) this.dataSource.sort = this.sort;
-    if (this.paginator) this.dataSource.paginator = this.paginator.paginator;
+    if (this.paginator) this.dataSource.paginator = this.paginator;
   }
 
   applyFilter(value: string): void {

@@ -1,17 +1,17 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <imr-page-layout [title]="title" class="modul-page">
-  <imr-section-card title="Modul-Einstellungen">
-      <imr-top-actions>
-        <imr-button
+  <imr-section title="Modul-Einstellungen">
+      <div class="imr-top-actions">
+        <button mat-flat-button
           color="accent"
           [hidden]="!formModul.disabled"
           (click)="neueDetails()"
           type="button"
         >
           Hinzufügen
-        </imr-button>
-      </imr-top-actions>
+        </button>
+      </div>
 
       <form
         [formGroup]="formModul"
@@ -21,23 +21,23 @@
       >
         <input hidden type="text" formControlName="id" />
 
-        <imr-top-actions class="imr-form-actions">
-          <imr-button
+        <div class="imr-top-actions imr-form-actions">
+          <button mat-flat-button
             color="accent"
             [hidden]="!formModul.valid"
             type="submit"
           >
             Daten speichern
-          </imr-button>
-          <imr-button
+          </button>
+          <button mat-flat-button
             color="primary"
             [hidden]="formModul.disabled"
             type="button"
             (click)="abbrechen()"
           >
             Abbrechen
-          </imr-button>
-          <imr-button
+          </button>
+          <button mat-flat-button
             color="warn"
             class="imr-delete-btn"
             [hidden]="!formModul.controls['id'].value"
@@ -45,35 +45,37 @@
             (click)="datenLoeschen()"
           >
             Daten löschen
-          </imr-button>
-        </imr-top-actions>
+          </button>
+        </div>
 
         <section class="app-grid imr-form-grid">
           <div class="app-col-12 app-col-lg-12 mb-3">
-            <imr-form-field class="imr-full-width" label="Verfügbare Module auswählen">
-              <imr-select formControlName="modul" (selectionChange)="onModulChange()">
+            <mat-form-field class="imr-full-width">
+              <mat-label>Verfügbare Module auswählen</mat-label>
+              <mat-select formControlName="modul" (selectionChange)="onModulChange()">
                 @for (m of verfuegbareModulListe; track m.key) {
-                  <imr-option [value]="m.key">{{ m.label }}</imr-option>
+                  <mat-option [value]="m.key">{{ m.label }}</mat-option>
                 }
-              </imr-select>
-            </imr-form-field>
+              </mat-select>
+            </mat-form-field>
           </div>
 
           <div class="app-col-12 app-col-lg-12 mb-3">
             @if (formModul.controls['modul'].value === 'pdf') {
               <div [formGroup]="pdfMappingForm" class="pdf-mapping">
                 @for (ex of pdfExports; track ex.key) {
-                  <imr-form-field appearance="outline" class="imr-full-width" [label]="ex.label">
-                    <imr-select [formControlName]="ex.key" uiControlErrors>
-                      <imr-option [value]="null">Bitte auswählen</imr-option>
+                  <mat-form-field appearance="outline" class="imr-full-width">
+                    <mat-label>{{ ex.label }}</mat-label>
+                    <mat-select [formControlName]="ex.key" uiControlErrors>
+                      <mat-option [value]="null">Bitte auswählen</mat-option>
                       @for (t of pdfTemplates; track t.id) {
-                        <imr-option [value]="t.id">
+                        <mat-option [value]="t.id">
                           {{ t.typ }} v{{ t.version }} – {{ t.bezeichnung }}
-                        </imr-option>
+                        </mat-option>
                       }
-                    </imr-select>
+                    </mat-select>
 
-                  </imr-form-field>
+                  </mat-form-field>
                 }
               </div>
 
@@ -141,14 +143,16 @@
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef>Aktionen</th>
             <td mat-cell *matCellDef="let element" class="imr-action-cell">
-              <imr-button class="imr-action-btn" color="primary" (click)="auswahlBearbeiten(element)">
-                <imr-icon class="m-0">edit</imr-icon>
-              </imr-button>
+              <button mat-icon-button class="imr-action-btn" color="primary" type="button" (click)="auswahlBearbeiten(element)">
+                <mat-icon class="m-0">edit</mat-icon>
+              </button>
             </td>
           </ng-container>
           <tr mat-header-row *matHeaderRowDef="sichtbareSpalten"></tr>
           <tr mat-row *matRowDef="let row; columns: sichtbareSpalten"></tr>
         </table>
       </div>
-  </imr-section-card>
+  </imr-section>
 </imr-page-layout>
+
+

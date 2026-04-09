@@ -1,17 +1,12 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <imr-page-layout [title]="title" class="inventar-page">
-  <imr-section-card title="Inventar verwalten">
-      <imr-top-actions>
-        <imr-button
-          color="accent"
-          [hidden]="!formModul.disabled"
-          (click)="neueDetails()"
-          type="button"
-        >
+  <imr-section title="Inventar verwalten">
+      <div class="imr-top-actions">
+        <button mat-flat-button color="accent" [hidden]="!formModul.disabled" (click)="neueDetails()" type="button">
           Hinzufügen
-        </imr-button>
-      </imr-top-actions>
+        </button>
+      </div>
 
       <form
         [formGroup]="formModul"
@@ -21,62 +16,53 @@
       >
           <input hidden type="text"  formControlName="id" />
 
-          <imr-top-actions class="imr-form-actions">
-            <imr-button
-            color="accent"
-            [hidden]="!formModul.valid"
-            type="submit"
-            >
+          <div class="imr-top-actions imr-form-actions">
+            <button mat-flat-button color="accent" [hidden]="!formModul.valid" type="submit">
             Daten speichern
-            </imr-button>
-            <imr-button
-            color="primary"
-            [hidden]="formModul.disabled"
-            type="button"
-            (click)="abbrechen()"
-            >
+            </button>
+            <button mat-flat-button color="primary" [hidden]="formModul.disabled" type="button" (click)="abbrechen()">
             Zurück
-            </imr-button>
-            <imr-button
-              color="warn"
-              class="imr-delete-btn"
-              [hidden]="!formModul.controls['id'].value"
-              type="button"
-              (click)="datenLoeschen()"
-            >
+            </button>
+            <button mat-flat-button color="warn" class="imr-delete-btn" [hidden]="!formModul.controls['id'].value" type="button" (click)="datenLoeschen()">
               Daten löschen
-            </imr-button>
-          </imr-top-actions>
+            </button>
+          </div>
 
           <section class="app-grid imr-form-grid">
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="Bezeichnung">
+              <mat-form-field class="imr-full-width">
+                <mat-label>Bezeichnung</mat-label>
                 <input matInput type="text" formControlName="bezeichnung" uiControlErrors />
-              </imr-form-field>
+                <mat-hint>* Pflichtfeld</mat-hint>
+              </mat-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <imr-form-field class="imr-full-width" label="Anzahl">
+              <mat-form-field class="imr-full-width">
+                <mat-label>Anzahl</mat-label>
                 <input matInput type="number" formControlName="anzahl" />
-              </imr-form-field>
+              </mat-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <imr-form-field class="imr-full-width" label="Lagerort">
+              <mat-form-field class="imr-full-width">
+                <mat-label>Lagerort</mat-label>
                 <input matInput type="text" formControlName="lagerort" />
-              </imr-form-field>
+              </mat-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <imr-form-field class="imr-full-width" label="Wartung zuletzt erledigt">
+              <mat-form-field class="imr-full-width">
+                <mat-label>Wartung zuletzt erledigt</mat-label>
                 <input matInput type="date" formControlName="wartung_zuletzt_am" appDateInputMask="iso" />
-              </imr-form-field>
+              </mat-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <imr-form-field class="imr-full-width" label="Nächste Wartung">
+              <mat-form-field class="imr-full-width">
+                <mat-label>Nächste Wartung</mat-label>
                 <input matInput type="date" formControlName="wartung_naechstes_am" appDateInputMask="iso" />
-              </imr-form-field>
+              </mat-form-field>
             </div>
             <div class="app-col-12 app-col-lg-12 mb-3">
               <div class="leihstatus-checkbox">
-                <imr-checkbox formControlName="ist_verliehen">Aktuell verliehen</imr-checkbox>
+                <mat-checkbox formControlName="ist_verliehen">Aktuell verliehen</mat-checkbox>
               </div>
             </div>
             @if (isVerliehenAktiv()) {
@@ -84,13 +70,9 @@
               <div class="imr-lending-panel">
                 <div class="imr-lending-panel-head">
                   <strong>Verleihungen</strong>
-                  <imr-button
-                    color="primary"
-                    type="button"
-                    (click)="addVerleihungZeile()"
-                  >
+                  <button mat-flat-button color="primary" type="button" (click)="addVerleihungZeile()">
                     Verleihung hinzufügen
-                  </imr-button>
+                  </button>
                 </div>
 
                 @if (verleihungenForm.length === 0) {
@@ -100,17 +82,19 @@
                 @for (eintrag of verleihungenForm; track $index) {
                 <div class="imr-lending-row app-grid">
                   <div class="app-col-12 app-col-lg-4 mb-2">
-                    <imr-form-field class="imr-full-width" label="Entlehner">
+                    <mat-form-field class="imr-full-width">
+                      <mat-label>Entlehner</mat-label>
                       <input
                         matInput
                         type="text"
                         [(ngModel)]="eintrag.an"
                         [ngModelOptions]="{ standalone: true }"
                       />
-                    </imr-form-field>
+                    </mat-form-field>
                   </div>
                   <div class="app-col-12 app-col-lg-3 mb-2">
-                    <imr-form-field class="imr-full-width" label="Anzahl">
+                    <mat-form-field class="imr-full-width">
+                      <mat-label>Anzahl</mat-label>
                       <input
                         matInput
                         type="number"
@@ -118,10 +102,11 @@
                         [(ngModel)]="eintrag.anzahl"
                         [ngModelOptions]="{ standalone: true }"
                       />
-                    </imr-form-field>
+                    </mat-form-field>
                   </div>
                   <div class="app-col-12 app-col-lg-3 mb-2">
-                    <imr-form-field class="imr-full-width" label="Verliehen bis">
+                    <mat-form-field class="imr-full-width">
+                      <mat-label>Verliehen bis</mat-label>
                       <input
                         matInput
                         type="date"
@@ -129,16 +114,12 @@
                         [(ngModel)]="eintrag.bis"
                         [ngModelOptions]="{ standalone: true }"
                       />
-                    </imr-form-field>
+                    </mat-form-field>
                   </div>
                   <div class="app-col-12 app-col-lg-2 mb-2 imr-lending-row-remove">
-                    <imr-button
-                      color="warn"
-                      type="button"
-                      (click)="removeVerleihungZeile($index)"
-                    >
+                    <button mat-flat-button color="warn" type="button" (click)="removeVerleihungZeile($index)">
                       Entfernen
-                    </imr-button>
+                    </button>
                   </div>
                 </div>
                 }
@@ -157,21 +138,16 @@
               </mat-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <imr-button type="button" color="primary" class="upload-button" (click)="fotoUpload.click()">{{ btnText }}</imr-button>
+              <button mat-flat-button type="button" color="primary" class="upload-button" (click)="fotoUpload.click()">{{ btnText }}</button>
               <input hidden #fotoUpload type="file" id="fotoUpload" accept=".jpg,.jpeg,.png" (change)="onFotoSelected($event)" />
               <div >
                 @if (fileFound === true) {
                 <div>
                   {{ fileName }}
                 </div>
-                <imr-button
-                  color="primary"
-                  type="button"
-                  [hidden]="!formModul.controls['id'].value"
-                  (click)="openModal()"
-                >
+                <button mat-flat-button color="primary" type="button" [hidden]="!formModul.controls['id'].value" (click)="openModal()">
                   Bild öffnen
-                </imr-button>
+                </button>
                 }
               </div>
             </div>
@@ -180,9 +156,10 @@
 
       <div class="imr-table-wrap" [hidden]="!formModul.disabled">
         <div class="table-toolbar">
-          <imr-form-field class="filter-field" appearance="outline" label="Suchen">
+          <mat-form-field class="filter-field" appearance="outline">
+            <mat-label>Suchen</mat-label>
             <input matInput #input (keyup)="applyFilter(input.value)" placeholder="Bezeichnung oder Lagerort" />
-          </imr-form-field>
+          </mat-form-field>
         </div>
 
         <table
@@ -209,38 +186,15 @@
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef class="table-actions-head">Aktionen</th>
             <td mat-cell *matCellDef="let element" class="imr-action-cell">
-              <imr-button
-                class="imr-action-btn"
-                color="primary"
-                type="button"
-                (click)="auswahlBearbeiten(element)"
-                matTooltip="Artikel bearbeiten"
-                ariaLabel="Artikel bearbeiten"
-              >
-                <imr-icon class="m-0">edit</imr-icon>
-              </imr-button>
-              <imr-button
-                class="imr-action-btn"
-                color="accent"
-                type="button"
-                (click)="openAusborgenModal(element)"
-                [disabled]="getVerfuegbarFuerInventar(element) <= 0"
-                matTooltip="Direkt ausborgen"
-                ariaLabel="Direkt ausborgen"
-              >
-                <imr-icon class="m-0">assignment_returned</imr-icon>
-              </imr-button>
-              <imr-button
-                class="imr-action-btn"
-                color="warn"
-                type="button"
-                (click)="openRueckgabeModal(element)"
-                [disabled]="getAktiveVerleihungenAnzahl(element) <= 0"
-                matTooltip="Direkt Rueckgabe buchen"
-                ariaLabel="Direkt Rueckgabe buchen"
-              >
-                <imr-icon class="m-0">assignment_turned_in</imr-icon>
-              </imr-button>
+              <button mat-icon-button class="imr-action-btn" color="primary" type="button" (click)="auswahlBearbeiten(element)" matTooltip="Artikel bearbeiten" aria-label="Artikel bearbeiten">
+                <mat-icon class="m-0">edit</mat-icon>
+              </button>
+              <button mat-icon-button class="imr-action-btn" color="accent" type="button" (click)="openAusborgenModal(element)" [disabled]="getVerfuegbarFuerInventar(element) <= 0" matTooltip="Direkt ausborgen" aria-label="Direkt ausborgen">
+                <mat-icon class="m-0">assignment_returned</mat-icon>
+              </button>
+              <button mat-icon-button class="imr-action-btn" color="warn" type="button" (click)="openRueckgabeModal(element)" [disabled]="getAktiveVerleihungenAnzahl(element) <= 0" matTooltip="Direkt Rueckgabe buchen" aria-label="Direkt Rueckgabe buchen">
+                <mat-icon class="m-0">assignment_turned_in</mat-icon>
+              </button>
             </td>
           </ng-container>
           <tr mat-header-row *matHeaderRowDef="sichtbareSpalten"></tr>
@@ -248,7 +202,7 @@
           <tr class="mat-row" *matNoDataRow>
             <td class="mat-cell table-empty-cell" [attr.colspan]="sichtbareSpalten.length">
               <div class="table-empty-state compact">
-                <imr-icon class="table-empty-icon">inventory_2</imr-icon>
+                <mat-icon class="table-empty-icon">inventory_2</mat-icon>
                 <span class="table-empty-title">Keine Inventarartikel gefunden</span>
                 <span class="table-empty-copy">Bitte Filter anpassen oder neuen Artikel anlegen.</span>
               </div>
@@ -256,14 +210,14 @@
           </tr>
         </table>
 
-        <imr-paginator
+        <mat-paginator
           [pageSizeOptions]="[10, 50, 100]"
           showFirstLastButtons
           aria-label="Auswahl Anzahl der sichtbaren Elemente"
         >
-        </imr-paginator>
+        </mat-paginator>
       </div>
-  </imr-section-card>
+  </imr-section>
 </imr-page-layout>
 
 @if (ausborgenModalOffen && ausborgenArtikel) {
@@ -281,9 +235,9 @@
   >
     <header class="imr-transaction-head">
       <h3 id="ausborgen-modal-title">Inventar ausborgen</h3>
-      <imr-button variant="icon" type="button" (click)="closeAusborgenModal()" ariaLabel="Modal schließen">
-        <imr-icon>close</imr-icon>
-      </imr-button>
+      <button mat-icon-button type="button" (click)="closeAusborgenModal()" aria-label="Modal schließen">
+        <mat-icon>close</mat-icon>
+      </button>
     </header>
 
     <p class="imr-transaction-meta">
@@ -294,26 +248,29 @@
     </p>
 
     <form [formGroup]="ausborgenForm" (ngSubmit)="ausborgenSpeichern()" class="imr-transaction-form">
-      <imr-form-field class="imr-full-width" label="Entlehner">
+      <mat-form-field class="imr-full-width">
+        <mat-label>Entlehner</mat-label>
         <input matInput type="text" formControlName="an" uiControlErrors />
-      </imr-form-field>
+      </mat-form-field>
 
-      <imr-form-field class="imr-full-width" label="Anzahl">
+      <mat-form-field class="imr-full-width">
+        <mat-label>Anzahl</mat-label>
         <input matInput type="number" min="1" formControlName="anzahl" />
-      </imr-form-field>
+      </mat-form-field>
 
-      <imr-form-field class="imr-full-width" label="Verliehen bis">
+      <mat-form-field class="imr-full-width">
+        <mat-label>Verliehen bis</mat-label>
         <input matInput type="date" formControlName="bis" appDateInputMask="iso" />
-      </imr-form-field>
+      </mat-form-field>
 
-      <imr-top-actions class="imr-transaction-actions">
-        <imr-button color="primary" type="button" (click)="closeAusborgenModal()">
+      <div class="imr-transaction-actions">
+        <button mat-flat-button color="primary" type="button" (click)="closeAusborgenModal()">
           Zurück
-        </imr-button>
-        <imr-button color="accent" type="submit">
+        </button>
+        <button mat-flat-button color="accent" type="submit">
           Ausborgen speichern
-        </imr-button>
-      </imr-top-actions>
+        </button>
+      </div>
     </form>
   </section>
 </div>
@@ -334,9 +291,9 @@
   >
     <header class="imr-transaction-head">
       <h3 id="rueckgabe-modal-title">Inventar Rueckgabe</h3>
-      <imr-button variant="icon" type="button" (click)="closeRueckgabeModal()" ariaLabel="Modal schliessen">
-        <imr-icon>close</imr-icon>
-      </imr-button>
+      <button mat-icon-button type="button" (click)="closeRueckgabeModal()" aria-label="Modal schliessen">
+        <mat-icon>close</mat-icon>
+      </button>
     </header>
 
     <p class="imr-transaction-meta">
@@ -347,35 +304,37 @@
     </p>
 
     <form [formGroup]="rueckgabeForm" (ngSubmit)="rueckgabeSpeichern()" class="imr-transaction-form">
-      <imr-form-field class="imr-full-width" label="Verleihung">
-        <imr-select formControlName="eintragIndex" (selectionChange)="onRueckgabeAuswahlChange()">
+      <mat-form-field class="imr-full-width">
+        <mat-label>Verleihung</mat-label>
+        <mat-select formControlName="eintragIndex" (selectionChange)="onRueckgabeAuswahlChange()">
           @for (eintrag of rueckgabeVerleihungen; track $index) {
-          <imr-option [value]="$index">
+          <mat-option [value]="$index">
             {{ eintrag.an }} - {{ eintrag.anzahl }} Stk
             @if (eintrag.bis) {
               (bis {{ formatService.formatDatum(eintrag.bis) }})
             }
-          </imr-option>
+          </mat-option>
           }
-        </imr-select>
-      </imr-form-field>
+        </mat-select>
+      </mat-form-field>
 
-      <imr-form-field class="imr-full-width" label="Rueckgabe Anzahl">
+      <mat-form-field class="imr-full-width">
+        <mat-label>Rueckgabe Anzahl</mat-label>
         <input matInput type="number" min="1" [max]="getRueckgabeMaxMenge()" formControlName="anzahl" />
-      </imr-form-field>
+      </mat-form-field>
 
       <p class="imr-transaction-note">
         Maximal: {{ getRueckgabeMaxMenge() }} | Rest fuer diese Verleihung nach Rueckgabe: {{ getRueckgabeRestNachEingabe() }}
       </p>
 
-      <imr-top-actions class="imr-transaction-actions">
-        <imr-button color="primary" type="button" (click)="closeRueckgabeModal()">
+      <div class="imr-transaction-actions">
+        <button mat-flat-button color="primary" type="button" (click)="closeRueckgabeModal()">
           Zurück
-        </imr-button>
-        <imr-button color="warn" type="submit">
+        </button>
+        <button mat-flat-button color="warn" type="submit">
           Rueckgabe speichern
-        </imr-button>
-      </imr-top-actions>
+        </button>
+      </div>
     </form>
   </section>
 </div>
@@ -397,4 +356,6 @@
   <img class="modal-content" id="img01" [src]="filePfad" alt="Inventarbild Vorschau" />
   <div id="inventar-image-title" class="modal-caption">{{ fileName }}</div>
 </div>
+
+
 

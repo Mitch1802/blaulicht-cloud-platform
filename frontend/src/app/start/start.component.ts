@@ -3,7 +3,14 @@ import { ApiHttpService } from '../_service/api-http.service';
 import { AuthSessionService } from '../_service/auth-session.service';
 import { NavigationService } from '../_service/navigation.service';
 import { UiMessageService } from '../_service/ui-message.service';
-import { IMR_UI_COMPONENTS, ImrBreadcrumbItem } from '../imr-ui-library';
+import {
+  ImrBreadcrumbItem,
+  ImrCardComponent,
+  ImrHeaderComponent,
+  ImrPageLayoutComponent,
+  ImrSectionComponent,
+} from '../imr-ui-library';
+import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import startRegelConfig from './konfig.json';
 
@@ -36,7 +43,11 @@ type StartResponse = {
   styleUrls: ['./start.component.sass'],
   standalone: true,
   imports: [
-    ...IMR_UI_COMPONENTS,
+    ImrHeaderComponent,
+    ImrPageLayoutComponent,
+    ImrSectionComponent,
+    ImrCardComponent,
+    MatIconModule,
     RouterLink
   ]
 })

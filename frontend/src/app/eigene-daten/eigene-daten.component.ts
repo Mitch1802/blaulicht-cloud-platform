@@ -14,12 +14,12 @@ import { UiMessageService } from 'src/app/_service/ui-message.service';
 import {
   ImrBreadcrumbItem,
   ImrHeaderComponent,
-  ImrButtonComponent,
-  ImrFormFieldComponent,
   ImrPageLayoutComponent,
   ImrSectionComponent,
   UiControlErrorsDirective,
 } from '../imr-ui-library';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatButtonModule } from '@angular/material/button';
 
 type EigeneDatenResponse = {
   id: string;
@@ -34,10 +34,10 @@ type EigeneDatenResponse = {
     FormsModule, 
     ReactiveFormsModule, 
     MatInputModule,
-    ImrFormFieldComponent,
     UiControlErrorsDirective,
     ImrSectionComponent,
-    ImrButtonComponent,
+    MatFormFieldModule,
+    MatButtonModule
   ],
   templateUrl: './eigene-daten.component.html',
   styleUrl: './eigene-daten.component.sass'

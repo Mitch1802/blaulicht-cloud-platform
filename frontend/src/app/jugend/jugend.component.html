@@ -1,19 +1,19 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <imr-page-layout [title]="title" class="jugend-page">
-  <imr-tab-group (selectedIndexChange)="onTabChange($event)">
+  <mat-tab-group (selectedIndexChange)="onTabChange($event)">
 
     <!-- Tab 1: Mitglieder -->
-    <imr-tab label="Mitglieder">
+    <mat-tab label="Mitglieder">
 
       @if (showMitgliedDetail && selectedMitglied) {
         <div class="mitglied-detail-view">
-          <imr-top-actions class="imr-form-actions">
-            <imr-button color="primary" type="button" (click)="mitgliedDetailZurueck()">Zurück</imr-button>
+          <div class="imr-form-actions">
+            <button mat-flat-button color="primary" type="button" (click)="mitgliedDetailZurueck()">Zurück</button>
             @if (kannUeberstelltWerden(selectedMitglied)) {
-              <imr-button color="accent" type="button" (click)="ueberstellen(selectedMitglied)">Überstellen</imr-button>
+              <button mat-flat-button color="accent" type="button" (click)="ueberstellen(selectedMitglied)">Überstellen</button>
             }
-          </imr-top-actions>
+          </div>
 
           <section class="mitglied-summary">
             <div class="summary-title">
@@ -151,9 +151,9 @@
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef>Aktionen</th>
               <td mat-cell *matCellDef="let element" class="imr-action-cell">
-                <imr-button class="imr-action-btn" color="primary" (click)="viewMitglied(element)">
-                  <imr-icon class="m-0">visibility</imr-icon>
-                </imr-button>
+                <button mat-flat-button class="imr-action-btn" color="primary" (click)="viewMitglied(element)">
+                  <mat-icon class="m-0">visibility</mat-icon>
+                </button>
               </td>
             </ng-container>
 
@@ -162,46 +162,50 @@
           </table>
         </div>
       }
-    </imr-tab>
+    </mat-tab>
 
     <!-- Tab 2: Events -->
-    <imr-tab label="Events">
+    <mat-tab label="Events">
 
       @if (!showEventForm) {
-        <imr-top-actions class="actions-top">
-          <imr-button color="accent" type="button" (click)="neuesEvent()">Neues Event</imr-button>
-        </imr-top-actions>
+        <div class="actions-top">
+          <button mat-flat-button color="accent" type="button" (click)="neuesEvent()">Neues Event</button>
+        </div>
       }
 
       @if (showEventForm) {
         <form [formGroup]="formEvent" (ngSubmit)="speichernEvent()" class="edit-form">
-          <imr-top-actions class="imr-form-actions">
-            <imr-button color="accent" type="submit">Event speichern</imr-button>
-            <imr-button color="warn" type="button" [hidden]="!formEvent.controls['id'].value" (click)="eventLoeschen()">Löschen</imr-button>
-            <imr-button color="primary" type="button" (click)="eventFormAbbrechen()">Abbrechen</imr-button>
-          </imr-top-actions>
+          <div class="imr-form-actions">
+            <button mat-flat-button color="accent" type="submit">Event speichern</button>
+            <button mat-flat-button color="warn" type="button" [hidden]="!formEvent.controls['id'].value" (click)="eventLoeschen()">Löschen</button>
+            <button mat-flat-button color="primary" type="button" (click)="eventFormAbbrechen()">Abbrechen</button>
+          </div>
 
           <section class="app-grid imr-form-grid">
             <div class="app-col-12 app-col-lg-6">
-              <imr-form-field class="imr-full-width" hintLabel="* Pflichtfeld" label="Datum">
+              <mat-form-field class="imr-full-width">
+                <mat-label>Datum</mat-label>
+                <mat-hint>* Pflichtfeld</mat-hint>
                 <input matInput formControlName="datum" appDateInputMask="dmy" placeholder="TT.MM.YYYY" />
-              </imr-form-field>
+              </mat-form-field>
             </div>
 
             <div class="app-col-12 app-col-lg-6">
-              <imr-form-field class="imr-full-width" hintLabel="* Pflichtfeld" label="Art">
-                <imr-select formControlName="kategorie" [disabled]="!isDatumFilled()" (selectionChange)="onEventKategorieGeaendert()">
+              <mat-form-field class="imr-full-width">
+                <mat-label>Art</mat-label>
+                <mat-hint>* Pflichtfeld</mat-hint>
+                <mat-select formControlName="kategorie" [disabled]="!isDatumFilled()" (selectionChange)="onEventKategorieGeaendert()">
                   @for (option of eventKategorien; track option.value) {
-                    <imr-option [value]="option.value">{{ option.label }}</imr-option>
+                    <mat-option [value]="option.value">{{ option.label }}</mat-option>
                   }
-                </imr-select>
-              </imr-form-field>
+                </mat-select>
+              </mat-form-field>
             </div>
 
             <div class="app-col-12 app-col-lg-12">
-              <imr-checkbox formControlName="stand_x_override" (change)="onStandXOverrideGeaendert()">
+              <mat-checkbox formControlName="stand_x_override" (change)="onStandXOverrideGeaendert()">
                 Voraussetzungen für dieses Event außer Kraft setzen
-              </imr-checkbox>
+              </mat-checkbox>
             </div>
 
             @if (isVoraussetzungenOverrideAktiv()) {
@@ -213,13 +217,14 @@
             }
 
             <div class="app-col-12 app-col-lg-12">
-              <imr-form-field class="imr-full-width" label="Teilnehmer">
-                <imr-select formControlName="teilnehmer_ids" multiple [disabled]="!isDatumFilled()" (selectionChange)="onEventTeilnehmerAuswahlGeaendert()">
+              <mat-form-field class="imr-full-width">
+                <mat-label>Teilnehmer</mat-label>
+                <mat-select formControlName="teilnehmer_ids" multiple [disabled]="!isDatumFilled()" (selectionChange)="onEventTeilnehmerAuswahlGeaendert()">
                   @for (member of sortedJugendMitglieder; track member.pkid) {
-                    <imr-option [value]="member.pkid">{{ getMitgliedMitRangText(member) }}</imr-option>
+                    <mat-option [value]="member.pkid">{{ getMitgliedMitRangText(member) }}</mat-option>
                   }
-                </imr-select>
-              </imr-form-field>
+                </mat-select>
+              </mat-form-field>
             </div>
 
             @if (getAusgewaehlteEventMitglieder().length > 0) {
@@ -235,18 +240,19 @@
                           (Alter bei Event: {{ getAlterBeimEvent(member, formEvent.controls.datum.value) }})
                         </span>
                       </div>
-                      <imr-form-field class="teilnehmer-level-field" label="Level">
-                        <imr-select
+                      <mat-form-field class="teilnehmer-level-field">
+                        <mat-label>Level</mat-label>
+                        <mat-select
                           [disabled]="getLevelOptionenForMitglied(member).length === 0"
                           [value]="getTeilnehmerLevel(member.pkid)"
                           (selectionChange)="setTeilnehmerLevel(member.pkid, $event.value)"
                         >
-                          <imr-option [value]="null">nicht angetreten</imr-option>
+                          <mat-option [value]="null">nicht angetreten</mat-option>
                           @for (level of getLevelOptionenForMitglied(member); track level) {
-                            <imr-option [value]="level">{{ getLevelLabel(level) }}</imr-option>
+                            <mat-option [value]="level">{{ getLevelLabel(level) }}</mat-option>
                           }
-                        </imr-select>
-                      </imr-form-field>
+                        </mat-select>
+                      </mat-form-field>
 
                       @if (getLevelOptionenForMitglied(member).length === 0) {
                         <div class="teilnehmer-level-hinweis">Keine erlaubte Stufe laut Voraussetzungen.</div>
@@ -258,9 +264,10 @@
             }
 
             <div class="app-col-12 app-col-lg-12">
-              <imr-form-field class="imr-full-width" label="Ort">
+              <mat-form-field class="imr-full-width">
+                <mat-label>Ort</mat-label>
                 <input matInput formControlName="ort" [disabled]="!isDatumFilled()" />
-              </imr-form-field>
+              </mat-form-field>
             </div>
           </section>
         </form>
@@ -287,9 +294,9 @@
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef>Aktionen</th>
               <td mat-cell *matCellDef="let element" class="imr-action-cell">
-                <imr-button class="imr-action-btn" color="primary" (click)="editEvent(element)">
-                  <imr-icon class="m-0">edit</imr-icon>
-                </imr-button>
+                <button mat-flat-button class="imr-action-btn" color="primary" (click)="editEvent(element)">
+                  <mat-icon class="m-0">edit</mat-icon>
+                </button>
               </td>
             </ng-container>
 
@@ -298,7 +305,10 @@
           </table>
         </div>
       }
-    </imr-tab>
+    </mat-tab>
 
-  </imr-tab-group>
+  </mat-tab-group>
 </imr-page-layout>
+
+
+

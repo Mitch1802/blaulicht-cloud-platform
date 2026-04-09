@@ -1,14 +1,17 @@
 ﻿import { Component, HostListener, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { IMR_UI_COMPONENTS } from '../imr-ui-library';
-import { MatInput } from '@angular/material/input';
 import { environment } from 'src/environments/environment';
 import { CommonModule } from '@angular/common';
 import { finalize, switchMap } from 'rxjs';
 import { ApiHttpService } from '../_service/api-http.service';
 import { UiMessageService } from '../_service/ui-message.service';
 import { AuthSessionService } from '../_service/auth-session.service';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { ImrCardComponent } from '../imr-ui-library';
 
 type VersionInfo = {
   version: string;
@@ -18,16 +21,19 @@ type VersionInfo = {
 };
 
 @Component({
-    selector: 'app-login',
-    templateUrl: './login.component.html',
-    styleUrls: ['./login.component.sass'],
-    imports: [
-      CommonModule,
-      FormsModule,
-      ReactiveFormsModule,
-      ...IMR_UI_COMPONENTS,
-      MatInput,
-    ]
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.sass'],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule, 
+    MatInputModule, 
+    MatButtonModule, 
+    MatIconModule,
+    ImrCardComponent
+  ]
 })
 
 export class LoginComponent implements OnInit {

@@ -1,1 +1,0 @@
-export * from './imr-list/imr-list.component'

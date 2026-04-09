@@ -1,19 +1,19 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <imr-page-layout title="Externe Fahrzeug-Checkliste" class="public-fahrzeug-page">
-  <imr-section-card title="Checkliste ohne Speichern">
+  <imr-section title="Checkliste ohne Speichern">
 
 
       @if (verified) {
-        <imr-top-actions class="actions-top">
-          <imr-button color="primary" type="button" (click)="logoutPublic()">
-            <imr-icon>logout</imr-icon>
+        <div class="imr-top-actions actions-top">
+          <button mat-flat-button color="primary" type="button" (click)="logoutPublic()">
+            <mat-icon>logout</mat-icon>
             PIN vergessen
-          </imr-button>
-        </imr-top-actions>
+          </button>
+        </div>
       }
       @if (loading) {
-        <imr-progress-bar mode="indeterminate" class="mb-3"></imr-progress-bar>
+        <mat-progress-bar mode="indeterminate" class="mb-3"></mat-progress-bar>
       }
 
       @if (!verified) {
@@ -22,18 +22,19 @@
 
           <form [formGroup]="pinForm" class="pin-form app-grid">
             <div class="app-col-12">
-              <imr-form-field class="pin-field" label="PIN">
+              <mat-form-field class="pin-field">
+                <mat-label>PIN</mat-label>
                 <input matInput type="password" inputmode="numeric" formControlName="pin" />
-              </imr-form-field>
+              </mat-form-field>
             </div>
 
             <div class="app-col-12 pin-action">
-              <imr-top-actions>
-                <imr-button color="primary" type="button" (click)="verifyPin()" [disabled]="loading">
-                  <imr-icon>lock_open</imr-icon>
+              <div class="imr-top-actions">
+                <button mat-flat-button color="primary" type="button" (click)="verifyPin()" [disabled]="loading">
+                  <mat-icon>lock_open</mat-icon>
                   Freischalten
-                </imr-button>
-              </imr-top-actions>
+                </button>
+              </div>
             </div>
           </form>
         </section>
@@ -45,27 +46,23 @@
           </p>
 
           <form [formGroup]="auswahlForm" class="selection-form">
-            <imr-form-field class="selection-field" label="Fahrzeug">
-              <imr-select formControlName="public_id">
+            <mat-form-field class="selection-field">
+              <mat-label>Fahrzeug</mat-label>
+              <mat-select formControlName="public_id">
                 @for (fahrzeugOpt of fahrzeugOptionen; track fahrzeugOpt.public_id) {
-                  <imr-option [value]="fahrzeugOpt.public_id">
+                  <mat-option [value]="fahrzeugOpt.public_id">
                     {{ fahrzeugOpt.name }} - {{ fahrzeugOpt.bezeichnung }}
-                  </imr-option>
+                  </mat-option>
                 }
-              </imr-select>
-            </imr-form-field>
+              </mat-select>
+            </mat-form-field>
 
-            <imr-top-actions>
-              <imr-button
-                color="primary"
-                type="button"
-                (click)="openSelectedFahrzeug()"
-                [disabled]="loading"
-              >
-                <imr-icon>checklist</imr-icon>
+            <div class="imr-top-actions">
+              <button mat-flat-button color="primary" type="button" (click)="openSelectedFahrzeug()" [disabled]="loading">
+                <mat-icon>checklist</mat-icon>
                 Checkliste öffnen
-              </imr-button>
-            </imr-top-actions>
+              </button>
+            </div>
           </form>
 
           @if (!loading && fahrzeugOptionen.length === 0) {
@@ -80,24 +77,24 @@
           </div>
 
           @if (publicId === '') {
-            <imr-button color="primary" type="button" (click)="backToSelection()">
-              <imr-icon>arrow_back</imr-icon>
+            <button mat-flat-button color="primary" type="button" (click)="backToSelection()">
+              <mat-icon>arrow_back</mat-icon>
               Fahrzeug wechseln
-            </imr-button>
+            </button>
           }
         </section>
 
         <p class="local-hint">Hinweis: Dieser Check ist nur lokal im Browser (kein Speichern).</p>
 
-        <imr-divider class="mb-2"></imr-divider>
+        <mat-divider class="mb-2"></mat-divider>
 
-        <imr-accordion class="check-accordion" multi>
+        <mat-accordion class="check-accordion" multi>
           @for (raum of fahrzeug.raeume; track raum.name) {
-            <imr-expansion-panel>
-              
-                <imr-panel-title>{{ raum.name }}</imr-panel-title>
-                <imr-panel-description>{{ raum.items.length }} Items</imr-panel-description>
-              
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>{{ raum.name }}</mat-panel-title>
+                <mat-panel-description>{{ raum.items.length }} Items</mat-panel-description>
+              </mat-expansion-panel-header>
 
               @for (item of raum.items; track item.reihenfolge) {
                 <article class="check-item">
@@ -110,40 +107,46 @@
                   </div>
 
                   <div class="item-controls">
-                    <imr-form-field class="status-field" label="Status">
-                      <imr-select
+                    <mat-form-field class="status-field">
+                      <mat-label>Status</mat-label>
+                      <mat-select
                         [value]="draft[getKey(raum.name, item)]?.status ?? 'ok'"
                         (selectionChange)="setStatus(raum.name, item, $any($event.value))"
                       >
                         @for (opt of statusOptions; track opt.value) {
-                          <imr-option [value]="opt.value">{{ opt.label }}</imr-option>
+                          <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
                         }
-                      </imr-select>
-                    </imr-form-field>
+                      </mat-select>
+                    </mat-form-field>
 
-                    <imr-form-field class="ist-field" label="Ist-Menge">
+                    <mat-form-field class="ist-field">
+                      <mat-label>Ist-Menge</mat-label>
                       <input
                         matInput
                         type="number"
                         [value]="draft[getKey(raum.name, item)]?.menge_aktuel ?? ''"
                         (input)="setIst(raum.name, item, $any($event.target).value)"
                       />
-                    </imr-form-field>
+                    </mat-form-field>
                   </div>
 
-                  <imr-form-field class="note-field" label="Check-Notiz">
+                  <mat-form-field class="note-field">
+                    <mat-label>Check-Notiz</mat-label>
                     <input
                       matInput
                       [value]="draft[getKey(raum.name, item)]?.notiz ?? ''"
                       (input)="setNotiz(raum.name, item, $any($event.target).value)"
                     />
-                  </imr-form-field>
+                  </mat-form-field>
                 </article>
               }
-            </imr-expansion-panel>
+            </mat-expansion-panel>
           }
-        </imr-accordion>
+        </mat-accordion>
       }
 
-  </imr-section-card>
+  </imr-section>
 </imr-page-layout>
+
+
+

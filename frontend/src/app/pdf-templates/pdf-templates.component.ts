@@ -17,8 +17,16 @@ import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
-import { IMR_UI_COMPONENTS, ImrBreadcrumbItem } from '../imr-ui-library';
+import {
+  ImrBreadcrumbItem,
+  ImrHeaderComponent,
+  ImrPageLayoutComponent,
+  ImrSectionComponent,
+  UiControlErrorsDirective,
+} from '../imr-ui-library';
 import { FormatService } from '../helpers/format.service';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
@@ -33,10 +41,15 @@ type PdfTemplateApiItem = IPdfTemplate & {
 @Component({
   selector: 'app-pdf-templates',
   imports: [
-    ...IMR_UI_COMPONENTS,
+    ImrHeaderComponent,
+    ImrPageLayoutComponent,
+    ImrSectionComponent,
+    UiControlErrorsDirective,
     FormsModule,
     ReactiveFormsModule,
     MatFormFieldModule,
+    MatButtonModule,
+    MatIconModule,
     MatInputModule,
     MatTableModule,
     MatSortModule,

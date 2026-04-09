@@ -5,16 +5,15 @@ import { CollectionUtilsService } from 'src/app/_service/collection-utils.servic
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
 import {
-  ImrButtonComponent,
   ImrBreadcrumbItem,
-  ImrCheckboxComponent,
-  ImrFormFieldComponent,
+  ImrCardComponent,
   ImrHeaderComponent,
   ImrPageLayoutComponent,
-  ImrSectionCardComponent,
-  ImrTopActionsComponent,
   UiControlErrorsDirective,
 } from '../../imr-ui-library';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTabsModule } from '@angular/material/tabs';
 import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { MatError } from '@angular/material/form-field';
@@ -36,16 +35,15 @@ type AtemschutzGeraeteKontextResponse = { main: IAtemschutzGeraet[]; fmd: FmdAte
 @Component({
   selector: 'app--atemschutzgeraete',
   imports: [
-    ImrButtonComponent,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatFormFieldModule,
+    ImrCardComponent,
     ImrHeaderComponent,
     ImrPageLayoutComponent,
-    ImrSectionCardComponent,
-    ImrTopActionsComponent,
     MatTabsModule,
     FormsModule,
     ReactiveFormsModule,
-    ImrCheckboxComponent,
-    ImrFormFieldComponent,
     UiControlErrorsDirective,
     MatSelect,
     MatOption,

@@ -1,27 +1,28 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <imr-page-layout title="Fahrzeuge verwalten" class="fahrzeug-page">
-  <imr-section-card title="Fahrzeuge & Beladung">
+  <imr-card title="Fahrzeuge & Beladung">
       @if (!editorOpen && !inventarEditorOpen) {
-        <imr-top-actions class="mb-3">
+        <div class="mb-3">
           <a mat-flat-button color="primary" [routerLink]="['/public/fahrzeuge']" target="_blank" rel="noopener">
             Externe Checkliste öffnen
           </a>
 
-          <imr-button color="accent" type="button" (click)="newFahrzeug()">
-            <imr-icon>add</imr-icon>
+          <button mat-flat-button color="accent" type="button" (click)="newFahrzeug()">
+            <mat-icon>add</mat-icon>
             Hinzufügen
-          </imr-button>
-        </imr-top-actions>
+          </button>
+        </div>
       }
 
       @if (!editorOpen && !inventarEditorOpen) {
         <imr-card class="imr-card">
-          <imr-card-header>
-            <imr-card-title>Fahrzeugliste</imr-card-title>
-          </imr-card-header>
+          <mat-card-header>
+            <mat-card-title>Fahrzeugliste</mat-card-title>
+          </mat-card-header>
             <div class="table-toolbar">
-              <imr-form-field class="filter-field" appearance="outline" label="Fahrzeuge filtern">
+              <mat-form-field class="filter-field" appearance="outline">
+                <mat-label>Fahrzeuge filtern</mat-label>
                 <input
                   #fahrzeugFilterInput
                   matInput
@@ -29,7 +30,7 @@
                   (input)="applyFahrzeugFilter(fahrzeugFilterInput.value)"
                   placeholder="Name"
                 />
-              </imr-form-field>
+              </mat-form-field>
             </div>
 
             <div class="imr-table-wrap">
@@ -43,35 +44,35 @@
                   <th mat-header-cell *matHeaderCellDef class="table-actions-head">Aktionen</th>
                   <td mat-cell *matCellDef="let row" class="imr-action-cell">
                     <div class="list-actions">
-                      <imr-button
+                      <button mat-flat-button
                         class="imr-action-btn"
                         color="primary"
                         type="button"
                         (click)="editFahrzeug(row)"
                         [attr.aria-label]="'Fahrzeug bearbeiten: ' + row.name"
                       >
-                        <imr-icon>edit</imr-icon>
-                      </imr-button>
+                        <mat-icon>edit</mat-icon>
+                      </button>
 
-                      <imr-button
+                      <button mat-flat-button
                         class="imr-action-btn"
                         color="accent"
                         type="button"
                         (click)="openInventarFromList(row)"
                         [attr.aria-label]="'Inventar öffnen: ' + row.name"
                       >
-                        <imr-icon>inventory_2</imr-icon>
-                      </imr-button>
+                        <mat-icon>inventory_2</mat-icon>
+                      </button>
 
-                      <imr-button
+                      <button mat-flat-button
                         class="imr-action-btn"
                         color="primary"
                         type="button"
                         (click)="openCheckFromList(row)"
                         [attr.aria-label]="'Checkliste öffnen: ' + row.name"
                       >
-                        <imr-icon>checklist</imr-icon>
-                      </imr-button>
+                        <mat-icon>checklist</mat-icon>
+                      </button>
                     </div>
                   </td>
                 </ng-container>
@@ -81,7 +82,7 @@
                 <tr class="mat-row" *matNoDataRow>
                   <td class="mat-cell table-empty-cell" [attr.colspan]="sichtbareSpalten.length">
                     <div class="table-empty-state compact">
-                      <imr-icon class="table-empty-icon">directions_car</imr-icon>
+                      <mat-icon class="table-empty-icon">directions_car</mat-icon>
                       <div class="table-empty-title">Keine Fahrzeuge gefunden</div>
                       <div class="table-empty-copy">Passe den Filter an oder lege ein neues Fahrzeug an.</div>
                     </div>
@@ -90,31 +91,35 @@
               </table>
             </div>
 
-            <imr-paginator [pageSize]="10"></imr-paginator>
+            <mat-paginator [pageSize]="10"></mat-paginator>
         </imr-card>
       }
 
       @if (editorOpen) {
         <imr-card class="imr-card">
-          <imr-card-header>
-            <imr-card-title>{{ selectedId ? 'Fahrzeug bearbeiten' : 'Neues Fahrzeug' }}</imr-card-title>
-          </imr-card-header>
+          <mat-card-header>
+            <mat-card-title>{{ selectedId ? 'Fahrzeug bearbeiten' : 'Neues Fahrzeug' }}</mat-card-title>
+          </mat-card-header>
             <form [formGroup]="fahrzeugForm" class="imr-form-grid mb-3">
-              <imr-form-field label="Name">
+              <mat-form-field>
+                <mat-label>Name</mat-label>
                 <input matInput formControlName="name" />
-              </imr-form-field>
+              </mat-form-field>
 
-              <imr-form-field label="Bezeichnung">
+              <mat-form-field>
+                <mat-label>Bezeichnung</mat-label>
                 <input matInput formControlName="bezeichnung" />
-              </imr-form-field>
+              </mat-form-field>
 
-              <imr-form-field label="Service zuletzt erledigt">
+              <mat-form-field>
+                <mat-label>Service zuletzt erledigt</mat-label>
                 <input matInput type="date" formControlName="service_zuletzt_am" appDateInputMask="iso" />
-              </imr-form-field>
+              </mat-form-field>
 
-              <imr-form-field label="Nächstes Service">
+              <mat-form-field>
+                <mat-label>Nächstes Service</mat-label>
                 <input matInput type="date" formControlName="service_naechstes_am" appDateInputMask="iso" />
-              </imr-form-field>
+              </mat-form-field>
 
               <mat-form-field appearance="outline" class="imr-full-width" subscriptSizing="dynamic">
                 <mat-label>Beschreibung</mat-label>
@@ -140,95 +145,95 @@
                     accept=".jpg,.jpeg,.png"
                     (change)="onFahrzeugFotoSelected($event)"
                   />
-                  <imr-button
+                  <button mat-flat-button
                     type="button"
                     color="primary"
                     class="upload-button"
                     (click)="fahrzeugFotoUpload.click()"
                   >
                     Datei auswählen
-                  </imr-button>
+                  </button>
                   @if (fahrzeugFotoName) {
                     <span class="file-name">{{ fahrzeugFotoName }}</span>
                   }
                 </div>
 
                 @if (selectedId && selected?.foto_url) {
-                  <imr-button color="warn" type="button" (click)="removeFahrzeugFoto()">
-                    <imr-icon>delete</imr-icon>
+                  <button mat-flat-button color="warn" type="button" (click)="removeFahrzeugFoto()">
+                    <mat-icon>delete</mat-icon>
                     Foto entfernen
-                  </imr-button>
+                  </button>
                 }
               </div>
 
-              <imr-top-actions class="actions-row imr-full-width">
-                <imr-button
+              <div class="actions-row imr-full-width">
+                <button mat-flat-button
                   color="accent"
                   type="button"
                   [hidden]="!fahrzeugForm.valid"
                   (click)="saveFahrzeug()"
                 >
-                  <imr-icon>save</imr-icon>
+                  <mat-icon>save</mat-icon>
                   Daten speichern
-                </imr-button>
+                </button>
 
-                <imr-button color="primary" type="button" (click)="closeEditor()">
+                <button mat-flat-button color="primary" type="button" (click)="closeEditor()">
                   Abbrechen
-                </imr-button>
+                </button>
 
                 @if (selectedId) {
-                  <imr-button color="primary" type="button" (click)="openInventarFromEditor()">
-                    <imr-icon>inventory_2</imr-icon>
+                  <button mat-flat-button color="primary" type="button" (click)="openInventarFromEditor()">
+                    <mat-icon>inventory_2</mat-icon>
                     Inventar bearbeiten
-                  </imr-button>
+                  </button>
                 }
 
                 @if (selectedId) {
                   <a mat-flat-button color="primary" [routerLink]="['/fahrzeuge', selectedId, 'check']">
-                    <imr-icon>checklist</imr-icon>
+                    <mat-icon>checklist</mat-icon>
                     Check öffnen
                   </a>
                 }
-              </imr-top-actions>
+              </div>
             </form>
 
-            <imr-button
+            <button mat-flat-button
               color="warn"
               class="imr-delete-btn"
               [hidden]="!selectedId"
               type="button"
               (click)="deleteSelectedFahrzeug()"
             >
-              <imr-icon>delete</imr-icon>
+              <mat-icon>delete</mat-icon>
               Daten löschen
-            </imr-button>
+            </button>
         </imr-card>
       }
 
       @if (inventarEditorOpen) {
         <imr-card class="imr-card inventar-card">
-          <imr-card-header>
-            <imr-card-title>Inventar bearbeiten</imr-card-title>
-          </imr-card-header>
+          <mat-card-header>
+            <mat-card-title>Inventar bearbeiten</mat-card-title>
+          </mat-card-header>
             <div class="inventar-toolbar mb-3">
-              <imr-button color="primary" type="button" (click)="backToFahrzeugEditor()">
-                <imr-icon>arrow_back</imr-icon>
+              <button mat-flat-button color="primary" type="button" (click)="backToFahrzeugEditor()">
+                <mat-icon>arrow_back</mat-icon>
                 Zum Fahrzeug
-              </imr-button>
+              </button>
 
-              <imr-button color="primary" type="button" (click)="closeEditor()">
+              <button mat-flat-button color="primary" type="button" (click)="closeEditor()">
                 Zur Liste
-              </imr-button>
+              </button>
 
-              <imr-button variant="stroked"
+              <button mat-flat-button
                 type="button"
                 class="inventar-toggle-btn"
                 [class.is-compact]="inventarAnsicht === 'kompakt'"
                 (click)="toggleInventarAnsicht()"
               >
-                <imr-icon>{{ inventarAnsicht === 'kompakt' ? 'view_agenda' : 'view_stream' }}</imr-icon>
+                <mat-icon>{{ inventarAnsicht === 'kompakt' ? 'view_agenda' : 'view_stream' }}</mat-icon>
                 {{ inventarAnsicht === 'kompakt' ? 'Detailansicht' : 'Kompaktansicht' }}
-              </imr-button>
+              </button>
             </div>
 
             <p class="inventar-subheadline">Beladung pro Fahrzeugraum</p>
@@ -261,13 +266,15 @@
                 </div>
 
                 <form [formGroup]="raumForm" class="raum-create-form">
-                  <imr-form-field label="Raumname">
+                  <mat-form-field>
+                    <mat-label>Raumname</mat-label>
                     <input matInput formControlName="name" />
-                  </imr-form-field>
+                  </mat-form-field>
 
-                  <imr-form-field label="Reihenfolge">
+                  <mat-form-field>
+                    <mat-label>Reihenfolge</mat-label>
                     <input matInput type="number" formControlName="reihenfolge" />
-                  </imr-form-field>
+                  </mat-form-field>
 
                   <div class="upload-row">
                     <label class="upload-label" for="newRaumFotoDatei">Raumfoto</label>
@@ -279,49 +286,51 @@
                       accept=".jpg,.jpeg,.png"
                       (change)="onNewRaumFotoSelected($event)"
                     />
-                    <imr-button
+                    <button mat-flat-button
                       type="button"
                       color="primary"
                       class="upload-button"
                       (click)="newRaumFotoUpload.click()"
                     >
                       Datei auswählen
-                    </imr-button>
+                    </button>
                     @if (neuerRaumFotoName) {
                       <span class="file-name">{{ neuerRaumFotoName }}</span>
                     }
                   </div>
 
-                  <imr-top-actions>
-                    <imr-button color="accent" type="button" (click)="addRaum()">
-                      <imr-icon>add</imr-icon>
+                  <div>
+                    <button mat-flat-button color="accent" type="button" (click)="addRaum()">
+                      <mat-icon>add</mat-icon>
                       Raum anlegen
-                    </imr-button>
-                  </imr-top-actions>
+                    </button>
+                  </div>
                 </form>
               </section>
 
               @if (f.raeume.length === 0) {
                 <div class="inventar-empty">Noch keine Räume vorhanden. Lege zuerst einen Raum an.</div>
               } @else {
-                <imr-accordion class="inventar-accordion" [multi]="true">
+                <mat-accordion class="inventar-accordion" [multi]="true">
                   @for (raum of f.raeume; track raum.id) {
-                    <imr-expansion-panel class="room-panel">
-                        <imr-panel-title>
+                    <mat-expansion-panel class="room-panel">
+                        <mat-panel-title>
                           {{ raum.name }}
-                        </imr-panel-title>
-                        <imr-panel-description>
+                        </mat-panel-title>
+                        <mat-panel-description>
                           #{{ raum.reihenfolge }} | {{ raum.items.length }} Items
-                        </imr-panel-description>
+                        </mat-panel-description>
 
                       <form [formGroup]="raumEditFormFor(raum)" class="raum-edit-form mb-3">
-                        <imr-form-field label="Raumname">
+                        <mat-form-field>
+                          <mat-label>Raumname</mat-label>
                           <input matInput formControlName="name" />
-                        </imr-form-field>
+                        </mat-form-field>
 
-                        <imr-form-field label="Reihenfolge">
+                        <mat-form-field>
+                          <mat-label>Reihenfolge</mat-label>
                           <input matInput type="number" formControlName="reihenfolge" />
-                        </imr-form-field>
+                        </mat-form-field>
 
                         <div class="room-photo-wrap">
                           @if (raum.foto_url) {
@@ -338,14 +347,14 @@
                               accept=".jpg,.jpeg,.png"
                               (change)="onRaumFotoSelected(raum.id, $event)"
                             />
-                            <imr-button
+                            <button mat-flat-button
                               type="button"
                               color="primary"
                               class="upload-button"
                               (click)="raumFotoUpload.click()"
                             >
                               Datei auswählen
-                            </imr-button>
+                            </button>
 
                             @if (raumFotoNameFor(raum.id)) {
                               <span class="file-name">{{ raumFotoNameFor(raum.id) }}</span>
@@ -353,24 +362,24 @@
                           </div>
                         </div>
 
-                        <imr-top-actions class="raum-actions">
-                          <imr-button color="accent" type="button" (click)="saveRaum(raum)">
-                            <imr-icon>save</imr-icon>
+                        <div class="raum-actions">
+                          <button mat-flat-button color="accent" type="button" (click)="saveRaum(raum)">
+                            <mat-icon>save</mat-icon>
                             Raum speichern
-                          </imr-button>
+                          </button>
 
                           @if (raum.foto_url) {
-                            <imr-button color="primary" type="button" (click)="removeRaumFoto(raum)">
-                              <imr-icon>image_not_supported</imr-icon>
+                            <button mat-flat-button color="primary" type="button" (click)="removeRaumFoto(raum)">
+                              <mat-icon>image_not_supported</mat-icon>
                               Raumfoto entfernen
-                            </imr-button>
+                            </button>
                           }
 
-                          <imr-button color="warn" type="button" (click)="deleteRaum(raum)">
-                            <imr-icon>delete</imr-icon>
+                          <button mat-flat-button color="warn" type="button" (click)="deleteRaum(raum)">
+                            <mat-icon>delete</mat-icon>
                             Raum löschen
-                          </imr-button>
-                        </imr-top-actions>
+                          </button>
+                        </div>
                       </form>
 
                       <div class="items-area">
@@ -408,7 +417,7 @@
                           }
 
                           <div class="compact-hint">
-                            <imr-icon>info</imr-icon>
+                            <mat-icon>info</mat-icon>
                             Für Bearbeitung und neue Einträge bitte auf Detailansicht wechseln.
                           </div>
                         } @else {
@@ -418,98 +427,115 @@
 
                           @for (item of raum.items; track item.id) {
                             <form [formGroup]="itemEditFormFor(item)" class="item-edit-form mb-2">
-                              <imr-form-field class="item-field-name" label="Item Name">
+                              <mat-form-field class="item-field-name">
+                                <mat-label>Item Name</mat-label>
                                 <input matInput formControlName="name" />
-                              </imr-form-field>
+                              </mat-form-field>
 
-                              <imr-form-field class="item-field-menge" label="Menge">
+                              <mat-form-field class="item-field-menge">
+                                <mat-label>Menge</mat-label>
                                 <input matInput type="number" formControlName="menge" />
-                              </imr-form-field>
+                              </mat-form-field>
 
-                              <imr-form-field class="item-field-einheit" label="Einheit">
+                              <mat-form-field class="item-field-einheit">
+                                <mat-label>Einheit</mat-label>
                                 <input matInput formControlName="einheit" />
-                              </imr-form-field>
+                              </mat-form-field>
 
-                              <imr-form-field class="item-field-wartung-zuletzt" label="Wartung zuletzt erledigt">
+                              <mat-form-field class="item-field-wartung-zuletzt">
+                                <mat-label>Wartung zuletzt erledigt</mat-label>
                                 <input matInput type="date" formControlName="wartung_zuletzt_am" appDateInputMask="iso" />
-                              </imr-form-field>
+                              </mat-form-field>
 
-                              <imr-form-field class="item-field-wartung-naechstes" label="Nächste Wartung">
+                              <mat-form-field class="item-field-wartung-naechstes">
+                                <mat-label>Nächste Wartung</mat-label>
                                 <input matInput type="date" formControlName="wartung_naechstes_am" appDateInputMask="iso" />
-                              </imr-form-field>
+                              </mat-form-field>
 
-                              <imr-form-field class="item-field-reihenfolge" label="Reihenfolge">
+                              <mat-form-field class="item-field-reihenfolge">
+                                <mat-label>Reihenfolge</mat-label>
                                 <input matInput type="number" formControlName="reihenfolge" />
-                              </imr-form-field>
+                              </mat-form-field>
 
-                              <imr-form-field class="item-field-notiz" label="Notiz">
+                              <mat-form-field class="item-field-notiz">
+                                <mat-label>Notiz</mat-label>
                                 <input matInput formControlName="notiz" />
-                              </imr-form-field>
+                              </mat-form-field>
 
-                              <imr-top-actions class="item-actions">
-                                <imr-button color="accent" type="button" (click)="saveItem(raum, item)">
-                                  <imr-icon>save</imr-icon>
+                              <div class="item-actions">
+                                <button mat-flat-button color="accent" type="button" (click)="saveItem(raum, item)">
+                                  <mat-icon>save</mat-icon>
                                   Item speichern
-                                </imr-button>
+                                </button>
 
-                                <imr-button color="warn" type="button" (click)="deleteItem(raum, item)">
-                                  <imr-icon>delete</imr-icon>
+                                <button mat-flat-button color="warn" type="button" (click)="deleteItem(raum, item)">
+                                  <mat-icon>delete</mat-icon>
                                   Item löschen
-                                </imr-button>
-                              </imr-top-actions>
+                                </button>
+                              </div>
                             </form>
                           }
 
                           <section class="item-new-card mt-2">
                             <h4 class="items-title">Neues Item</h4>
                             <form [formGroup]="itemCreateFormFor(raum.id)" class="item-add-form">
-                              <imr-form-field class="item-field-name" label="Item Name">
+                              <mat-form-field class="item-field-name">
+                                <mat-label>Item Name</mat-label>
                                 <input matInput formControlName="name" />
-                              </imr-form-field>
+                              </mat-form-field>
 
-                              <imr-form-field class="item-field-menge" label="Menge">
+                              <mat-form-field class="item-field-menge">
+                                <mat-label>Menge</mat-label>
                                 <input matInput type="number" formControlName="menge" />
-                              </imr-form-field>
+                              </mat-form-field>
 
-                              <imr-form-field class="item-field-einheit" label="Einheit">
+                              <mat-form-field class="item-field-einheit">
+                                <mat-label>Einheit</mat-label>
                                 <input matInput formControlName="einheit" />
-                              </imr-form-field>
+                              </mat-form-field>
 
-                              <imr-form-field class="item-field-wartung-zuletzt" label="Wartung zuletzt erledigt">
+                              <mat-form-field class="item-field-wartung-zuletzt">
+                                <mat-label>Wartung zuletzt erledigt</mat-label>
                                 <input matInput type="date" formControlName="wartung_zuletzt_am" appDateInputMask="iso" />
-                              </imr-form-field>
+                              </mat-form-field>
 
-                              <imr-form-field class="item-field-wartung-naechstes" label="Nächste Wartung">
+                              <mat-form-field class="item-field-wartung-naechstes">
+                                <mat-label>Nächste Wartung</mat-label>
                                 <input matInput type="date" formControlName="wartung_naechstes_am" appDateInputMask="iso" />
-                              </imr-form-field>
+                              </mat-form-field>
 
-                              <imr-form-field class="item-field-reihenfolge" label="Reihenfolge">
+                              <mat-form-field class="item-field-reihenfolge">
+                                <mat-label>Reihenfolge</mat-label>
                                 <input matInput type="number" formControlName="reihenfolge" />
-                              </imr-form-field>
+                              </mat-form-field>
 
-                              <imr-form-field class="item-field-notiz" label="Notiz">
+                              <mat-form-field class="item-field-notiz">
+                                <mat-label>Notiz</mat-label>
                                 <input matInput formControlName="notiz" />
-                              </imr-form-field>
+                              </mat-form-field>
 
-                              <imr-top-actions>
-                                <imr-button color="accent" type="button" (click)="addItem(raum)">
-                                  <imr-icon>add</imr-icon>
+                              <div>
+                                <button mat-flat-button color="accent" type="button" (click)="addItem(raum)">
+                                  <mat-icon>add</mat-icon>
                                   Item anlegen
-                                </imr-button>
-                              </imr-top-actions>
+                                </button>
+                              </div>
                             </form>
                           </section>
                         }
                       </div>
-                    </imr-expansion-panel>
+                    </mat-expansion-panel>
                   }
-                </imr-accordion>
+                </mat-accordion>
               }
             } @else {
               <div class="empty-hint">Fahrzeugdaten werden geladen.</div>
             }
         </imr-card>
       }
-  </imr-section-card>
+  </imr-card>
 </imr-page-layout>
+
+
+
 

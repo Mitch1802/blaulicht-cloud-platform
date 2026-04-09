@@ -4,8 +4,18 @@ import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
-import { IMR_UI_COMPONENTS, ImrBreadcrumbItem } from '../../imr-ui-library';
+import {
+  ImrBreadcrumbItem,
+  ImrCardComponent,
+  ImrHeaderComponent,
+  ImrPageLayoutComponent,
+} from '../../imr-ui-library';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import {
   AbstractControl,
@@ -32,8 +42,15 @@ type AtemschutzRolesResponse = {
 @Component({
   selector: 'app-atemschutz-messgeraete',
   imports: [
-    ...IMR_UI_COMPONENTS,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatFormFieldModule,
+    MatIconModule,
+    ImrCardComponent,
+    ImrHeaderComponent,
+    ImrPageLayoutComponent,
     MatInputModule,
+    MatSelectModule,
     MatTabsModule,
     FormsModule,
     ReactiveFormsModule,

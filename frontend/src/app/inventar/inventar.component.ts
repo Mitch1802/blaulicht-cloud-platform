@@ -22,8 +22,20 @@ import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { IMR_UI_COMPONENTS, ImrBreadcrumbItem, ImrPaginatorComponent } from '../imr-ui-library';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSelectModule } from '@angular/material/select';
+import {
+  ImrBreadcrumbItem,
+  ImrHeaderComponent,
+  ImrPageLayoutComponent,
+  ImrSectionComponent,
+  UiControlErrorsDirective,
+} from '../imr-ui-library';
 import { FormatService } from '../helpers/format.service';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSort, MatSortModule } from '@angular/material/sort';
@@ -42,8 +54,17 @@ interface IVerleihungFormEintrag {
     A11yModule,
     FormsModule,
     ReactiveFormsModule,
-    ...IMR_UI_COMPONENTS,
+    ImrHeaderComponent,
+    ImrPageLayoutComponent,
+    ImrSectionComponent,
+    UiControlErrorsDirective,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatFormFieldModule,
+    MatIconModule,
     MatInputModule,
+    MatPaginatorModule,
+    MatSelectModule,
     MatTableModule,
     MatSortModule,
     MatTooltipModule,
@@ -54,7 +75,7 @@ interface IVerleihungFormEintrag {
 })
 export class InventarComponent implements OnInit, AfterViewInit {
   @ViewChild('fotoUpload', { static: false }) fotoRef!: ElementRef<HTMLInputElement>;
-  @ViewChild(ImrPaginatorComponent) paginator?: ImrPaginatorComponent;
+  @ViewChild(MatPaginator) paginator?: MatPaginator;
   @ViewChild(MatSort) sort?: MatSort;
   private apiHttpService = inject(ApiHttpService);
   private authSessionService = inject(AuthSessionService);
@@ -959,7 +980,7 @@ export class InventarComponent implements OnInit, AfterViewInit {
 
   private bindTableControls(): void {
     if (this.paginator) {
-      this.dataSource.paginator = this.paginator.paginator;
+      this.dataSource.paginator = this.paginator;
     }
     if (this.sort) {
       this.dataSource.sort = this.sort;

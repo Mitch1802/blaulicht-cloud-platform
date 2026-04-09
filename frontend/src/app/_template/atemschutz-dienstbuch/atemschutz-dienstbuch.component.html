@@ -1,7 +1,7 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <imr-page-layout title="Dienstbuch verwalten" class="atemschutz-dienstbuch-page">
-  <imr-section-card title="Dienstbuch verwalten">
+  <imr-card title="Dienstbuch verwalten">
         <hr>
         <div class="app-grid">
             <h4 class="app-col-6 app-col-lg-2 mb-0">{{ jahrHeuer }}:</h4>
@@ -15,18 +15,15 @@
           </div>
         <hr>
         <div class="table-toolbar">
-          <imr-form-field
-            class="filter-field"
-            appearance="outline"
-            label="Filter"
-          >
+          <mat-form-field class="filter-field" appearance="outline">
+            <mat-label>Filter</mat-label>
             <input
               matInput
               #filterInput
               (input)="applyFilter(filterInput.value)"
               placeholder="Suchen..."
             />
-          </imr-form-field>
+          </mat-form-field>
         </div>
         <div class="imr-table-wrap">
         <table
@@ -73,13 +70,15 @@
         </table>
         </div>
 
-        <imr-paginator
+        <mat-paginator
           [pageSizeOptions]="pageOptions"
           showFirstLastButtons
           aria-label="Auswahl Anzahl der sichtbaren Elemente"
         >
-        </imr-paginator>
-  </imr-section-card>
+        </mat-paginator>
+  </imr-card>
 </imr-page-layout>
+
+
 
 

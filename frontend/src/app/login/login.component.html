@@ -1,39 +1,63 @@
 ﻿<div class="login-page">
   <imr-card class="login-card">
-    <img class="login-logo" mat-card-image src="../../assets/images/logo.svg" alt="Logo" />
-      <form class="login-form" [formGroup]="form" (ngSubmit)="anmelden()">
-        <imr-form-field label="Benutzername" class="mb-3">
-          <input matInput formControlName="user" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" autofocus uiControlErrors>
-        </imr-form-field>
-        <imr-form-field label="Passwort" class="mb-3">
-          <input matInput formControlName="pwd" [type]="showPassword ? 'text' : 'password'" autocomplete="current-password" uiControlErrors>
-          <imr-suffix>
-            <imr-button
-              variant="icon"
-              type="button"
-              (click)="togglePasswordVisibility()"
-              [ariaLabel]="showPassword ? 'Passwort verbergen' : 'Passwort anzeigen'"
-              [attr.aria-pressed]="showPassword"
-            >
-              <imr-icon>{{showPassword?'visibility_off':'visibility'}}</imr-icon>
-            </imr-button>
-          </imr-suffix>
-        </imr-form-field>
-        <imr-top-actions class="login-button-row">
-          <imr-button type="submit" color="primary" class="submit-button" [disabled]="form.invalid || isSubmitting">
-            Anmelden
-          </imr-button>
-        </imr-top-actions>
-
-      </form>
+    <img
+      class="login-logo"
+      mat-card-image
+      src="../../assets/images/logo.svg"
+      alt="Logo"
+    />
+    <form
+      class="login-form app-grid"
+      [formGroup]="form"
+      (ngSubmit)="anmelden()"
+    >
+      <mat-form-field class="app-col-12">
+        <mat-label>Benutzername</mat-label>
+        <input
+          matInput
+          formControlName="user"
+          type="text"
+          autocomplete="username"
+          autocapitalize="none"
+          spellcheck="false"
+        />
+      </mat-form-field>
+      <mat-form-field class="app-col-12">
+        <mat-label>Passwort</mat-label>
+        <input
+          matInput
+          formControlName="pwd"
+          [type]="showPassword ? 'text' : 'password'"
+          autocomplete="current-password"
+        />
+        <button
+          mat-icon-button
+          type="button"
+          matSuffix
+          (click)="togglePasswordVisibility()"
+          [ariaLabel]="
+            showPassword ? 'Passwort verbergen' : 'Passwort anzeigen'
+          "
+          [attr.aria-pressed]="showPassword"
+        >
+          <mat-icon>{{
+            showPassword ? "visibility_off" : "visibility"
+          }}</mat-icon>
+        </button>
+      </mat-form-field>
+      <button mat-flat-button color="primary" type="submit" class="submit-button app-col-12 imr-full-width" [disabled]="form.invalid || isSubmitting">
+        Anmelden
+      </button>
+    </form>
   </imr-card>
   @if (versionInfo) {
-  <div class="login-footer">
-    <div>Version: {{ versionInfo.version }} ({{ versionInfo.commit }})</div>
-    @if (isTestVersion && screenResolution) {
-      <div class="login-resolution">Auflösung: {{ screenResolution }}</div>
-    }
-  </div>
+    <div class="login-footer">
+      <div>Version: {{ versionInfo.version }} ({{ versionInfo.commit }})</div>
+      @if (isTestVersion && screenResolution) {
+        <div class="login-resolution">Auflösung: {{ screenResolution }}</div>
+      }
+    </div>
   }
 </div>
+
 

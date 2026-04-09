@@ -1,7 +1,7 @@
-<imr-header [breadcrumb]="breadcrumb"></imr-header>
+﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <imr-page-layout [title]="title" pageClass="start-page atemschutz-page">
-  <imr-section-card title="Atemschutz">
+  <imr-card title="Atemschutz">
     <div class="module-grid">
       @for (item of moduleCards; track item.routerLink) {
         <a
@@ -11,7 +11,7 @@
         >
           <imr-card cardClass="module-card" [wrapContent]="false">
             <div class="module-icon-shell">
-              <imr-icon class="module-icon" [inline]="true">{{ item.icon }}</imr-icon>
+              <mat-icon class="module-icon" [inline]="true">{{ item.icon }}</mat-icon>
             </div>
             <div class="module-card-body">
               <div class="module-title">{{ item.titel }}</div>
@@ -20,5 +20,8 @@
         </a>
       }
     </div>
-  </imr-section-card>
+  </imr-card>
 </imr-page-layout>
+
+
+

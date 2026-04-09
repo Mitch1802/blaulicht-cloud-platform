@@ -1,4 +1,4 @@
-<imr-header [breadcrumb]="breadcrumb"></imr-header>
+﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <imr-page-layout [title]="display_name">
   @if (categorizedItems.length === 0) {
@@ -13,7 +13,7 @@
                 <imr-card cardClass="module-card planned" [wrapContent]="false" aria-disabled="true">
                   <span class="badge planned-badge">GEPLANT</span>
                   <div class="module-icon-shell">
-                    <imr-icon class="module-icon" [inline]="true">{{ item.icon }}</imr-icon>
+                    <mat-icon class="module-icon" [inline]="true">{{ item.icon }}</mat-icon>
                   </div>
                   <div class="module-card-body">
                     <div class="module-title">{{ item.modul }}</div>
@@ -31,7 +31,7 @@
                     <span class="badge admin-badge">ADMIN</span>
                   }
                   <div class="module-icon-shell">
-                    <imr-icon class="module-icon" [inline]="true">{{ item.icon }}</imr-icon>
+                    <mat-icon class="module-icon" [inline]="true">{{ item.icon }}</mat-icon>
                   </div>
                   <div class="module-card-body">
                     <div class="module-title">{{ item.modul }}</div>
@@ -45,3 +45,5 @@
     }
   }
 </imr-page-layout>
+
+

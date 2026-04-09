@@ -5,30 +5,27 @@
   <imr-section [title]="title">
     <form [formGroup]="formRolle" (ngSubmit)="rolleSpeichern()" class="role-form">
       <div class="role-entry-row">
-        <imr-form-field class="imr-full-width" label="Neue Rolle">
+        <mat-form-field class="imr-full-width">
+          <mat-label>Neue Rolle</mat-label>
           <input matInput type="text" formControlName="rolle" placeholder="z. B. JUGENDWART" uiControlErrors />
-        </imr-form-field>
+        </mat-form-field>
 
-        <imr-button
-          color="accent"
-          [disabled]="!canSaveRole"
-          type="submit"
-        >
+        <button mat-flat-button color="accent" [disabled]="!canSaveRole" type="submit">
           Rolle speichern
-        </imr-button>
+        </button>
       </div>
 
       @if (customRollen.length === 0) {
         <p class="role-empty">Noch keine Rollen vorhanden.</p>
       } @else {
-        <imr-chip-set class="imr-chips">
+        <mat-chip-set class="imr-chips">
           @for (rolle of customRollen; track rolle.id) {
-            <imr-chip [removable]="true" (removed)="rolleLoeschen(rolle)">
+            <mat-chip [removable]="true" (removed)="rolleLoeschen(rolle)">
               {{ rolle.key }}
-              <imr-chip-remove><imr-icon>cancel</imr-icon></imr-chip-remove>
-            </imr-chip>
+              <button matChipRemove><mat-icon>cancel</mat-icon></button>
+            </mat-chip>
           }
-        </imr-chip-set>
+        </mat-chip-set>
       }
     </form>
   </imr-section>
@@ -37,76 +34,84 @@
     <form [formGroup]="formKonfig" (ngSubmit)="konfigSpeichern()">
       <input hidden type="text"  formControlName="id" />
 
-      <imr-top-actions>
-        <imr-button
-          color="accent"
-          [disabled]="!formKonfig.valid"
-          type="submit"
-        >
+      <div class="imr-top-actions">
+        <button mat-flat-button color="accent" [disabled]="!formKonfig.valid" type="submit">
           Stammdaten speichern
-        </imr-button>
-      </imr-top-actions>
+        </button>
+      </div>
 
       <div class="app-grid">
         <div class="app-col-12 app-col-lg-4">
-          <imr-form-field class="imr-full-width" label="FW Nummer">
+          <mat-form-field class="imr-full-width">
+            <mat-label>FW Nummer</mat-label>
             <input matInput type="text" formControlName="fw_nummer" uiControlErrors />
-          </imr-form-field>
+          </mat-form-field>
         </div>
         <div class="app-col-12 app-col-lg-8">
-          <imr-form-field class="imr-full-width" label="FW Name">
+          <mat-form-field class="imr-full-width">
+            <mat-label>FW Name</mat-label>
             <input matInput type="text" formControlName="fw_name" uiControlErrors />
-          </imr-form-field>
+          </mat-form-field>
         </div>
         <div class="app-col-12 app-col-lg-5">
-          <imr-form-field class="imr-full-width" label="Straße">
+          <mat-form-field class="imr-full-width">
+            <mat-label>Straße</mat-label>
             <input matInput type="text" formControlName="fw_street" uiControlErrors />
-          </imr-form-field>
+          </mat-form-field>
         </div>
         <div class="app-col-12 app-col-lg-3">
-          <imr-form-field class="imr-full-width" label="PLZ">
+          <mat-form-field class="imr-full-width">
+            <mat-label>PLZ</mat-label>
             <input matInput type="text" formControlName="fw_plz" uiControlErrors />
-          </imr-form-field>
+          </mat-form-field>
         </div>
         <div class="app-col-12 app-col-lg-4">
-          <imr-form-field class="imr-full-width" label="Ort">
+          <mat-form-field class="imr-full-width">
+            <mat-label>Ort</mat-label>
             <input matInput type="text" formControlName="fw_ort" uiControlErrors />
-          </imr-form-field>
+          </mat-form-field>
         </div>
         <div class="app-col-12 app-col-lg-6">
-          <imr-form-field class="imr-full-width" label="E-Mail">
+          <mat-form-field class="imr-full-width">
+            <mat-label>E-Mail</mat-label>
             <input matInput type="text" formControlName="fw_email" uiControlErrors />
-          </imr-form-field>
+          </mat-form-field>
         </div>
         <div class="app-col-12 app-col-lg-6">
-          <imr-form-field class="imr-full-width" label="Telefon">
+          <mat-form-field class="imr-full-width">
+            <mat-label>Telefon</mat-label>
             <input matInput type="text" formControlName="fw_telefon" uiControlErrors />
-          </imr-form-field>
+          </mat-form-field>
         </div>
         <div class="app-col-12 app-col-lg-12">
-          <imr-form-field class="imr-full-width" label="Webseite">
+          <mat-form-field class="imr-full-width">
+            <mat-label>Webseite</mat-label>
             <input matInput type="text" formControlName="fw_webseite" uiControlErrors />
-          </imr-form-field>
+          </mat-form-field>
         </div>
         <div class="app-col-12 app-col-lg-12">
-          <imr-form-field class="imr-full-width" label="Kommandant">
+          <mat-form-field class="imr-full-width">
+            <mat-label>Kommandant</mat-label>
             <input matInput type="text" formControlName="fw_kdt" uiControlErrors />
-          </imr-form-field>
+          </mat-form-field>
         </div>
         <div class="app-col-12 app-col-lg-12">
-          <imr-form-field class="imr-full-width" label="Bankkonto">
+          <mat-form-field class="imr-full-width">
+            <mat-label>Bankkonto</mat-label>
             <input matInput type="text" formControlName="fw_konto" uiControlErrors />
-          </imr-form-field>
+          </mat-form-field>
         </div>
         <div class="app-col-12 app-col-lg-4">
-          <imr-form-field class="imr-full-width" label="BIC">
+          <mat-form-field class="imr-full-width">
+            <mat-label>BIC</mat-label>
             <input matInput type="text" formControlName="fw_bic" uiControlErrors />
-          </imr-form-field>
+          </mat-form-field>
         </div>
         <div class="app-col-12 app-col-lg-8">
-          <imr-form-field class="imr-full-width" label="IBAN">
+          <mat-form-field class="imr-full-width">
+            <mat-label>IBAN</mat-label>
             <input matInput type="text" formControlName="fw_iban" uiControlErrors />
-          </imr-form-field>
+          </mat-form-field>
         </div>
       </div>
     </form>
@@ -116,39 +121,36 @@
       <section class="config-section backup-section">
         <header class="config-section-head">
       <p class="backup-warning">
-        <imr-icon>warning</imr-icon>
+        <mat-icon>warning</mat-icon>
         Nach jedem Wiederherstellen wird man automatisch abgemeldet.
       </p>
 
       <div class="backup-legend">
-        <span><imr-icon>settings_backup_restore</imr-icon> Wiederherstellen</span>
-        <span><imr-icon>get_app</imr-icon> Herunterladen</span>
-        <span><imr-icon>delete</imr-icon> Löschen</span>
+        <span><mat-icon>settings_backup_restore</mat-icon> Wiederherstellen</span>
+        <span><mat-icon>get_app</mat-icon> Herunterladen</span>
+        <span><mat-icon>delete</mat-icon> Löschen</span>
       </div>
         </header>
 
         <div class="config-section-body">
 
-      <imr-top-actions class="actions-top">
-        <imr-button
-          color="accent"
-          (click)="backupErstellen()"
-          type="button"
-        >
+      <div class="imr-top-actions actions-top">
+        <button mat-flat-button color="accent" (click)="backupErstellen()" type="button">
           Backup erstellen
-        </imr-button>
-      </imr-top-actions>
+        </button>
+      </div>
 
       @if (backups.length > 0) {
       <div class="table-toolbar">
-        <imr-form-field class="filter-field" appearance="outline" label="Backups filtern">
+        <mat-form-field class="filter-field" appearance="outline">
+          <mat-label>Backups filtern</mat-label>
           <input
             matInput
             [(ngModel)]="backupFilter"
             [ngModelOptions]="{ standalone: true }"
             placeholder="Dateiname durchsuchen"
           />
-        </imr-form-field>
+        </mat-form-field>
       </div>
 
       <div class="imr-table-wrap backup-table-wrap">
@@ -161,33 +163,15 @@
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef class="table-actions-head">Aktionen</th>
             <td mat-cell *matCellDef="let element" class="imr-action-cell">
-              <imr-button
-                class="imr-action-btn"
-                color="primary"
-                type="button"
-                (click)="backupImport(element)"
-                ariaLabel="Backup wiederherstellen"
-              >
-                <imr-icon>settings_backup_restore</imr-icon>
-              </imr-button>
-              <imr-button
-                class="imr-action-btn"
-                color="primary"
-                type="button"
-                (click)="backupDownload(element)"
-                ariaLabel="Backup herunterladen"
-              >
-                <imr-icon>get_app</imr-icon>
-              </imr-button>
-              <imr-button
-                class="imr-action-btn"
-                color="warn"
-                type="button"
-                (click)="backupLoeschen(element)"
-                ariaLabel="Backup löschen"
-              >
-                <imr-icon>delete</imr-icon>
-              </imr-button>
+              <button mat-icon-button class="imr-action-btn" color="primary" type="button" (click)="backupImport(element)" aria-label="Backup wiederherstellen">
+                <mat-icon>settings_backup_restore</mat-icon>
+              </button>
+              <button mat-icon-button class="imr-action-btn" color="primary" type="button" (click)="backupDownload(element)" aria-label="Backup herunterladen">
+                <mat-icon>get_app</mat-icon>
+              </button>
+              <button mat-icon-button class="imr-action-btn" color="warn" type="button" (click)="backupLoeschen(element)" aria-label="Backup löschen">
+                <mat-icon>delete</mat-icon>
+              </button>
             </td>
           </ng-container>
 
@@ -200,47 +184,29 @@
           <article class="table-mobile-card">
             <div class="table-mobile-main">{{ element.name }}</div>
             <div class="table-mobile-actions">
-              <imr-button
-                class="imr-action-btn"
-                color="primary"
-                type="button"
-                (click)="backupImport(element)"
-                ariaLabel="Backup wiederherstellen"
-              >
-                <imr-icon>settings_backup_restore</imr-icon>
-              </imr-button>
-              <imr-button
-                class="imr-action-btn"
-                color="primary"
-                type="button"
-                (click)="backupDownload(element)"
-                ariaLabel="Backup herunterladen"
-              >
-                <imr-icon>get_app</imr-icon>
-              </imr-button>
-              <imr-button
-                class="imr-action-btn"
-                color="warn"
-                type="button"
-                (click)="backupLoeschen(element)"
-                ariaLabel="Backup löschen"
-              >
-                <imr-icon>delete</imr-icon>
-              </imr-button>
+              <button mat-icon-button class="imr-action-btn" color="primary" type="button" (click)="backupImport(element)" aria-label="Backup wiederherstellen">
+                <mat-icon>settings_backup_restore</mat-icon>
+              </button>
+              <button mat-icon-button class="imr-action-btn" color="primary" type="button" (click)="backupDownload(element)" aria-label="Backup herunterladen">
+                <mat-icon>get_app</mat-icon>
+              </button>
+              <button mat-icon-button class="imr-action-btn" color="warn" type="button" (click)="backupLoeschen(element)" aria-label="Backup löschen">
+                <mat-icon>delete</mat-icon>
+              </button>
             </div>
           </article>
         }
       </div>
       @if (filteredBackups.length === 0) {
         <div class="table-empty-state compact">
-          <imr-icon class="table-empty-icon">search_off</imr-icon>
+          <mat-icon class="table-empty-icon">search_off</mat-icon>
           <div class="table-empty-title">Keine passenden Backups</div>
           <div class="table-empty-copy">Passe den Filter an, um wieder Einträge anzuzeigen.</div>
         </div>
       }
       } @else {
         <div class="table-empty-state compact">
-          <imr-icon class="table-empty-icon">folder_off</imr-icon>
+          <mat-icon class="table-empty-icon">folder_off</mat-icon>
           <div class="table-empty-title">Keine Backups vorhanden</div>
           <div class="table-empty-copy">Erstelle ein erstes Backup, um Wiederherstellungen zu ermöglichen.</div>
         </div>
@@ -256,7 +222,8 @@
 
         <div class="app-grid">
           <div class="app-col-12 app-col-md-6 app-col-lg-4">
-            <imr-form-field label="Zielbereich">
+            <mat-form-field>
+              <mat-label>Zielbereich</mat-label>
               <mat-select
                 [(ngModel)]="cleanupTarget"
                 [ngModelOptions]="{ standalone: true }"
@@ -268,32 +235,20 @@
                 <mat-option value="einsatzberichte">Einsatzberichte (files/einsatzberichte)</mat-option>
                 <mat-option value="anwesenheitsliste">Anwesenheitsliste (files/anwesenheitsliste)</mat-option>
               </mat-select>
-            </imr-form-field>
+            </mat-form-field>
           </div>
         </div>
 
         <div class="cleanup-actions">
-          <imr-button
-            color="primary"
-            type="button"
-            [disabled]="cleanupRunning"
-            (click)="mediaCleanup(false)"
-            ariaLabel="Verwaiste Dateien analysieren"
-          >
-            <imr-icon>manage_search</imr-icon>
+          <button mat-flat-button color="primary" type="button" [disabled]="cleanupRunning" (click)="mediaCleanup(false)" aria-label="Verwaiste Dateien analysieren">
+            <mat-icon>manage_search</mat-icon>
             Analysieren
-          </imr-button>
+          </button>
 
-          <imr-button
-            color="warn"
-            type="button"
-            [disabled]="cleanupRunning"
-            (click)="mediaCleanup(true)"
-            ariaLabel="Verwaiste Dateien endgültig löschen"
-          >
-            <imr-icon>delete</imr-icon>
+          <button mat-flat-button color="warn" type="button" [disabled]="cleanupRunning" (click)="mediaCleanup(true)" aria-label="Verwaiste Dateien endgültig löschen">
+            <mat-icon>delete</mat-icon>
             Endgültig löschen
-          </imr-button>
+          </button>
         </div>
 
         @if (cleanupSummary) {
@@ -302,14 +257,15 @@
 
         @if (cleanupFiles.length > 0) {
           <div class="table-toolbar">
-            <imr-form-field class="filter-field" appearance="outline" label="Bereinigung filtern">
+            <mat-form-field class="filter-field" appearance="outline">
+              <mat-label>Bereinigung filtern</mat-label>
               <input
                 matInput
                 [(ngModel)]="cleanupFilter"
                 [ngModelOptions]="{ standalone: true }"
                 placeholder="Bereich oder Dateiname"
               />
-            </imr-form-field>
+            </mat-form-field>
           </div>
 
           <div class="imr-table-wrap cleanup-table-wrap">
@@ -343,17 +299,18 @@
 
           @if (filteredCleanupFiles.length === 0) {
             <div class="table-empty-state compact">
-              <imr-icon class="table-empty-icon">search_off</imr-icon>
+              <mat-icon class="table-empty-icon">search_off</mat-icon>
               <div class="table-empty-title">Keine Treffer für den aktuellen Filter</div>
               <div class="table-empty-copy">Erweitere den Filter, um Dateien wieder einzublenden.</div>
             </div>
           }
         } @else if (cleanupSummary) {
           <div class="table-empty-state compact">
-            <imr-icon class="table-empty-icon">check_circle</imr-icon>
+            <mat-icon class="table-empty-icon">check_circle</mat-icon>
             <div class="table-empty-title">Keine verwaisten Dateien gefunden</div>
             <div class="table-empty-copy">Der gewählte Bereich ist aktuell sauber.</div>
           </div>
         }
   </imr-section>
 </imr-page-layout>
+

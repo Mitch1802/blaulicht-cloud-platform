@@ -1,25 +1,25 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <imr-page-layout [title]="title" class="mitglied-page">
-  <imr-section-card title="Mitglieder verwalten">
+  <imr-card title="Mitglieder verwalten">
 
-      <imr-top-actions>
+      <div>
         @if (formModul.disabled) {
-          <imr-button
+          <button mat-flat-button
             color="accent"
             (click)="neueDetails()"
             type="button"
           >
             Hinzufügen
-          </imr-button>
-          <imr-button
+          </button>
+          <button mat-flat-button
             color="accent"
             (click)="fileInput.click()"
           >
             FDISK CSV Import
-          </imr-button>
+          </button>
         }
-      </imr-top-actions>
+      </div>
 
       @if (importSummary) {
         <div class="import-preview">
@@ -30,14 +30,14 @@
             Unverändert: {{ importSummary.unchanged }}
           </p>
 
-          <imr-top-actions class="imr-form-actions">
-            <imr-button color="accent" type="button" (click)="importBestaetigen()">
+          <div class="imr-form-actions">
+            <button mat-flat-button color="accent" type="button" (click)="importBestaetigen()">
               Import bestätigen
-            </imr-button>
-            <imr-button color="primary" type="button" (click)="importAbbrechen()">
+            </button>
+            <button mat-flat-button color="primary" type="button" (click)="importAbbrechen()">
               Abbrechen
-            </imr-button>
-          </imr-top-actions>
+            </button>
+          </div>
 
           <div class="imr-table-wrap" [hidden]="importChanges.length === 0">
             <table mat-table [dataSource]="importChanges">
@@ -79,57 +79,67 @@
         >
           <input hidden type="text"  formControlName="id" />
 
-          <imr-top-actions class="imr-form-actions">
-            <imr-button
+          <div class="imr-form-actions">
+            <button mat-flat-button
               color="accent"
               [hidden]="!formModul.valid"
               type="submit"
             >
               Daten speichern
-            </imr-button>
-            <imr-button
+            </button>
+            <button mat-flat-button
               color="primary"
               [hidden]="formModul.disabled"
               type="button"
               (click)="abbrechen()"
             >
               Abbrechen
-            </imr-button>
-          </imr-top-actions>
+            </button>
+          </div>
 
           <section class="app-grid imr-form-grid">
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="Vorname">
+              <mat-form-field class="imr-full-width">
+                <mat-label>Vorname</mat-label>
+                <mat-hint>* Pflichtfeld</mat-hint>
                 <input matInput type="text" formControlName="vorname" uiControlErrors />
-              </imr-form-field>
+              </mat-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="Nachname">
+              <mat-form-field class="imr-full-width">
+                <mat-label>Nachname</mat-label>
+                <mat-hint>* Pflichtfeld</mat-hint>
                 <input matInput type="text" formControlName="nachname" uiControlErrors />
-              </imr-form-field>
+              </mat-form-field>
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3">
-              <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="Stbnr">
+              <mat-form-field class="imr-full-width">
+                <mat-label>Stbnr</mat-label>
+                <mat-hint>* Pflichtfeld</mat-hint>
                 <input matInput type="text" formControlName="stbnr" uiControlErrors />
-              </imr-form-field>
+              </mat-form-field>
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3">
-              <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="Status">
-                <imr-select formControlName="dienststatus">
-                  <imr-option value="JUGEND">Jugend</imr-option>
-                  <imr-option value="AKTIV">Aktiv</imr-option>
-                  <imr-option value="RESERVE">Reserve</imr-option>
-                  <imr-option value="ABGEMELDET">Abgemeldet</imr-option>
-                </imr-select>
-              </imr-form-field>
+              <mat-form-field class="imr-full-width">
+                <mat-label>Status</mat-label>
+                <mat-hint>* Pflichtfeld</mat-hint>
+                <mat-select formControlName="dienststatus">
+                  <mat-option value="JUGEND">Jugend</mat-option>
+                  <mat-option value="AKTIV">Aktiv</mat-option>
+                  <mat-option value="RESERVE">Reserve</mat-option>
+                  <mat-option value="ABGEMELDET">Abgemeldet</mat-option>
+                </mat-select>
+              </mat-form-field>
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3">
-              <imr-form-field class="imr-full-width" label="Dienstgrad">
+              <mat-form-field class="imr-full-width">
+                <mat-label>Dienstgrad</mat-label>
                 <input matInput type="text" formControlName="dienstgrad" />
-              </imr-form-field>
+              </mat-form-field>
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3">
-              <imr-form-field class="imr-full-width" label="SVNr">
+              <mat-form-field class="imr-full-width">
+                <mat-label>SVNr</mat-label>
                 <input
                   matInput
                   type="text"
@@ -142,15 +152,17 @@
                   formModul.controls["svnr"].hasError("minlength") ||
                   formModul.controls["svnr"].hasError("maxlength")
                 ) {
-                  <imr-error>4 Ziffern erforderlich!</imr-error>
+                  <mat-error>4 Ziffern erforderlich!</mat-error>
                 }
                 @if (formModul.controls["svnr"].hasError("pattern")) {
-                  <imr-error>Nur Ziffern erlaubt!</imr-error>
+                  <mat-error>Nur Ziffern erlaubt!</mat-error>
                 }
-              </imr-form-field>
+              </mat-form-field>
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3">
-              <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="Geburtsdatum">
+              <mat-form-field class="imr-full-width">
+                <mat-label>Geburtsdatum</mat-label>
+                <mat-hint>* Pflichtfeld</mat-hint>
                 <input
                   matInput
                   type="text"
@@ -160,25 +172,25 @@
                   placeholder="TT.MM.YYYY"
                 />
                 @if (formModul.controls["geburtsdatum"].hasError("pattern")) {
-                  <imr-error
-                    >Ungültiges Format. Bitte TT.MM.YYYY eingeben.</imr-error
+                  <mat-error
+                    >Ungültiges Format. Bitte TT.MM.YYYY eingeben.</mat-error
                   >
                 }
                 @if (
                   formModul.controls["geburtsdatum"].hasError("dateInvalid")
                 ) {
-                  <imr-error>Kein existierendes Datum!</imr-error>
+                  <mat-error>Kein existierendes Datum!</mat-error>
                 }
-              </imr-form-field>
+              </mat-form-field>
             </div>
             <div class="app-col-12 app-col-lg-6 mb-3">
-              <imr-checkbox formControlName="hauptberuflich"
-                >Hauptberuflich</imr-checkbox
+              <mat-checkbox formControlName="hauptberuflich"
+                >Hauptberuflich</mat-checkbox
               >
             </div>
           </section>
 
-          <imr-button
+          <button mat-flat-button
             color="warn"
             class="imr-delete-btn"
             [hidden]="!formModul.controls['id'].value"
@@ -186,24 +198,21 @@
             (click)="datenLoeschen()"
           >
             Daten löschen
-          </imr-button>
+          </button>
         </form>
 
         @if (formModul.disabled) {
           <div class="imr-table-wrap">
             <div class="table-toolbar mitglied-toolbar">
-              <imr-form-field
-                class="filter-field"
-                appearance="outline"
-                label="Filter"
-              >
+              <mat-form-field class="filter-field" appearance="outline">
+                <mat-label>Filter</mat-label>
                 <input
                   matInput
                   #filterInput
                   (input)="applyFilter(filterInput.value)"
                   placeholder="Stbnr, Name oder Dienstgrad"
                 />
-              </imr-form-field>
+              </mat-form-field>
             </div>
             <table mat-table [dataSource]="dataSource" matSort>
               <ng-container matColumnDef="stbnr">
@@ -237,14 +246,14 @@
               <ng-container matColumnDef="actions">
                 <th mat-header-cell *matHeaderCellDef class="table-actions-head">Aktionen</th>
                 <td mat-cell *matCellDef="let element" class="imr-action-cell">
-                  <imr-button
+                  <button mat-flat-button
                     class="imr-action-btn"
                     color="primary"
                     (click)="auswahlBearbeiten(element)"
                     [attr.aria-label]="'Mitglied ' + element.stbnr + ' ' + element.vorname + ' ' + element.nachname + ' bearbeiten'"
                   >
-                    <imr-icon class="m-0">edit</imr-icon>
-                  </imr-button>
+                    <mat-icon class="m-0">edit</mat-icon>
+                  </button>
                 </td>
               </ng-container>
               <tr
@@ -258,20 +267,22 @@
               <tr class="mat-row" *matNoDataRow>
                 <td class="mat-cell table-empty-cell" [attr.colspan]="sichtbareSpaltenMitglieder.length">
                   <div class="table-empty-state compact">
-                    <imr-icon class="table-empty-icon">person_search</imr-icon>
+                    <mat-icon class="table-empty-icon">person_search</mat-icon>
                     <span class="table-empty-title">Keine Mitglieder gefunden</span>
                     <span class="table-empty-copy">Bitte Filter anpassen oder neues Mitglied hinzufügen.</span>
                   </div>
                 </td>
               </tr>
             </table>
-            <imr-paginator
+            <mat-paginator
               [pageSizeOptions]="[10, 50, 100]"
               showFirstLastButtons
               aria-label="Auswahl Anzahl der sichtbaren Elemente"
             >
-            </imr-paginator>
+            </mat-paginator>
           </div>
         }
-  </imr-section-card>
+  </imr-card>
 </imr-page-layout>
+
+

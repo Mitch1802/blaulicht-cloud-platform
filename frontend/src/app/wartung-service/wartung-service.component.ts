@@ -1,15 +1,14 @@
 ﻿import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 
 import {
-  ImrButtonComponent,
   ImrBreadcrumbItem,
+  ImrCardComponent,
   ImrHeaderComponent,
-  ImrIconComponent,
   ImrPageLayoutComponent,
-  ImrSectionCardComponent,
-  ImrTopActionsComponent,
 } from '../imr-ui-library';
 import { IWartungServiceEintrag, IWartungServiceResponse, IWartungServiceSummary } from '../_interface/wartung_service';
 import { ApiHttpService } from 'src/app/_service/api-http.service';
@@ -21,12 +20,11 @@ import { UiMessageService } from 'src/app/_service/ui-message.service';
 @Component({
   selector: 'app-wartung-service',
   imports: [
-    ImrButtonComponent,
+    MatButtonModule,
+    MatIconModule,
+    ImrCardComponent,
     ImrHeaderComponent,
     ImrPageLayoutComponent,
-    ImrSectionCardComponent,
-    ImrIconComponent,
-    ImrTopActionsComponent,
     MatTableModule,
     RouterLink,
   ],

@@ -13,7 +13,9 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatCardModule } from "@angular/material/card";
 import { MatExpansionModule } from "@angular/material/expansion";
 import { MatInputModule } from "@angular/material/input";
+import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from "@angular/material/sort";
 import { MatTableDataSource, MatTableModule } from "@angular/material/table";
 
@@ -23,7 +25,12 @@ import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
-import { IMR_UI_COMPONENTS, ImrBreadcrumbItem, ImrPaginatorComponent } from "../imr-ui-library";
+import {
+  ImrBreadcrumbItem,
+  ImrCardComponent,
+  ImrHeaderComponent,
+  ImrPageLayoutComponent,
+} from "../imr-ui-library";
 import { DateInputMaskDirective } from '../_directive/date-input-mask.directive';
 
 type RaumEditFG = FormGroup<{
@@ -48,14 +55,18 @@ type ItemDraftFG = FormGroup<{
     CommonModule,
     RouterModule,
     ReactiveFormsModule,
-    ...IMR_UI_COMPONENTS,
+    ImrHeaderComponent,
+    ImrPageLayoutComponent,
+    ImrCardComponent,
     MatButtonModule,
     MatCardModule,
     MatExpansionModule,
+    MatIconModule,
     MatTableModule,
     MatSortModule,
     MatFormFieldModule,
     MatInputModule,
+    MatPaginatorModule,
     DateInputMaskDirective,
   ],
   templateUrl: "./fahrzeug.component.html",
@@ -116,7 +127,7 @@ export class FahrzeugComponent implements OnInit {
   neuerRaumFotoDatei: File | null = null;
   neuerRaumFotoName = "";
 
-  @ViewChild(ImrPaginatorComponent) paginator?: ImrPaginatorComponent;
+  @ViewChild(MatPaginator) paginator?: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild("fahrzeugFotoUpload") fahrzeugFotoRef?: ElementRef<HTMLInputElement>;
   @ViewChild("newRaumFotoUpload") neuerRaumFotoRef?: ElementRef<HTMLInputElement>;
@@ -168,7 +179,7 @@ export class FahrzeugComponent implements OnInit {
         this.dataSource.filter = this.normalizeFilterValue(this.fahrzeugFilter);
 
         queueMicrotask(() => {
-          if (this.paginator) this.dataSource.paginator = this.paginator.paginator;
+          if (this.paginator) this.dataSource.paginator = this.paginator;
           if (this.sort) this.dataSource.sort = this.sort;
         });
       },

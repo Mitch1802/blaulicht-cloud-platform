@@ -1,7 +1,7 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <imr-page-layout [title]="title" class="verwaltung-page">
-  <imr-section-card title="Rechnungen & Vorlagen">
+  <imr-section title="Rechnungen & Vorlagen">
       <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" class="invoice-tabs">
           <mat-tab label="Rechnung">
             <section class="verwaltung-block">
@@ -11,18 +11,16 @@
               (ngSubmit)="sevdeskKontaktUebernehmen()"
               class="verwaltung-form"
             >
-              <imr-top-actions class="imr-form-actions">
-                <imr-button
-                  color="primary"
-                  type="submit"
-                >
+              <div class="imr-top-actions imr-form-actions">
+                <button mat-flat-button color="primary" type="submit">
                   übernehmen
-                </imr-button>
-              </imr-top-actions>
+                </button>
+              </div>
 
               <section class="app-grid m-0 mt-3">
                 <div class="app-col-12 app-col-lg-9">
-                  <imr-form-field label="SevDesk Kontakt auswählen">
+                  <mat-form-field>
+                    <mat-label>SevDesk Kontakt auswählen</mat-label>
                     <mat-select formControlName="name">
                       @for (opt of kontakte; track opt) {
                         <mat-option [value]="opt.id">
@@ -30,7 +28,7 @@
                         </mat-option>
                       }
                     </mat-select>
-                  </imr-form-field>
+                  </mat-form-field>
                 </div>
               </section>
             </form>
@@ -39,67 +37,67 @@
             <section class="verwaltung-block">
             <h3 class="section-title">Rechnungsdaten</h3>
             <form [formGroup]="formRechnung" (ngSubmit)="printRechnung()" class="verwaltung-form">
-              <imr-top-actions class="imr-form-actions">
-                <imr-button
-                  color="primary"
-                  (click)="formRechnungReset()"
-                  type="button"
-                >
+              <div class="imr-top-actions imr-form-actions">
+                <button mat-flat-button color="primary" (click)="formRechnungReset()" type="button">
                   Reset
-                </imr-button>
-                <imr-button
-                  color="accent"
-                  type="submit"
-                >
+                </button>
+                <button mat-flat-button color="accent" type="submit">
                   Drucken
-                </imr-button>
-              </imr-top-actions>
+                </button>
+              </div>
 
               <section class="app-grid mt-2 mx-0">
                 <div class="app-col-12 app-col-lg-12 mb-3">
-                  <imr-form-field label="Name">
+                  <mat-form-field>
+                    <mat-label>Name</mat-label>
                     <input matInput type="text" formControlName="adress_name" uiControlErrors />
-                  </imr-form-field>
+                  </mat-form-field>
                 </div>
                 <div class="app-col-12 app-col-lg-6 mb-3">
-                  <imr-form-field label="Straße">
+                  <mat-form-field>
+                    <mat-label>Straße</mat-label>
                     <input
                       matInput
                       type="text"
                       formControlName="adresse_strasse"
                       uiControlErrors
                     />
-                  </imr-form-field>
+                  </mat-form-field>
                 </div>
                 <div class="app-col-12 app-col-lg-2 mb-3">
-                  <imr-form-field label="PLZ">
+                  <mat-form-field>
+                    <mat-label>PLZ</mat-label>
                     <input matInput type="text" formControlName="adresse_plz" uiControlErrors />
-                  </imr-form-field>
+                  </mat-form-field>
                 </div>
                 <div class="app-col-12 app-col-lg-4 mb-3">
-                  <imr-form-field label="Ort">
+                  <mat-form-field>
+                    <mat-label>Ort</mat-label>
                     <input matInput type="text" formControlName="adresse_ort" uiControlErrors />
-                  </imr-form-field>
+                  </mat-form-field>
                 </div>
                 <div class="app-col-12 app-col-lg-8 mb-3">
-                  <imr-form-field label="Betreff">
+                  <mat-form-field>
+                    <mat-label>Betreff</mat-label>
                     <input matInput type="text" formControlName="betreff" uiControlErrors />
-                  </imr-form-field>
+                  </mat-form-field>
                 </div>
                 <div class="app-col-12 app-col-lg-4 mb-3">
-                  <imr-form-field label="Rechnungsnummer">
+                  <mat-form-field>
+                    <mat-label>Rechnungsnummer</mat-label>
                     <input
                       matInput
                       type="text"
                       formControlName="invoice_nummer"
                       uiControlErrors
                     />
-                  </imr-form-field>
+                  </mat-form-field>
                 </div>
                 <div class="app-col-12 app-col-lg-12 mb-3">
-                  <imr-form-field label="Anrede">
+                  <mat-form-field>
+                    <mat-label>Anrede</mat-label>
                     <input matInput type="text" formControlName="anrede" uiControlErrors />
-                  </imr-form-field>
+                  </mat-form-field>
                 </div>
                 <div class="app-col-12 app-col-lg-12 mb-3">
                   <mat-form-field appearance="outline" class="imr-full-width" subscriptSizing="dynamic">
@@ -124,23 +122,22 @@
               (ngSubmit)="addPosition()"
               class="verwaltung-form"
             >
-              <imr-top-actions class="imr-form-actions">
-                <imr-button
-                  color="accent"
-                  type="submit"
-                >
+              <div class="imr-top-actions imr-form-actions">
+                <button mat-flat-button color="accent" type="submit">
                   Hinzufügen
-                </imr-button>
-              </imr-top-actions>
+                </button>
+              </div>
 
               <section class="app-grid mt-2 mx-0">
                 <div class="app-col-12 app-col-lg-6 mb-3">
-                  <imr-form-field label="Bezeichnung">
+                  <mat-form-field>
+                    <mat-label>Bezeichnung</mat-label>
                     <input matInput type="text" formControlName="bezeichnung" uiControlErrors />
-                  </imr-form-field>
+                  </mat-form-field>
                 </div>
                 <div class="app-col-12 app-col-lg-3 mb-3">
-                  <imr-form-field label="Preis">
+                  <mat-form-field>
+                    <mat-label>Preis</mat-label>
                     <input matInput type="text" formControlName="preis" uiControlErrors />
                     @if (
                       formRechnungPositionen.controls.preis.hasError("pattern")
@@ -149,39 +146,36 @@
                         >Ungültiges Format! (z. B. 12,50 oder 12.50)</mat-error
                       >
                     }
-                  </imr-form-field>
+                  </mat-form-field>
                 </div>
               </section>
             </form>
             <section class="position-list-wrap">
-              <imr-list class="position-list">
+              <mat-list class="position-list">
                 @for (
                   pos of formRechnung.controls.positionen.value;
                   track $index;
                   let i = $index
                 ) {
-                  <imr-list-item itemClass="app-grid">
+                  <mat-list-item class="app-grid">
                     <div class="app-col-7">{{ pos.bezeichnung }}</div>
                     <div class="app-col-3">{{ formatPreis(pos.preis) }}</div>
                     <div class="app-col-2 text-end">
-                      <imr-button
-                        class="imr-action-btn"
-                        type="button"
-                        ariaLabel="Position löschen"
-                        (click)="removePosition(i)"
-                      >
+                      <button mat-icon-button class="imr-action-btn" color="warn" type="button" aria-label="Position löschen" (click)="removePosition(i)">
                         <mat-icon>delete</mat-icon>
-                      </imr-button>
+                      </button>
                     </div>
-                  </imr-list-item>
+                  </mat-list-item>
                 }
-              </imr-list>
+              </mat-list>
             </section>
             </section>
           </mat-tab>
           <mat-tab label="Coming Soon" disabled></mat-tab>
       </mat-tab-group>
-  </imr-section-card>
+  </imr-section>
 </imr-page-layout>
+
+
 
 

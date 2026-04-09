@@ -2,13 +2,23 @@
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatInputModule } from '@angular/material/input';
-import { IMR_UI_COMPONENTS, ImrBreadcrumbItem } from '../imr-ui-library';
+import {
+  ImrBreadcrumbItem,
+  ImrHeaderComponent,
+  ImrPageLayoutComponent,
+} from '../imr-ui-library';
 import { ApiHttpService } from 'src/app/_service/api-http.service';
 import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { DateInputMaskDirective } from '../_directive/date-input-mask.directive';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTabsModule } from '@angular/material/tabs';
 import { IMitglied } from '../_interface/mitglied';
 import { IJugendEvent } from '../_interface/jugend_event';
 import { IJugendAusbildung } from '../_interface/jugend_ausbildung';
@@ -73,11 +83,18 @@ type IJugendFertigkeitsDatumKey =
   selector: 'app-jugend',
   standalone: true,
   imports: [
-    ...IMR_UI_COMPONENTS,
+    ImrHeaderComponent,
+    ImrPageLayoutComponent,
     FormsModule,
     ReactiveFormsModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatSelectModule,
     MatTableModule,
     MatInputModule,
+    MatTabsModule,
     DateInputMaskDirective,
   ],
   templateUrl: './jugend.component.html',

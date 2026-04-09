@@ -4,7 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 
-import { ImrToolbarComponent } from './imr-toolbar.component';
+import { ImrToolbarComponent } from './imr-toolbar/imr-toolbar.component';
 
 const meta: Meta<ImrToolbarComponent> = {
   title: 'IMR UI Library/Wrappers/imr-toolbar',

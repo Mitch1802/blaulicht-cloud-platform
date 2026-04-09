@@ -3,7 +3,7 @@ import { applicationConfig, moduleMetadata } from '@storybook/angular';
 import { MatButtonModule } from '@angular/material/button';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 
-import { ImrPageLayoutComponent } from './imr-page-layout.component';
+import { ImrPageLayoutComponent } from './imr-page-layout/imr-page-layout.component';
 
 const meta: Meta<ImrPageLayoutComponent> = {
   title: 'IMR UI Library/Layout/imr-page-layout',

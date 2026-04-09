@@ -11,8 +11,18 @@ import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
 import { environment } from "src/environments/environment";
 import { Router } from '@angular/router';
-import { IMR_UI_COMPONENTS, ImrBreadcrumbItem } from '../imr-ui-library';
+import {
+  ImrBreadcrumbItem,
+  ImrHeaderComponent,
+  ImrPageLayoutComponent,
+  ImrSectionComponent,
+  UiControlErrorsDirective,
+} from '../imr-ui-library';
 import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatChipsModule } from '@angular/material/chips';
 
 type RolleEintrag = { id: number; key: string; verbose_name: string };
 type BackupEintrag = { name: string };
@@ -26,9 +36,16 @@ type BackupCleanupResponse = { summary?: { orphan?: number }; deleted?: number; 
     templateUrl: './konfiguration.component.html',
     styleUrls: ['./konfiguration.component.sass'],
     imports: [
-      ...IMR_UI_COMPONENTS, 
+      ImrHeaderComponent,
+      ImrPageLayoutComponent,
+      ImrSectionComponent,
+      UiControlErrorsDirective,
       FormsModule, 
       ReactiveFormsModule, 
+      MatFormFieldModule,
+      MatButtonModule,
+      MatIconModule,
+      MatChipsModule,
       MatInputModule, 
       MatTableModule,
       MatSelectModule

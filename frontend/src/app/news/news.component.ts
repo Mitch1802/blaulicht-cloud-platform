@@ -8,8 +8,19 @@ import { CollectionUtilsService } from 'src/app/_service/collection-utils.servic
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { A11yModule } from '@angular/cdk/a11y';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { IMR_UI_COMPONENTS, ImrBreadcrumbItem, ImrPaginatorComponent } from '../imr-ui-library';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSelectModule } from '@angular/material/select';
+import {
+  ImrBreadcrumbItem,
+  ImrHeaderComponent,
+  ImrPageLayoutComponent,
+  ImrSectionComponent,
+  UiControlErrorsDirective,
+} from '../imr-ui-library';
 import { forkJoin } from 'rxjs';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSort, MatSortModule } from '@angular/material/sort';
@@ -19,8 +30,16 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
   imports: [
     FormsModule,
     ReactiveFormsModule,
-    ...IMR_UI_COMPONENTS,
+    ImrHeaderComponent,
+    ImrPageLayoutComponent,
+    ImrSectionComponent,
+    UiControlErrorsDirective,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatIconModule,
     MatInputModule,
+    MatPaginatorModule,
+    MatSelectModule,
     A11yModule,
     MatTableModule,
     MatSortModule,
@@ -31,9 +50,9 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 export class NewsComponent implements OnInit {
   @ViewChild('fotoUpload', { static: false }) fotoRef!: ElementRef<HTMLInputElement>;
 
-  @ViewChild(ImrPaginatorComponent) set matPaginator(p: ImrPaginatorComponent | undefined) {
+  @ViewChild(MatPaginator) set matPaginator(p: MatPaginator | undefined) {
     if (p) {
-      this.newsDataSource.paginator = p.paginator;
+      this.newsDataSource.paginator = p;
     }
   }
 

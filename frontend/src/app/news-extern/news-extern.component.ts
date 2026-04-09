@@ -1,5 +1,5 @@
 ﻿import { ChangeDetectorRef, Component, OnDestroy, OnInit, inject } from '@angular/core';
-import { IMR_UI_COMPONENTS } from '../imr-ui-library';
+import { ImrPageLayoutComponent } from '../imr-ui-library';
 import { Router } from '@angular/router';
 import { interval, Subscription, timer } from 'rxjs';
 import { ApiHttpService } from 'src/app/_service/api-http.service';
@@ -22,7 +22,7 @@ type TerminItem = {
 @Component({
   selector: 'app-news-extern',
   standalone: true,
-  imports: [...IMR_UI_COMPONENTS],
+  imports: [ImrPageLayoutComponent],
   templateUrl: './news-extern.component.html',
   styleUrls: ['./news-extern.component.sass']
 })

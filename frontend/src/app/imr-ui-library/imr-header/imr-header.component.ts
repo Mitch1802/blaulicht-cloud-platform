@@ -3,7 +3,7 @@ import { RouterLink } from '@angular/router';
 import { MatIconButton } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { AuthSessionService } from '../../_service/auth-session.service';
-import { ImrToolbarComponent } from '../imr-toolbar.component';
+import { ImrToolbarComponent } from '../imr-toolbar/imr-toolbar.component';
 import { environment } from 'src/environments/environment';
 
 /**

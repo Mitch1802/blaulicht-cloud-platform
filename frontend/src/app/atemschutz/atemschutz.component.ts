@@ -1,11 +1,8 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
 import { NavigationService } from 'src/app/_service/navigation.service';
-import { ImrCardComponent } from '../imr-ui-library/imr-card.component';
-import { ImrBreadcrumbItem, ImrHeaderComponent } from '../imr-ui-library/imr-header.component';
-import { ImrIconComponent } from '../imr-ui-library/imr-icon.component';
-import { ImrPageLayoutComponent } from '../imr-ui-library/imr-page-layout.component';
-import { ImrSectionCardComponent } from '../imr-ui-library/imr-section-card.component';
+import { ImrBreadcrumbItem, ImrCardComponent, ImrHeaderComponent, ImrPageLayoutComponent } from '../imr-ui-library';
 
 type AtemschutzModul = {
   titel: string;
@@ -18,9 +15,8 @@ type AtemschutzModul = {
     imports: [
       ImrHeaderComponent,
       ImrPageLayoutComponent,
-      ImrSectionCardComponent,
       ImrCardComponent,
-      ImrIconComponent,
+      MatIconModule,
       RouterLink
     ],
     templateUrl: './atemschutz.component.html',

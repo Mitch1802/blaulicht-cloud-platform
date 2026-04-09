@@ -10,6 +10,9 @@ import {
 } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 
+import { MatButtonModule } from "@angular/material/button";
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDividerModule } from "@angular/material/divider";
 import { MatInputModule } from "@angular/material/input";
 import { MatFormFieldModule } from '@angular/material/form-field';
 
@@ -19,7 +22,12 @@ import { CollectionUtilsService } from 'src/app/_service/collection-utils.servic
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { IFahrzeugDetail } from "../_interface/fahrzeug";
-import { IMR_UI_COMPONENTS, ImrBreadcrumbItem } from "../imr-ui-library";
+import {
+  ImrBreadcrumbItem,
+  ImrHeaderComponent,
+  ImrPageLayoutComponent,
+  ImrSectionComponent,
+} from "../imr-ui-library";
 
 type ResultFG = FormGroup<{
   item_id: FormControl<string>;
@@ -48,9 +56,14 @@ type CheckRoomView = {
   standalone: true,
   selector: "app-fahrzeug-check",
   imports: [
-    ...IMR_UI_COMPONENTS,
+    ImrHeaderComponent,
+    ImrPageLayoutComponent,
+    ImrSectionComponent,
     CommonModule,
     ReactiveFormsModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatDividerModule,
     MatFormFieldModule,
     MatInputModule,
   ],

@@ -16,7 +16,6 @@ import { startWith } from 'rxjs/operators'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 
 import { UI_CONTROL_ERROR_MAP, UiControlErrorMap } from './ui-control-error-map.token'
-import { ImrFormFieldComponent } from '../imr-form-field/imr-form-field.component'
 
 @Component({
   selector: 'ui-control-error-outlet',
@@ -40,7 +39,6 @@ export class UiControlErrorsDirective implements OnInit, OnDestroy {
   private readonly environmentInjector = inject(EnvironmentInjector)
   private readonly destroyRef = inject(DestroyRef)
   private readonly globalErrorMap = inject(UI_CONTROL_ERROR_MAP)
-  private readonly imrFormField = inject(ImrFormFieldComponent, { optional: true })
 
   private errorOutletRef: ComponentRef<UiControlErrorOutletComponent> | null = null
 
@@ -85,12 +83,6 @@ export class UiControlErrorsDirective implements OnInit, OnDestroy {
       ? mapEntry(firstErrorValue, control)
       : mapEntry
 
-    if (this.imrFormField) {
-      this.imrFormField.setAutoError(message)
-      this.clearOutletOnly()
-      return
-    }
-
     this.ensureOutlet()
     this.errorOutletRef?.setInput('message', message)
   }
@@ -106,10 +98,6 @@ export class UiControlErrorsDirective implements OnInit, OnDestroy {
   }
 
   private clearError(): void {
-    if (this.imrFormField) {
-      this.imrFormField.setAutoError('')
-    }
-
     this.clearOutletOnly()
   }
 

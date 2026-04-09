@@ -2,9 +2,16 @@
 import { A11yModule } from '@angular/cdk/a11y';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { Observable, forkJoin, map, of } from 'rxjs';
-import { IMR_UI_COMPONENTS, ImrBreadcrumbItem } from '../imr-ui-library';
+import {
+  ImrBreadcrumbItem,
+  ImrHeaderComponent,
+  ImrPageLayoutComponent,
+  ImrSectionComponent,
+} from '../imr-ui-library';
 import { IMitglied } from '../_interface/mitglied';
 import { IHomepageDienstposten } from '../_interface/homepage';
 import { ApiHttpService } from '../_service/api-http.service';
@@ -85,7 +92,11 @@ const DEFAULT_PLAN_TEMPLATE: ReadonlyArray<HomepageSectionTemplate> = [
     A11yModule,
     FormsModule,
     ReactiveFormsModule,
-    ...IMR_UI_COMPONENTS,
+    ImrHeaderComponent,
+    ImrPageLayoutComponent,
+    ImrSectionComponent,
+    MatButtonModule,
+    MatFormFieldModule,
     MatInputModule,
     MatAutocompleteModule,
   ],

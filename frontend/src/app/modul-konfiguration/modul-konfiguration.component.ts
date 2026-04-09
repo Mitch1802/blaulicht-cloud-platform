@@ -14,10 +14,19 @@ import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
-import { IMR_UI_COMPONENTS, ImrBreadcrumbItem } from '../imr-ui-library';
-import { UiControlErrorMap } from '../imr-ui-library';
-import { MatInput } from '@angular/material/input';
+import {
+  ImrBreadcrumbItem,
+  ImrHeaderComponent,
+  ImrPageLayoutComponent,
+  ImrSectionComponent,
+  UiControlErrorMap,
+  UiControlErrorsDirective,
+} from '../imr-ui-library';
+import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { IPdfTemplate } from '../_interface/pdf_template';
@@ -34,9 +43,15 @@ type PdfTemplatesResponse = { main?: IPdfTemplate[] } | IPdfTemplate[];
   imports: [
     FormsModule,
     ReactiveFormsModule,
-    ...IMR_UI_COMPONENTS,
+    ImrHeaderComponent,
+    ImrPageLayoutComponent,
+    ImrSectionComponent,
+    UiControlErrorsDirective,
+    MatButtonModule,
     MatFormFieldModule,
-    MatInput,
+    MatIconModule,
+    MatInputModule,
+    MatSelectModule,
     MatTableModule,
   ],
   templateUrl: './modul-konfiguration.component.html',

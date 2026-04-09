@@ -10,15 +10,25 @@ import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
-import { IMR_UI_COMPONENTS, ImrBreadcrumbItem, UiControlErrorMap } from '../imr-ui-library';
-import { MatInput } from '@angular/material/input';
-import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
+import {
+  ImrBreadcrumbItem,
+  ImrHeaderComponent,
+  ImrPageLayoutComponent,
+  ImrSectionComponent,
+  UiControlErrorMap,
+  UiControlErrorsDirective,
+} from '../imr-ui-library';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { Observable, forkJoin } from 'rxjs';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
+import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTabsModule } from '@angular/material/tabs';
 
 type RoleDefinition = {
   id?: number;
@@ -73,16 +83,22 @@ type UserUpdatePayload = Omit<UserCreatePayload, 'password1' | 'password2' | 'se
     templateUrl: './user.component.html',
     styleUrls: ['./user.component.sass'],
     imports: [
-    ...IMR_UI_COMPONENTS,
+    ImrHeaderComponent,
+    ImrPageLayoutComponent,
+    ImrSectionComponent,
+    UiControlErrorsDirective,
     FormsModule,
     ReactiveFormsModule,
-    MatInput,
-    MatCheckbox,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatCheckboxModule,
     MatAutocompleteModule,
     MatTableModule,
     MatPaginatorModule,
-    MatSort,
+    MatSortModule,
     MatIconModule,
+    MatTabsModule,
 ]
 })
 export class UserComponent implements OnInit {

@@ -2,7 +2,7 @@ import { AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
-import { ImrProgressBarComponent } from './imr-ui-library/imr-progress-bar.component';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { ApiHttpService } from './_service/api-http.service';
 
 @Component({
@@ -10,7 +10,7 @@ import { ApiHttpService } from './_service/api-http.service';
     templateUrl: './app.component.html',
     imports: [
         RouterOutlet,
-        ImrProgressBarComponent,
+        MatProgressBarModule,
         AsyncPipe
     ],
     styleUrls: [

@@ -1,27 +1,28 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <imr-page-layout [title]="title">
-  <imr-tab-group>
-    <imr-tab label="Benutzer">
+  <mat-tab-group>
+    <mat-tab label="Benutzer">
       <imr-section title="Benutzer verwalten">
           @if (formModul.disabled) {
-          <imr-top-actions>
-            <imr-button color="accent" (click)="neueDetails()" type="button">
+          <div>
+            <button mat-flat-button color="accent" (click)="neueDetails()" type="button">
               Hinzufügen
-            </imr-button>
-          </imr-top-actions>
+            </button>
+          </div>
           }
 
           <div class="imr-table-wrap" [hidden]="!formModul.disabled">
             <div class="table-toolbar user-toolbar">
-              <imr-form-field class="filter-field" appearance="outline" label="Filter">
+              <mat-form-field class="filter-field" appearance="outline">
+                <mat-label>Filter</mat-label>
                 <input
                   matInput
                   #filterInput
                   (input)="applyFilter(filterInput.value)"
                   placeholder="Name, Mitglied oder Rolle"
                 />
-              </imr-form-field>
+              </mat-form-field>
             </div>
 
             <table mat-table [dataSource]="dataSource" matSort>
@@ -49,14 +50,14 @@
               <ng-container matColumnDef="actions">
                 <th mat-header-cell *matHeaderCellDef class="table-actions-head">Aktionen</th>
                 <td mat-cell *matCellDef="let element" class="imr-action-cell">
-                  <imr-button
+                  <button mat-flat-button
                     class="imr-action-btn"
                     color="primary"
                     (click)="auswahlBearbeiten(element)"
                     [attr.aria-label]="'Benutzer ' + element.username + ' bearbeiten'"
                   >
                     <mat-icon class="m-0">edit</mat-icon>
-                  </imr-button>
+                  </button>
                 </td>
               </ng-container>
 
@@ -85,33 +86,36 @@
           <form [formGroup]="formModul" (ngSubmit)="datenSpeichern()" [hidden]="formModul.disabled" class="edit-form">
             <input hidden type="text"  formControlName="id" />
 
-            <imr-top-actions>
-              <imr-button color="accent" [hidden]="!formModul.valid" type="submit">
+            <div>
+              <button mat-flat-button color="accent" [hidden]="!formModul.valid" type="submit">
                 Daten speichern
-              </imr-button>
-              <imr-button color="primary" [hidden]="formModul.disabled" type="button" (click)="abbrechen()">
+              </button>
+              <button mat-flat-button color="primary" [hidden]="formModul.disabled" type="button" (click)="abbrechen()">
                 Abbrechen
-              </imr-button>
-            </imr-top-actions>
+              </button>
+            </div>
             <div class="app-grid">
             @if (username === "admin") {
               <input hidden type="text" formControlName="username" />
             } @else {
                 <div class="app-col-12 app-col-lg-4">
-                  <imr-form-field class="imr-full-width" label="Benutzername">
+                  <mat-form-field class="imr-full-width">
+                    <mat-label>Benutzername</mat-label>
                     <input matInput type="text" formControlName="username" [uiControlErrors]="usernameErrorMap" />
-                  </imr-form-field>
+                  </mat-form-field>
                 </div>
             }
 
               <div class="app-col-12 app-col-lg-4">
-                <imr-form-field class="imr-full-width" label="E-Mail-Adresse">
+                <mat-form-field class="imr-full-width">
+                  <mat-label>E-Mail-Adresse</mat-label>
                   <input matInput type="email" formControlName="email" uiControlErrors />
-                </imr-form-field>
+                </mat-form-field>
               </div>
 
               <div class="app-col-12 app-col-lg-4">
-                <imr-form-field class="imr-full-width" label="Mitgliederzugehörigkeit">
+                <mat-form-field class="imr-full-width">
+                  <mat-label>Mitgliederzugehörigkeit</mat-label>
                   <input
                     matInput
                     [formControl]="mitgliedSuche"
@@ -127,7 +131,7 @@
                       <mat-option disabled>Kein Mitglied gefunden.</mat-option>
                     }
                   </mat-autocomplete>
-                </imr-form-field>
+                </mat-form-field>
               </div>
             </div>
 
@@ -173,24 +177,26 @@
             @if (formModul.controls['id'].value || !sendInviteMode) {
             <section class="app-grid imr-form-grid">
               <div class="app-col-12 app-col-lg-4 mb-3">
-                <imr-form-field class="imr-full-width" label="Passwort">
+                <mat-form-field class="imr-full-width">
+                  <mat-label>Passwort</mat-label>
                   <input matInput type="password" formControlName="password1" [uiControlErrors]="initialPasswordErrorMap" />
-                </imr-form-field>
+                </mat-form-field>
               </div>
               <div class="app-col-12 app-col-lg-4 mb-3">
-                <imr-form-field class="imr-full-width" label="Passwort wiederholen">
+                <mat-form-field class="imr-full-width">
+                  <mat-label>Passwort wiederholen</mat-label>
                   <input matInput type="password" formControlName="password2" [uiControlErrors]="initialPasswordRepeatErrorMap" />
-                </imr-form-field>
+                </mat-form-field>
               </div>
               <div class="app-col-12 app-col-lg-4 password-action">
-                <imr-button
+                <button mat-flat-button
                   color="accent"
                   [hidden]="!formModul.controls['id'].value"
                   type="button"
                   (click)="passwortAendern()"
                 >
                   Passwort ändern
-                </imr-button>
+                </button>
               </div>
             </section>
             }
@@ -199,7 +205,7 @@
               @if (formModul.controls['id'].value) {
                 <hr />
               }
-              <imr-button
+              <button mat-flat-button
                 color="warn"
                 class="imr-delete-btn"
                 [hidden]="!formModul.controls['id'].value"
@@ -207,18 +213,18 @@
                 (click)="datenLoeschen()"
               >
                 Daten löschen
-              </imr-button>
+              </button>
             }
           </form>
       </imr-section>
-    </imr-tab>
-    <imr-tab label="Rollenübersicht">
+    </mat-tab>
+    <mat-tab label="Rollenübersicht">
       <imr-section title="Rollenübersicht">
-        <imr-top-actions class="rollen-matrix-actions">
-          <imr-button color="accent" type="button" (click)="rollenMatrixSpeichern()">
+        <div class="rollen-matrix-actions">
+          <button mat-flat-button color="accent" type="button" (click)="rollenMatrixSpeichern()">
             Rollen speichern
-          </imr-button>
-        </imr-top-actions>
+          </button>
+        </div>
         <div class="imr-table-wrap rollen-matrix-wrap">
           <table mat-table [dataSource]="benutzer" class="rollen-matrix-table">
             <ng-container matColumnDef="benutzer">
@@ -257,5 +263,7 @@
           </table>
         </div>
       </imr-section>
-    </imr-tab>
-  </imr-tab-group>
+    </mat-tab>
+  </mat-tab-group>
+
+

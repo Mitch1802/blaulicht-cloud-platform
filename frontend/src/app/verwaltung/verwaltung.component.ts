@@ -7,17 +7,15 @@ import { CollectionUtilsService } from 'src/app/_service/collection-utils.servic
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
 import {
-  ImrButtonComponent,
   ImrBreadcrumbItem,
-  ImrFormFieldComponent,
   ImrHeaderComponent,
-  ImrListComponent,
-  ImrListItemComponent,
   ImrPageLayoutComponent,
-  ImrSectionCardComponent,
-  ImrTopActionsComponent,
+  ImrSectionComponent,
   UiControlErrorsDirective,
 } from '../imr-ui-library';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatListModule } from '@angular/material/list';
 import { MatTabsModule } from '@angular/material/tabs';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IStammdaten } from '../_interface/stammdaten';
@@ -64,15 +62,13 @@ type VerwaltungKontakteResponse = {
   standalone: true,
   imports: [
     CommonModule,
-    ImrButtonComponent,
     ImrHeaderComponent,
-    ImrListComponent,
-    ImrListItemComponent,
     ImrPageLayoutComponent,
-    ImrSectionCardComponent,
-    ImrTopActionsComponent,
+    ImrSectionComponent,
     MatTabsModule,
-    ImrFormFieldComponent,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatListModule,
     ReactiveFormsModule,
     FormsModule,
     MatInputModule,

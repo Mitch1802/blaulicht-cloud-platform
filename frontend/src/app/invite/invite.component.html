@@ -1,5 +1,5 @@
 ﻿<imr-page-layout pageClass="invite-page">
-  <imr-section-card sectionTitle="Einladung abschließen" cardClass="invite-card">
+  <imr-section title="Einladung abschließen" class="invite-card">
       @if (tokenMissing) {
         <p class="invite-note error">Der Einladungslink ist unvollständig. Bitte fordere eine neue Einladung an.</p>
       } @else {
@@ -8,27 +8,31 @@
         <form [formGroup]="form" (ngSubmit)="abschliessen()" class="invite-form">
           <input type="hidden" formControlName="token" />
 
-          <imr-form-field class="imr-full-width" label="Neues Passwort">
+          <mat-form-field class="imr-full-width">
+            <mat-label>Neues Passwort</mat-label>
             <input matInput type="password" formControlName="password1" autocomplete="new-password" uiControlErrors />
-          </imr-form-field>
+          </mat-form-field>
 
-          <imr-form-field class="imr-full-width" label="Passwort wiederholen">
+          <mat-form-field class="imr-full-width">
+            <mat-label>Passwort wiederholen</mat-label>
             <input matInput type="password" formControlName="password2" autocomplete="new-password" uiControlErrors />
-          </imr-form-field>
+          </mat-form-field>
 
           @if (!passwordsMatch && form.controls.password2.touched) {
             <p class="invite-note error">Passwörter stimmen nicht überein.</p>
           }
 
-          <imr-top-actions class="invite-actions">
-            <imr-button color="accent" type="submit" [disabled]="isSubmitting">
+          <div class="invite-actions">
+            <button mat-flat-button color="accent" type="submit" [disabled]="isSubmitting">
               Passwort setzen
-            </imr-button>
-            <imr-button color="primary" type="button" [disabled]="isSubmitting" routerLink="/login">
+            </button>
+            <button mat-flat-button color="primary" type="button" [disabled]="isSubmitting" routerLink="/login">
               Zur Anmeldung
-            </imr-button>
-          </imr-top-actions>
+            </button>
+          </div>
         </form>
       }
-  </imr-section-card>
+  </imr-section>
 </imr-page-layout>
+
+

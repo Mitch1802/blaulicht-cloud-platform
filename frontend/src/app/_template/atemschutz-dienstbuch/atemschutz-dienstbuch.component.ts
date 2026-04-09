@@ -5,15 +5,14 @@ import { CollectionUtilsService } from 'src/app/_service/collection-utils.servic
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
 import {
-  ImrFormFieldComponent,
   ImrBreadcrumbItem,
+  ImrCardComponent,
   ImrHeaderComponent,
   ImrPageLayoutComponent,
-  ImrPaginatorComponent,
-  ImrSectionCardComponent,
 } from '../../imr-ui-library';
 import { IAtemschutzGeraetProtokoll } from 'src/app/_interface/atemschutz_geraet_protokoll';
 import { IMitglied } from 'src/app/_interface/mitglied';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatInputModule } from '@angular/material/input';
@@ -34,9 +33,8 @@ type ProtokollMitgliedRow = IAtemschutzGeraetProtokoll & {
   imports: [
     ImrHeaderComponent,
     ImrPageLayoutComponent,
-    ImrSectionCardComponent,
-    ImrFormFieldComponent,
-    ImrPaginatorComponent,
+    ImrCardComponent,
+    MatPaginatorModule,
     MatTableModule,
     MatSortModule,
     MatInputModule,
@@ -67,7 +65,7 @@ export class AtemschutzDienstbuchComponent implements OnInit {
   sichtbareSpalten: string[] = ['datum', 'verwendung_typ', 'verwendung_min', 'stbnr', 'vorname', 'nachname'];
   dataSource = new MatTableDataSource<ProtokollMitgliedRow>(this.list_protokoll_mitglieder);
 
-  @ViewChild(ImrPaginatorComponent, { static: false }) paginator?: ImrPaginatorComponent;
+  @ViewChild(MatPaginator, { static: false }) paginator?: MatPaginator;
   @ViewChildren(MatSort) sorts?: QueryList<MatSort>;
 
   ngOnInit(): void {
@@ -108,7 +106,7 @@ export class AtemschutzDienstbuchComponent implements OnInit {
           });
 
           this.dataSource = new MatTableDataSource(this.list_protokoll_mitglieder);
-          this.dataSource.paginator = this.paginator?.paginator ?? null;
+          this.dataSource.paginator = this.paginator ?? null;
           this.dataSource.sort = this.sorts?.first ?? null;
 
           this.summenBerechnen(this.protokoll);
