@@ -1,10 +1,9 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
-<imr-page-layout [title]="title" class="user-page">
-  <imr-section-card title="Benutzer verwalten">
-      <imr-tab-group class="user-tabs">
-
-        <imr-tab label="Benutzer">
+<imr-page-layout [title]="title">
+  <imr-tab-group>
+    <imr-tab label="Benutzer">
+      <imr-section title="Benutzer verwalten">
           @if (formModul.disabled) {
           <imr-top-actions>
             <imr-button color="accent" (click)="neueDetails()" type="button">
@@ -86,7 +85,7 @@
           <form [formGroup]="formModul" (ngSubmit)="datenSpeichern()" [hidden]="formModul.disabled" class="edit-form">
             <input hidden type="text"  formControlName="id" />
 
-            <imr-top-actions class="imr-form-actions">
+            <imr-top-actions>
               <imr-button color="accent" [hidden]="!formModul.valid" type="submit">
                 Daten speichern
               </imr-button>
@@ -94,29 +93,24 @@
                 Abbrechen
               </imr-button>
             </imr-top-actions>
-
+            <div class="app-grid">
             @if (username === "admin") {
               <input hidden type="text" formControlName="username" />
             } @else {
-              <section class="app-grid imr-form-grid">
-                <div class="app-col-12 app-col-lg-6 mb-3">
-                  <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="Benutzername">
+                <div class="app-col-12 app-col-lg-4">
+                  <imr-form-field class="imr-full-width" label="Benutzername">
                     <input matInput type="text" formControlName="username" [uiControlErrors]="usernameErrorMap" />
                   </imr-form-field>
                 </div>
-              </section>
             }
 
-            <section class="app-grid imr-form-grid">
-              <div class="app-col-12 app-col-lg-6 mb-3">
+              <div class="app-col-12 app-col-lg-4">
                 <imr-form-field class="imr-full-width" label="E-Mail-Adresse">
                   <input matInput type="email" formControlName="email" uiControlErrors />
                 </imr-form-field>
               </div>
-            </section>
 
-            <section class="app-grid imr-form-grid">
-              <div class="app-col-12 app-col-lg-6 mb-3">
+              <div class="app-col-12 app-col-lg-4">
                 <imr-form-field class="imr-full-width" label="Mitgliederzugehörigkeit">
                   <input
                     matInput
@@ -135,9 +129,9 @@
                   </mat-autocomplete>
                 </imr-form-field>
               </div>
-            </section>
+            </div>
 
-            <section class="role-row" aria-label="Rollen">
+            <div class="role-row" aria-label="Rollen">
               @for (rolle of rollen; track rolle) {
                 @if (rolle.key !== 'MITGLIED') {
                   <div class="role-option">
@@ -152,7 +146,7 @@
                   </div>
                 }
               }
-            </section>
+            </div>
 
             @if (formModul.controls['id'].value) {
               <hr />
@@ -216,55 +210,52 @@
               </imr-button>
             }
           </form>
-        </imr-tab>
+      </imr-section>
+    </imr-tab>
+    <imr-tab label="Rollenübersicht">
+      <imr-section title="Rollenübersicht">
+        <imr-top-actions class="rollen-matrix-actions">
+          <imr-button color="accent" type="button" (click)="rollenMatrixSpeichern()">
+            Rollen speichern
+          </imr-button>
+        </imr-top-actions>
+        <div class="imr-table-wrap rollen-matrix-wrap">
+          <table mat-table [dataSource]="benutzer" class="rollen-matrix-table">
+            <ng-container matColumnDef="benutzer">
+              <th mat-header-cell *matHeaderCellDef>Benutzer</th>
+              <td mat-cell *matCellDef="let user" class="rollen-matrix-user-cell">
+                {{ user.username }}
+              </td>
+            </ng-container>
 
-        <imr-tab label="Rollenübersicht">
-          <imr-top-actions class="rollen-matrix-actions">
-            <imr-button color="accent" type="button" (click)="rollenMatrixSpeichern()">
-              Rollen speichern
-            </imr-button>
-          </imr-top-actions>
-          <div class="imr-table-wrap rollen-matrix-wrap">
-            <table mat-table [dataSource]="benutzer" class="rollen-matrix-table">
-              <ng-container matColumnDef="benutzer">
-                <th mat-header-cell *matHeaderCellDef>Benutzer</th>
-                <td mat-cell *matCellDef="let user" class="rollen-matrix-user-cell">
-                  {{ user.username }}
+            @for (rolle of rollenOhne; track rolle.key) {
+              <ng-container [matColumnDef]="rolle.key">
+                <th mat-header-cell *matHeaderCellDef class="rollen-matrix-role-header">
+                  {{ rolle.verbose_name }}
+                </th>
+                <td mat-cell *matCellDef="let user" class="rollen-matrix-role-cell">
+                  <mat-checkbox
+                    [checked]="hasRoleInMatrix(user.id, rolle.key)"
+                    [disabled]="isRoleDisabledInMatrix(user.id, rolle.key)"
+                    (change)="rollenMatrixToggle(user.id, rolle.key, $event)"
+                  ></mat-checkbox>
                 </td>
               </ng-container>
+            }
 
-              @for (rolle of rollenOhne; track rolle.key) {
-                <ng-container [matColumnDef]="rolle.key">
-                  <th mat-header-cell *matHeaderCellDef class="rollen-matrix-role-header">
-                    {{ rolle.verbose_name }}
-                  </th>
-                  <td mat-cell *matCellDef="let user" class="rollen-matrix-role-cell">
-                    <mat-checkbox
-                      [checked]="hasRoleInMatrix(user.id, rolle.key)"
-                      [disabled]="isRoleDisabledInMatrix(user.id, rolle.key)"
-                      (change)="rollenMatrixToggle(user.id, rolle.key, $event)"
-                    ></mat-checkbox>
-                  </td>
-                </ng-container>
-              }
-
-              <tr mat-header-row *matHeaderRowDef="rollenUebersichtSpalten"></tr>
-              <tr mat-row *matRowDef="let row; columns: rollenUebersichtSpalten"></tr>
-              <tr class="mat-row" *matNoDataRow>
-                <td class="mat-cell table-empty-cell" [attr.colspan]="rollenUebersichtSpalten.length">
-                  <div class="table-empty-state compact">
-                    <mat-icon class="table-empty-icon">groups</mat-icon>
-                    <span class="table-empty-title">Keine Rollenübersicht verfügbar</span>
-                    <span class="table-empty-copy">Es wurden noch keine Benutzer geladen.</span>
-                  </div>
-                </td>
-              </tr>
-            </table>
-          </div>
-        </imr-tab>
-
-      </imr-tab-group>
-  </imr-section-card>
-</imr-page-layout>
-
-
+            <tr mat-header-row *matHeaderRowDef="rollenUebersichtSpalten"></tr>
+            <tr mat-row *matRowDef="let row; columns: rollenUebersichtSpalten"></tr>
+            <tr class="mat-row" *matNoDataRow>
+              <td class="mat-cell table-empty-cell" [attr.colspan]="rollenUebersichtSpalten.length">
+                <div class="table-empty-state compact">
+                  <mat-icon class="table-empty-icon">groups</mat-icon>
+                  <span class="table-empty-title">Keine Rollenübersicht verfügbar</span>
+                  <span class="table-empty-copy">Es wurden noch keine Benutzer geladen.</span>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </imr-section>
+    </imr-tab>
+  </imr-tab-group>

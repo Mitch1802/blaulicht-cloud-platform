@@ -1,126 +1,118 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
-<imr-page-layout title="Konfiguration" class="config-page">
+<imr-page-layout title="Konfiguration">
 
-  <imr-section-card [title]="title">
-      <section class="config-section role-section">
-        <div class="config-section-body">
-      <form [formGroup]="formRolle" (ngSubmit)="rolleSpeichern()" class="role-form">
-        <div class="role-entry-row">
-          <imr-form-field class="imr-full-width" label="Neue Rolle">
-            <input matInput type="text" formControlName="rolle" placeholder="z. B. JUGENDWART" uiControlErrors />
+  <imr-section [title]="title">
+    <form [formGroup]="formRolle" (ngSubmit)="rolleSpeichern()" class="role-form">
+      <div class="role-entry-row">
+        <imr-form-field class="imr-full-width" label="Neue Rolle">
+          <input matInput type="text" formControlName="rolle" placeholder="z. B. JUGENDWART" uiControlErrors />
+        </imr-form-field>
+
+        <imr-button
+          color="accent"
+          [disabled]="!canSaveRole"
+          type="submit"
+        >
+          Rolle speichern
+        </imr-button>
+      </div>
+
+      @if (customRollen.length === 0) {
+        <p class="role-empty">Noch keine Rollen vorhanden.</p>
+      } @else {
+        <imr-chip-set class="imr-chips">
+          @for (rolle of customRollen; track rolle.id) {
+            <imr-chip [removable]="true" (removed)="rolleLoeschen(rolle)">
+              {{ rolle.key }}
+              <imr-chip-remove><imr-icon>cancel</imr-icon></imr-chip-remove>
+            </imr-chip>
+          }
+        </imr-chip-set>
+      }
+    </form>
+  </imr-section>
+
+  <imr-section [title]="title2">
+    <form [formGroup]="formKonfig" (ngSubmit)="konfigSpeichern()">
+      <input hidden type="text"  formControlName="id" />
+
+      <imr-top-actions>
+        <imr-button
+          color="accent"
+          [disabled]="!formKonfig.valid"
+          type="submit"
+        >
+          Stammdaten speichern
+        </imr-button>
+      </imr-top-actions>
+
+      <div class="app-grid">
+        <div class="app-col-12 app-col-lg-4">
+          <imr-form-field class="imr-full-width" label="FW Nummer">
+            <input matInput type="text" formControlName="fw_nummer" uiControlErrors />
           </imr-form-field>
-
-          <imr-button
-            color="accent"
-            [disabled]="!canSaveRole"
-            type="submit"
-          >
-            Rolle speichern
-          </imr-button>
         </div>
-
-        @if (customRollen.length === 0) {
-          <p class="role-empty">Noch keine Rollen vorhanden.</p>
-        } @else {
-          <imr-chip-set class="imr-chips">
-            @for (rolle of customRollen; track rolle.id) {
-              <imr-chip [removable]="true" (removed)="rolleLoeschen(rolle)">
-                {{ rolle.key }}
-                <imr-chip-remove><imr-icon>cancel</imr-icon></imr-chip-remove>
-              </imr-chip>
-            }
-          </imr-chip-set>
-        }
-      </form>
+        <div class="app-col-12 app-col-lg-8">
+          <imr-form-field class="imr-full-width" label="FW Name">
+            <input matInput type="text" formControlName="fw_name" uiControlErrors />
+          </imr-form-field>
         </div>
-      </section>
-  </imr-section-card>
-
-  <imr-section-card [title]="title2">
-      <section class="config-section masterdata-section">
-        <div class="config-section-body">
-      <form [formGroup]="formKonfig" (ngSubmit)="konfigSpeichern()">
-        <input hidden type="text"  formControlName="id" />
-
-        <imr-top-actions class="actions-top">
-          <imr-button
-            color="accent"
-            [disabled]="!formKonfig.valid"
-            type="submit"
-          >
-            Stammdaten speichern
-          </imr-button>
-        </imr-top-actions>
-
-        <section class="app-grid imr-form-grid">
-          <div class="app-col-12 app-col-lg-4 mb-3">
-            <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="FW Nummer">
-              <input matInput type="text" formControlName="fw_nummer" uiControlErrors />
-            </imr-form-field>
-          </div>
-          <div class="app-col-12 app-col-lg-8 mb-3">
-            <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="FW Name">
-              <input matInput type="text" formControlName="fw_name" uiControlErrors />
-            </imr-form-field>
-          </div>
-          <div class="app-col-12 app-col-lg-5 mb-3">
-            <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="Straße">
-              <input matInput type="text" formControlName="fw_street" uiControlErrors />
-            </imr-form-field>
-          </div>
-          <div class="app-col-12 app-col-lg-3 mb-3">
-            <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="PLZ">
-              <input matInput type="text" formControlName="fw_plz" uiControlErrors />
-            </imr-form-field>
-          </div>
-          <div class="app-col-12 app-col-lg-4 mb-3">
-            <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="Ort">
-              <input matInput type="text" formControlName="fw_ort" uiControlErrors />
-            </imr-form-field>
-          </div>
-          <div class="app-col-12 app-col-lg-6 mb-3">
-            <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="E-Mail">
-              <input matInput type="text" formControlName="fw_email" uiControlErrors />
-            </imr-form-field>
-          </div>
-          <div class="app-col-12 app-col-lg-6 mb-3">
-            <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="Telefon">
-              <input matInput type="text" formControlName="fw_telefon" uiControlErrors />
-            </imr-form-field>
-          </div>
-          <div class="app-col-12 app-col-lg-12 mb-3">
-            <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="Webseite">
-              <input matInput type="text" formControlName="fw_webseite" uiControlErrors />
-            </imr-form-field>
-          </div>
-          <div class="app-col-12 app-col-lg-12 mb-3">
-            <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="Kommandant">
-              <input matInput type="text" formControlName="fw_kdt" uiControlErrors />
-            </imr-form-field>
-          </div>
-          <div class="app-col-12 app-col-lg-12 mb-3">
-            <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="Bankkonto">
-              <input matInput type="text" formControlName="fw_konto" uiControlErrors />
-            </imr-form-field>
-          </div>
-          <div class="app-col-12 app-col-lg-4 mb-3">
-            <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="BIC">
-              <input matInput type="text" formControlName="fw_bic" uiControlErrors />
-            </imr-form-field>
-          </div>
-          <div class="app-col-12 app-col-lg-8 mb-3">
-            <imr-form-field hintLabel="* Pflichtfeld" class="imr-full-width" label="IBAN">
-              <input matInput type="text" formControlName="fw_iban" uiControlErrors />
-            </imr-form-field>
-          </div>
-        </section>
-      </form>
+        <div class="app-col-12 app-col-lg-5">
+          <imr-form-field class="imr-full-width" label="Straße">
+            <input matInput type="text" formControlName="fw_street" uiControlErrors />
+          </imr-form-field>
         </div>
-      </section>
-  </imr-section-card>
+        <div class="app-col-12 app-col-lg-3">
+          <imr-form-field class="imr-full-width" label="PLZ">
+            <input matInput type="text" formControlName="fw_plz" uiControlErrors />
+          </imr-form-field>
+        </div>
+        <div class="app-col-12 app-col-lg-4">
+          <imr-form-field class="imr-full-width" label="Ort">
+            <input matInput type="text" formControlName="fw_ort" uiControlErrors />
+          </imr-form-field>
+        </div>
+        <div class="app-col-12 app-col-lg-6">
+          <imr-form-field class="imr-full-width" label="E-Mail">
+            <input matInput type="text" formControlName="fw_email" uiControlErrors />
+          </imr-form-field>
+        </div>
+        <div class="app-col-12 app-col-lg-6">
+          <imr-form-field class="imr-full-width" label="Telefon">
+            <input matInput type="text" formControlName="fw_telefon" uiControlErrors />
+          </imr-form-field>
+        </div>
+        <div class="app-col-12 app-col-lg-12">
+          <imr-form-field class="imr-full-width" label="Webseite">
+            <input matInput type="text" formControlName="fw_webseite" uiControlErrors />
+          </imr-form-field>
+        </div>
+        <div class="app-col-12 app-col-lg-12">
+          <imr-form-field class="imr-full-width" label="Kommandant">
+            <input matInput type="text" formControlName="fw_kdt" uiControlErrors />
+          </imr-form-field>
+        </div>
+        <div class="app-col-12 app-col-lg-12">
+          <imr-form-field class="imr-full-width" label="Bankkonto">
+            <input matInput type="text" formControlName="fw_konto" uiControlErrors />
+          </imr-form-field>
+        </div>
+        <div class="app-col-12 app-col-lg-4">
+          <imr-form-field class="imr-full-width" label="BIC">
+            <input matInput type="text" formControlName="fw_bic" uiControlErrors />
+          </imr-form-field>
+        </div>
+        <div class="app-col-12 app-col-lg-8">
+          <imr-form-field class="imr-full-width" label="IBAN">
+            <input matInput type="text" formControlName="fw_iban" uiControlErrors />
+          </imr-form-field>
+        </div>
+      </div>
+    </form>
+  </imr-section>
 
-  <imr-section-card [title]="title3">
+  <imr-section [title]="title3">
       <section class="config-section backup-section">
         <header class="config-section-head">
       <p class="backup-warning">
@@ -255,30 +247,27 @@
       }
         </div>
       </section>
-  </imr-section-card>
+  </imr-section>
 
-  <imr-section-card title="Dateibereinigung">
-      <section class="config-section cleanup-root-section">
-        <div class="config-section-body">
-      <section class="cleanup-section">
+  <imr-section title="Dateibereinigung">
         <p class="cleanup-intro">
           Hier können verwaiste Dateien zuerst analysiert und anschließend dauerhaft gelöscht werden.
         </p>
 
-        <div class="app-grid mt-2">
+        <div class="app-grid">
           <div class="app-col-12 app-col-md-6 app-col-lg-4">
-            <imr-form-field appearance="outline" class="imr-full-width" label="Zielbereich">
-              <imr-select
+            <imr-form-field label="Zielbereich">
+              <mat-select
                 [(ngModel)]="cleanupTarget"
                 [ngModelOptions]="{ standalone: true }"
               >
-                <imr-option value="all">Alle Pfade</imr-option>
-                <imr-option value="news">News (files/news)</imr-option>
-                <imr-option value="homepage">Homepage (files/homepage)</imr-option>
-                <imr-option value="inventar">Inventar (files/inventar)</imr-option>
-                <imr-option value="einsatzberichte">Einsatzberichte (files/einsatzberichte)</imr-option>
-                <imr-option value="anwesenheitsliste">Anwesenheitsliste (files/anwesenheitsliste)</imr-option>
-              </imr-select>
+                <mat-option value="all">Alle Pfade</mat-option>
+                <mat-option value="news">News (files/news)</mat-option>
+                <mat-option value="homepage">Homepage (files/homepage)</mat-option>
+                <mat-option value="inventar">Inventar (files/inventar)</mat-option>
+                <mat-option value="einsatzberichte">Einsatzberichte (files/einsatzberichte)</mat-option>
+                <mat-option value="anwesenheitsliste">Anwesenheitsliste (files/anwesenheitsliste)</mat-option>
+              </mat-select>
             </imr-form-field>
           </div>
         </div>
@@ -366,10 +355,5 @@
             <div class="table-empty-copy">Der gewählte Bereich ist aktuell sauber.</div>
           </div>
         }
-      </section>
-        </div>
-      </section>
-  </imr-section-card>
+  </imr-section>
 </imr-page-layout>
-
-

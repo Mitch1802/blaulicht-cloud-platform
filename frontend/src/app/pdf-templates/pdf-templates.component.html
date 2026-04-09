@@ -1,8 +1,9 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <imr-page-layout [title]="title" class="pdf-page">
-  <imr-section-card title="Vorlagen verwalten">
+  <imr-section title="Vorlagen verwalten">
 
+    @if (tableVisible) {
       <imr-top-actions>
         <imr-button
           color="accent"
@@ -13,21 +14,20 @@
           Hinzufügen
         </imr-button>
 
-        @if (tableVisible) {
-          <imr-form-field fieldClass="status-filter" subscriptSizing="dynamic" label="Status">
-            <imr-select
-              [(ngModel)]="statusFilter"
-              [ngModelOptions]="{ standalone: true }"
-              (selectionChange)="applyStatusFilter()"
-            >
-              <imr-option value="ALL">Alle</imr-option>
-              <imr-option value="DRAFT">Draft</imr-option>
-              <imr-option value="PUBLISHED">Published</imr-option>
-              <imr-option value="ARCHIVED">Archived</imr-option>
-            </imr-select>
-          </imr-form-field>
-        }
+        <imr-form-field label="Status" class="status-filter">
+          <mat-select
+            [(ngModel)]="statusFilter"
+            [ngModelOptions]="{ standalone: true }"
+            (selectionChange)="applyStatusFilter()"
+          >
+            <mat-option value="ALL">Alle</mat-option>
+            <mat-option value="DRAFT">Draft</mat-option>
+            <mat-option value="PUBLISHED">Published</mat-option>
+            <mat-option value="ARCHIVED">Archived</mat-option>
+          </mat-select>
+        </imr-form-field>
       </imr-top-actions>
+    }
 
       <form
         [formGroup]="formModul"
@@ -39,7 +39,7 @@
         <input hidden type="text"  formControlName="version" />
         <input hidden type="text"  formControlName="status" />
 
-        <imr-top-actions class="imr-form-actions">
+        <imr-top-actions>
           <imr-button
             color="accent"
             [hidden]="readonlyMode || !formModul.valid"
@@ -66,23 +66,23 @@
           </imr-button>
         </imr-top-actions>
 
-        <section class="app-grid imr-form-grid">
+        <div class="app-grid">
           <div class="app-col-12 app-col-lg-6 mb-3">
-            <imr-form-field hintLabel="* Pflichtfeld" fieldClass="imr-full-width" label="Typ / Modul">
-              <imr-select formControlName="typ" uiControlErrors>
+            <imr-form-field label="Typ / Modul">
+              <mat-select formControlName="typ" uiControlErrors>
                 @for (opt of typModul; track opt) {
-                  <imr-option [value]="opt"> {{ opt }} </imr-option>
+                  <mat-option [value]="opt"> {{ opt }} </mat-option>
                 }
-              </imr-select>
+              </mat-select>
             </imr-form-field>
           </div>
           <div class="app-col-12 app-col-lg-6 mb-3">
-            <imr-form-field hintLabel="* Pflichtfeld" fieldClass="imr-full-width" label="Bezeichnung">
+            <imr-form-field label="Bezeichnung">
               <input matInput type="text" formControlName="bezeichnung" uiControlErrors />
             </imr-form-field>
           </div>
           <div class="app-col-12 app-col-lg-12 mb-3">
-            <mat-form-field appearance="outline" class="imr-full-width html-source-field" subscriptSizing="dynamic">
+            <imr-form-field class="imr-full-width html-source-field">
               <mat-label>HTML Code</mat-label>
               <textarea
                 matInput
@@ -90,9 +90,9 @@
                 formControlName="source"
                 rows="18"
               ></textarea>
-            </mat-form-field>
+            </imr-form-field>
           </div>
-        </section>
+        </div>
       </form>
 
       <div class="imr-table-wrap" [hidden]="!tableVisible">
@@ -144,5 +144,5 @@
           <tr mat-row *matRowDef="let row; columns: sichtbareSpalten"></tr>
         </table>
       </div>
-  </imr-section-card>
+  </imr-section>
 </imr-page-layout>

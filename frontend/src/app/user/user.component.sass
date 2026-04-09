@@ -1,33 +1,22 @@
 @use '../../theme' as theme
 
-:host .user-page .imr-top-actions
-	margin-bottom: .75rem
-
-:host .user-page .user-toolbar
-	margin-bottom: .75rem
-
-:host .user-page .user-toolbar .filter-field
+:host .user-toolbar .filter-field
 	width: min(100%, 28rem)
 
-:host .user-page .edit-form
-	margin-top: .5rem
-
-:host .user-page .role-row
+:host .role-row
 	margin: .5rem 0 1rem
 	display: flex
 	flex-wrap: wrap
 	gap: .5rem .75rem
 
-:host .user-page .password-action
+:host .password-action
 	display: flex
 	align-items: flex-end
 
 @media (max-width: 768px)
-	:host .user-page .user-toolbar .filter-field
+	:host .user-toolbar .filter-field
 		width: 100%
 
-
-.user-page
 	.imr-top-actions
 		gap: .6rem
 		margin: .2rem 0 .75rem
@@ -95,11 +84,6 @@
 		display: flex
 		align-items: center
 
-	.user-tabs
-		margin-top: .2rem
-
-		::ng-deep .mat-mdc-tab-body-content
-			padding-top: .75rem
 
 	.rollen-matrix-actions
 		margin-bottom: .75rem

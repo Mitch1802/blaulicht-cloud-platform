@@ -9,22 +9,24 @@
         <div class="app-grid">
           @for (item of category.items; track item) {
             @if (isPlannedItem(item)) {
-              <imr-card cardClass="module-card planned app-col-12 app-col-lg-4" [wrapContent]="false" aria-disabled="true">
-                <span class="badge planned-badge">GEPLANT</span>
-                <div class="module-icon-shell">
-                  <imr-icon class="module-icon" [inline]="true">{{ item.icon }}</imr-icon>
-                </div>
-                <div class="module-card-body">
-                  <div class="module-title">{{ item.modul }}</div>
-                </div>
-              </imr-card>
+              <div class="app-col-12 app-col-lg-2">
+                <imr-card cardClass="module-card planned" [wrapContent]="false" aria-disabled="true">
+                  <span class="badge planned-badge">GEPLANT</span>
+                  <div class="module-icon-shell">
+                    <imr-icon class="module-icon" [inline]="true">{{ item.icon }}</imr-icon>
+                  </div>
+                  <div class="module-card-body">
+                    <div class="module-title">{{ item.modul }}</div>
+                  </div>
+                </imr-card>
+              </div>
             } @else {
               <a
-                class="module-card-link app-col-12 app-col-lg-4"
+                class="module-card-link app-col-12 app-col-lg-2"
                 [routerLink]="item.routerlink"
                 [attr.aria-label]="'Modul öffnen: ' + item.modul"
               >
-                <imr-card [cardClass]="'module-card' + (isAdminOnly(item) ? ' admin-only' : '')" [wrapContent]="false">
+                <imr-card [cardClass]="'module-card ' + (isAdminOnly(item) ? ' admin-only' : '')" [wrapContent]="false">
                   @if (isAdminOnly(item)) {
                     <span class="badge admin-badge">ADMIN</span>
                   }
@@ -43,47 +45,3 @@
     }
   }
 </imr-page-layout>
-
-<!-- <imr-page-layout [title]="display_name" pageClass="start-page">
-  @if (categorizedItems.length === 0) {
-    <imr-section-card title="Für deine Rollen sind aktuell keine Module freigeschaltet!"></imr-section-card>
-  }@else {
-    @for (category of categorizedItems; track category.name) {
-      <imr-section-card [title]="category.name">
-        <div class="module-grid">
-          @for (item of category.items; track item) {
-            @if (isPlannedItem(item)) {
-              <imr-card cardClass="module-card planned" [wrapContent]="false" aria-disabled="true">
-                <span class="badge planned-badge">GEPLANT</span>
-                <div class="module-icon-shell">
-                  <imr-icon class="module-icon" [inline]="true">{{ item.icon }}</imr-icon>
-                </div>
-                <div class="module-card-body">
-                  <div class="module-title">{{ item.modul }}</div>
-                </div>
-              </imr-card>
-            } @else {
-              <a
-                class="module-card-link"
-                [routerLink]="item.routerlink"
-                [attr.aria-label]="'Modul öffnen: ' + item.modul"
-              >
-                <imr-card [cardClass]="'module-card' + (isAdminOnly(item) ? ' admin-only' : '')" [wrapContent]="false">
-                  @if (isAdminOnly(item)) {
-                    <span class="badge admin-badge">ADMIN</span>
-                  }
-                  <div class="module-icon-shell">
-                    <imr-icon class="module-icon" [inline]="true">{{ item.icon }}</imr-icon>
-                  </div>
-                  <div class="module-card-body">
-                    <div class="module-title">{{ item.modul }}</div>
-                  </div>
-                </imr-card>
-              </a>
-            }
-          }
-        </div>
-      </imr-section-card>
-    }
-  }
-</imr-page-layout> -->

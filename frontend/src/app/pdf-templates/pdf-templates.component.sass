@@ -24,32 +24,9 @@
 	line-height: 1.35
 	resize: vertical
 
-.pdf-page
-	+theme.imr-admin-page-shell
-	+theme.imr-admin-page-mobile(768px)
-
-	.page-head
-		margin: 0 0 1.5rem
-
-		h1
-			margin: 0
-			color: theme.$imr-primary
-			font-size: clamp(1.5rem, 2.4vw, 2.1rem)
-			line-height: 1.2
-
-	.imr-card
-		border-radius: 0
-
-	.status-filter
-		width: 220px
+.status-filter
+	width: 220px
 
 @media (max-width: 768px)
-	.pdf-page
-		.page-head
-			margin-bottom: 1rem
-
-			h1
-				font-size: 1.4rem
-
-		.status-filter
-			width: 100%
+	.status-filter
+		width: 100%

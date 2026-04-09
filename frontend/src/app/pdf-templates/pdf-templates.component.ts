@@ -18,22 +18,12 @@ import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { Router } from '@angular/router';
-import {
-  ImrButtonComponent,
-  ImrBreadcrumbItem,
-  ImrFormFieldComponent,
-  ImrHeaderComponent,
-  ImrIconComponent,
-  ImrOptionComponent,
-  ImrPageLayoutComponent,
-  ImrSectionCardComponent,
-  ImrSelectComponent,
-  ImrTopActionsComponent,
-} from '../imr-ui-library';
+import { IMR_UI_COMPONENTS, ImrBreadcrumbItem } from '../imr-ui-library';
 import { FormatService } from '../helpers/format.service';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
 import { IPdfTemplate } from '../_interface/pdf_template';
+import { MatSelectModule } from '@angular/material/select';
 
 type PdfTemplateApiItem = IPdfTemplate & {
   created_at?: string;
@@ -43,21 +33,14 @@ type PdfTemplateApiItem = IPdfTemplate & {
 @Component({
   selector: 'app-pdf-templates',
   imports: [
-    ImrButtonComponent,
-    ImrHeaderComponent,
-    ImrPageLayoutComponent,
-    ImrSectionCardComponent,
+    ...IMR_UI_COMPONENTS,
     FormsModule,
     ReactiveFormsModule,
-    ImrFormFieldComponent,
-    ImrSelectComponent,
-    ImrOptionComponent,
-    ImrTopActionsComponent,
     MatFormFieldModule,
     MatInputModule,
     MatTableModule,
     MatSortModule,
-    ImrIconComponent,
+    MatSelectModule
   ],
   templateUrl: './pdf-templates.component.html',
   styleUrl: './pdf-templates.component.sass'

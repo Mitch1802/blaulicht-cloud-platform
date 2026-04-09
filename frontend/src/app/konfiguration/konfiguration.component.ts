@@ -12,6 +12,7 @@ import { MatTableModule } from '@angular/material/table';
 import { environment } from "src/environments/environment";
 import { Router } from '@angular/router';
 import { IMR_UI_COMPONENTS, ImrBreadcrumbItem } from '../imr-ui-library';
+import { MatSelectModule } from '@angular/material/select';
 
 type RolleEintrag = { id: number; key: string; verbose_name: string };
 type BackupEintrag = { name: string };
@@ -24,7 +25,14 @@ type BackupCleanupResponse = { summary?: { orphan?: number }; deleted?: number; 
     selector: 'app-konfiguration',
     templateUrl: './konfiguration.component.html',
     styleUrls: ['./konfiguration.component.sass'],
-    imports: [...IMR_UI_COMPONENTS, FormsModule, ReactiveFormsModule, MatInputModule, MatTableModule]
+    imports: [
+      ...IMR_UI_COMPONENTS, 
+      FormsModule, 
+      ReactiveFormsModule, 
+      MatInputModule, 
+      MatTableModule,
+      MatSelectModule
+    ]
 })
 export class KonfigurationComponent implements OnInit {
   private apiHttpService = inject(ApiHttpService);

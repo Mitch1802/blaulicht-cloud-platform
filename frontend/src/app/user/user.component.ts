@@ -10,19 +10,7 @@ import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
 import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
-import {
-  ImrBreadcrumbItem,
-  ImrButtonComponent,
-  ImrFormFieldComponent,
-  ImrHeaderComponent,
-  ImrPageLayoutComponent,
-  ImrSectionCardComponent,
-  ImrTabComponent,
-  ImrTabGroupComponent,
-  ImrTopActionsComponent,
-  UiControlErrorMap,
-  UiControlErrorsDirective,
-} from '../imr-ui-library';
+import { IMR_UI_COMPONENTS, ImrBreadcrumbItem, UiControlErrorMap } from '../imr-ui-library';
 import { MatInput } from '@angular/material/input';
 import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
@@ -85,18 +73,10 @@ type UserUpdatePayload = Omit<UserCreatePayload, 'password1' | 'password2' | 'se
     templateUrl: './user.component.html',
     styleUrls: ['./user.component.sass'],
     imports: [
-    ImrButtonComponent,
-    ImrHeaderComponent,
-    ImrPageLayoutComponent,
-    ImrSectionCardComponent,
-    ImrFormFieldComponent,
-    ImrTopActionsComponent,
-    ImrTabGroupComponent,
-    ImrTabComponent,
+    ...IMR_UI_COMPONENTS,
     FormsModule,
     ReactiveFormsModule,
     MatInput,
-    UiControlErrorsDirective,
     MatCheckbox,
     MatAutocompleteModule,
     MatTableModule,

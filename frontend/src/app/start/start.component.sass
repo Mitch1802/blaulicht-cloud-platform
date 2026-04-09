@@ -8,22 +8,7 @@
     &:focus-visible
         outline: none
 
-// .module-grid
-//     display: grid
-//     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr))
-//     gap: .5rem
-//     padding: .5rem
-
 :host ::ng-deep
-    // imr-section-card
-    //     box-shadow: none
-
-    // imr-section-card > mat-card
-    //     margin-top: 1rem
-
-    // .imr-card__head h2
-    //     text-transform: uppercase
-
     .module-card
         min-height: 148px
         padding: .85rem .75rem .78rem
@@ -144,54 +129,49 @@
         opacity: .75
 
 @media (max-width: 768px)
-    // .start-page
-    //     .module-grid
-    //         grid-template-columns: repeat(2, minmax(0, 1fr))
-    //         gap: .4rem
-    //         padding: 0 .5rem .5rem .5rem
 
-        .module-icon-shell
-            width: 2.25rem
-            height: 2.25rem
-            margin-bottom: 0
-            flex: 0 0 auto
+    .module-icon-shell
+        width: 2.25rem
+        height: 2.25rem
+        margin-bottom: 0
+        flex: 0 0 auto
 
-        .module-card-body
-            min-width: 0
-            justify-items: start
+    .module-card-body
+        min-width: 0
+        justify-items: start
 
-        .module-icon
-            width: 1.3rem
-            height: 1.3rem
-            font-size: 1.3rem
-            line-height: 1.3rem
-            margin-top: .05rem
-            flex: 0 0 auto
+    .module-icon
+        width: 1.3rem
+        height: 1.3rem
+        font-size: 1.3rem
+        line-height: 1.3rem
+        margin-top: .05rem
+        flex: 0 0 auto
 
-        .module-title
-            min-height: 0
-            font-size: .9rem
-            min-height: auto
-            max-height: none
-            max-width: 100%
-            min-width: 0
-            justify-content: flex-start
-            text-align: left
-            overflow: hidden
-            text-overflow: ellipsis
-            white-space: normal
-            display: -webkit-box
-            -webkit-line-clamp: 2
-            -webkit-box-orient: vertical
-            line-clamp: 2
+    .module-title
+        min-height: 0
+        font-size: .9rem
+        min-height: auto
+        max-height: none
+        max-width: 100%
+        min-width: 0
+        justify-content: flex-start
+        text-align: left
+        overflow: hidden
+        text-overflow: ellipsis
+        white-space: normal
+        display: -webkit-box
+        -webkit-line-clamp: 2
+        -webkit-box-orient: vertical
+        line-clamp: 2
 
-        .admin-badge,
-        .planned-badge
-            top: .35rem
-            right: .35rem
-            font-size: .55rem
-            letter-spacing: .03em
-            padding: .1rem .35rem
+    .admin-badge,
+    .planned-badge
+        top: .35rem
+        right: .35rem
+        font-size: .55rem
+        letter-spacing: .03em
+        padding: .1rem .35rem
 
 @media (max-width: 768px)
     :host ::ng-deep
@@ -207,12 +187,3 @@
                 inset: 0 auto 0 0
                 width: 4px
                 height: auto
-
-// @media (max-width: 560px)
-//     .start-page
-//         .module-grid
-//             grid-template-columns: 1fr
-
-//         .category-head
-//             flex-direction: column
-//             align-items: flex-start

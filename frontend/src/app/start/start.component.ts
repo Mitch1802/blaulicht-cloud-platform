@@ -3,13 +3,8 @@ import { ApiHttpService } from '../_service/api-http.service';
 import { AuthSessionService } from '../_service/auth-session.service';
 import { NavigationService } from '../_service/navigation.service';
 import { UiMessageService } from '../_service/ui-message.service';
-import { ImrCardComponent } from '../imr-ui-library/imr-card.component';
-import { ImrBreadcrumbItem, ImrHeaderComponent } from '../imr-ui-library/imr-header.component';
-import { ImrIconComponent } from '../imr-ui-library/imr-icon.component';
-import { ImrPageLayoutComponent } from '../imr-ui-library/imr-page-layout.component';
-import { ImrSectionComponent } from '../imr-ui-library/imr-section.component';
+import { IMR_UI_COMPONENTS, ImrBreadcrumbItem } from '../imr-ui-library';
 import { RouterLink } from '@angular/router';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import startRegelConfig from './konfig.json';
 
 type StartKonfigItem = {
@@ -41,13 +36,8 @@ type StartResponse = {
   styleUrls: ['./start.component.sass'],
   standalone: true,
   imports: [
-    ImrHeaderComponent,
-    ImrPageLayoutComponent,
-    ImrSectionComponent,
-    ImrCardComponent,
-    ImrIconComponent,
-    RouterLink,
-    MatTooltipModule
+    ...IMR_UI_COMPONENTS,
+    RouterLink
   ]
 })
 export class StartComponent implements OnInit {
