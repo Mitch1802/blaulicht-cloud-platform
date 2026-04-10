@@ -66,7 +66,7 @@
                 @for (ex of pdfExports; track ex.key) {
                   <mat-form-field appearance="outline" class="imr-full-width">
                     <mat-label>{{ ex.label }}</mat-label>
-                    <mat-select [formControlName]="ex.key" uiControlErrors>
+                    <mat-select [formControlName]="ex.key">
                       <mat-option [value]="null">Bitte auswählen</mat-option>
                       @for (t of pdfTemplates; track t.id) {
                         <mat-option [value]="t.id">
@@ -89,7 +89,6 @@
                   formControlName="konfiguration"
                   rows="18"
                   placeholder="{ 'key': 'value' }"
-                  [uiControlErrors]="konfigurationErrorMap"
                 ></textarea>
               </mat-form-field>
 
@@ -154,5 +153,6 @@
       </div>
   </imr-section>
 </imr-page-layout>
+
 
 

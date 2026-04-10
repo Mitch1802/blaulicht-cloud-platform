@@ -1,4 +1,4 @@
-export interface IRechnung {
+﻿export interface IRechnung {
   adress_name: string;
   adresse_strasse: string;
   adresse_plz: string;

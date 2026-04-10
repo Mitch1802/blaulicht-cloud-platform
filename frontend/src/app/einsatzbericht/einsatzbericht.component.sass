@@ -1,310 +1,289 @@
-@use '../../theme' as theme
+﻿@use '../../theme' as theme
 
-.bericht-page
+.form-section
+    border: 1px solid rgba(theme.$imr-border, .95)
+    border-radius: 0
+    background: transparent
+    box-shadow: none
+    overflow: hidden
 
-    .form-section
-        border: 1px solid rgba(theme.$imr-border, .95)
-        border-radius: 0
-        background: transparent
-        box-shadow: none
-        overflow: hidden
+    &:hover
+        border-color: rgba(theme.$imr-primary, .45)
 
-        &:hover
-            border-color: rgba(theme.$imr-primary, .45)
-
-        &.has-error
-            border-color: rgba(theme.$imr-error, .75)
-
-            .mat-expansion-panel-header
-                background: rgba(theme.$imr-error, .07)
-
-                &:hover
-                    background: rgba(theme.$imr-error, .12)
+    &.has-error
+        border-color: rgba(theme.$imr-error, .75)
 
         .mat-expansion-panel-header
-            background: rgba(theme.$imr-surface-variant, .62)
+            background: rgba(theme.$imr-error, .07)
 
             &:hover
-                background: rgba(theme.$imr-surface-variant, .78)
+                background: rgba(theme.$imr-error, .12)
 
-    .form-section-title
+    .mat-expansion-panel-header
+        background: theme.$imr-surface
+
+
+.form-section-title
+    color: theme.$imr-primary
+    font-weight: 600
+    display: flex
+    align-items: center
+    min-width: 0
+    flex: 1 1 auto
+
+.section-error-icon
+    color: theme.$imr-error
+    font-size: 1.1rem
+    width: 1.1rem
+    height: 1.1rem
+    vertical-align: middle
+    margin-left: auto
+    flex-shrink: 0
+
+.form-section-subtitle
+    opacity: .72
+    font-size: .84rem
+
+.form-section-body
+    // margin-top: .2rem
+    padding-top: 0
+
+.grid
+    display: grid
+    gap: .75rem
+    margin-bottom: .75rem
+
+.one-col
+    grid-template-columns: 1fr
+
+.two-col
+    grid-template-columns: repeat(2, minmax(0, 1fr))
+    align-items: start
+
+.three-col
+    grid-template-columns: repeat(3, minmax(0, 1fr))
+
+.conditional-block
+    border: 1px solid rgba(theme.$imr-border, .65)
+    border-radius: 0
+    padding: .55rem .6rem
+    margin-bottom: .7rem
+    background: transparent
+
+    h3
+        margin: 0 0 .45rem
         color: theme.$imr-primary
-        font-weight: 600
-        display: flex
-        align-items: center
-        min-width: 0
-        flex: 1 1 auto
+        font-size: 1rem
 
-    .section-error-icon
-        color: theme.$imr-error
-        font-size: 1.1rem
-        width: 1.1rem
-        height: 1.1rem
-        vertical-align: middle
-        margin-left: auto
-        flex-shrink: 0
+.einsatzdetails-block
+    border: 0
+    padding: 0
+    margin-bottom: 0
 
-    .form-section-subtitle
-        opacity: .72
-        font-size: .84rem
+.einsatzdetails-grid
+    margin-bottom: .45rem
 
-    .form-section-body
-        margin-top: .2rem
-        padding-top: 0
-
-    .grid
-        display: grid
-        gap: .75rem
-        margin-bottom: .75rem
-
-    .one-col
-        grid-template-columns: 1fr
-
-    .two-col
-        grid-template-columns: repeat(2, minmax(0, 1fr))
-        align-items: start
-
-    .three-col
-        grid-template-columns: repeat(3, minmax(0, 1fr))
-
-    .conditional-block
-        border: 1px solid rgba(theme.$imr-border, .65)
-        border-radius: 0
-        padding: .55rem .6rem
-        margin-bottom: .7rem
-        background: transparent
-
-        h3
-            margin: 0 0 .45rem
-            color: theme.$imr-primary
-            font-size: 1rem
-
-    .einsatzdetails-block
-        border: 0
-        padding: 0
+    &:last-child
         margin-bottom: 0
 
-    .einsatzdetails-grid
-        margin-bottom: .45rem
+.selection-description
+    margin: -.2rem 0 0
+    font-size: .8rem
+    opacity: .72
 
-        &:last-child
-            margin-bottom: 0
+.selection-counter
+    font-size: .78rem
+    opacity: .72
+    margin-left: .25rem
 
-    .selection-description
-        margin: -.2rem 0 0
-        font-size: .8rem
-        opacity: .72
+.option-title
+    font-weight: 600
+    line-height: 1.2
 
-    .selection-counter
-        font-size: .78rem
-        opacity: .72
-        margin-left: .25rem
+.option-description
+    font-size: .78rem
+    opacity: .72
+    margin-top: .1rem
+    white-space: normal
 
-    .option-title
-        font-weight: 600
-        line-height: 1.2
+.prefill-row
+    display: grid
+    grid-template-columns: 1fr auto
+    gap: .6rem
+    align-items: center
 
-    .option-description
-        font-size: .78rem
-        opacity: .72
-        margin-top: .1rem
-        white-space: normal
-
-    .prefill-row
-        display: grid
-        grid-template-columns: 1fr auto
-        gap: .6rem
-        align-items: center
-
-    .upload-row
-        display: flex
-        align-items: center
-        flex-wrap: wrap
-        margin-top: .7rem
-        column-gap: 1rem
-        row-gap: .6rem
-        padding: 0
-
-        .preview-grid
-            flex-basis: 100%
-            width: 100%
-
-    .upload-label
-        font-weight: 600
-        display: inline-block
-        margin-bottom: 0
-        color: theme.$imr-primary
-
-    .file-input-hidden
-        position: absolute
-        width: 1px
-        height: 1px
-        padding: 0
-        margin: -1px
-        overflow: hidden
-        clip: rect(0, 0, 0, 0)
-        border: 0
+.upload-row
+    display: flex
+    align-items: center
+    flex-wrap: wrap
+    margin-top: .7rem
+    column-gap: 1rem
+    row-gap: .6rem
+    padding: 0
 
     .preview-grid
-        display: grid
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr))
-        gap: .6rem
-        margin-top: .6rem
+        flex-basis: 100%
+        width: 100%
 
+.upload-label
+    font-weight: 600
+    display: inline-block
+    margin-bottom: 0
+    color: theme.$imr-primary
+
+.file-input-hidden
+    position: absolute
+    width: 1px
+    height: 1px
+    padding: 0
+    margin: -1px
+    overflow: hidden
+    clip: rect(0, 0, 0, 0)
+    border: 0
+
+.preview-grid
+    display: grid
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr))
+    gap: .6rem
+    margin-top: .6rem
+
+.preview-card
+    border: 0
+    border-left: 2px solid rgba(theme.$imr-border, .95)
+    border-radius: 0
+    background: rgba(theme.$imr-surface, .7)
+    overflow: hidden
+    box-shadow: none
+
+.preview-image
+    width: 100%
+    height: 120px
+    object-fit: cover
+    display: block
+
+.preview-file
+    height: 120px
+    display: flex
+    align-items: center
+    justify-content: center
+    font-weight: 600
+    color: theme.$imr-primary
+
+.preview-meta
+    display: flex
+    align-items: center
+    justify-content: flex-end
+    gap: .2rem
+    padding: .45rem
+    border-top: 1px solid rgba(theme.$imr-border, .72)
+
+    a,
+    span
+        font-size: .8rem
+        overflow: hidden
+        text-overflow: ellipsis
+        white-space: nowrap
+
+.documentation-block
+    border: 0
+    padding: 0
+    margin: 0
+    background: transparent
+
+    .upload-button,
     .preview-card
         border: 0
-        border-left: 2px solid rgba(theme.$imr-border, .95)
-        border-radius: 0
-        background: rgba(theme.$imr-surface, .7)
-        overflow: hidden
+
+    .preview-card
         box-shadow: none
 
-    .preview-image
-        width: 100%
-        height: 120px
-        object-fit: cover
-        display: block
-
-    .preview-file
-        height: 120px
-        display: flex
-        align-items: center
-        justify-content: center
-        font-weight: 600
-        color: theme.$imr-primary
-
     .preview-meta
-        display: flex
-        align-items: center
-        justify-content: flex-end
-        gap: .2rem
-        padding: .45rem
-        border-top: 1px solid rgba(theme.$imr-border, .72)
+        border-top: 0
 
-        a,
-        span
-            font-size: .8rem
-            overflow: hidden
-            text-overflow: ellipsis
-            white-space: nowrap
+.existing-previews
+    margin-top: .4rem
 
-    .documentation-block
-        border: 0
-        padding: 0
+.searchable-select
+    display: grid
+    gap: .45rem
+
+.autocomplete-multi
+    display: grid
+    gap: .3rem
+    align-content: start
+
+.imr-chips
+    min-height: 2rem
+    align-self: start
+
+.actions-row
+    display: flex
+    flex-wrap: wrap
+    gap: .6rem
+    margin: .25rem 0 .8rem
+    justify-content: flex-start
+
+.mobile-berichte-list
+    display: none
+    gap: .75rem
+    margin-top: .6rem
+
+.bericht-card
+    border: 0
+    border-left: 2px solid rgba(theme.$imr-border, .95)
+    border-radius: 0
+    background: rgba(theme.$imr-surface, .82)
+    padding: .65rem .7rem
+    display: grid
+    gap: .55rem
+
+.bericht-card-head
+    display: flex
+    justify-content: space-between
+    align-items: center
+    gap: .65rem
+
+.bericht-card-date
+    font-weight: 600
+    color: theme.$imr-primary
+
+.bericht-card-content
+    display: grid
+    gap: .3rem
+
+    p
         margin: 0
-        background: transparent
+        line-height: 1.35
 
-        .upload-button,
-        .preview-card
-            border: 0
+.bericht-card-actions
+    display: flex
+    flex-wrap: nowrap
+    align-items: center
+    gap: .35rem
 
-        .preview-card
-            box-shadow: none
-
-        .preview-meta
-            border-top: 0
-
-    .existing-previews
-        margin-top: .4rem
-
-    .searchable-select
-        display: grid
-        gap: .45rem
-
-    .autocomplete-multi
-        display: grid
-        gap: .3rem
-        align-content: start
-
-    .imr-chips
-        min-height: 2rem
-        align-self: start
-
-    .actions-row
-        display: flex
-        flex-wrap: wrap
-        gap: .6rem
-        margin: .25rem 0 .8rem
-        justify-content: flex-start
-
-    .drafts-section
-        margin-top: 1.2rem
-
-        h3
-            margin: 0 0 .6rem
-            color: theme.$imr-primary
-            font-size: 1rem
-
-        &.list-only
-            margin-top: .2rem
-
-    .mobile-berichte-list
-        display: none
-        gap: .75rem
-        margin-top: .6rem
-
-    .bericht-card
-        border: 0
-        border-left: 2px solid rgba(theme.$imr-border, .95)
-        border-radius: 0
-        background: rgba(theme.$imr-surface, .82)
-        padding: .65rem .7rem
-        display: grid
-        gap: .55rem
-
-    .bericht-card-head
-        display: flex
-        justify-content: space-between
-        align-items: center
-        gap: .65rem
-
-    .bericht-card-date
-        font-weight: 600
-        color: theme.$imr-primary
-
-    .bericht-card-content
-        display: grid
-        gap: .3rem
-
-        p
-            margin: 0
-            line-height: 1.35
-
-    .bericht-card-actions
-        display: flex
-        flex-wrap: nowrap
-        align-items: center
-        gap: .35rem
-
-    .desktop-list-table
-        display: block
+.desktop-list-table
+    display: block
 
 :host ::ng-deep
-    .bericht-page .form-section .mat-expansion-panel-header .mat-content
+    .bericht-accordion,
+    .bericht-accordion .mat-expansion-panel,
+    .bericht-accordion .mat-expansion-panel-header,
+    .bericht-accordion .mat-expansion-panel-body,
+    .bericht-accordion .mat-expansion-panel-content,
+    .bericht-accordion .mat-expansion-panel-spacing
+        border-radius: 0 !important
+
+    .form-section .mat-expansion-panel-header .mat-content
         margin-right: 0
 
-    .bericht-page .form-section .mat-expansion-panel-header .mat-panel-title
+    .form-section .mat-expansion-panel-header .mat-panel-title
         display: flex
         align-items: center
         margin-right: 0
         max-width: 100%
         flex: 1 1 auto
 
-    .bericht-page .form-section imr-panel-title
-        display: flex
-        align-items: center
-        gap: .35rem
-        width: 100%
-
-    .bericht-page .taetigkeit-textarea-field textarea.mat-mdc-input-element
-        min-height: 7.5rem
-        height: auto
-        width: 100%
-        box-sizing: border-box
-        line-height: 1.35
-        resize: vertical
-
-    .bericht-page .taetigkeit-textarea-field
+    .taetigkeit-textarea-field
         width: 100%
 
     .status-badge
@@ -323,54 +302,52 @@
         opacity: .75
 
 @media (max-width: 992px)
-    .bericht-page
-        .two-col,
-        .three-col,
-        .prefill-row
-            grid-template-columns: 1fr
+    .two-col,
+    .three-col,
+    .prefill-row
+        grid-template-columns: 1fr
 
 @media (max-width: 768px)
-    .bericht-page
-        .form-section
-            border-radius: 0
-            border: 1px solid rgba(theme.$imr-border, .95)
+    .form-section
+        border-radius: 0
+        border: 1px solid rgba(theme.$imr-border, .95)
 
-            .mat-expansion-panel-header
-                padding: .45rem .65rem
+        .mat-expansion-panel-header
+            padding: .45rem .65rem
 
-        .permission-hints
-            flex-direction: column
+    .permission-hints
+        flex-direction: column
 
-        .upload-row
-            flex-direction: column
-            align-items: stretch
-            row-gap: .45rem
-            padding: .45rem 0
+    .upload-row
+        flex-direction: column
+        align-items: stretch
+        row-gap: .45rem
+        padding: .45rem 0
 
-        .preview-grid
-            grid-template-columns: repeat(2, minmax(0, 1fr))
+    .preview-grid
+        grid-template-columns: repeat(2, minmax(0, 1fr))
 
-        .preview-image,
-        .preview-file
-            height: 108px
+    .preview-image,
+    .preview-file
+        height: 108px
 
-        .draft-item
-            flex-direction: column
-            align-items: flex-start
+    .draft-item
+        flex-direction: column
+        align-items: flex-start
 
-        .desktop-list-table
-            display: none
+    .desktop-list-table
+        display: none
 
-        .mobile-berichte-list
-            display: grid
+    .mobile-berichte-list
+        display: grid
 
 @media (max-width: 480px)
-    .bericht-page
-        .bericht-card
-            padding: .6rem
+    .bericht-card
+        padding: .6rem
 
-        .preview-grid
-            grid-template-columns: 1fr
+    .preview-grid
+        grid-template-columns: 1fr
 
-        .grid
-            gap: .55rem
+    .grid
+        gap: .55rem
+

@@ -11,7 +11,6 @@ import { ApiHttpService } from '../_service/api-http.service';
 import {
   ImrPageLayoutComponent,
   ImrSectionComponent,
-  UiControlErrorsDirective,
 } from '../imr-ui-library';
 import { UiMessageService } from '../_service/ui-message.service';
 
@@ -24,7 +23,6 @@ import { UiMessageService } from '../_service/ui-message.service';
     RouterLink,
     ImrPageLayoutComponent,
     ImrSectionComponent,
-    UiControlErrorsDirective,
     MatFormFieldModule,
     MatButtonModule,
     MatInputModule,
@@ -102,3 +100,4 @@ export class InviteComponent implements OnInit {
       });
   }
 }
+

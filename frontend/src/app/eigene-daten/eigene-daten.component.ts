@@ -16,7 +16,6 @@ import {
   ImrHeaderComponent,
   ImrPageLayoutComponent,
   ImrSectionComponent,
-  UiControlErrorsDirective,
 } from '../imr-ui-library';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
@@ -34,7 +33,6 @@ type EigeneDatenResponse = {
     FormsModule, 
     ReactiveFormsModule, 
     MatInputModule,
-    UiControlErrorsDirective,
     ImrSectionComponent,
     MatFormFieldModule,
     MatButtonModule
@@ -144,3 +142,4 @@ export class EigeneDatenComponent implements OnInit {
     });
   }
 }
+

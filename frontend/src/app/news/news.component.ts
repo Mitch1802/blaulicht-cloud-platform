@@ -19,7 +19,6 @@ import {
   ImrHeaderComponent,
   ImrPageLayoutComponent,
   ImrSectionComponent,
-  UiControlErrorsDirective,
 } from '../imr-ui-library';
 import { forkJoin } from 'rxjs';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -33,7 +32,6 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
     ImrHeaderComponent,
     ImrPageLayoutComponent,
     ImrSectionComponent,
-    UiControlErrorsDirective,
     MatButtonModule,
     MatFormFieldModule,
     MatIconModule,
@@ -540,3 +538,4 @@ export class NewsComponent implements OnInit {
     }
   }
 }
+

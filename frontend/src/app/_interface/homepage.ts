@@ -1,4 +1,4 @@
-export interface IHomepageDienstposten {
+﻿export interface IHomepageDienstposten {
   id?: string;
   pkid?: number;
   section_id: string;
@@ -34,3 +34,4 @@ export interface IHomepagePublicSection {
 export interface IHomepagePublicResponse {
   sections: IHomepagePublicSection[];
 }
+

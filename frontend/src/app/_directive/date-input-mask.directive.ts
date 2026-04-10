@@ -1,4 +1,4 @@
-import { Directive, ElementRef, HostListener, Input, OnInit, forwardRef, inject } from '@angular/core';
+﻿import { Directive, ElementRef, HostListener, Input, OnInit, forwardRef, inject } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 type DateMaskMode = 'iso' | 'dmy';
@@ -269,3 +269,4 @@ export class DateInputMaskDirective implements ControlValueAccessor, OnInit {
     return parsed.getFullYear() === year && parsed.getMonth() === month - 1 && parsed.getDate() === day;
   }
 }
+

@@ -1,15 +1,15 @@
-﻿    <imr-toolbar toolbarClass="imr-header-toolbar">
+﻿    <mat-toolbar class="imr-header-toolbar">
       <a class="imr-header-logo-link" routerLink="/start" aria-label="Zur Startseite">
         <img class="imr-header-logo" src="../assets/images/icon.svg" alt="Blaulicht Cloud Logo" />
       </a>
       <a class="title imr-header-title imr-header-title-link" routerLink="/start" aria-label="Zur Startseite">
         {{ appTitle }}
       </a>
-      <span class="spacer"></span>
+      <span class="imr-header-spacer"></span>
       <button class="imr-header-logout" mat-icon-button type="button" aria-label="Abmelden" (click)="authService.abmelden()">
         <mat-icon>logout</mat-icon>
       </button>
-    </imr-toolbar>
+    </mat-toolbar>
 
     <div class="imr-header-stepper-wrap">
       <nav class="imr-breadcrumb" aria-label="Breadcrumb">
@@ -32,4 +32,5 @@
       </nav>
     </div>
   
+
 

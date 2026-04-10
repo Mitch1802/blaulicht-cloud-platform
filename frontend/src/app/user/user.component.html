@@ -101,7 +101,7 @@
                 <div class="app-col-12 app-col-lg-4">
                   <mat-form-field class="imr-full-width">
                     <mat-label>Benutzername</mat-label>
-                    <input matInput type="text" formControlName="username" [uiControlErrors]="usernameErrorMap" />
+                    <input matInput type="text" formControlName="username" />
                   </mat-form-field>
                 </div>
             }
@@ -109,7 +109,7 @@
               <div class="app-col-12 app-col-lg-4">
                 <mat-form-field class="imr-full-width">
                   <mat-label>E-Mail-Adresse</mat-label>
-                  <input matInput type="email" formControlName="email" uiControlErrors />
+                  <input matInput type="email" formControlName="email" />
                 </mat-form-field>
               </div>
 
@@ -179,13 +179,13 @@
               <div class="app-col-12 app-col-lg-4 mb-3">
                 <mat-form-field class="imr-full-width">
                   <mat-label>Passwort</mat-label>
-                  <input matInput type="password" formControlName="password1" [uiControlErrors]="initialPasswordErrorMap" />
+                  <input matInput type="password" formControlName="password1" />
                 </mat-form-field>
               </div>
               <div class="app-col-12 app-col-lg-4 mb-3">
                 <mat-form-field class="imr-full-width">
                   <mat-label>Passwort wiederholen</mat-label>
-                  <input matInput type="password" formControlName="password2" [uiControlErrors]="initialPasswordRepeatErrorMap" />
+                  <input matInput type="password" formControlName="password2" />
                 </mat-form-field>
               </div>
               <div class="app-col-12 app-col-lg-4 password-action">
@@ -265,5 +265,6 @@
       </imr-section>
     </mat-tab>
   </mat-tab-group>
+
 
 

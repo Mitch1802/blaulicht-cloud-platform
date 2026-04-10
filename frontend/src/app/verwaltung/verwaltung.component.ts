@@ -11,7 +11,6 @@ import {
   ImrHeaderComponent,
   ImrPageLayoutComponent,
   ImrSectionComponent,
-  UiControlErrorsDirective,
 } from '../imr-ui-library';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -74,9 +73,7 @@ type VerwaltungKontakteResponse = {
     MatInputModule,
     MatIconModule,
     MatSelectModule,
-    MatOptionModule,
-    UiControlErrorsDirective
-  ],
+    MatOptionModule,],
   templateUrl: './verwaltung.component.html',
   styleUrl: './verwaltung.component.sass'
 })
@@ -365,3 +362,4 @@ export class VerwaltungComponent implements OnInit {
     
   }
 }
+

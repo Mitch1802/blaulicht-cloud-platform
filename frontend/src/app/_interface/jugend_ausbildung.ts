@@ -1,4 +1,4 @@
-export interface IJugendAusbildung {
+﻿export interface IJugendAusbildung {
   id: string;
   pkid: number;
   mitglied: number;

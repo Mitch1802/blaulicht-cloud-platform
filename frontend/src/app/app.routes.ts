@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+﻿import { Routes } from '@angular/router';
 import { authGuard } from './_guards/auth.guard';
 import { guestGuard } from './_guards/guest.guard';
 
@@ -147,3 +147,4 @@ export const routes: Routes = [
     path: '**', redirectTo: 'login'
   }
 ];
+

@@ -68,7 +68,7 @@
               <mat-form-field>
                 <mat-label>Inventar Nummer</mat-label>
                 <mat-hint>* Pflichtfeld</mat-hint>
-                <input matInput type="text" formControlName="inv_nr" uiControlErrors />
+                <input matInput type="text" formControlName="inv_nr" />
               </mat-form-field>
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3">
@@ -175,7 +175,7 @@
               <mat-form-field>
                 <mat-label>Gerät</mat-label>
                 <mat-hint>* Pflichtfeld</mat-hint>
-                <mat-select formControlName="geraet_id" uiControlErrors>
+                <mat-select formControlName="geraet_id">
                   @for (opt of geraete; track opt) {
                   <mat-option [value]="opt.pkid"> {{ opt.inv_nr }} - {{ opt.typ }} </mat-option>
                   }
@@ -246,7 +246,7 @@
               <mat-form-field>
                 <mat-label>Name Prüfer</mat-label>
                 <mat-hint>* Pflichtfeld</mat-hint>
-                <input matInput type="text" formControlName="name_pruefer" uiControlErrors />
+                <input matInput type="text" formControlName="name_pruefer" />
               </mat-form-field>
             </div>
             <div class="app-col-12 app-col-lg-4 mb-3 checkbox-field checkbox-triplet">
@@ -430,6 +430,7 @@
         <!-- TABELLE MASKEN PRÜFUNGEN ENDE -->
   </imr-card>
 </imr-page-layout>
+
 
 
 

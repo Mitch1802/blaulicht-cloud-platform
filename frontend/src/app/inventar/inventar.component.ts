@@ -34,7 +34,6 @@ import {
   ImrHeaderComponent,
   ImrPageLayoutComponent,
   ImrSectionComponent,
-  UiControlErrorsDirective,
 } from '../imr-ui-library';
 import { FormatService } from '../helpers/format.service';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -57,7 +56,6 @@ interface IVerleihungFormEintrag {
     ImrHeaderComponent,
     ImrPageLayoutComponent,
     ImrSectionComponent,
-    UiControlErrorsDirective,
     MatButtonModule,
     MatCheckboxModule,
     MatFormFieldModule,
@@ -987,3 +985,4 @@ export class InventarComponent implements OnInit, AfterViewInit {
     }
   }
 }
+

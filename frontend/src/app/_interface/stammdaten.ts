@@ -1,4 +1,4 @@
-export interface IStammdaten {
+﻿export interface IStammdaten {
     fw_name: string;
     fw_nummer: string;
     fw_street: string;

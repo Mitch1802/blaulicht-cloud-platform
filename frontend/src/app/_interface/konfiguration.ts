@@ -1,4 +1,4 @@
-export interface IKonfiguration {
+﻿export interface IKonfiguration {
     id: string,
     fw_nummer: string,
     fw_name: string,
@@ -13,3 +13,4 @@ export interface IKonfiguration {
     fw_iban: string,
     fw_bic: string,
 }
+

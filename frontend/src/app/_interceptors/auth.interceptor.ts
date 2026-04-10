@@ -1,4 +1,4 @@
-import { HttpBackend, HttpClient, HttpErrorResponse, HttpInterceptorFn, HttpRequest } from '@angular/common/http';
+﻿import { HttpBackend, HttpClient, HttpErrorResponse, HttpInterceptorFn, HttpRequest } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Observable, catchError, finalize, map, of, shareReplay, switchMap, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
@@ -146,3 +146,4 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return sendRequest(withCsrfHeader(requestWithCredentials));
 };
+

@@ -1,4 +1,4 @@
-export interface IMitglied {
+﻿export interface IMitglied {
     id: string,
     pkid: number,
     stbnr: number,
@@ -10,3 +10,4 @@ export interface IMitglied {
     hauptberuflich: boolean,
     dienststatus?: 'JUGEND' | 'AKTIV' | 'RESERVE' | 'ABGEMELDET'
 }
+

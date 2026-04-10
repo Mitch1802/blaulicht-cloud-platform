@@ -261,3 +261,4 @@ export class NewsExternComponent implements OnInit, OnDestroy {
     });
   }
 }
+

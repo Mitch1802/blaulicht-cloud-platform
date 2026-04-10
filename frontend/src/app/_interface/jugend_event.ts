@@ -1,4 +1,4 @@
-export interface IJugendEventTeilnehmer {
+﻿export interface IJugendEventTeilnehmer {
   id: string;
   pkid: number;
   stbnr: number;
@@ -19,3 +19,4 @@ export interface IJugendEvent {
   stand_x_override?: boolean;
   teilnehmer: IJugendEventTeilnehmer[];
 }
+

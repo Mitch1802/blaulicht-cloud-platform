@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+﻿import { Injectable } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
 
 type GenericObject = object;
@@ -162,3 +162,4 @@ export class CollectionUtilsService {
     return (item as Record<string, unknown>)[key];
   }
 }
+

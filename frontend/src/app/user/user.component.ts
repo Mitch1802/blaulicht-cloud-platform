@@ -1,4 +1,4 @@
-﻿import { Component, DestroyRef, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, ViewChild, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BreakpointObserver } from '@angular/cdk/layout';
 
@@ -15,8 +15,6 @@ import {
   ImrHeaderComponent,
   ImrPageLayoutComponent,
   ImrSectionComponent,
-  UiControlErrorMap,
-  UiControlErrorsDirective,
 } from '../imr-ui-library';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -86,7 +84,6 @@ type UserUpdatePayload = Omit<UserCreatePayload, 'password1' | 'password2' | 'se
     ImrHeaderComponent,
     ImrPageLayoutComponent,
     ImrSectionComponent,
-    UiControlErrorsDirective,
     FormsModule,
     ReactiveFormsModule,
     MatButtonModule,
@@ -144,20 +141,6 @@ export class UserComponent implements OnInit {
   private readonly desktopSpaltenBenutzer = ['username', 'mitglied_name', 'rolle', 'actions'];
   private readonly mobileSpaltenBenutzer = ['username', 'rolle', 'actions'];
   sichtbareSpaltenBenutzer: string[] = [...this.desktopSpaltenBenutzer];
-
-  readonly usernameErrorMap: UiControlErrorMap = {
-    required: 'Benutzername ist erforderlich!',
-  };
-
-  readonly initialPasswordErrorMap: UiControlErrorMap = {
-    required: 'Bitte ein Initialpasswort eingeben!',
-    minlength: 'Das Passwort muss mindestens 8 Zeichen lang sein!',
-  };
-
-  readonly initialPasswordRepeatErrorMap: UiControlErrorMap = {
-    required: 'Bitte das Initialpasswort wiederholen!',
-    minlength: 'Das Passwort muss mindestens 8 Zeichen lang sein!',
-  };
 
   private normalizeFilterValue(value: string): string {
     return String(value || '').trim().toLowerCase();
@@ -711,3 +694,4 @@ export class UserComponent implements OnInit {
     return m ? `${m.vorname} ${m.nachname}` : '';
   }
 }
+

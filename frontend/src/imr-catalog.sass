@@ -10,16 +10,9 @@
 // IMR components should primarily be styled through CSS variables.
 // -----------------------------------------------------------------------------
 @use './theme' as theme
-@use './app/imr-ui-library/imr-toolbar/imr-toolbar.component' as imrToolbarStyles
 @use './app/imr-ui-library/imr-header/imr-header.component' as imrHeaderStyles
 @use './app/imr-ui-library/imr-page-layout/imr-page-layout.component' as imrPageLayoutStyles
 @use './app/imr-ui-library/imr-section/imr-section.component' as imrSectionStyles
-@use './app/imr-ui-library/imr-top-actions/imr-top-actions.component' as imrTopActionsStyles
-@use './app/imr-ui-library/imr-form-grid/imr-form-grid.component' as imrFormGridStyles
-@use './app/imr-ui-library/imr-table-wrap/imr-table-wrap.component' as imrTableWrapStyles
-@use './app/imr-ui-library/imr-tab-group/imr-tab-group.component' as imrTabGroupStyles
-@use './app/imr-ui-library/imr-expansion-panel/imr-expansion-panel.component' as imrExpansionPanelStyles
-@use './app/imr-ui-library/imr-paginator/imr-paginator.component' as imrPaginatorStyles
 
 // ------------------------------------------------------------------------------
 // 1. IMR design tokens and CSS custom properties
@@ -41,9 +34,9 @@
     --imr-text:               #{theme.$imr-text}
     --imr-text-muted:         #{theme.$imr-text-muted}
 
-    // -- Steuerelemente (Buttons, Inputs, Chips) -------------------------------
+    // -- Steuerelemente (Buttons, Chips) --------------------------------------
     --imr-control-radius:     0
-    --imr-control-height:     40px
+    --imr-control-height:     56px
     --imr-control-bg:         #ffffff
     --imr-control-border:     #{rgba(theme.$imr-border, 1)}
     --imr-control-transition: transform .14s ease, box-shadow .14s ease, background-color .14s ease, border-color .14s ease
@@ -144,226 +137,231 @@ h1
     border: solid 1px rgba(theme.$imr-border, .95)
 
 // ------------------------------------------------------------------------------
-// 3. Material Design 3 and Angular Material overrides
-// ------------------------------------------------------------------------------
-
-// -- Disabled-Cursor ----------------------------------------------------------
-.mat-form-field-disabled,
-.mat-form-field-disabled input,
-.mat-form-field-disabled textarea,
-.mat-form-field-disabled mat-label,
-.mat-mdc-button-disabled,
-.mat-mdc-button-disabled span,
-div:has(> .mat-mdc-button-disabled)
-    cursor: not-allowed
-
-// -- Formfelder ---------------------------------------------------------------
-.mat-mdc-form-field
-    width: 100%
-    --mat-form-field-container-height: var(--imr-control-height)
-    --mat-form-field-container-vertical-padding: 0
-
-.mat-mdc-text-field-wrapper,
-.mdc-text-field,
-.mdc-notched-outline__leading,
-.mdc-notched-outline__trailing
-    border-radius: 0 !important
-
-.mat-mdc-form-field-infix
-    min-height: calc(var(--imr-control-height) - 2px)
-    padding-top: 0
-    padding-bottom: 0
-    display: flex
-    align-items: center
-
-.mat-mdc-form-field-type-mat-select .mat-mdc-form-field-infix
-    padding-top: 0
-    padding-bottom: 0
-
-.mat-mdc-select-trigger,
-.mat-mdc-form-field .mat-mdc-select-value
-    display: flex
-    align-items: center
-
-input.mat-mdc-input-element
-    line-height: 1.35
-
-// -- Buttons: IMR visual style, now global for mat-* migration ---------------
-.mat-mdc-button,
-.mat-mdc-outlined-button,
-.mat-mdc-unelevated-button,
-.mat-mdc-raised-button,
-.mat-mdc-icon-button
-    border-radius: var(--imr-control-radius)
-    min-height: var(--imr-control-height)
-    height: var(--imr-control-height)
-    font-weight: 500
-    letter-spacing: .1px
-    border: 1px solid var(--imr-control-border)
-    background: var(--imr-control-bg)
-    color: theme.$imr-text
-    box-shadow: none
-    transition: var(--imr-control-transition)
-
-    &:hover:not(:disabled)
-        transform: none
-        background: #f7f7f7
-        border-color: rgba(theme.$imr-primary, .45)
-        color: theme.$imr-primary
-
-    &:active:not(:disabled)
-        transform: translateY(0)
-
-    &:focus-visible
-        outline: 2px solid rgba(theme.$imr-primary, .55)
-        outline-offset: 2px
-
-.mat-mdc-button,
-.mat-mdc-outlined-button,
-.mat-mdc-unelevated-button,
-.mat-mdc-raised-button
-    padding-inline: .85rem
-
-.mat-mdc-icon-button
-    width: var(--imr-control-height)
-    min-width: var(--imr-control-height)
-    height: var(--imr-control-height)
-    padding: 0
-
-.mat-mdc-button.mat-primary,
-.mat-mdc-unelevated-button.mat-primary,
-.mat-mdc-raised-button.mat-primary,
-.mat-mdc-button.mat-accent,
-.mat-mdc-unelevated-button.mat-accent,
-.mat-mdc-raised-button.mat-accent,
-.mat-mdc-button.mat-warn,
-.mat-mdc-unelevated-button.mat-warn,
-.mat-mdc-raised-button.mat-warn
-    color: #fff
-
-.mat-mdc-unelevated-button.mat-primary,
-.mat-mdc-raised-button.mat-primary
-    background: theme.$imr-primary !important
-    border-color: rgba(theme.$imr-primary, .92) !important
-    box-shadow: none
-
-    &:hover:not(:disabled)
-        background: theme.$imr-primary !important
-        border-color: rgba(theme.$imr-primary, .95) !important
-
-.mat-mdc-unelevated-button.mat-accent,
-.mat-mdc-raised-button.mat-accent
-    background: theme.$imr-secondary !important
-    border-color: rgba(theme.$imr-secondary, .86) !important
-    box-shadow: none
-
-    &:hover:not(:disabled)
-        background: color-mix(in srgb, #{theme.$imr-secondary} 86%, #000 14%) !important
-        border-color: rgba(theme.$imr-secondary, .95) !important
-
-.mat-mdc-unelevated-button.mat-warn,
-.mat-mdc-raised-button.mat-warn
-    background: theme.$imr-error !important
-    border-color: rgba(theme.$imr-error, .88) !important
-    box-shadow: none
-
-    &:hover:not(:disabled)
-        background: color-mix(in srgb, #{theme.$imr-error} 86%, #000 14%) !important
-        border-color: rgba(theme.$imr-error, .95) !important
-
-.mat-mdc-button.mat-primary,
-.mat-mdc-outlined-button.mat-primary
-    color: theme.$imr-primary
-    border-color: rgba(theme.$imr-primary, .42)
-    background: rgba(theme.$imr-primary, .34)
-
-.mat-mdc-button.mat-accent,
-.mat-mdc-outlined-button.mat-accent
-    color: color-mix(in srgb, #{theme.$imr-secondary} 86%, #000 14%)
-    border-color: rgba(theme.$imr-secondary, .46)
-    background: rgba(theme.$imr-secondary, .55)
-
-.mat-mdc-button.mat-warn,
-.mat-mdc-outlined-button.mat-warn
-    color: color-mix(in srgb, #{theme.$imr-error} 86%, #000 14%)
-    border-color: rgba(theme.$imr-error, .45)
-    background: rgba(theme.$imr-error, .12)
-
-.mat-mdc-icon-button.mat-primary,
-.mat-mdc-icon-button.mat-accent,
-.mat-mdc-icon-button.mat-warn
-    box-shadow: none
-
-.mat-mdc-icon-button.mat-primary
-    color: theme.$imr-primary
-    background: rgba(theme.$imr-primary, .35)
-    border-color: rgba(theme.$imr-primary, .4)
-
-.mat-mdc-icon-button.mat-accent
-    color: color-mix(in srgb, #{theme.$imr-secondary} 86%, #000 14%)
-    background: rgba(theme.$imr-secondary, .52)
-    border-color: rgba(theme.$imr-secondary, .45)
-
-.mat-mdc-icon-button.mat-warn
-    color: color-mix(in srgb, #{theme.$imr-error} 86%, #000 14%)
-    background: rgba(theme.$imr-error, .12)
-    border-color: rgba(theme.$imr-error, .45)
-
-.mat-mdc-button-base:disabled
-    opacity: .55
-    box-shadow: none
-
-.mat-mdc-button,
-.mat-mdc-outlined-button,
-.mat-mdc-unelevated-button,
-.mat-mdc-raised-button,
-.mat-mdc-icon-button,
-.mat-mdc-chip
-    border-radius: var(--imr-control-radius) !important
-
-// -- Snackbar -----------------------------------------------------------------
-.app-snackbar
-    --mdc-snackbar-supporting-text-size: 1rem
-    --mdc-snackbar-supporting-text-line-height: 1.35rem
-    --mdc-snackbar-supporting-text-color: #fff
-    --mat-snack-bar-button-color: #fff
-    border-radius: 0
-    white-space: pre-line
-    word-break: break-word
-    box-shadow: 0 10px 24px rgba(0, 0, 0, .28)
-    opacity: .96
-    border: 1px solid rgba(255, 255, 255, .22)
-
-.cdk-overlay-container .mat-mdc-snack-bar-container.app-snackbar
-    --mdc-snackbar-supporting-text-size: 1rem
-    --mdc-snackbar-supporting-text-line-height: 1.35rem
-    --mdc-snackbar-supporting-text-color: #fff
-    --mat-snack-bar-button-color: #fff
-
-    .mdc-snackbar__surface
-        border-radius: 0
-        box-shadow: 0 10px 24px rgba(0, 0, 0, .28)
-        opacity: .96
-        white-space: pre-line
-        word-break: break-word
-        border-left: 5px solid rgba(255, 255, 255, .55)
-
-.app-snackbar--success
-    --mdc-snackbar-container-color: #{theme.$imr-success}
-
-.app-snackbar--info
-    --mdc-snackbar-container-color: #{theme.$imr-primary}
-
-.app-snackbar--error
-    --mdc-snackbar-container-color: #{theme.$imr-error}
-
-// ------------------------------------------------------------------------------
-// 4. IMR component styles for imr-* hosts and wrapper classes
+// 3. IMR component styles for imr-* hosts and wrapper classes
 // ------------------------------------------------------------------------------
 
 // -- imr-form -----------------------------------------------------------------
 .imr-form
     margin-top: .2rem
+
+.imr-form-grid
+    margin: 0
+    padding: 1rem
+    border: 1px solid rgba(theme.$imr-border, .82)
+    border-radius: 0
+    background: #fff
+
+.imr-two-col-md
+    grid-column: span 12
+
+.imr-full-width
+    width: 100%
+
+@media only screen and (min-width: 768px)
+    .imr-two-col-md
+        grid-column: span 6
+
+    .imr-two-col-md.mb-3,
+    .imr-form-grid .app-col-lg-12.mb-3
+        margin-bottom: .6rem !important
+
+@media only screen and (max-width: 700px)
+    .imr-form-grid
+        padding: .75rem
+
+.imr-top-actions
+    display: flex
+    align-items: center
+    column-gap: .5rem
+    row-gap: .18rem
+    flex-wrap: wrap
+    margin-bottom: 1rem
+
+    > .mat-mdc-button-base,
+    > a.mat-mdc-button-base,
+    > [mat-flat-button],
+    > [mat-stroked-button],
+    > [mat-raised-button],
+    > [mat-button],
+    > [mat-icon-button]
+        min-height: var(--imr-control-height)
+        height: var(--imr-control-height)
+
+@media only screen and (max-width: 700px)
+    .imr-top-actions
+        button
+            width: 100%
+
+.imr-table-wrap
+    overflow-x: auto
+    border-radius: 0
+    box-shadow: none
+
+    > .mat-mdc-form-field,
+    > mat-form-field,
+    .filter-field
+        display: block
+        width: min(360px, 100%)
+        margin: 0 0 1rem
+
+    > .mat-mdc-paginator
+        margin-top: 0 !important
+
+.table-toolbar
+    display: flex
+    align-items: center
+    justify-content: space-between
+    gap: 1rem
+
+    .filter-field,
+    > .mat-mdc-form-field,
+    > mat-form-field
+        width: min(360px, 100%)
+
+.table-actions-head,
+.mat-column-actions
+    width: 8.6rem
+    min-width: 8.6rem
+
+.table-empty-cell
+    padding: 1rem .5rem !important
+
+.table-empty-state
+    display: grid
+    justify-items: center
+    gap: .22rem
+    margin: .2rem 0 .45rem
+    padding: .7rem .65rem
+    border-radius: 0
+    border: 1px dashed rgba(theme.$imr-border, .88)
+    text-align: center
+
+    &.compact
+        margin-top: .6rem
+        padding: .75rem .65rem
+
+.table-empty-icon
+    width: 1.25rem
+    height: 1.25rem
+    font-size: 1.25rem
+    color: rgba(theme.$imr-primary, .75)
+
+.table-empty-title
+    font-weight: 700
+    color: rgba(theme.$imr-primary, .9)
+
+.table-empty-copy
+    font-size: .84rem
+    color: rgba(theme.$imr-text-muted, .95)
+
+.imr-action-cell
+    display: flex
+    column-gap: .35rem
+    row-gap: .12rem
+    align-items: center
+
+td.imr-action-cell
+    display: table-cell
+    vertical-align: middle
+    white-space: nowrap
+
+    > * + *
+        margin-left: .35rem
+
+    .mat-icon
+        margin: 0
+        font-size: 20px
+        width: 20px
+        height: 20px
+        line-height: 20px
+
+    > .mat-mdc-button-base,
+    > a.mat-mdc-button-base,
+    > [mat-flat-button],
+    > [mat-stroked-button],
+    > [mat-raised-button],
+    > [mat-button],
+    > [mat-icon-button],
+    > .imr-action-btn
+        min-width: var(--imr-control-height)
+        width: var(--imr-control-height)
+        min-height: var(--imr-control-height)
+        height: var(--imr-control-height)
+        padding: 0
+        box-shadow: none
+
+.imr-action-btn
+    min-width: var(--imr-control-height)
+    width: var(--imr-control-height)
+    height: var(--imr-control-height)
+    padding: 0
+
+@media only screen and (max-width: 700px)
+    .table-toolbar
+        flex-direction: column
+        align-items: stretch
+
+        .filter-field,
+        > .mat-mdc-form-field,
+        > mat-form-field
+            width: 100%
+
+@media (max-width: 768px)
+    .mat-mdc-header-cell,
+    .mat-mdc-cell
+        font-size: .86rem
+
+    .table-empty-cell
+        padding: .8rem .3rem !important
+
+    td.imr-action-cell
+        display: flex
+        flex-wrap: wrap
+        align-items: center
+        column-gap: .35rem
+        row-gap: .12rem
+        white-space: normal
+
+        > * + *
+            margin-left: 0
+
+.mat-mdc-table
+    border: 1px solid var(--imr-table-border)
+    border-radius: 0
+    overflow: hidden
+    box-shadow: none
+
+    .mat-mdc-header-row
+        background: theme.$imr-primary
+        border-bottom: 1px solid rgba(theme.$imr-primary, .9)
+
+    .mat-mdc-header-cell
+        color: #fff
+        font-weight: 600
+        letter-spacing: .02em
+        font-size: .74rem
+        line-height: 1.2
+        padding: .68rem .8rem
+        background-color: #fff
+
+    .mat-sort-header-arrow
+        color: rgba(#fff, .8)
+
+    .mat-mdc-cell
+        color: theme.$imr-text
+        font-size: .88rem
+        line-height: 1.35
+        padding: .72rem .8rem
+        border-bottom: 1px solid rgba(theme.$imr-border, .65)
+
+    .mat-mdc-row
+        min-height: 44px
+
+    .mat-mdc-header-row
+        min-height: 42px
+
+        &:last-child .mat-mdc-cell
+            border-bottom: 0
 
 .upload-button[mat-flat-button]
     min-height: var(--imr-control-height)
@@ -695,7 +693,7 @@ mat-card-content > button.imr-delete-btn[mat-flat-button]
 // ------------------------------------------------------------------------------
 
 @media only screen and (min-width: 768px)
-    // Komponentenbezogene Grid-Regeln sind in imr-form-grid.component.sass ausgelagert.
+    // Reserviert für desktop-spezifische globale Grid-Erweiterungen.
 
 @media only screen and (max-width: 700px)
     .actions-row
@@ -724,3 +722,4 @@ mat-card-content > button.imr-delete-btn[mat-flat-button]
 @media (max-width: 768px)
     .mat-mdc-card
         border-radius: 0
+

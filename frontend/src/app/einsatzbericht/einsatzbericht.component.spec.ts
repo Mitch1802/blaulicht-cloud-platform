@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+﻿import { TestBed } from '@angular/core/testing';
 import { EinsatzberichtComponent } from './einsatzbericht.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -102,3 +102,4 @@ describe('EinsatzberichtComponent - parseBlaulichtAlarmtext', () => {
     expect(result.einsatzart).toBe('Technischer Einsatz');
   });
 });
+

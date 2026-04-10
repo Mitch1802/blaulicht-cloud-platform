@@ -1,4 +1,4 @@
-export interface INews {
+﻿export interface INews {
   id: string;
   title: string;
   text: string;
@@ -7,3 +7,4 @@ export interface INews {
   created_at: string;
   updated_at: string;
 }
+

@@ -1,4 +1,4 @@
-export interface IAtemschutzGeraet {
+﻿export interface IAtemschutzGeraet {
   pkid: number;
   id: string;
   inv_nr: string;
@@ -25,3 +25,4 @@ export interface IAtemschutzGeraet {
   created_at: string;
   updated_at: string;
 }
+

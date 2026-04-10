@@ -126,3 +126,4 @@ describe('LoginComponent', () => {
     expect(freshFixture.nativeElement.textContent || '').not.toContain('Auflösung:');
   });
 });
+

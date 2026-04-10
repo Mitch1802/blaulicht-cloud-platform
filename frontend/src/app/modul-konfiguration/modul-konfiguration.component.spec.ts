@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+﻿import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ModulKonfigurationComponent } from './modul-konfiguration.component';
 
@@ -21,3 +21,4 @@ describe('ModulKonfigurationComponent', () => {
     expect(component).toBeTruthy();
   });
 });
+

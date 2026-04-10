@@ -1,4 +1,4 @@
-export type TWartungServiceStatus = 'ueberfaellig' | 'heute' | 'anstehend';
+﻿export type TWartungServiceStatus = 'ueberfaellig' | 'heute' | 'anstehend';
 
 export interface IWartungServiceEintrag {
   modul: string;
@@ -23,3 +23,4 @@ export interface IWartungServiceResponse {
   summary: IWartungServiceSummary;
   main: IWartungServiceEintrag[];
 }
+

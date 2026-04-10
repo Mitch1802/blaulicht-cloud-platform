@@ -1,4 +1,4 @@
-export interface IInventarVerleihung {
+﻿export interface IInventarVerleihung {
   an: string;
   anzahl: number;
   bis: string | null;
@@ -21,3 +21,4 @@ export interface IInventar {
   created_at: string;
   updated_at: string;
 }
+

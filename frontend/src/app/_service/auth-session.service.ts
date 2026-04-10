@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+﻿import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiHttpService } from './api-http.service';
 import { UiMessageService } from './ui-message.service';
@@ -99,3 +99,4 @@ export class AuthSessionService {
       });
   }
 }
+

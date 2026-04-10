@@ -1,4 +1,4 @@
-// Schneller Test für parseBlaulichtAlarmtext ohne Angular-Setup
+﻿// Schneller Test für parseBlaulichtAlarmtext ohne Angular-Setup
 
 // Test-Daten
 const example1 = '(16:59) T1 Objekt/Baum - Umgestürzt. Weinbergstrasse 21, 2432 Schwadorf: Bäume auf Strasse (48.075, 16.5827)';
@@ -303,3 +303,4 @@ console.log(`  einsatzadresse: "${result2.einsatzadresse}"`);
 console.log('Expected:');
 console.log(`  alarmstichwort: "Bergung - PKW"`);
 console.log(`  einsatzadresse: "L2004 km 1.4"`);
+

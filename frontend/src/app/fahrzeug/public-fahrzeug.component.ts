@@ -249,3 +249,4 @@ export class PublicFahrzeugComponent implements OnInit {
     this.draft[key].notiz = String(value ?? "");
   }
 }
+

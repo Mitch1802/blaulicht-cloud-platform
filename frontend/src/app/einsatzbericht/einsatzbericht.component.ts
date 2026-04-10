@@ -3,9 +3,10 @@ import { AbstractControl, FormControl, FormGroup, FormGroupDirective, NgForm, Re
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   ImrBreadcrumbItem,
-  ImrCardComponent,
+  // ImrCardComponent,
   ImrHeaderComponent,
   ImrPageLayoutComponent,
+  ImrSectionComponent,
 } from '../imr-ui-library';
 import { ApiHttpService } from 'src/app/_service/api-http.service';
 import { AuthSessionService } from 'src/app/_service/auth-session.service';
@@ -125,9 +126,10 @@ type SaveEinsatzberichtResponse = {
   selector: 'app-einsatzbericht',
   imports: [
     ReactiveFormsModule,
-    ImrCardComponent,
+    // ImrCardComponent,
     ImrHeaderComponent,
     ImrPageLayoutComponent,
+    ImrSectionComponent,
     MatButtonModule,
     MatChipsModule,
     MatFormFieldModule,
@@ -1647,3 +1649,4 @@ export class EinsatzberichtComponent implements OnInit {
     });
   }
 }
+

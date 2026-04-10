@@ -1,271 +1,419 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
-<imr-page-layout [title]="title" class="bericht-page">
-  <imr-card [title]="viewMode === 'list' ? 'Einsätze' : 'Einsatz erfassen'">
-      @if (viewMode === 'list') {
-        <section class="drafts-section list-only">
-          <div>
-            @if (canEditBerichte) {
-              <button mat-flat-button color="accent" type="button" (click)="neuerEntwurf()">Neuen Einsatz anlegen</button>
+<imr-page-layout [title]="title">
+  <imr-section>
+    @if (viewMode === "list") {
+      <div class="mb-3">
+        @if (canEditBerichte) {
+          <button
+            mat-flat-button
+            color="accent"
+            type="button"
+            (click)="neuerEntwurf()"
+          >
+            Neuen Einsatz anlegen
+          </button>
+        } @else {
+          <span class="permission-inline-note"
+            >Anlegen und Bearbeiten von Inhalten ist nur mit Rolle BERICHT
+            moeglich.</span
+          >
+        }
+      </div>
+
+      @if (berichte.length === 0) {
+        <p class="empty">Noch keine Einsatzberichte vorhanden.</p>
+      } @else {
+        <div class="imr-table-wrap">
+          <div class="table-toolbar">
+            <mat-form-field class="filter-field">
+              <mat-label>Suchen</mat-label>
+              <input matInput #input (keyup)="applyFilter(input.value)" />
+            </mat-form-field>
+          </div>
+
+          <div class="mobile-berichte-list">
+            @if (visibleBerichte.length === 0) {
+              <p class="empty">Keine passenden Einsatzberichte gefunden.</p>
             } @else {
-              <span class="permission-inline-note">Anlegen und Bearbeiten von Inhalten ist nur mit Rolle BERICHT moeglich.</span>
+              @for (element of visibleBerichte; track element.id) {
+                <article class="bericht-card">
+                  <div class="bericht-card-head">
+                    <span class="bericht-card-date">{{
+                      formatListDateTime(element.einsatz_datum) || "-"
+                    }}</span>
+                    <span
+                      class="status-badge"
+                      [class.done]="element.status === 'ABGESCHLOSSEN'"
+                      >{{ element.status }}</span
+                    >
+                  </div>
+
+                  <div class="bericht-card-content">
+                    <p>
+                      <strong>Stichwort:</strong>
+                      {{ element.alarmstichwort || "-" }}
+                    </p>
+                    <p>
+                      <strong>Adresse:</strong>
+                      {{ element.einsatzadresse || "-" }}
+                    </p>
+                  </div>
+
+                  <div class="bericht-card-actions">
+                    @if (canEditBerichte) {
+                      <button
+                        mat-flat-button
+                        class="imr-action-btn"
+                        color="primary"
+                        type="button"
+                        (click)="berichtBearbeiten(element)"
+                      >
+                        <mat-icon class="m-0">edit</mat-icon>
+                      </button>
+                    }
+                    @if (canManageStatus) {
+                      <button
+                        mat-flat-button
+                        class="imr-action-btn"
+                        color="primary"
+                        type="button"
+                        (click)="statusUmschalten(element)"
+                      >
+                        <mat-icon class="m-0">check</mat-icon>
+                      </button>
+                    }
+                    @if (canPrintBericht) {
+                      <button
+                        mat-flat-button
+                        class="imr-action-btn"
+                        color="primary"
+                        type="button"
+                        (click)="druckeBericht(element)"
+                        aria-label="Bericht drucken"
+                      >
+                        <mat-icon class="m-0">picture_as_pdf</mat-icon>
+                      </button>
+                    }
+                    @if (canDeleteBerichte) {
+                      <button
+                        mat-flat-button
+                        class="imr-action-btn"
+                        color="warn"
+                        type="button"
+                        (click)="berichtLoeschen(element)"
+                      >
+                        <mat-icon class="m-0">delete</mat-icon>
+                      </button>
+                    }
+                  </div>
+                </article>
+              }
             }
           </div>
 
-          @if (berichte.length === 0) {
-            <p class="empty">Noch keine Einsatzberichte vorhanden.</p>
-          } @else {
-            <div class="imr-table-wrap">
-              <div class="table-toolbar">
-                <mat-form-field class="filter-field" appearance="outline">
-                  <mat-label>Suchen</mat-label>
-                  <input matInput #input (keyup)="applyFilter(input.value)" />
-                </mat-form-field>
-              </div>
+          <div class="desktop-list-table">
+            <table mat-table [dataSource]="dataSource" matSort>
+              <ng-container matColumnDef="einsatz_datum">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Datum</th>
+                <td mat-cell *matCellDef="let element">
+                  {{ formatListDateTime(element.einsatz_datum) || "-" }}
+                </td>
+              </ng-container>
 
-              <div class="mobile-berichte-list">
-                @if (visibleBerichte.length === 0) {
-                  <p class="empty">Keine passenden Einsatzberichte gefunden.</p>
-                } @else {
-                  @for (element of visibleBerichte; track element.id) {
-                    <article class="bericht-card">
-                      <div class="bericht-card-head">
-                        <span class="bericht-card-date">{{ formatListDateTime(element.einsatz_datum) || '-' }}</span>
-                        <span class="status-badge" [class.done]="element.status === 'ABGESCHLOSSEN'">{{ element.status }}</span>
-                      </div>
+              <ng-container matColumnDef="alarmstichwort">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                  Alarmstichwort
+                </th>
+                <td mat-cell *matCellDef="let element">
+                  {{ element.alarmstichwort || "-" }}
+                </td>
+              </ng-container>
 
-                      <div class="bericht-card-content">
-                        <p><strong>Stichwort:</strong> {{ element.alarmstichwort || '-' }}</p>
-                        <p><strong>Adresse:</strong> {{ element.einsatzadresse || '-' }}</p>
-                      </div>
+              <ng-container matColumnDef="einsatzadresse">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                  Einsatzadresse
+                </th>
+                <td mat-cell *matCellDef="let element">
+                  {{ element.einsatzadresse || "-" }}
+                </td>
+              </ng-container>
 
-                      <div class="bericht-card-actions">
-                        @if (canEditBerichte) {
-                          <button mat-flat-button class="imr-action-btn" color="primary" type="button" (click)="berichtBearbeiten(element)">
-                            <mat-icon class="m-0">edit</mat-icon>
-                          </button>
-                        }
-                        @if (canManageStatus) {
-                          <button mat-flat-button class="imr-action-btn" color="primary" type="button" (click)="statusUmschalten(element)">
-                            <mat-icon class="m-0">check</mat-icon>
-                          </button>
-                        }
-                        @if (canPrintBericht) {
-                          <button mat-flat-button class="imr-action-btn" color="primary" type="button" (click)="druckeBericht(element)" aria-label="Bericht drucken">
-                            <mat-icon class="m-0">picture_as_pdf</mat-icon>
-                          </button>
-                        }
-                        @if (canDeleteBerichte) {
-                          <button mat-flat-button class="imr-action-btn" color="warn" type="button" (click)="berichtLoeschen(element)">
-                            <mat-icon class="m-0">delete</mat-icon>
-                          </button>
-                        }
-                      </div>
-                    </article>
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                  Status
+                </th>
+                <td mat-cell *matCellDef="let element">
+                  <span
+                    class="status-badge"
+                    [class.done]="element.status === 'ABGESCHLOSSEN'"
+                    >{{ element.status }}</span
+                  >
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Aktionen</th>
+                <td mat-cell *matCellDef="let element" class="imr-action-cell">
+                  @if (canEditBerichte) {
+                    <button
+                      mat-flat-button
+                      class="imr-action-btn"
+                      color="primary"
+                      type="button"
+                      (click)="berichtBearbeiten(element)"
+                    >
+                      <mat-icon class="m-0">edit</mat-icon>
+                    </button>
                   }
-                }
-              </div>
+                  @if (canManageStatus) {
+                    <button
+                      mat-flat-button
+                      class="imr-action-btn"
+                      color="primary"
+                      type="button"
+                      (click)="statusUmschalten(element)"
+                    >
+                      <mat-icon class="m-0">check</mat-icon>
+                    </button>
+                  }
+                  @if (canPrintBericht) {
+                    <button
+                      mat-flat-button
+                      class="imr-action-btn"
+                      color="primary"
+                      type="button"
+                      (click)="druckeBericht(element)"
+                      aria-label="Bericht drucken"
+                    >
+                      <mat-icon class="m-0">picture_as_pdf</mat-icon>
+                    </button>
+                  }
+                  @if (canDeleteBerichte) {
+                    <button
+                      mat-flat-button
+                      class="imr-action-btn"
+                      color="warn"
+                      type="button"
+                      (click)="berichtLoeschen(element)"
+                    >
+                      <mat-icon class="m-0">delete</mat-icon>
+                    </button>
+                  }
+                </td>
+              </ng-container>
 
-              <div class="desktop-list-table">
-                <table mat-table [dataSource]="dataSource" matSort>
-                  <ng-container matColumnDef="einsatz_datum">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Datum</th>
-                    <td mat-cell *matCellDef="let element">{{ formatListDateTime(element.einsatz_datum) || '-' }}</td>
-                  </ng-container>
+              <tr mat-header-row *matHeaderRowDef="sichtbareSpalten"></tr>
+              <tr mat-row *matRowDef="let row; columns: sichtbareSpalten"></tr>
+            </table>
 
-                  <ng-container matColumnDef="alarmstichwort">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Alarmstichwort</th>
-                    <td mat-cell *matCellDef="let element">{{ element.alarmstichwort || '-' }}</td>
-                  </ng-container>
-
-                  <ng-container matColumnDef="einsatzadresse">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Einsatzadresse</th>
-                    <td mat-cell *matCellDef="let element">{{ element.einsatzadresse || '-' }}</td>
-                  </ng-container>
-
-                  <ng-container matColumnDef="status">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
-                    <td mat-cell *matCellDef="let element">
-                      <span class="status-badge" [class.done]="element.status === 'ABGESCHLOSSEN'">{{ element.status }}</span>
-                    </td>
-                  </ng-container>
-
-                  <ng-container matColumnDef="actions">
-                    <th mat-header-cell *matHeaderCellDef>Aktionen</th>
-                    <td mat-cell *matCellDef="let element" class="imr-action-cell">
-                      @if (canEditBerichte) {
-                        <button mat-flat-button class="imr-action-btn" color="primary" type="button" (click)="berichtBearbeiten(element)">
-                          <mat-icon class="m-0">edit</mat-icon>
-                        </button>
-                      }
-                      @if (canManageStatus) {
-                        <button mat-flat-button class="imr-action-btn" color="primary" type="button" (click)="statusUmschalten(element)">
-                          <mat-icon class="m-0">check</mat-icon>
-                        </button>
-                      }
-                      @if (canPrintBericht) {
-                        <button mat-flat-button class="imr-action-btn" color="primary" type="button" (click)="druckeBericht(element)" aria-label="Bericht drucken">
-                          <mat-icon class="m-0">picture_as_pdf</mat-icon>
-                        </button>
-                      }
-                      @if (canDeleteBerichte) {
-                        <button mat-flat-button class="imr-action-btn" color="warn" type="button" (click)="berichtLoeschen(element)">
-                          <mat-icon class="m-0">delete</mat-icon>
-                        </button>
-                      }
-                    </td>
-                  </ng-container>
-
-                  <tr mat-header-row *matHeaderRowDef="sichtbareSpalten"></tr>
-                  <tr mat-row *matRowDef="let row; columns: sichtbareSpalten"></tr>
-                </table>
-
-                <mat-paginator
-                  [pageSizeOptions]="[10, 50, 100]"
-                  showFirstLastButtons
-                  aria-label="Auswahl Anzahl der sichtbaren Elemente"
-                >
-                </mat-paginator>
-              </div>
-            </div>
-          }
-        </section>
-      } @else {
-      <form [formGroup]="formBericht" (ngSubmit)="speichereBericht()" class="bericht-form">
+            <mat-paginator
+              [pageSizeOptions]="[10, 50, 100]"
+              showFirstLastButtons
+              aria-label="Auswahl Anzahl der sichtbaren Elemente"
+            >
+            </mat-paginator>
+          </div>
+        </div>
+      }
+    } @else {
+      <form
+        [formGroup]="formBericht"
+        (ngSubmit)="speichereBericht()"
+        class="bericht-form"
+      >
         <div>
-          <button mat-flat-button type="button" color="primary" (click)="zurueckZurListe()">Zur Liste</button>
+          <button
+            mat-flat-button
+            type="button"
+            color="primary"
+            (click)="zurueckZurListe()"
+          >
+            Zur Liste
+          </button>
         </div>
 
         <mat-accordion class="bericht-accordion m-2" [multi]="false">
-          <mat-expansion-panel class="form-section" [class.has-error]="section1HasError">
-            <mat-panel-title>
+          <mat-expansion-panel
+            class="form-section"
+            [class.has-error]="section1HasError"
+          >
+            <mat-expansion-panel-header>
+              <mat-panel-title>
                 <span class="form-section-title">1. Alarmdaten</span>
                 @if (section1HasError) {
                   <mat-icon class="section-error-icon">error</mat-icon>
                 }
               </mat-panel-title>
+            </mat-expansion-panel-header>
 
             <div class="form-section-body">
               <section class="grid two-col">
-            <mat-form-field class="imr-full-width">
-              <mat-label>Status</mat-label>
-              <mat-select formControlName="status">
-                @for (status of statusOptionen; track status.key) {
-                  <mat-option [value]="status.key">{{ status.label }}</mat-option>
+                <mat-form-field class="imr-full-width">
+                  <mat-label>Status</mat-label>
+                  <mat-select formControlName="status">
+                    @for (status of statusOptionen; track status.key) {
+                      <mat-option [value]="status.key">{{
+                        status.label
+                      }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+
+                @if (!canManageStatus) {
+                  <p class="selection-description">
+                    Status kann nur von Verwaltung geaendert werden.
+                  </p>
                 }
-              </mat-select>
-            </mat-form-field>
 
-            @if (!canManageStatus) {
-              <p class="selection-description">Status kann nur von Verwaltung geaendert werden.</p>
-            }
+                <div class="prefill-row">
+                  <button
+                    mat-flat-button
+                    type="button"
+                    color="accent"
+                    [disabled]="!canEditBerichte"
+                    (click)="uebernehmeLetztenEinsatz()"
+                  >
+                    Daten BlaulichtSMS übernehmen
+                  </button>
+                </div>
+              </section>
 
-            <div class="prefill-row">
-              <button mat-flat-button type="button" color="accent" [disabled]="!canEditBerichte" (click)="uebernehmeLetztenEinsatz()">
-                Daten BlaulichtSMS übernehmen
-              </button>
-            </div>
-          </section>
+              <section class="grid two-col">
+                <div class="searchable-select">
+                  <mat-form-field class="imr-full-width">
+                    <mat-label>Einsatzleiter</mat-label>
+                    <input
+                      matInput
+                      [formControl]="einsatzleiterSuche"
+                      [matAutocomplete]="einsatzleiterAuto"
+                      [errorStateMatcher]="einsatzleiterErrorMatcher"
+                      placeholder="Name oder StbNr"
+                    />
+                    <mat-autocomplete
+                      #einsatzleiterAuto="matAutocomplete"
+                      (optionSelected)="onEinsatzleiterSelected($event)"
+                    >
+                      @for (
+                        einsatzleiter of filteredEinsatzleiterOptionen;
+                        track einsatzleiter
+                      ) {
+                        <mat-option [value]="einsatzleiter">{{
+                          einsatzleiter
+                        }}</mat-option>
+                      }
+                      @if (filteredEinsatzleiterOptionen.length === 0) {
+                        <mat-option disabled
+                          >Kein Einsatzleiter gefunden.</mat-option
+                        >
+                      }
+                    </mat-autocomplete>
+                  </mat-form-field>
+                </div>
 
-          <section class="grid two-col">
-            <div class="searchable-select">
-              <mat-form-field class="imr-full-width">
-                <mat-label>Einsatzleiter</mat-label>
-                <input
-                  matInput
-                  [formControl]="einsatzleiterSuche"
-                  [matAutocomplete]="einsatzleiterAuto"
-                  [errorStateMatcher]="einsatzleiterErrorMatcher"
-                  placeholder="Name oder StbNr"
-                  uiControlErrors
-                />
-                <mat-autocomplete #einsatzleiterAuto="matAutocomplete" (optionSelected)="onEinsatzleiterSelected($event)">
-                  @for (einsatzleiter of filteredEinsatzleiterOptionen; track einsatzleiter) {
-                    <mat-option [value]="einsatzleiter">{{ einsatzleiter }}</mat-option>
-                  }
-                  @if (filteredEinsatzleiterOptionen.length === 0) {
-                    <mat-option disabled>Kein Einsatzleiter gefunden.</mat-option>
-                  }
-                </mat-autocomplete>
-              </mat-form-field>
-            </div>
+                <mat-form-field class="imr-full-width">
+                  <mat-label>Einsatzart</mat-label>
+                  <mat-select formControlName="einsatzart">
+                    @for (art of einsatzarten; track art) {
+                      <mat-option [value]="art">{{ art }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
 
-            <mat-form-field class="imr-full-width">
-              <mat-label>Einsatzart</mat-label>
-              <mat-select formControlName="einsatzart">
-                @for (art of einsatzarten; track art) {
-                  <mat-option [value]="art">{{ art }}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
+                <mat-form-field class="imr-full-width">
+                  <mat-label>Alarmstichwort</mat-label>
+                  <input matInput formControlName="alarmstichwort" />
+                </mat-form-field>
 
-            <mat-form-field class="imr-full-width">
-              <mat-label>Alarmstichwort</mat-label>
-              <input matInput formControlName="alarmstichwort" />
-            </mat-form-field>
+                <mat-form-field class="imr-full-width">
+                  <mat-label>Einsatzadresse</mat-label>
+                  <input matInput formControlName="einsatzadresse" />
+                </mat-form-field>
 
-            <mat-form-field class="imr-full-width">
-              <mat-label>Einsatzadresse</mat-label>
-              <input matInput formControlName="einsatzadresse" />
-            </mat-form-field>
+                <mat-form-field class="imr-full-width">
+                  <mat-label>Alarmierende Stelle</mat-label>
+                  <mat-select formControlName="alarmierendeStelle">
+                    @for (stelle of alarmierendeStelleOptionen; track stelle) {
+                      <mat-option [value]="stelle">{{ stelle }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              </section>
 
-            <mat-form-field class="imr-full-width">
-              <mat-label>Alarmierende Stelle</mat-label>
-              <mat-select formControlName="alarmierendeStelle">
-                @for (stelle of alarmierendeStelleOptionen; track stelle) {
-                  <mat-option [value]="stelle">{{ stelle }}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-          </section>
+              <section class="grid three-col">
+                <mat-form-field class="imr-full-width">
+                  <mat-label>Einsatz Datum</mat-label>
+                  <input
+                    matInput
+                    type="date"
+                    formControlName="einsatzDatum"
+                    appDateInputMask="iso"
+                  />
+                </mat-form-field>
 
-          <section class="grid three-col">
-            <mat-form-field class="imr-full-width">
-              <mat-label>Einsatz Datum</mat-label>
-              <input matInput type="date" formControlName="einsatzDatum" appDateInputMask="iso" />
-            </mat-form-field>
+                <mat-form-field class="imr-full-width">
+                  <mat-label>Ausgerückt</mat-label>
+                  <input matInput type="time" formControlName="ausgerueckt" />
+                </mat-form-field>
 
-            <mat-form-field class="imr-full-width">
-              <mat-label>Ausgerückt</mat-label>
-              <input matInput type="time" formControlName="ausgerueckt" />
-            </mat-form-field>
-
-            <mat-form-field class="imr-full-width">
-              <mat-label>Eingerückt</mat-label>
-              <input matInput type="time" formControlName="eingerueckt" />
-            </mat-form-field>
-          </section>
-
+                <mat-form-field class="imr-full-width">
+                  <mat-label>Eingerückt</mat-label>
+                  <input matInput type="time" formControlName="eingerueckt" />
+                </mat-form-field>
+              </section>
             </div>
           </mat-expansion-panel>
 
-          <mat-expansion-panel class="form-section" [class.has-error]="section2HasError">
+          <mat-expansion-panel
+            class="form-section"
+            [class.has-error]="section2HasError"
+          >
+            <mat-expansion-panel-header>
               <mat-panel-title>
                 <span class="form-section-title">2. Tätigkeiten</span>
                 @if (section2HasError) {
                   <mat-icon class="section-error-icon">error</mat-icon>
                 }
               </mat-panel-title>
+            </mat-expansion-panel-header>
 
             <div class="form-section-body">
               <section class="grid one-col">
-            <mat-form-field appearance="outline" class="imr-full-width taetigkeit-textarea-field" subscriptSizing="dynamic">
-              <mat-label>Lage beim Eintreffen</mat-label>
-              <textarea matInput rows="3" formControlName="lageBeimEintreffen"></textarea>
-            </mat-form-field>
+                <mat-form-field
+                  appearance="outline"
+                  class="imr-full-width taetigkeit-textarea-field"
+                  subscriptSizing="dynamic"
+                >
+                  <mat-label>Lage beim Eintreffen</mat-label>
+                  <textarea
+                    matInput
+                    rows="3"
+                    formControlName="lageBeimEintreffen"
+                  ></textarea>
+                </mat-form-field>
 
-            <mat-form-field appearance="outline" class="imr-full-width taetigkeit-textarea-field" subscriptSizing="dynamic">
-              <mat-label>Gesetzte Maßnahmen</mat-label>
-              <textarea matInput rows="3" formControlName="gesetzteMassnahmen"></textarea>
-            </mat-form-field>
-          </section>
+                <mat-form-field
+                  appearance="outline"
+                  class="imr-full-width taetigkeit-textarea-field"
+                  subscriptSizing="dynamic"
+                >
+                  <mat-label>Gesetzte Maßnahmen</mat-label>
+                  <textarea
+                    matInput
+                    rows="3"
+                    formControlName="gesetzteMassnahmen"
+                  ></textarea>
+                </mat-form-field>
+              </section>
             </div>
           </mat-expansion-panel>
 
           <mat-expansion-panel class="form-section">
+            <mat-expansion-panel-header>
               <mat-panel-title>
                 <span class="form-section-title">3. Einsatzspezifisch</span>
               </mat-panel-title>
+            </mat-expansion-panel-header>
 
             <div class="form-section-body">
               <section class="grid two-col">
@@ -275,11 +423,16 @@
                       <mat-form-field class="imr-full-width">
                         <mat-label>Brand Kategorie</mat-label>
                         <mat-select formControlName="brandKategorie">
-                          @for (opt of brandOptionenMitBeschreibung; track opt.titel) {
+                          @for (
+                            opt of brandOptionenMitBeschreibung;
+                            track opt.titel
+                          ) {
                             <mat-option [value]="opt.titel">
                               <div class="option-title">{{ opt.titel }}</div>
                               @if (opt.beschreibung) {
-                                <div class="option-description">{{ opt.beschreibung }}</div>
+                                <div class="option-description">
+                                  {{ opt.beschreibung }}
+                                </div>
                               }
                             </mat-option>
                           }
@@ -287,7 +440,11 @@
                       </mat-form-field>
                       <mat-form-field class="imr-full-width">
                         <mat-label>Brand aus</mat-label>
-                        <input matInput type="time" formControlName="brandAus" />
+                        <input
+                          matInput
+                          type="time"
+                          formControlName="brandAus"
+                        />
                       </mat-form-field>
                     </section>
                   } @else if (isTechnisch) {
@@ -302,7 +459,10 @@
                       </mat-form-field>
                     </section>
                   } @else {
-                    <p class="empty">Für diese Einsatzart gibt es keine zusätzlichen Kategorien.</p>
+                    <p class="empty">
+                      Für diese Einsatzart gibt es keine zusätzlichen
+                      Kategorien.
+                    </p>
                   }
                   @if (isBMA) {
                     <section class="grid two-col einsatzdetails-grid">
@@ -317,8 +477,13 @@
                       <mat-form-field class="imr-full-width">
                         <mat-label>Fehl- oder Täuschungsalarm</mat-label>
                         <mat-select formControlName="bmaFehlTauschungsalarm">
-                          @for (opt of bmaFehlTauschungsalarmOptionen; track opt) {
-                            <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+                          @for (
+                            opt of bmaFehlTauschungsalarmOptionen;
+                            track opt
+                          ) {
+                            <mat-option [value]="opt.value">{{
+                              opt.label
+                            }}</mat-option>
                           }
                         </mat-select>
                       </mat-form-field>
@@ -336,21 +501,33 @@
                         [matAutocomplete]="mitalarmiertAuto"
                         placeholder="Stelle auswählen"
                       />
-                      <mat-autocomplete #mitalarmiertAuto="matAutocomplete" (optionSelected)="onMitalarmiertSelected($event)">
+                      <mat-autocomplete
+                        #mitalarmiertAuto="matAutocomplete"
+                        (optionSelected)="onMitalarmiertSelected($event)"
+                      >
                         @for (opt of filteredMitalarmiertOptionen; track opt) {
-                          <mat-option [value]="opt.id">{{ opt.label }}</mat-option>
+                          <mat-option [value]="opt.id">{{
+                            opt.label
+                          }}</mat-option>
                         }
                         @if (filteredMitalarmiertOptionen.length === 0) {
-                          <mat-option disabled>Keine Stellen gefunden.</mat-option>
+                          <mat-option disabled
+                            >Keine Stellen gefunden.</mat-option
+                          >
                         }
                       </mat-autocomplete>
                     </mat-form-field>
 
                     <mat-chip-set class="imr-chips">
                       @for (opt of selectedMitalarmiertOptionen; track opt) {
-                        <mat-chip [removable]="true" (removed)="removeMitalarmiert(opt.id)">
+                        <mat-chip
+                          [removable]="true"
+                          (removed)="removeMitalarmiert(opt.id)"
+                        >
                           {{ opt.label }}
-                          <button matChipRemove><mat-icon>cancel</mat-icon></button>
+                          <button matChipRemove>
+                            <mat-icon>cancel</mat-icon>
+                          </button>
                         </mat-chip>
                       }
                     </mat-chip-set>
@@ -361,79 +538,68 @@
           </mat-expansion-panel>
 
           <mat-expansion-panel class="form-section">
+            <mat-expansion-panel-header>
               <mat-panel-title>
                 <span class="form-section-title">4. Dokumentation</span>
               </mat-panel-title>
+            </mat-expansion-panel-header>
 
             <div class="form-section-body">
-            <section class="documentation-block">
-              <div class="upload-row">
-                <label class="upload-label" for="fotoDokuDateien">Foto Doku Dateien</label>
-                <input #fotoDokuDateienInput id="fotoDokuDateien" class="file-input-hidden" type="file" multiple accept=".jpg,.jpeg,.png,.pdf" (change)="onDokumentSelected($event, 'fotoDoku')" />
-                <button mat-flat-button type="button" color="primary" class="upload-button" (click)="fotoDokuDateienInput.click()">Dateien auswählen</button>
-                @if (fotoDokuFiles.length > 0) {
-                  <div class="preview-grid">
-                    @for (file of fotoDokuFiles; track file; let i = $index) {
-                      <article class="preview-card">
-                        @if (file.type.startsWith('image/')) {
-                          <img class="preview-image" [src]="getFilePreviewUrl(file)" [alt]="file.name" />
-                        } @else {
-                          <div class="preview-file">PDF</div>
-                        }
-                        <div class="preview-meta">
-                          <button mat-flat-button class="imr-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(getFilePreviewUrl(file))">
-                            <mat-icon>open_in_new</mat-icon>
-                          </button>
-                          <button mat-flat-button class="imr-action-btn" type="button" color="warn" aria-label="Datei entfernen" (click)="removeSelectedDokument(i, 'fotoDoku')">
-                            <mat-icon>delete</mat-icon>
-                          </button>
-                        </div>
-                      </article>
-                    }
-                  </div>
-                }
-
-                @if (bestehendeDokuFotos.length > 0) {
-                  <div class="preview-grid existing-previews">
-                    @for (foto of bestehendeDokuFotos; track foto.id) {
-                      <article class="preview-card">
-                        @if (isImagePath(foto.foto_url)) {
-                          <img class="preview-image" [src]="foto.foto_url" [alt]="getFileNameFromPath(foto.foto_url)" />
-                        } @else {
-                          <div class="preview-file">PDF</div>
-                        }
-                        <div class="preview-meta">
-                          <button mat-flat-button class="imr-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(foto.foto_url)">
-                            <mat-icon>open_in_new</mat-icon>
-                          </button>
-                          <button mat-flat-button class="imr-action-btn" type="button" color="warn" aria-label="Datei löschen" (click)="loescheBestehendesFoto(foto)">
-                            <mat-icon>delete</mat-icon>
-                          </button>
-                        </div>
-                      </article>
-                    }
-                  </div>
-                }
-              </div>
-              @if (isTechnisch) {
+              <section class="documentation-block">
                 <div class="upload-row">
-                  <label class="upload-label" for="zulassungDateien">Zulassungsschein Dateien</label>
-                  <input #zulassungDateienInput id="zulassungDateien" class="file-input-hidden" type="file" multiple accept=".jpg,.jpeg,.png,.pdf" (change)="onDokumentSelected($event, 'zulassungsschein')" />
-                  <button mat-flat-button type="button" color="primary" class="upload-button" (click)="zulassungDateienInput.click()">Dateien auswählen</button>
-                  @if (zulassungFiles.length > 0) {
+                  <label class="upload-label" for="fotoDokuDateien"
+                    >Foto Doku Dateien</label
+                  >
+                  <input
+                    #fotoDokuDateienInput
+                    id="fotoDokuDateien"
+                    class="file-input-hidden"
+                    type="file"
+                    multiple
+                    accept=".jpg,.jpeg,.png,.pdf"
+                    (change)="onDokumentSelected($event, 'fotoDoku')"
+                  />
+                  <button
+                    mat-flat-button
+                    type="button"
+                    color="primary"
+                    class="upload-button"
+                    (click)="fotoDokuDateienInput.click()"
+                  >
+                    Dateien auswählen
+                  </button>
+                  @if (fotoDokuFiles.length > 0) {
                     <div class="preview-grid">
-                      @for (file of zulassungFiles; track file; let i = $index) {
+                      @for (file of fotoDokuFiles; track file; let i = $index) {
                         <article class="preview-card">
-                          @if (file.type.startsWith('image/')) {
-                            <img class="preview-image" [src]="getFilePreviewUrl(file)" [alt]="file.name" />
+                          @if (file.type.startsWith("image/")) {
+                            <img
+                              class="preview-image"
+                              [src]="getFilePreviewUrl(file)"
+                              [alt]="file.name"
+                            />
                           } @else {
                             <div class="preview-file">PDF</div>
                           }
                           <div class="preview-meta">
-                            <button mat-flat-button class="imr-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(getFilePreviewUrl(file))">
+                            <button
+                              mat-flat-button
+                              class="imr-action-btn"
+                              type="button"
+                              color="primary"
+                              aria-label="Bild öffnen"
+                              (click)="openFoto(getFilePreviewUrl(file))"
+                            >
                               <mat-icon>open_in_new</mat-icon>
                             </button>
-                            <button mat-flat-button class="imr-action-btn" type="button" color="warn" aria-label="Datei entfernen" (click)="removeSelectedDokument(i, 'zulassungsschein')">
+                            <button
+                              mat-flat-button
+                              class="imr-action-btn"
+                              type="button"
+                              color="warn"
+                              aria-label="Datei entfernen"
+                              (click)="removeSelectedDokument(i, 'fotoDoku')"
+                            >
                               <mat-icon>delete</mat-icon>
                             </button>
                           </div>
@@ -442,20 +608,38 @@
                     </div>
                   }
 
-                  @if (bestehendeZulassungFotos.length > 0) {
+                  @if (bestehendeDokuFotos.length > 0) {
                     <div class="preview-grid existing-previews">
-                      @for (foto of bestehendeZulassungFotos; track foto.id) {
+                      @for (foto of bestehendeDokuFotos; track foto.id) {
                         <article class="preview-card">
                           @if (isImagePath(foto.foto_url)) {
-                            <img class="preview-image" [src]="foto.foto_url" [alt]="getFileNameFromPath(foto.foto_url)" />
+                            <img
+                              class="preview-image"
+                              [src]="foto.foto_url"
+                              [alt]="getFileNameFromPath(foto.foto_url)"
+                            />
                           } @else {
                             <div class="preview-file">PDF</div>
                           }
                           <div class="preview-meta">
-                            <button mat-flat-button class="imr-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(foto.foto_url)">
+                            <button
+                              mat-flat-button
+                              class="imr-action-btn"
+                              type="button"
+                              color="primary"
+                              aria-label="Bild öffnen"
+                              (click)="openFoto(foto.foto_url)"
+                            >
                               <mat-icon>open_in_new</mat-icon>
                             </button>
-                            <button mat-flat-button class="imr-action-btn" type="button" color="warn" aria-label="Datei löschen" (click)="loescheBestehendesFoto(foto)">
+                            <button
+                              mat-flat-button
+                              class="imr-action-btn"
+                              type="button"
+                              color="warn"
+                              aria-label="Datei löschen"
+                              (click)="loescheBestehendesFoto(foto)"
+                            >
                               <mat-icon>delete</mat-icon>
                             </button>
                           </div>
@@ -464,64 +648,245 @@
                     </div>
                   }
                 </div>
+                @if (isTechnisch) {
+                  <div class="upload-row">
+                    <label class="upload-label" for="zulassungDateien"
+                      >Zulassungsschein Dateien</label
+                    >
+                    <input
+                      #zulassungDateienInput
+                      id="zulassungDateien"
+                      class="file-input-hidden"
+                      type="file"
+                      multiple
+                      accept=".jpg,.jpeg,.png,.pdf"
+                      (change)="onDokumentSelected($event, 'zulassungsschein')"
+                    />
+                    <button
+                      mat-flat-button
+                      type="button"
+                      color="primary"
+                      class="upload-button"
+                      (click)="zulassungDateienInput.click()"
+                    >
+                      Dateien auswählen
+                    </button>
+                    @if (zulassungFiles.length > 0) {
+                      <div class="preview-grid">
+                        @for (
+                          file of zulassungFiles;
+                          track file;
+                          let i = $index
+                        ) {
+                          <article class="preview-card">
+                            @if (file.type.startsWith("image/")) {
+                              <img
+                                class="preview-image"
+                                [src]="getFilePreviewUrl(file)"
+                                [alt]="file.name"
+                              />
+                            } @else {
+                              <div class="preview-file">PDF</div>
+                            }
+                            <div class="preview-meta">
+                              <button
+                                mat-flat-button
+                                class="imr-action-btn"
+                                type="button"
+                                color="primary"
+                                aria-label="Bild öffnen"
+                                (click)="openFoto(getFilePreviewUrl(file))"
+                              >
+                                <mat-icon>open_in_new</mat-icon>
+                              </button>
+                              <button
+                                mat-flat-button
+                                class="imr-action-btn"
+                                type="button"
+                                color="warn"
+                                aria-label="Datei entfernen"
+                                (click)="
+                                  removeSelectedDokument(i, 'zulassungsschein')
+                                "
+                              >
+                                <mat-icon>delete</mat-icon>
+                              </button>
+                            </div>
+                          </article>
+                        }
+                      </div>
+                    }
 
-                <div class="upload-row">
-                  <label class="upload-label" for="versicherungDateien">Versicherungsschein Dateien</label>
-                  <input #versicherungDateienInput id="versicherungDateien" class="file-input-hidden" type="file" multiple accept=".jpg,.jpeg,.png,.pdf" (change)="onDokumentSelected($event, 'versicherungsschein')" />
-                  <button mat-flat-button type="button" color="primary" class="upload-button" (click)="versicherungDateienInput.click()">Dateien auswählen</button>
-                  @if (versicherungFiles.length > 0) {
-                    <div class="preview-grid">
-                      @for (file of versicherungFiles; track file; let i = $index) {
-                        <article class="preview-card">
-                          @if (file.type.startsWith('image/')) {
-                            <img class="preview-image" [src]="getFilePreviewUrl(file)" [alt]="file.name" />
-                          } @else {
-                            <div class="preview-file">PDF</div>
-                          }
-                          <div class="preview-meta">
-                            <button mat-flat-button class="imr-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(getFilePreviewUrl(file))">
-                              <mat-icon>open_in_new</mat-icon>
-                            </button>
-                            <button mat-flat-button class="imr-action-btn" type="button" color="warn" aria-label="Datei entfernen" (click)="removeSelectedDokument(i, 'versicherungsschein')">
-                              <mat-icon>delete</mat-icon>
-                            </button>
-                          </div>
-                        </article>
-                      }
-                    </div>
-                  }
+                    @if (bestehendeZulassungFotos.length > 0) {
+                      <div class="preview-grid existing-previews">
+                        @for (foto of bestehendeZulassungFotos; track foto.id) {
+                          <article class="preview-card">
+                            @if (isImagePath(foto.foto_url)) {
+                              <img
+                                class="preview-image"
+                                [src]="foto.foto_url"
+                                [alt]="getFileNameFromPath(foto.foto_url)"
+                              />
+                            } @else {
+                              <div class="preview-file">PDF</div>
+                            }
+                            <div class="preview-meta">
+                              <button
+                                mat-flat-button
+                                class="imr-action-btn"
+                                type="button"
+                                color="primary"
+                                aria-label="Bild öffnen"
+                                (click)="openFoto(foto.foto_url)"
+                              >
+                                <mat-icon>open_in_new</mat-icon>
+                              </button>
+                              <button
+                                mat-flat-button
+                                class="imr-action-btn"
+                                type="button"
+                                color="warn"
+                                aria-label="Datei löschen"
+                                (click)="loescheBestehendesFoto(foto)"
+                              >
+                                <mat-icon>delete</mat-icon>
+                              </button>
+                            </div>
+                          </article>
+                        }
+                      </div>
+                    }
+                  </div>
 
-                  @if (bestehendeVersicherungFotos.length > 0) {
-                    <div class="preview-grid existing-previews">
-                      @for (foto of bestehendeVersicherungFotos; track foto.id) {
-                        <article class="preview-card">
-                          @if (isImagePath(foto.foto_url)) {
-                            <img class="preview-image" [src]="foto.foto_url" [alt]="getFileNameFromPath(foto.foto_url)" />
-                          } @else {
-                            <div class="preview-file">PDF</div>
-                          }
-                          <div class="preview-meta">
-                            <button mat-flat-button class="imr-action-btn" type="button" color="primary" aria-label="Bild öffnen" (click)="openFoto(foto.foto_url)">
-                              <mat-icon>open_in_new</mat-icon>
-                            </button>
-                            <button mat-flat-button class="imr-action-btn" type="button" color="warn" aria-label="Datei löschen" (click)="loescheBestehendesFoto(foto)">
-                              <mat-icon>delete</mat-icon>
-                            </button>
-                          </div>
-                        </article>
-                      }
-                    </div>
-                  }
-                </div>
-              }
-            </section>
+                  <div class="upload-row">
+                    <label class="upload-label" for="versicherungDateien"
+                      >Versicherungsschein Dateien</label
+                    >
+                    <input
+                      #versicherungDateienInput
+                      id="versicherungDateien"
+                      class="file-input-hidden"
+                      type="file"
+                      multiple
+                      accept=".jpg,.jpeg,.png,.pdf"
+                      (change)="
+                        onDokumentSelected($event, 'versicherungsschein')
+                      "
+                    />
+                    <button
+                      mat-flat-button
+                      type="button"
+                      color="primary"
+                      class="upload-button"
+                      (click)="versicherungDateienInput.click()"
+                    >
+                      Dateien auswählen
+                    </button>
+                    @if (versicherungFiles.length > 0) {
+                      <div class="preview-grid">
+                        @for (
+                          file of versicherungFiles;
+                          track file;
+                          let i = $index
+                        ) {
+                          <article class="preview-card">
+                            @if (file.type.startsWith("image/")) {
+                              <img
+                                class="preview-image"
+                                [src]="getFilePreviewUrl(file)"
+                                [alt]="file.name"
+                              />
+                            } @else {
+                              <div class="preview-file">PDF</div>
+                            }
+                            <div class="preview-meta">
+                              <button
+                                mat-flat-button
+                                class="imr-action-btn"
+                                type="button"
+                                color="primary"
+                                aria-label="Bild öffnen"
+                                (click)="openFoto(getFilePreviewUrl(file))"
+                              >
+                                <mat-icon>open_in_new</mat-icon>
+                              </button>
+                              <button
+                                mat-flat-button
+                                class="imr-action-btn"
+                                type="button"
+                                color="warn"
+                                aria-label="Datei entfernen"
+                                (click)="
+                                  removeSelectedDokument(
+                                    i,
+                                    'versicherungsschein'
+                                  )
+                                "
+                              >
+                                <mat-icon>delete</mat-icon>
+                              </button>
+                            </div>
+                          </article>
+                        }
+                      </div>
+                    }
+
+                    @if (bestehendeVersicherungFotos.length > 0) {
+                      <div class="preview-grid existing-previews">
+                        @for (
+                          foto of bestehendeVersicherungFotos;
+                          track foto.id
+                        ) {
+                          <article class="preview-card">
+                            @if (isImagePath(foto.foto_url)) {
+                              <img
+                                class="preview-image"
+                                [src]="foto.foto_url"
+                                [alt]="getFileNameFromPath(foto.foto_url)"
+                              />
+                            } @else {
+                              <div class="preview-file">PDF</div>
+                            }
+                            <div class="preview-meta">
+                              <button
+                                mat-flat-button
+                                class="imr-action-btn"
+                                type="button"
+                                color="primary"
+                                aria-label="Bild öffnen"
+                                (click)="openFoto(foto.foto_url)"
+                              >
+                                <mat-icon>open_in_new</mat-icon>
+                              </button>
+                              <button
+                                mat-flat-button
+                                class="imr-action-btn"
+                                type="button"
+                                color="warn"
+                                aria-label="Datei löschen"
+                                (click)="loescheBestehendesFoto(foto)"
+                              >
+                                <mat-icon>delete</mat-icon>
+                              </button>
+                            </div>
+                          </article>
+                        }
+                      </div>
+                    }
+                  </div>
+                }
+              </section>
             </div>
           </mat-expansion-panel>
 
           <mat-expansion-panel class="form-section">
+            <mat-expansion-panel-header>
               <mat-panel-title>
-                <span class="form-section-title">5. Fahrzeuge &amp; Mitglieder</span>
+                <span class="form-section-title"
+                  >5. Fahrzeuge &amp; Mitglieder</span
+                >
               </mat-panel-title>
+            </mat-expansion-panel-header>
 
             <div class="form-section-body">
               <section class="grid two-col">
@@ -534,21 +899,39 @@
                       [matAutocomplete]="fahrzeugAuto"
                       placeholder="Fahrzeugname"
                     />
-                    <mat-autocomplete #fahrzeugAuto="matAutocomplete" (optionSelected)="onFahrzeugSelected($event)">
-                      @for (fahrzeug of filteredFahrzeugOptionen; track fahrzeug.id) {
-                        <mat-option [value]="fahrzeug.id">{{ fahrzeug.label }}</mat-option>
+                    <mat-autocomplete
+                      #fahrzeugAuto="matAutocomplete"
+                      (optionSelected)="onFahrzeugSelected($event)"
+                    >
+                      @for (
+                        fahrzeug of filteredFahrzeugOptionen;
+                        track fahrzeug.id
+                      ) {
+                        <mat-option [value]="fahrzeug.id">{{
+                          fahrzeug.label
+                        }}</mat-option>
                       }
                       @if (filteredFahrzeugOptionen.length === 0) {
-                        <mat-option disabled>Keine Fahrzeuge gefunden.</mat-option>
+                        <mat-option disabled
+                          >Keine Fahrzeuge gefunden.</mat-option
+                        >
                       }
                     </mat-autocomplete>
                   </mat-form-field>
 
                   <mat-chip-set class="imr-chips">
-                    @for (fahrzeug of selectedFahrzeugOptionen; track fahrzeug.id) {
-                      <mat-chip [removable]="true" (removed)="removeFahrzeug(fahrzeug.id)">
+                    @for (
+                      fahrzeug of selectedFahrzeugOptionen;
+                      track fahrzeug.id
+                    ) {
+                      <mat-chip
+                        [removable]="true"
+                        (removed)="removeFahrzeug(fahrzeug.id)"
+                      >
                         {{ fahrzeug.label }}
-                        <button matChipRemove><mat-icon>cancel</mat-icon></button>
+                        <button matChipRemove>
+                          <mat-icon>cancel</mat-icon>
+                        </button>
                       </mat-chip>
                     }
                   </mat-chip-set>
@@ -561,17 +944,26 @@
                       <mat-select-trigger>
                         {{ mitgliederAuswahlTriggerText }}
                         @if (mitgliederAuswahlCounter > 1) {
-                          <span class="selection-counter">(+{{ mitgliederAuswahlCounter - 1 }})</span>
+                          <span class="selection-counter"
+                            >(+{{ mitgliederAuswahlCounter - 1 }})</span
+                          >
                         }
                       </mat-select-trigger>
 
-                      @for (mitglied of sortedMitgliedOptionen; track mitglied.id) {
-                        <mat-option [value]="mitglied.id">{{ mitglied.label }}</mat-option>
+                      @for (
+                        mitglied of sortedMitgliedOptionen;
+                        track mitglied.id
+                      ) {
+                        <mat-option [value]="mitglied.id">{{
+                          mitglied.label
+                        }}</mat-option>
                       }
                     </mat-select>
                   </mat-form-field>
 
-                  <p class="selection-description">Ausgewählt: {{ mitgliederAuswahlCounter }}</p>
+                  <p class="selection-description">
+                    Ausgewählt: {{ mitgliederAuswahlCounter }}
+                  </p>
                 </div>
               </section>
             </div>
@@ -579,13 +971,17 @@
         </mat-accordion>
 
         <div>
-          <button mat-flat-button color="accent" type="submit" [disabled]="!canEditBerichte">Einsatzbericht speichern</button>
+          <button
+            mat-flat-button
+            color="accent"
+            type="submit"
+            [disabled]="!canEditBerichte"
+          >
+            Einsatzbericht speichern
+          </button>
         </div>
       </form>
-      }
-  </imr-card>
+    }
+  </imr-section>
 </imr-page-layout>
-
-
-
 

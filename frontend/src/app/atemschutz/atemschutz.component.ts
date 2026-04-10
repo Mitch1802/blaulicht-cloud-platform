@@ -41,3 +41,4 @@ export class AtemschutzComponent implements OnInit {
     this.breadcrumb = this.navigationService.ladeBreadcrumb();
   }
 }
+

@@ -51,7 +51,7 @@
           <div class="app-col-12 app-col-lg-6 mb-3">
             <mat-form-field>
               <mat-label>Typ / Modul</mat-label>
-              <mat-select formControlName="typ" uiControlErrors>
+              <mat-select formControlName="typ">
                 @for (opt of typModul; track opt) {
                   <mat-option [value]="opt"> {{ opt }} </mat-option>
                 }
@@ -61,7 +61,7 @@
           <div class="app-col-12 app-col-lg-6 mb-3">
             <mat-form-field>
               <mat-label>Bezeichnung</mat-label>
-              <input matInput type="text" formControlName="bezeichnung" uiControlErrors />
+              <input matInput type="text" formControlName="bezeichnung" />
             </mat-form-field>
           </div>
           <div class="app-col-12 app-col-lg-12 mb-3">
@@ -129,5 +129,6 @@
       </div>
   </imr-section>
 </imr-page-layout>
+
 
 

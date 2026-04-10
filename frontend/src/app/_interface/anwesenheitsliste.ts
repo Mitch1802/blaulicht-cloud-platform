@@ -1,4 +1,4 @@
-export interface IAnwesenheitslisteFoto {
+﻿export interface IAnwesenheitslisteFoto {
   id?: string | number;
   foto_url?: string;
   created_at?: string;
@@ -17,3 +17,4 @@ export interface IAnwesenheitsliste {
   created_at?: string;
   updated_at?: string;
 }
+

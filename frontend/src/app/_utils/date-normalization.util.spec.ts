@@ -1,4 +1,4 @@
-import { normalizeDateInput } from './date-normalization.util';
+﻿import { normalizeDateInput } from './date-normalization.util';
 
 describe('normalizeDateInput', () => {
   it('returns empty string for null-like values', () => {
@@ -24,3 +24,4 @@ describe('normalizeDateInput', () => {
     expect(normalizeDateInput('kein-datum')).toBe('');
   });
 });
+

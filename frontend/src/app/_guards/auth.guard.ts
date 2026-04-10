@@ -1,4 +1,4 @@
-import { inject } from '@angular/core';
+﻿import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { catchError, map, of } from 'rxjs';
 import { ApiHttpService } from '../_service/api-http.service';
@@ -50,3 +50,4 @@ export const authGuard: CanActivateFn = () => {
     })
   );
 };
+

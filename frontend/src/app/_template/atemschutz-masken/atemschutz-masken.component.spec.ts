@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+﻿import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AtemschutzMaskenComponent } from './atemschutz-masken.component';
 
@@ -21,3 +21,4 @@ describe('AtemschutzMaskenComponent', () => {
     expect(component).toBeTruthy();
   });
 });
+

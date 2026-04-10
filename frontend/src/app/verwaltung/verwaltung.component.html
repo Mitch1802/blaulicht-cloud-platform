@@ -50,7 +50,7 @@
                 <div class="app-col-12 app-col-lg-12 mb-3">
                   <mat-form-field>
                     <mat-label>Name</mat-label>
-                    <input matInput type="text" formControlName="adress_name" uiControlErrors />
+                    <input matInput type="text" formControlName="adress_name" />
                   </mat-form-field>
                 </div>
                 <div class="app-col-12 app-col-lg-6 mb-3">
@@ -60,26 +60,26 @@
                       matInput
                       type="text"
                       formControlName="adresse_strasse"
-                      uiControlErrors
+                     
                     />
                   </mat-form-field>
                 </div>
                 <div class="app-col-12 app-col-lg-2 mb-3">
                   <mat-form-field>
                     <mat-label>PLZ</mat-label>
-                    <input matInput type="text" formControlName="adresse_plz" uiControlErrors />
+                    <input matInput type="text" formControlName="adresse_plz" />
                   </mat-form-field>
                 </div>
                 <div class="app-col-12 app-col-lg-4 mb-3">
                   <mat-form-field>
                     <mat-label>Ort</mat-label>
-                    <input matInput type="text" formControlName="adresse_ort" uiControlErrors />
+                    <input matInput type="text" formControlName="adresse_ort" />
                   </mat-form-field>
                 </div>
                 <div class="app-col-12 app-col-lg-8 mb-3">
                   <mat-form-field>
                     <mat-label>Betreff</mat-label>
-                    <input matInput type="text" formControlName="betreff" uiControlErrors />
+                    <input matInput type="text" formControlName="betreff" />
                   </mat-form-field>
                 </div>
                 <div class="app-col-12 app-col-lg-4 mb-3">
@@ -89,14 +89,14 @@
                       matInput
                       type="text"
                       formControlName="invoice_nummer"
-                      uiControlErrors
+                     
                     />
                   </mat-form-field>
                 </div>
                 <div class="app-col-12 app-col-lg-12 mb-3">
                   <mat-form-field>
                     <mat-label>Anrede</mat-label>
-                    <input matInput type="text" formControlName="anrede" uiControlErrors />
+                    <input matInput type="text" formControlName="anrede" />
                   </mat-form-field>
                 </div>
                 <div class="app-col-12 app-col-lg-12 mb-3">
@@ -106,7 +106,7 @@
                       matInput
                       type="text"
                       formControlName="text"
-                      uiControlErrors
+                     
                       rows="4"
                     ></textarea>
                   </mat-form-field>
@@ -132,13 +132,13 @@
                 <div class="app-col-12 app-col-lg-6 mb-3">
                   <mat-form-field>
                     <mat-label>Bezeichnung</mat-label>
-                    <input matInput type="text" formControlName="bezeichnung" uiControlErrors />
+                    <input matInput type="text" formControlName="bezeichnung" />
                   </mat-form-field>
                 </div>
                 <div class="app-col-12 app-col-lg-3 mb-3">
                   <mat-form-field>
                     <mat-label>Preis</mat-label>
-                    <input matInput type="text" formControlName="preis" uiControlErrors />
+                    <input matInput type="text" formControlName="preis" />
                     @if (
                       formRechnungPositionen.controls.preis.hasError("pattern")
                     ) {
@@ -175,6 +175,7 @@
       </mat-tab-group>
   </imr-section>
 </imr-page-layout>
+
 
 
 

@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+﻿import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 
 import { ApiHttpService } from '../_service/api-http.service';
@@ -126,3 +126,4 @@ describe('StartComponent', () => {
     });
   });
 });
+

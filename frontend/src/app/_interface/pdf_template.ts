@@ -1,4 +1,4 @@
-export interface IPdfTemplate {
+﻿export interface IPdfTemplate {
     id: string;
     typ: string;
     version: number;

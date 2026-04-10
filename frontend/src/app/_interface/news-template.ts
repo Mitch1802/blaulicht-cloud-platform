@@ -1,4 +1,4 @@
-export interface INewsTemplate {
+﻿export interface INewsTemplate {
   id: string;
   name: string;
   title: string;
@@ -8,3 +8,4 @@ export interface INewsTemplate {
   created_at?: string;
   updated_at?: string;
 }
+

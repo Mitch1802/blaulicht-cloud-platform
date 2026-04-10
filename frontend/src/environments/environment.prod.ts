@@ -1,4 +1,4 @@
-import packageJson from '../../package.json';
+﻿import packageJson from '../../package.json';
 
 export const environment = {
   production: true,
@@ -6,3 +6,4 @@ export const environment = {
   apiUrl: 'https://' + window.location.host + '/api/v1/',
   title: "Blaulicht Cloud"
 };
+

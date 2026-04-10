@@ -1,4 +1,4 @@
-import { CheckStatus } from "../fahrzeug/fahrzeug.constants";
+﻿import { CheckStatus } from "../fahrzeug/fahrzeug.constants";
 
 export interface IFahrzeugPublic {
   name: string;
@@ -94,3 +94,4 @@ export interface IFahrzeugDetail {
   foto_url?: string | null;
   raeume: IFahrzeugRaum[];
 }
+

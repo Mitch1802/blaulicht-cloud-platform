@@ -25,7 +25,6 @@ import {
   ImrHeaderComponent,
   ImrPageLayoutComponent,
   ImrSectionComponent,
-  UiControlErrorsDirective,
 } from '../imr-ui-library';
 import { FormatService } from '../helpers/format.service';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -44,7 +43,6 @@ type PdfTemplateApiItem = IPdfTemplate & {
     ImrHeaderComponent,
     ImrPageLayoutComponent,
     ImrSectionComponent,
-    UiControlErrorsDirective,
     FormsModule,
     ReactiveFormsModule,
     MatFormFieldModule,
@@ -347,3 +345,4 @@ export class PdfTemplatesComponent implements OnInit {
     this.formModul.disable();
   }
 }
+

@@ -32,7 +32,7 @@
             <div class="app-col-12 app-col-lg-6 mb-3">
               <mat-form-field class="imr-full-width">
                 <mat-label>Bezeichnung</mat-label>
-                <input matInput type="text" formControlName="bezeichnung" uiControlErrors />
+                <input matInput type="text" formControlName="bezeichnung" />
                 <mat-hint>* Pflichtfeld</mat-hint>
               </mat-form-field>
             </div>
@@ -250,7 +250,7 @@
     <form [formGroup]="ausborgenForm" (ngSubmit)="ausborgenSpeichern()" class="imr-transaction-form">
       <mat-form-field class="imr-full-width">
         <mat-label>Entlehner</mat-label>
-        <input matInput type="text" formControlName="an" uiControlErrors />
+        <input matInput type="text" formControlName="an" />
       </mat-form-field>
 
       <mat-form-field class="imr-full-width">
@@ -356,6 +356,7 @@
   <img class="modal-content" id="img01" [src]="filePfad" alt="Inventarbild Vorschau" />
   <div id="inventar-image-title" class="modal-caption">{{ fileName }}</div>
 </div>
+
 
 
 

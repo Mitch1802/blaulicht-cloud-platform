@@ -428,3 +428,4 @@ export class MitgliedComponent implements OnInit {
     }
   }
 }
+

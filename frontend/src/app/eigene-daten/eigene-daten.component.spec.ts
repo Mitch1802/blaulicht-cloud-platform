@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+﻿import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { EigeneDatenComponent } from './eigene-daten.component';
 
@@ -21,3 +21,4 @@ describe('EigeneDatenComponent', () => {
     expect(component).toBeTruthy();
   });
 });
+

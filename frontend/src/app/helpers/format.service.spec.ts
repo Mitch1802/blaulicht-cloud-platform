@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+﻿import { TestBed } from '@angular/core/testing';
 
 import { FormatService } from './format.service';
 
@@ -14,3 +14,4 @@ describe('FormatService', () => {
     expect(service).toBeTruthy();
   });
 });
+

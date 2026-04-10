@@ -100,3 +100,4 @@ export class WartungServiceComponent implements OnInit {
     return 'status-pill status-pill--anstehend';
   }
 }
+

@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+﻿import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { PdfTemplatesComponent } from './pdf-templates.component';
 
@@ -21,3 +21,4 @@ describe('PdfTemplatesComponent', () => {
     expect(component).toBeTruthy();
   });
 });
+

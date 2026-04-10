@@ -1,4 +1,4 @@
-@use '../../theme' as theme
+﻿@use '../../theme' as theme
 
 .role-form
     display: grid
@@ -24,19 +24,6 @@
 .role-empty
     margin: .15rem 0 0
     color: theme.$imr-text-muted
-
-.mat-mdc-form-field .mat-mdc-text-field-wrapper
-    min-height: var(--imr-control-height)
-    height: var(--imr-control-height)
-
-.mat-mdc-form-field .mat-mdc-form-field-flex
-    min-height: var(--imr-control-height)
-    align-items: center
-
-.mat-mdc-form-field .mat-mdc-form-field-infix
-    min-height: calc(var(--imr-control-height) - 2px)
-    padding-top: .35rem
-    padding-bottom: .35rem
 
 .backup-warning
     display: inline-flex
@@ -83,9 +70,10 @@
 
 .table-mobile-actions
     display: flex
-    flex-wrap: nowrap
+    flex-wrap: wrap
     align-items: center
-    gap: .35rem
+    column-gap: .35rem
+    row-gap: .12rem
 
 .imr-table-wrap
     margin-top: .4rem

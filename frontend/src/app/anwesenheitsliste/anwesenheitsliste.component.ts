@@ -429,3 +429,4 @@ export class AnwesenheitslisteComponent implements OnInit {
     this.fotoDokuFiles = [];
   }
 }
+

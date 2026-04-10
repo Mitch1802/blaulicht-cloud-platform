@@ -1,4 +1,4 @@
-import { booleanAttribute, Component, Input } from '@angular/core'
+﻿import { booleanAttribute, Component, Input } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { MatCardModule } from '@angular/material/card'
 
@@ -19,5 +19,6 @@ export class ImrCardComponent {
   @Input() cardClass = 'imr-card'
   @Input({ transform: booleanAttribute }) wrapContent = true
 }
+
 
 

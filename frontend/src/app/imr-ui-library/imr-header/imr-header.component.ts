@@ -2,8 +2,8 @@ import { Component, Input, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatIconButton } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { AuthSessionService } from '../../_service/auth-session.service';
-import { ImrToolbarComponent } from '../imr-toolbar/imr-toolbar.component';
 import { environment } from 'src/environments/environment';
 
 /**
@@ -38,7 +38,7 @@ export interface ImrBreadcrumbItem {
 @Component({
   selector: 'imr-header',
   standalone: true,
-  imports: [ImrToolbarComponent, RouterLink, MatIconButton, MatIconModule],
+  imports: [MatToolbarModule, RouterLink, MatIconButton, MatIconModule],
   templateUrl: './imr-header.component.html',
   styleUrl: './imr-header.component.sass',
 })
@@ -53,5 +53,6 @@ export class ImrHeaderComponent {
     return Array.isArray(this.breadcrumb) && this.breadcrumb.length > 0;
   }
 }
+
 
 

@@ -16,7 +16,6 @@ import {
   ImrHeaderComponent,
   ImrPageLayoutComponent,
   ImrSectionComponent,
-  UiControlErrorsDirective,
 } from '../imr-ui-library';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -39,7 +38,6 @@ type BackupCleanupResponse = { summary?: { orphan?: number }; deleted?: number; 
       ImrHeaderComponent,
       ImrPageLayoutComponent,
       ImrSectionComponent,
-      UiControlErrorsDirective,
       FormsModule, 
       ReactiveFormsModule, 
       MatFormFieldModule,
@@ -467,3 +465,4 @@ export class KonfigurationComponent implements OnInit {
     return data;
   }
 }
+

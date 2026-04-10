@@ -1,4 +1,4 @@
-﻿import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -19,8 +19,6 @@ import {
   ImrHeaderComponent,
   ImrPageLayoutComponent,
   ImrSectionComponent,
-  UiControlErrorMap,
-  UiControlErrorsDirective,
 } from '../imr-ui-library';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -46,7 +44,6 @@ type PdfTemplatesResponse = { main?: IPdfTemplate[] } | IPdfTemplate[];
     ImrHeaderComponent,
     ImrPageLayoutComponent,
     ImrSectionComponent,
-    UiControlErrorsDirective,
     MatButtonModule,
     MatFormFieldModule,
     MatIconModule,
@@ -132,11 +129,6 @@ export class ModulKonfigurationComponent implements OnInit {
     null,
     2,
   );
-
-  readonly konfigurationErrorMap: UiControlErrorMap = {
-    required: 'Konfiguration ist erforderlich!',
-    jsonInvalid: 'Ungültiges JSON!',
-  };
 
   formModul = new FormGroup({
     id: new FormControl<number | null>(null),
@@ -418,3 +410,4 @@ export class ModulKonfigurationComponent implements OnInit {
     };
   }
 }
+

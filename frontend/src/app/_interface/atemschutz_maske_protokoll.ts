@@ -1,4 +1,4 @@
-export interface IAtemschutzMaskeProtokoll {
+﻿export interface IAtemschutzMaskeProtokoll {
   id: string;
   maske_id: number;
   datum: string;
@@ -20,3 +20,4 @@ export interface IAtemschutzMaskeProtokoll {
   created_at: string;
   updated_at: string;
 }
+

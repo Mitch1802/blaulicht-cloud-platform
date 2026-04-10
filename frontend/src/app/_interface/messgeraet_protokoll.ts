@@ -1,4 +1,4 @@
-export interface IMessgeraetProtokoll {
+﻿export interface IMessgeraetProtokoll {
   id: string;
   geraet_id: number;
   datum: string;
@@ -9,3 +9,4 @@ export interface IMessgeraetProtokoll {
   created_at: string;
   updated_at: string;
 }
+

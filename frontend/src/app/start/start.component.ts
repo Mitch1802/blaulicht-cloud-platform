@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+﻿import { Component, OnInit, inject } from '@angular/core';
 import { ApiHttpService } from '../_service/api-http.service';
 import { AuthSessionService } from '../_service/auth-session.service';
 import { NavigationService } from '../_service/navigation.service';
@@ -211,3 +211,4 @@ export class StartComponent implements OnInit {
     return `category-${normalized || 'allgemein'}`;
   }
 }
+

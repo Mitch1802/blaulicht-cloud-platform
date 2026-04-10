@@ -1,4 +1,4 @@
-export const normalizeDateInput = (value: string | null | undefined): string => {
+﻿export const normalizeDateInput = (value: string | null | undefined): string => {
   if (!value) {
     return '';
   }
@@ -31,3 +31,4 @@ export const normalizeDateInput = (value: string | null | undefined): string => 
 
   return '';
 };
+

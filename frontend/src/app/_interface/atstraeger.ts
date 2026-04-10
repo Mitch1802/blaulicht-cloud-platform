@@ -1,4 +1,4 @@
-export interface IATSTraeger {
+﻿export interface IATSTraeger {
     id: string,
     mitglied_id: number,
     arzt: string,
@@ -16,3 +16,4 @@ export interface IATSTraeger {
     geburtsdatum?: string
     hauptberuflich?: boolean
 }
+

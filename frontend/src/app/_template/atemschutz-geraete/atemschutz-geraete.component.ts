@@ -9,7 +9,6 @@ import {
   ImrCardComponent,
   ImrHeaderComponent,
   ImrPageLayoutComponent,
-  UiControlErrorsDirective,
 } from '../../imr-ui-library';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -44,7 +43,6 @@ type AtemschutzGeraeteKontextResponse = { main: IAtemschutzGeraet[]; fmd: FmdAte
     MatTabsModule,
     FormsModule,
     ReactiveFormsModule,
-    UiControlErrorsDirective,
     MatSelect,
     MatOption,
     MatInput,
@@ -757,3 +755,4 @@ export class AtemschutzGeraeteComponent implements OnInit {
     this.formPruefung.controls['notiz'].enable();
   }
 }
+

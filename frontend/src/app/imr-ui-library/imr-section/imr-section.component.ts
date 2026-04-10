@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+﻿import { Component, Input } from '@angular/core';
 
 /**
  * `<imr-section>`
@@ -15,3 +15,4 @@ export class ImrSectionComponent {
   /** Optionaler Kartentitel (wird als <h2> im Kopfbereich gerendert) */
   @Input() title = '';
 }
+

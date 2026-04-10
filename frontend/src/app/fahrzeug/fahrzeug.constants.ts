@@ -11,3 +11,4 @@ export const CHECK_STATUS_OPTIONS: Array<{ value: CheckStatus; label: string }> 
   { value: "missing", label: "Fehlt" },
   { value: "damaged", label: "Beschädigt" },
 ];
+
