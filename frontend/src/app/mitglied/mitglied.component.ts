@@ -9,9 +9,9 @@ import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
 import {
   ImrBreadcrumbItem,
-  ImrCardComponent,
   ImrHeaderComponent,
   ImrPageLayoutComponent,
+  ImrSectionComponent,
 } from '../imr-ui-library';
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -55,7 +55,7 @@ type CsvRawRow = Record<string, string | number | boolean | null | undefined>;
 @Component({
     selector: 'app-mitglied',
     imports: [
-  ImrCardComponent,
+  ImrSectionComponent,
   ImrHeaderComponent,
   ImrPageLayoutComponent,
     FormsModule,

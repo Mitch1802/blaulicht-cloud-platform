@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { NavigationService } from 'src/app/_service/navigation.service';
-import { ImrBreadcrumbItem, ImrCardComponent, ImrHeaderComponent, ImrPageLayoutComponent } from '../imr-ui-library';
+import { ImrBreadcrumbItem, ImrCardComponent, ImrHeaderComponent, ImrPageLayoutComponent, ImrSectionComponent } from '../imr-ui-library';
 
 type AtemschutzModul = {
   titel: string;
@@ -15,6 +15,7 @@ type AtemschutzModul = {
     imports: [
       ImrHeaderComponent,
       ImrPageLayoutComponent,
+      ImrSectionComponent,
       ImrCardComponent,
       MatIconModule,
       RouterLink

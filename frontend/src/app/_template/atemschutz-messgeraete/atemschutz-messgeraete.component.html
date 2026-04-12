@@ -1,7 +1,7 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <imr-page-layout [title]="title" class="atemschutz-messgeraete-page">
-  <imr-card title="Messgeräte verwalten">
+  <imr-section [title]="'Messgeräte verwalten'">
         @if (sichtbarkeitModul() === "tableListe")
         {
         <div>
@@ -299,7 +299,7 @@
         </div>
         }
         <!-- TABELLE MESSGERÄTE PRÜFUNGEN ENDE -->
-  </imr-card>
+    </imr-section>
 </imr-page-layout>
 
 

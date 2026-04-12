@@ -1,7 +1,7 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <imr-page-layout [title]="title" class="atemschutz-masken-page">
-  <imr-card title="Masken verwalten">
+  <imr-section [title]="'Masken verwalten'">
     
         @if (sichtbarkeitModul() === "tableListe")
         {
@@ -372,7 +372,7 @@
         }
         <!-- TABELLE MASKEN PRÜFUNGEN ENDE -->
     
-  </imr-card>
+    </imr-section>
 </imr-page-layout>
 
 

@@ -1,7 +1,7 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <imr-page-layout [title]="title" class="mitglied-page">
-  <imr-card title="Mitglieder verwalten">
+  <imr-section [title]="'Mitglieder verwalten'">
 
       <div>
         @if (formModul.disabled) {
@@ -282,7 +282,7 @@
             </mat-paginator>
           </div>
         }
-  </imr-card>
+  </imr-section>
 </imr-page-layout>
 
 

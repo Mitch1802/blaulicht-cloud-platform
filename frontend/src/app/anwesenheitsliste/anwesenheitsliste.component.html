@@ -1,7 +1,7 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <imr-page-layout [title]="title" class="anwesenheitsliste-page">
-  <imr-card title="Anwesenheitslisten verwalten">
+  <imr-section [title]="'Anwesenheitslisten verwalten'">
     @if(formModul.disabled) {
     <div>
       <button mat-flat-button
@@ -238,7 +238,7 @@
       >
       </mat-paginator>
     </div>
-  </imr-card>
+  </imr-section>
 </imr-page-layout>
 
 

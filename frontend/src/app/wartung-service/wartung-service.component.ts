@@ -6,9 +6,9 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 
 import {
   ImrBreadcrumbItem,
-  ImrCardComponent,
   ImrHeaderComponent,
   ImrPageLayoutComponent,
+  ImrSectionComponent,
 } from '../imr-ui-library';
 import { IWartungServiceEintrag, IWartungServiceResponse, IWartungServiceSummary } from '../_interface/wartung_service';
 import { ApiHttpService } from 'src/app/_service/api-http.service';
@@ -22,9 +22,9 @@ import { UiMessageService } from 'src/app/_service/ui-message.service';
   imports: [
     MatButtonModule,
     MatIconModule,
-    ImrCardComponent,
     ImrHeaderComponent,
     ImrPageLayoutComponent,
+    ImrSectionComponent,
     MatTableModule,
     RouterLink,
   ],

@@ -1,7 +1,7 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <imr-page-layout title="Fahrzeuge verwalten" class="fahrzeug-page">
-  <imr-card title="Fahrzeuge & Beladung">
+  <imr-section [title]="'Fahrzeuge & Beladung'">
       @if (!editorOpen && !inventarEditorOpen) {
         <div class="mb-3">
           <a mat-flat-button color="primary" [routerLink]="['/public/fahrzeuge']" target="_blank" rel="noopener">
@@ -543,8 +543,7 @@
             }
         </imr-card>
       }
-  </imr-card>
-</imr-page-layout>
+    </imr-section>
 
 
 

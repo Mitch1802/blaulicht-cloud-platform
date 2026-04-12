@@ -12,9 +12,9 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatSelectModule } from '@angular/material/select';
 import {
   ImrBreadcrumbItem,
-  ImrCardComponent,
   ImrHeaderComponent,
   ImrPageLayoutComponent,
+  ImrSectionComponent,
 } from '../imr-ui-library';
 import { ApiHttpService } from '../_service/api-http.service';
 import { AuthSessionService } from '../_service/auth-session.service';
@@ -30,9 +30,9 @@ import { DateInputMaskDirective } from '../_directive/date-input-mask.directive'
   imports: [
     FormsModule,
     ReactiveFormsModule,
-    ImrCardComponent,
     ImrHeaderComponent,
     ImrPageLayoutComponent,
+    ImrSectionComponent,
     MatButtonModule,
     MatFormFieldModule,
     MatIconModule,

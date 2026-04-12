@@ -7,9 +7,9 @@ import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
 import {
   ImrBreadcrumbItem,
-  ImrCardComponent,
   ImrHeaderComponent,
   ImrPageLayoutComponent,
+  ImrSectionComponent,
 } from '../imr-ui-library';
 import { Router } from '@angular/router';
 import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
@@ -68,9 +68,9 @@ Chart.register(ChartDataLabels);
   imports: [
     FormsModule,
     ReactiveFormsModule,
-    ImrCardComponent,
     ImrHeaderComponent,
     ImrPageLayoutComponent,
+    ImrSectionComponent,
     MatButtonModule,
     MatFormFieldModule,
     MatIconModule,

@@ -1,7 +1,7 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <imr-page-layout [title]="title" pageClass="start-page atemschutz-page">
-  <imr-card title="Atemschutz">
+  <imr-section [title]="'Atemschutz'">
     <div class="module-grid imr-grid">
       @for (item of moduleCards; track item.routerLink) {
         <a
@@ -20,7 +20,7 @@
         </a>
       }
     </div>
-  </imr-card>
+  </imr-section>
 </imr-page-layout>
 
 

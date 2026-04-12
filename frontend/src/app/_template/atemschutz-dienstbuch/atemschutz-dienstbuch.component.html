@@ -1,7 +1,7 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <imr-page-layout title="Dienstbuch verwalten" class="atemschutz-dienstbuch-page">
-  <imr-card title="Dienstbuch verwalten">
+  <imr-section [title]="'Dienstbuch verwalten'">
         <hr>
         <div class="imr-grid">
             <h4 class="imr-col-6 imr-col-lg-2 mb-0">{{ jahrHeuer }}:</h4>
@@ -76,7 +76,7 @@
           aria-label="Auswahl Anzahl der sichtbaren Elemente"
         >
         </mat-paginator>
-  </imr-card>
+  </imr-section>
 </imr-page-layout>
 
 

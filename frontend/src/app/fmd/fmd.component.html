@@ -1,7 +1,7 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <imr-page-layout [title]="title" class="fmd-page">
-  <imr-card title="Atemschutz Verwaltung">
+  <imr-section [title]="'Atemschutz Verwaltung'">
     @if (hasTable(activeTabIndex)) {
     <div class="table-toolbar">
       <mat-form-field class="filter-field" appearance="outline">
@@ -502,7 +502,7 @@
     >
     </mat-paginator>
     }
-  </imr-card>
+    </imr-section>
 </imr-page-layout>
 
 

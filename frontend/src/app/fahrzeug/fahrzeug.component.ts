@@ -30,6 +30,7 @@ import {
   ImrCardComponent,
   ImrHeaderComponent,
   ImrPageLayoutComponent,
+  ImrSectionComponent,
 } from "../imr-ui-library";
 import { DateInputMaskDirective } from '../_directive/date-input-mask.directive';
 
@@ -57,6 +58,7 @@ type ItemDraftFG = FormGroup<{
     ReactiveFormsModule,
     ImrHeaderComponent,
     ImrPageLayoutComponent,
+    ImrSectionComponent,
     ImrCardComponent,
     MatButtonModule,
     MatCardModule,

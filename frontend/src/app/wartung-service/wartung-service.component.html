@@ -1,7 +1,7 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <imr-page-layout [title]="title" class="wartung-service-page">
-  <imr-card [title]="'Anstehende Termine ' + jahr">
+  <imr-section [title]="'Anstehende Termine ' + jahr">
 
       <div class="actions-top">
         <button mat-flat-button color="primary" type="button" (click)="reload()">Aktualisieren</button>
@@ -82,7 +82,7 @@
           </table>
         </div>
       }
-  </imr-card>
+  </imr-section>
 </imr-page-layout>
 
 

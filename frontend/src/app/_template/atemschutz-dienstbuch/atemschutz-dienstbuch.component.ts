@@ -6,9 +6,9 @@ import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
 import {
   ImrBreadcrumbItem,
-  ImrCardComponent,
   ImrHeaderComponent,
   ImrPageLayoutComponent,
+  ImrSectionComponent,
 } from '../../imr-ui-library';
 import { IAtemschutzGeraetProtokoll } from 'src/app/_interface/atemschutz_geraet_protokoll';
 import { IMitglied } from 'src/app/_interface/mitglied';
@@ -33,7 +33,7 @@ type ProtokollMitgliedRow = IAtemschutzGeraetProtokoll & {
   imports: [
     ImrHeaderComponent,
     ImrPageLayoutComponent,
-    ImrCardComponent,
+    ImrSectionComponent,
     MatPaginatorModule,
     MatTableModule,
     MatSortModule,

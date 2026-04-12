@@ -4,6 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "start:stable": "node -e \"require('fs').rmSync('.angular/cache',{ recursive:true, force:true })\" && npx ng serve --configuration development --no-prebundle",
     "build": "ng build web-app --configuration production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",

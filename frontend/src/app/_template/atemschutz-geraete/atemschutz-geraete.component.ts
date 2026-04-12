@@ -6,9 +6,9 @@ import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
 import {
   ImrBreadcrumbItem,
-  ImrCardComponent,
   ImrHeaderComponent,
   ImrPageLayoutComponent,
+  ImrSectionComponent,
 } from '../../imr-ui-library';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -37,9 +37,9 @@ type AtemschutzGeraeteKontextResponse = { main: IAtemschutzGeraet[]; fmd: FmdAte
     MatButtonModule,
     MatCheckboxModule,
     MatFormFieldModule,
-    ImrCardComponent,
     ImrHeaderComponent,
     ImrPageLayoutComponent,
+    ImrSectionComponent,
     MatTabsModule,
     FormsModule,
     ReactiveFormsModule,
