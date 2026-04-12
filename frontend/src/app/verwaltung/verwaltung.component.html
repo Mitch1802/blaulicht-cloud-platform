@@ -1,4 +1,4 @@
-﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
+<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <imr-page-layout [title]="title" class="verwaltung-page">
   <imr-section title="Rechnungen & Vorlagen">
@@ -161,7 +161,7 @@
                     <div class="imr-col-7">{{ pos.bezeichnung }}</div>
                     <div class="imr-col-3">{{ formatPreis(pos.preis) }}</div>
                     <div class="imr-col-2 text-end">
-                      <button mat-icon-button class="imr-action-btn" color="warn" type="button" aria-label="Position löschen" (click)="removePosition(i)">
+                      <button mat-icon-button  color="warn" type="button" aria-label="Position löschen" (click)="removePosition(i)">
                         <mat-icon>delete</mat-icon>
                       </button>
                     </div>

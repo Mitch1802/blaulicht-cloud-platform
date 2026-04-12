@@ -1,4 +1,4 @@
-﻿import { Component, OnInit, inject, ViewChild, ElementRef } from '@angular/core';
+﻿import { Component, OnInit, inject, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { INews } from 'src/app/_interface/news';
 import { INewsTemplate } from 'src/app/_interface/news-template';
@@ -20,6 +20,7 @@ import {
   ImrPageLayoutComponent,
   ImrSectionComponent,
 } from '../imr-ui-library';
+import { ImrUploadFieldComponent } from '../imr-ui-library/imr-upload-field/imr-upload-field.component';
 import { forkJoin } from 'rxjs';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSort, MatSortModule } from '@angular/material/sort';
@@ -32,6 +33,7 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
     ImrHeaderComponent,
     ImrPageLayoutComponent,
     ImrSectionComponent,
+    ImrUploadFieldComponent,
     MatButtonModule,
     MatFormFieldModule,
     MatIconModule,
@@ -46,7 +48,7 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
   styleUrl: './news.component.sass'
 })
 export class NewsComponent implements OnInit {
-  @ViewChild('fotoUpload', { static: false }) fotoRef!: ElementRef<HTMLInputElement>;
+  @ViewChild('fotoUpload', { static: false }) fotoRef?: ImrUploadFieldComponent;
 
   @ViewChild(MatPaginator) set matPaginator(p: MatPaginator | undefined) {
     if (p) {
@@ -231,8 +233,7 @@ export class NewsComponent implements OnInit {
 
   /** Datei aus dem ViewChild-input holen */
   private getSelectedFile(): File | null {
-    const el = this.fotoRef?.nativeElement;
-    return el?.files && el.files.length ? el.files[0] : null;
+    return this.fotoRef?.selectedFile ?? null;
   }
 
   /** Server-Datum ins gewünschte Anzeigeformat bringen */
@@ -355,9 +356,7 @@ export class NewsComponent implements OnInit {
     this.setzeSelectZurueck();
 
     // Datei-Auswahl im Input zurücksetzen
-    if (this.fotoRef?.nativeElement) {
-      this.fotoRef.nativeElement.value = '';
-    }
+    this.fotoRef?.clear();
   }
 
   datenSpeichern(): void {
@@ -471,7 +470,7 @@ export class NewsComponent implements OnInit {
       const maxMB = this.apiHttpService.MaxUploadSize / 1024;
       this.uiMessageService.erstelleMessage('error', `Foto darf nicht größer als ${maxMB}MB sein!`);
       // Input leeren
-      if (this.fotoRef?.nativeElement) this.fotoRef.nativeElement.value = '';
+      this.fotoRef?.clear();
     } else {
       this.fileFound = true;
       this.fileName = file.name;
@@ -533,9 +532,7 @@ export class NewsComponent implements OnInit {
     }
     this.setzeSelectZurueck();
     // Datei im Input löschen
-    if (this.fotoRef?.nativeElement) {
-      this.fotoRef.nativeElement.value = '';
-    }
+    this.fotoRef?.clear();
   }
 }
 

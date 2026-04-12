@@ -5,7 +5,6 @@ import {
   DestroyRef,
   OnInit,
   ViewChild,
-  ElementRef,
   inject,
 } from '@angular/core';
 import { A11yModule } from '@angular/cdk/a11y';
@@ -35,6 +34,7 @@ import {
   ImrPageLayoutComponent,
   ImrSectionComponent,
 } from '../imr-ui-library';
+import { ImrUploadFieldComponent } from '../imr-ui-library/imr-upload-field/imr-upload-field.component';
 import { FormatService } from '../helpers/format.service';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSort, MatSortModule } from '@angular/material/sort';
@@ -56,6 +56,7 @@ interface IVerleihungFormEintrag {
     ImrHeaderComponent,
     ImrPageLayoutComponent,
     ImrSectionComponent,
+    ImrUploadFieldComponent,
     MatButtonModule,
     MatCheckboxModule,
     MatFormFieldModule,
@@ -72,7 +73,7 @@ interface IVerleihungFormEintrag {
   styleUrl: './inventar.component.sass',
 })
 export class InventarComponent implements OnInit, AfterViewInit {
-  @ViewChild('fotoUpload', { static: false }) fotoRef!: ElementRef<HTMLInputElement>;
+  @ViewChild('fotoUpload', { static: false }) fotoRef?: ImrUploadFieldComponent;
   @ViewChild(MatPaginator) paginator?: MatPaginator;
   @ViewChild(MatSort) sort?: MatSort;
   private apiHttpService = inject(ApiHttpService);
@@ -164,8 +165,7 @@ export class InventarComponent implements OnInit, AfterViewInit {
 
   /** Datei aus dem ViewChild-input holen */
   private getSelectedFile(): File | null {
-    const el = this.fotoRef?.nativeElement;
-    return el?.files && el.files.length ? el.files[0] : null;
+    return this.fotoRef?.selectedFile ?? null;
   }
 
   /** Server-Datum ins gewünschte Anzeigeformat bringen */
@@ -743,9 +743,7 @@ export class InventarComponent implements OnInit, AfterViewInit {
     this.verleihungenForm = [];
 
     // Datei-Auswahl im Input zurücksetzen
-    if (this.fotoRef?.nativeElement) {
-      this.fotoRef.nativeElement.value = '';
-    }
+    this.fotoRef?.clear();
   }
 
   datenSpeichern(): void {
@@ -908,7 +906,7 @@ export class InventarComponent implements OnInit, AfterViewInit {
       const maxMB = this.apiHttpService.MaxUploadSize / 1024;
       this.uiMessageService.erstelleMessage('error', `Foto darf nicht größer als ${maxMB}MB sein!`);
       // Input leeren
-      if (this.fotoRef?.nativeElement) this.fotoRef.nativeElement.value = '';
+      this.fotoRef?.clear();
     } else {
       this.fileFound = true;
       this.fileName = file.name;
@@ -959,9 +957,7 @@ export class InventarComponent implements OnInit, AfterViewInit {
     this.filePfad = '';
     this.fileFound = false;
     // Datei im Input löschen
-    if (this.fotoRef?.nativeElement) {
-      this.fotoRef.nativeElement.value = '';
-    }
+    this.fotoRef?.clear();
   }
 
   private observeLeihstatus(): void {

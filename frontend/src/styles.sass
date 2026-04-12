@@ -1,4 +1,4 @@
-﻿// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
 // styles.sass  ·  Globale Stile der Blaulicht-Cloud-Platform
 //
 // Zweck dieses Files:
@@ -35,6 +35,9 @@ div:has(> .mat-mdc-button-disabled)
 .mdc-notched-outline__leading,
 .mdc-notched-outline__trailing
     border-radius: 0 !important
+
+.mat-mdc-unelevated-button > .mat-icon
+    --mat-button-filled-icon-spacing: -.5rem
 
 .mat-mdc-button,
 .mat-mdc-outlined-button,
@@ -76,6 +79,15 @@ div:has(> .mat-mdc-button-disabled)
     min-width: var(--imr-control-height)
     height: var(--imr-control-height)
     padding: 0
+    display: inline-flex
+    align-items: center
+    justify-content: center
+    text-align: center
+
+    .mat-icon,
+    mat-icon
+        margin: 0
+        flex-shrink: 0
 
 .mat-mdc-button.mat-primary,
 .mat-mdc-unelevated-button.mat-primary,
@@ -253,7 +265,7 @@ div:has(> .mat-mdc-button-disabled)
     flex-direction: column
     gap: .25rem
 
-.table-toolbar
+.imr-table-toolbar
     display: flex
     align-items: center
     justify-content: space-between
@@ -267,7 +279,7 @@ div:has(> .mat-mdc-button-disabled)
         margin: 0
 
 @media only screen and (max-width: 700px)
-    .table-toolbar
+    .imr-table-toolbar
         flex-direction: column
         align-items: stretch
 

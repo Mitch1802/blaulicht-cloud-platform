@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, ElementRef, HostListener, OnInit, ViewChild, inject } from "@angular/core";
+import { Component, HostListener, OnInit, ViewChild, inject } from "@angular/core";
 import {
   FormBuilder,
   FormControl,
@@ -32,6 +32,7 @@ import {
   ImrPageLayoutComponent,
   ImrSectionComponent,
 } from "../imr-ui-library";
+import { ImrUploadFieldComponent } from '../imr-ui-library/imr-upload-field/imr-upload-field.component';
 import { DateInputMaskDirective } from '../_directive/date-input-mask.directive';
 
 type RaumEditFG = FormGroup<{
@@ -60,6 +61,7 @@ type ItemDraftFG = FormGroup<{
     ImrPageLayoutComponent,
     ImrSectionComponent,
     ImrCardComponent,
+    ImrUploadFieldComponent,
     MatButtonModule,
     MatCardModule,
     MatExpansionModule,
@@ -131,8 +133,8 @@ export class FahrzeugComponent implements OnInit {
 
   @ViewChild(MatPaginator) paginator?: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
-  @ViewChild("fahrzeugFotoUpload") fahrzeugFotoRef?: ElementRef<HTMLInputElement>;
-  @ViewChild("newRaumFotoUpload") neuerRaumFotoRef?: ElementRef<HTMLInputElement>;
+  @ViewChild("fahrzeugFotoUpload") fahrzeugFotoRef?: ImrUploadFieldComponent;
+  @ViewChild("newRaumFotoUpload") neuerRaumFotoRef?: ImrUploadFieldComponent;
 
   ngOnInit(): void {
     sessionStorage.setItem("PageNumber", "2");
@@ -381,17 +383,13 @@ export class FahrzeugComponent implements OnInit {
   private resetFahrzeugFotoAuswahl(): void {
     this.fahrzeugFotoDatei = null;
     this.fahrzeugFotoName = "";
-    if (this.fahrzeugFotoRef?.nativeElement) {
-      this.fahrzeugFotoRef.nativeElement.value = "";
-    }
+    this.fahrzeugFotoRef?.clear();
   }
 
   private resetNeuerRaumFotoAuswahl(): void {
     this.neuerRaumFotoDatei = null;
     this.neuerRaumFotoName = "";
-    if (this.neuerRaumFotoRef?.nativeElement) {
-      this.neuerRaumFotoRef.nativeElement.value = "";
-    }
+    this.neuerRaumFotoRef?.clear();
   }
 
   onFahrzeugFotoSelected(event: Event): void {

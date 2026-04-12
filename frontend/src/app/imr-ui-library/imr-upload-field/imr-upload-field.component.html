@@ -1,0 +1,27 @@
+<div class="upload-row">
+  @if (label) {
+    <label class="upload-label" [for]="resolvedInputId">{{ label }}</label>
+  }
+  <input
+    #fileInput
+    [id]="resolvedInputId"
+    class="file-input-hidden"
+    type="file"
+    [attr.accept]="accept || null"
+    [multiple]="multiple"
+    (change)="fileChange.emit($event)"
+  />
+  <button
+    mat-flat-button
+    type="button"
+    [color]="color"
+    class="upload-button"
+    (click)="openPicker()"
+  >
+    {{ buttonText }}
+  </button>
+  @if (fileName) {
+    <span class="file-name">{{ fileName }}</span>
+  }
+  <ng-content></ng-content>
+</div>

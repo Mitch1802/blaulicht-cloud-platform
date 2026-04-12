@@ -1,9 +1,9 @@
-﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
+<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <imr-page-layout [title]="title" class="fmd-page">
   <imr-section [title]="'Atemschutz Verwaltung'">
     @if (hasTable(activeTabIndex)) {
-    <div class="table-toolbar">
+    <div class="imr-table-toolbar">
       <mat-form-field class="filter-field" appearance="outline">
         <mat-label>Filter</mat-label>
         <input
@@ -108,7 +108,7 @@
             </button>
           </div>
 
-          <section class="imr-grid imr-form-grid">
+          <section class="imr-grid">
             <div class="imr-col-12 imr-col-lg-8 mb-3">
               <mat-form-field class="imr-full-width">
                 <mat-label>Mitglied auswählen</mat-label>
@@ -244,14 +244,14 @@
             <th mat-header-cell *matHeaderCellDef>Aktionen</th>
             <td mat-cell *matCellDef="let element" class="imr-action-cell">
               <button mat-flat-button
-                class="imr-action-btn"
+                
                 color="primary"
                 (click)="auswahlBearbeiten(element)"
               >
                 <mat-icon class="m-0">edit</mat-icon>
               </button>
               <button mat-flat-button
-                class="imr-action-btn"
+                
                 color="primary"
                 (click)="printChecklist(element)"
               >
@@ -504,6 +504,7 @@
     }
     </imr-section>
 </imr-page-layout>
+
 
 
 

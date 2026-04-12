@@ -16,6 +16,7 @@ import {
   ImrPageLayoutComponent,
   ImrSectionComponent,
 } from '../imr-ui-library';
+import { ImrUploadFieldComponent } from '../imr-ui-library/imr-upload-field/imr-upload-field.component';
 import { ApiHttpService } from '../_service/api-http.service';
 import { AuthSessionService } from '../_service/auth-session.service';
 import { CollectionUtilsService } from '../_service/collection-utils.service';
@@ -33,6 +34,7 @@ import { DateInputMaskDirective } from '../_directive/date-input-mask.directive'
     ImrHeaderComponent,
     ImrPageLayoutComponent,
     ImrSectionComponent,
+    ImrUploadFieldComponent,
     MatButtonModule,
     MatFormFieldModule,
     MatIconModule,

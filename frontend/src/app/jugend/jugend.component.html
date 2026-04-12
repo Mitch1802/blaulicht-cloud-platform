@@ -1,4 +1,4 @@
-﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
+<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <imr-page-layout [title]="title" class="jugend-page">
   <mat-tab-group (selectedIndexChange)="onTabChange($event)">
@@ -151,7 +151,7 @@
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef>Aktionen</th>
               <td mat-cell *matCellDef="let element" class="imr-action-cell">
-                <button mat-flat-button class="imr-action-btn" color="primary" (click)="viewMitglied(element)">
+                <button mat-flat-button  color="primary" (click)="viewMitglied(element)">
                   <mat-icon class="m-0">visibility</mat-icon>
                 </button>
               </td>
@@ -181,7 +181,7 @@
             <button mat-flat-button color="primary" type="button" (click)="eventFormAbbrechen()">Abbrechen</button>
           </div>
 
-          <section class="imr-grid imr-form-grid">
+          <section class="imr-grid">
             <div class="imr-col-12 imr-col-lg-6">
               <mat-form-field class="imr-full-width">
                 <mat-label>Datum</mat-label>
@@ -294,7 +294,7 @@
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef>Aktionen</th>
               <td mat-cell *matCellDef="let element" class="imr-action-cell">
-                <button mat-flat-button class="imr-action-btn" color="primary" (click)="editEvent(element)">
+                <button mat-flat-button  color="primary" (click)="editEvent(element)">
                   <mat-icon class="m-0">edit</mat-icon>
                 </button>
               </td>
@@ -309,6 +309,7 @@
 
   </mat-tab-group>
 </imr-page-layout>
+
 
 
 

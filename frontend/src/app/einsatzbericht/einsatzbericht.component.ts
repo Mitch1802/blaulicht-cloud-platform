@@ -8,6 +8,7 @@ import {
   ImrPageLayoutComponent,
   ImrSectionComponent,
 } from '../imr-ui-library';
+import { ImrUploadFieldComponent } from '../imr-ui-library/imr-upload-field/imr-upload-field.component';
 import { ApiHttpService } from 'src/app/_service/api-http.service';
 import { AuthSessionService } from 'src/app/_service/auth-session.service';
 import { CollectionUtilsService } from 'src/app/_service/collection-utils.service';
@@ -130,6 +131,7 @@ type SaveEinsatzberichtResponse = {
     ImrHeaderComponent,
     ImrPageLayoutComponent,
     ImrSectionComponent,
+    ImrUploadFieldComponent,
     MatButtonModule,
     MatChipsModule,
     MatFormFieldModule,

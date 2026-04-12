@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 // imr-catalog.sass - IMR UI catalog, design tokens and component styles
 //
 // Central styling source for the IMR UI library.
@@ -137,33 +137,15 @@ h1
 // 3. IMR component styles for imr-* hosts and wrapper classes
 // ------------------------------------------------------------------------------
 
-// -- imr-form -----------------------------------------------------------------
-.imr-form
-    margin-top: .2rem
-
-.imr-form-grid
-    margin: 0
-    padding: 1rem
-    border: 1px solid rgba(theme.$imr-border, .82)
-    border-radius: 0
-    background: #fff
-
-.imr-two-col-md
-    grid-column: span 12
-
 .imr-full-width
     width: 100%
 
 @media only screen and (min-width: 768px)
-    .imr-two-col-md
-        grid-column: span 6
-
-    .imr-two-col-md.mb-3,
-    .imr-form-grid .imr-col-lg-12.mb-3
+    .imr-grid .imr-col-lg-12.mb-3
         margin-bottom: .6rem !important
 
 @media only screen and (max-width: 700px)
-    .imr-form-grid
+    .imr-grid
         padding: .75rem
 
 .imr-top-actions
@@ -197,7 +179,7 @@ h1
     > .mat-mdc-paginator
         margin-top: 0 !important
 
-.table-toolbar
+.imr-table-toolbar
     display: flex
     align-items: center
     justify-content: space-between
@@ -209,15 +191,15 @@ h1
     > mat-form-field
         width: min(360px, 100%)
 
-.table-actions-head,
+.imr-table-actions-head,
 .mat-column-actions
     width: 8.6rem
     min-width: 8.6rem
 
-.table-empty-cell
+.imr-table-empty-cell
     padding: 1rem .5rem !important
 
-.table-empty-state
+.imr-table-empty-state
     display: grid
     justify-items: center
     gap: .22rem
@@ -231,17 +213,17 @@ h1
         margin-top: .6rem
         padding: .75rem .65rem
 
-.table-empty-icon
+.imr-table-empty-icon
     width: 1.25rem
     height: 1.25rem
     font-size: 1.25rem
     color: rgba(theme.$imr-primary, .75)
 
-.table-empty-title
+.imr-table-empty-title
     font-weight: 700
     color: rgba(theme.$imr-primary, .9)
 
-.table-empty-copy
+.imr-table-empty-copy
     font-size: .84rem
     color: rgba(theme.$imr-text-muted, .95)
 
@@ -285,7 +267,7 @@ td.imr-action-cell
     padding: 0
 
 @media only screen and (max-width: 700px)
-    .table-toolbar
+    .imr-table-toolbar
         flex-direction: column
         align-items: stretch
 
@@ -299,7 +281,7 @@ td.imr-action-cell
     .mat-mdc-cell
         font-size: .86rem
 
-    .table-empty-cell
+    .imr-table-empty-cell
         padding: .8rem .3rem !important
 
     td.imr-action-cell
@@ -351,14 +333,124 @@ td.imr-action-cell
         &:last-child .mat-mdc-cell
             border-bottom: 0
 
+// -- upload / preview helpers -----------------------------------------------
+.upload-row
+    display: flex
+    align-items: center
+    gap: .6rem
+    flex-wrap: wrap
+
+.upload-label
+    font-weight: 600
+    color: theme.$imr-primary
+
+.file-input-hidden
+    position: absolute
+    width: 1px
+    height: 1px
+    padding: 0
+    margin: -1px
+    overflow: hidden
+    clip: rect(0, 0, 0, 0)
+    border: 0
+
+.file-name
+    font-size: .88rem
+    opacity: .85
+
+.preview-grid
+    display: grid
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr))
+    gap: .6rem
+    margin-top: .6rem
+
+.preview-card
+    border: 1px solid rgba(theme.$imr-border, .95)
+    border-radius: 0
+    background: rgba(theme.$imr-surface, .94)
+    overflow: hidden
+    box-shadow: none
+
+.preview-image
+    width: 100%
+    height: 120px
+    object-fit: cover
+    display: block
+
+.preview-file
+    height: 120px
+    display: flex
+    align-items: center
+    justify-content: center
+    font-weight: 600
+    color: theme.$imr-primary
+
+.preview-meta
+    display: flex
+    align-items: center
+    justify-content: flex-end
+    gap: .2rem
+    padding: .45rem
+    border-top: 1px solid rgba(theme.$imr-border, .72)
+
+    a,
+    span
+        font-size: .8rem
+        overflow: hidden
+        text-overflow: ellipsis
+        white-space: nowrap
+
+.existing-previews
+    margin-top: .4rem
+
+.photo-preview,
+.room-photo-preview
+    display: block
+    width: 100%
+    max-width: 340px
+    max-height: 200px
+    object-fit: cover
+    border-radius: 0
+    border: 1px solid rgba(theme.$imr-border, .95)
+    background: rgba(theme.$imr-surface, .94)
+
+.image-preview-tile
+    display: inline-grid
+    align-items: center
+    width: 176px
+    height: 112px
+    padding: .25rem
+    border: 1px solid rgba(theme.$imr-border, .95)
+    background: rgba(theme.$imr-surface, .94)
+    overflow: hidden
+    box-shadow: none
+    cursor: pointer
+    transition: border-color .16s ease, background-color .16s ease
+
+    &:hover
+        border-color: rgba(theme.$imr-primary, .38)
+
+    img
+        width: 100%
+        height: 100%
+        object-fit: cover
+        display: block
+
+.upload-button[mat-flat-button],
+.imr-action-btn
+    display: inline-flex
+    align-items: center
+    justify-content: center
+    gap: .35rem
+
+    .mat-icon,
+    mat-icon
+        margin: 0
+        flex-shrink: 0
+
 .upload-button[mat-flat-button]
     min-height: var(--imr-control-height)
     height: var(--imr-control-height)
-
-form > button.imr-delete-btn[mat-flat-button],
-mat-card-content > button.imr-delete-btn[mat-flat-button],
-mat-card-content > button.imr-delete-btn[mat-flat-button]
-    margin-top: .8rem
 
 // -- imr-transaction (Buchungs-Dialog) ----------------------------------------
 .imr-transaction-backdrop
@@ -435,7 +527,7 @@ mat-card-content > button.imr-delete-btn[mat-flat-button]
 .atemschutz-geraete-page,
 .atemschutz-masken-page,
 .atemschutz-messgeraete-page
-    .imr-form-grid
+    .imr-grid
         > [class*='imr-col-']
             margin-bottom: .55rem !important
 
@@ -473,7 +565,7 @@ mat-card-content > button.imr-delete-btn[mat-flat-button]
     .atemschutz-geraete-page,
     .atemschutz-masken-page,
     .atemschutz-messgeraete-page
-        .imr-form-grid
+        .imr-grid
             > div > mat-checkbox
                 padding: .45rem .6rem
 
