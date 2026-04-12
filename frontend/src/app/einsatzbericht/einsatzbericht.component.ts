@@ -317,22 +317,8 @@ export class EinsatzberichtComponent implements OnInit {
   get filteredFahrzeugOptionen(): FahrzeugOption[] {
     const search = this.fahrzeugSuche.value.trim().toLowerCase();
     const selectedIds = this.formBericht.controls.fahrzeuge.value;
-    const idToFahrzeug = new Map(this.fahrzeugOptionen.map((f) => [f.id, f]));
-
-    // Ausgewählte Fahrzeuge in der Reihenfolge des selectedIds arrays
-    const selectedVehicles = selectedIds
-      .map((id) => idToFahrzeug.get(id))
-      .filter((f): f is FahrzeugOption => f !== undefined)
-      .filter((fahrzeug) => {
-        if (!search) {
-          return true;
-        }
-        return fahrzeug.label.toLowerCase().includes(search);
-      });
-
-    // Nicht ausgewählte Fahrzeuge
     const selectedSet = new Set(selectedIds);
-    const unselectedVehicles = this.fahrzeugOptionen
+    return this.fahrzeugOptionen
       .filter((fahrzeug) => !selectedSet.has(fahrzeug.id))
       .filter((fahrzeug) => {
         if (!search) {
@@ -340,8 +326,6 @@ export class EinsatzberichtComponent implements OnInit {
         }
         return fahrzeug.label.toLowerCase().includes(search);
       });
-
-    return [...selectedVehicles, ...unselectedVehicles];
   }
 
   get einsatzleiterOptionen(): string[] {
