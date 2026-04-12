@@ -85,9 +85,9 @@
         </div>
 
         @if (termineCount > 0) {
-          <div class="termine-grid">
+          <div class="termine-grid imr-grid">
             @for (event of termine; track event) {
-              <article class="termin-item">
+              <article class="termin-item imr-col-12">
                 <p class="termin-date">{{ event.start }}</p>
                 <p class="termin-title">{{ event.summary }}</p>
               </article>
@@ -100,6 +100,7 @@
     </div>
   </div>
 </imr-page-layout>
+
 
 
 

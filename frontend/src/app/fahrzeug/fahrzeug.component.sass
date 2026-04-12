@@ -15,12 +15,7 @@
         height: 100%
 
     .imr-form-grid
-        display: grid
-        grid-template-columns: repeat(2, minmax(0, 1fr))
         gap: 12px
-
-        .imr-full-width
-            grid-column: 1 / -1
 
     .actions-row
         display: flex
@@ -97,8 +92,6 @@
         opacity: .8
 
     .inventar-stats
-        display: grid
-        grid-template-columns: repeat(2, minmax(95px, 1fr))
         gap: 10px
 
     .stat-card
@@ -274,14 +267,10 @@
         opacity: .85
 
     .raum-create-form
-        display: grid
-        grid-template-columns: minmax(220px, 1fr) 170px minmax(220px, 1fr) auto
         gap: 12px
         align-items: center
 
     .raum-edit-form
-        display: grid
-        grid-template-columns: minmax(220px, 1fr) 170px minmax(240px, 1fr)
         gap: 12px
         align-items: start
         padding: .7rem
@@ -294,7 +283,6 @@
         gap: 8px
 
     .raum-actions
-        grid-column: 1 / -1
         display: flex
         gap: 10px
         flex-wrap: wrap
@@ -309,60 +297,19 @@
 
     .item-edit-form,
     .item-add-form
-        display: grid
-        grid-template-columns: repeat(12, minmax(0, 1fr))
         gap: 12px
         align-items: start
         padding: .7rem
         border-radius: 0
         border: 1px solid rgba(theme.$imr-border, .9)
 
-    .item-field-name
-        grid-column: span 8
-
-    .item-field-menge
-        grid-column: span 2
-
-    .item-field-einheit
-        grid-column: span 2
-
-    .item-field-wartung-zuletzt
-        grid-column: span 6
-
-    .item-field-wartung-naechstes
-        grid-column: span 6
-
-    .item-field-reihenfolge
-        grid-column: span 2
-
-    .item-field-notiz
-        grid-column: span 10
-
     .item-actions
-        grid-column: 1 / -1
         display: flex
         flex-wrap: wrap
         gap: 10px
 
     .empty-hint
         opacity: .75
-
-@media (max-width: 1320px)
-    .fahrzeug-page
-        .item-edit-form,
-        .item-add-form
-            grid-template-columns: repeat(6, minmax(0, 1fr))
-
-        .item-field-name,
-        .item-field-wartung-zuletzt,
-        .item-field-wartung-naechstes,
-        .item-field-notiz
-            grid-column: span 6
-
-        .item-field-menge,
-        .item-field-einheit,
-        .item-field-reihenfolge
-            grid-column: span 2
 
 @media (max-width: 1120px)
     .fahrzeug-page
@@ -371,35 +318,10 @@
             align-items: stretch
 
         .inventar-stats
-            grid-template-columns: repeat(2, minmax(120px, 1fr))
-
-        .raum-create-form
-            grid-template-columns: 1fr 170px
-
-        .raum-edit-form
-            grid-template-columns: 1fr 170px
-
-        .room-photo-wrap
-            grid-column: 1 / -1
+            gap: 12px
 
 @media (max-width: 992px)
     .fahrzeug-page
-        .imr-form-grid,
-        .raum-create-form,
-        .raum-edit-form,
-        .item-edit-form,
-        .item-add-form
-            grid-template-columns: 1fr
-
-        .item-field-name,
-        .item-field-menge,
-        .item-field-einheit,
-        .item-field-wartung-zuletzt,
-        .item-field-wartung-naechstes,
-        .item-field-reihenfolge,
-        .item-field-notiz
-            grid-column: 1 / -1
-
         .photo-preview,
         .room-photo-preview
             max-width: 100%

@@ -51,8 +51,8 @@
         <section class="template-block">
           <h3 class="block-title">Vorlagenverwaltung</h3>
 
-          <section class="app-grid imr-form-grid template-grid">
-              <div class="app-col-12 app-col-lg-6 mb-3">
+          <section class="imr-grid imr-form-grid template-grid">
+              <div class="imr-col-12 imr-col-lg-6 mb-3">
                 <mat-form-field class="imr-full-width" subscriptSizing="dynamic">
                   <mat-label>Vorlage auswählen</mat-label>
                   <mat-select formControlName="template_id">
@@ -63,7 +63,7 @@
                   </mat-select>
                 </mat-form-field>
               </div>
-              <div class="app-col-12 app-col-lg-6 mb-3 template-actions">
+              <div class="imr-col-12 imr-col-lg-6 mb-3 template-actions">
                 <button mat-flat-button
                   color="primary"
                   type="button"
@@ -81,13 +81,13 @@
                   Vorlage löschen
                 </button>
               </div>
-              <div class="app-col-12 app-col-lg-6 mb-3">
+              <div class="imr-col-12 imr-col-lg-6 mb-3">
                 <mat-form-field class="imr-full-width" subscriptSizing="dynamic">
                   <mat-label>Vorlagenname</mat-label>
                   <input matInput type="text" formControlName="template_name" placeholder="z. B. Geburtstagswünsche" />
                 </mat-form-field>
               </div>
-              <div class="app-col-12 app-col-lg-6 mb-3 template-actions">
+              <div class="imr-col-12 imr-col-lg-6 mb-3 template-actions">
                 <button mat-flat-button
                   color="accent"
                   type="button"
@@ -98,7 +98,7 @@
                 </button>
               </div>
             @if (templateArray.length === 0) {
-              <div class="app-col-12 template-hint">Noch keine Vorlagen vorhanden.</div>
+              <div class="imr-col-12 template-hint">Noch keine Vorlagen vorhanden.</div>
             }
           </section>
         </section>
@@ -106,15 +106,15 @@
         <section class="news-block">
           <h3 class="block-title">Newsbeitrag</h3>
 
-          <section class="app-grid imr-form-grid news-grid">
-              <div class="app-col-12 app-col-lg-6 mb-3">
+          <section class="imr-grid imr-form-grid news-grid">
+              <div class="imr-col-12 imr-col-lg-6 mb-3">
                 <mat-form-field class="imr-full-width">
                   <mat-label>Titel</mat-label>
                   <input matInput type="text" formControlName="title">
                   <mat-hint>* Pflichtfeld</mat-hint>
                 </mat-form-field>
               </div>
-              <div class="app-col-12 app-col-lg-6 mb-3">
+              <div class="imr-col-12 imr-col-lg-6 mb-3">
                 <mat-form-field class="imr-full-width">
                   <mat-label>Typ</mat-label>
                   <mat-select formControlName="typ">
@@ -123,7 +123,7 @@
                   </mat-select>
                 </mat-form-field>
               </div>
-              <div class="app-col-12 app-col-lg-12 mb-3">
+              <div class="imr-col-12 imr-col-lg-12 mb-3">
                 <mat-form-field appearance="outline" class="imr-full-width" subscriptSizing="dynamic">
                   <mat-label>Text</mat-label>
                   <textarea
@@ -135,16 +135,16 @@
                 </mat-form-field>
               </div>
 
-            <div class="app-col-12 mb-3">
-              <div class="upload-stage" [class.has-preview]="fileFound">
-                <div class="upload-stage-copy">
+            <div class="imr-col-12 mb-3">
+              <div class="upload-stage imr-grid" [class.has-preview]="fileFound">
+                <div class="upload-stage-copy imr-col-12 imr-col-lg-7">
                   <span class="upload-stage-label">Titelbild</span>
                   <span class="upload-stage-file" [class.is-placeholder]="!fileFound">
                     {{ fileFound ? fileName : 'Noch kein Bild ausgewählt.' }}
                   </span>
                 </div>
 
-                <div class="upload-stage-actions">
+                <div class="upload-stage-actions imr-col-12 imr-col-lg-5">
                   <button mat-flat-button type="button" color="primary" class="upload-button" (click)="fotoUpload.click()">{{btnText}}</button>
                   <input hidden #fotoUpload type="file" id="fotoUpload" accept=".jpg,.jpeg,.png" (change)="onFotoSelected($event)" />
                   @if (fileFound === true) {
@@ -153,7 +153,7 @@
                 </div>
 
                 @if (fileFound === true) {
-                  <button type="button" class="image-preview-tile" (click)="openModal()" aria-label="Bildvorschau öffnen">
+                  <button type="button" class="image-preview-tile imr-col-12 imr-col-lg-5" (click)="openModal()" aria-label="Bildvorschau öffnen">
                     <img [src]="filePfad" [alt]="fileName || 'News Bildvorschau'" />
                   </button>
                 }
@@ -282,6 +282,7 @@
     <div id="caption">{{fileName}}</div>
   </div>
 </div>
+
 
 
 

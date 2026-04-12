@@ -237,6 +237,7 @@
           <mat-expansion-panel
             class="form-section"
             [class.has-error]="section1HasError"
+            hideToggle
           >
             <mat-expansion-panel-header>
               <mat-panel-title>
@@ -248,118 +249,140 @@
             </mat-expansion-panel-header>
 
             <div class="form-section-body">
-              <section class="grid two-col">
-                <mat-form-field class="imr-full-width">
-                  <mat-label>Status</mat-label>
-                  <mat-select formControlName="status">
-                    @for (status of statusOptionen; track status.key) {
-                      <mat-option [value]="status.key">{{
-                        status.label
-                      }}</mat-option>
-                    }
-                  </mat-select>
-                </mat-form-field>
-
-                @if (!canManageStatus) {
-                  <p class="selection-description">
-                    Status kann nur von Verwaltung geaendert werden.
-                  </p>
-                }
-
-                <div class="prefill-row">
-                  <button
-                    mat-flat-button
-                    type="button"
-                    color="accent"
-                    [disabled]="!canEditBerichte"
-                    (click)="uebernehmeLetztenEinsatz()"
-                  >
-                    Daten BlaulichtSMS übernehmen
-                  </button>
-                </div>
-              </section>
-
-              <section class="grid two-col">
-                <div class="searchable-select">
+              <section class="imr-grid mb-3">
+                <div class="imr-col-12 imr-col-md-6">
                   <mat-form-field class="imr-full-width">
-                    <mat-label>Einsatzleiter</mat-label>
-                    <input
-                      matInput
-                      [formControl]="einsatzleiterSuche"
-                      [matAutocomplete]="einsatzleiterAuto"
-                      [errorStateMatcher]="einsatzleiterErrorMatcher"
-                      placeholder="Name oder StbNr"
-                    />
-                    <mat-autocomplete
-                      #einsatzleiterAuto="matAutocomplete"
-                      (optionSelected)="onEinsatzleiterSelected($event)"
-                    >
-                      @for (
-                        einsatzleiter of filteredEinsatzleiterOptionen;
-                        track einsatzleiter
-                      ) {
-                        <mat-option [value]="einsatzleiter">{{
-                          einsatzleiter
+                    <mat-label>Status</mat-label>
+                    <mat-select formControlName="status">
+                      @for (status of statusOptionen; track status.key) {
+                        <mat-option [value]="status.key">{{
+                          status.label
                         }}</mat-option>
                       }
-                      @if (filteredEinsatzleiterOptionen.length === 0) {
-                        <mat-option disabled
-                          >Kein Einsatzleiter gefunden.</mat-option
-                        >
-                      }
-                    </mat-autocomplete>
+                    </mat-select>
                   </mat-form-field>
                 </div>
 
-                <mat-form-field class="imr-full-width">
-                  <mat-label>Einsatzart</mat-label>
-                  <mat-select formControlName="einsatzart">
-                    @for (art of einsatzarten; track art) {
-                      <mat-option [value]="art">{{ art }}</mat-option>
-                    }
-                  </mat-select>
-                </mat-form-field>
+                @if (!canManageStatus) {
+                  <div class="imr-col-12 imr-col-md-6">
+                    <p class="selection-description">
+                      Status kann nur von Verwaltung geaendert werden.
+                    </p>
+                  </div>
+                }
 
-                <mat-form-field class="imr-full-width">
-                  <mat-label>Alarmstichwort</mat-label>
-                  <input matInput formControlName="alarmstichwort" />
-                </mat-form-field>
-
-                <mat-form-field class="imr-full-width">
-                  <mat-label>Einsatzadresse</mat-label>
-                  <input matInput formControlName="einsatzadresse" />
-                </mat-form-field>
-
-                <mat-form-field class="imr-full-width">
-                  <mat-label>Alarmierende Stelle</mat-label>
-                  <mat-select formControlName="alarmierendeStelle">
-                    @for (stelle of alarmierendeStelleOptionen; track stelle) {
-                      <mat-option [value]="stelle">{{ stelle }}</mat-option>
-                    }
-                  </mat-select>
-                </mat-form-field>
+                <div class="imr-col-12 imr-col-md-6">
+                  <div class="prefill-row">
+                    <button
+                      mat-flat-button
+                      type="button"
+                      color="accent"
+                      [disabled]="!canEditBerichte"
+                      (click)="uebernehmeLetztenEinsatz()"
+                    >
+                      Daten BlaulichtSMS übernehmen
+                    </button>
+                  </div>
+                </div>
               </section>
 
-              <section class="grid three-col">
-                <mat-form-field class="imr-full-width">
-                  <mat-label>Einsatz Datum</mat-label>
-                  <input
-                    matInput
-                    type="date"
-                    formControlName="einsatzDatum"
-                    appDateInputMask="iso"
-                  />
-                </mat-form-field>
+              <section class="imr-grid mb-3">
+                <div class="imr-col-12 imr-col-md-6">
+                  <div class="searchable-select">
+                    <mat-form-field class="imr-full-width">
+                      <mat-label>Einsatzleiter</mat-label>
+                      <input
+                        matInput
+                        [formControl]="einsatzleiterSuche"
+                        [matAutocomplete]="einsatzleiterAuto"
+                        [errorStateMatcher]="einsatzleiterErrorMatcher"
+                        placeholder="Name oder StbNr"
+                      />
+                      <mat-autocomplete
+                        #einsatzleiterAuto="matAutocomplete"
+                        (optionSelected)="onEinsatzleiterSelected($event)"
+                      >
+                        @for (
+                          einsatzleiter of filteredEinsatzleiterOptionen;
+                          track einsatzleiter
+                        ) {
+                          <mat-option [value]="einsatzleiter">{{
+                            einsatzleiter
+                          }}</mat-option>
+                        }
+                        @if (filteredEinsatzleiterOptionen.length === 0) {
+                          <mat-option disabled
+                            >Kein Einsatzleiter gefunden.</mat-option
+                          >
+                        }
+                      </mat-autocomplete>
+                    </mat-form-field>
+                  </div>
+                </div>
 
-                <mat-form-field class="imr-full-width">
-                  <mat-label>Ausgerückt</mat-label>
-                  <input matInput type="time" formControlName="ausgerueckt" />
-                </mat-form-field>
+                <div class="imr-col-12 imr-col-md-6">
+                  <mat-form-field class="imr-full-width">
+                    <mat-label>Einsatzart</mat-label>
+                    <mat-select formControlName="einsatzart">
+                      @for (art of einsatzarten; track art) {
+                        <mat-option [value]="art">{{ art }}</mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+                </div>
 
-                <mat-form-field class="imr-full-width">
-                  <mat-label>Eingerückt</mat-label>
-                  <input matInput type="time" formControlName="eingerueckt" />
-                </mat-form-field>
+                <div class="imr-col-12 imr-col-md-6">
+                  <mat-form-field class="imr-full-width">
+                    <mat-label>Alarmstichwort</mat-label>
+                    <input matInput formControlName="alarmstichwort" />
+                  </mat-form-field>
+                </div>
+
+                <div class="imr-col-12 imr-col-md-6">
+                  <mat-form-field class="imr-full-width">
+                    <mat-label>Einsatzadresse</mat-label>
+                    <input matInput formControlName="einsatzadresse" />
+                  </mat-form-field>
+                </div>
+
+                <div class="imr-col-12 imr-col-md-6">
+                  <mat-form-field class="imr-full-width">
+                    <mat-label>Alarmierende Stelle</mat-label>
+                    <mat-select formControlName="alarmierendeStelle">
+                      @for (stelle of alarmierendeStelleOptionen; track stelle) {
+                        <mat-option [value]="stelle">{{ stelle }}</mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+              </section>
+
+              <section class="imr-grid mb-3">
+                <div class="imr-col-12 imr-col-lg-4">
+                  <mat-form-field class="imr-full-width">
+                    <mat-label>Einsatz Datum</mat-label>
+                    <input
+                      matInput
+                      type="date"
+                      formControlName="einsatzDatum"
+                      appDateInputMask="iso"
+                    />
+                  </mat-form-field>
+                </div>
+
+                <div class="imr-col-12 imr-col-lg-4">
+                  <mat-form-field class="imr-full-width">
+                    <mat-label>Ausgerückt</mat-label>
+                    <input matInput type="time" formControlName="ausgerueckt" />
+                  </mat-form-field>
+                </div>
+
+                <div class="imr-col-12 imr-col-lg-4">
+                  <mat-form-field class="imr-full-width">
+                    <mat-label>Eingerückt</mat-label>
+                    <input matInput type="time" formControlName="eingerueckt" />
+                  </mat-form-field>
+                </div>
               </section>
             </div>
           </mat-expansion-panel>
@@ -367,6 +390,7 @@
           <mat-expansion-panel
             class="form-section"
             [class.has-error]="section2HasError"
+            hideToggle
           >
             <mat-expansion-panel-header>
               <mat-panel-title>
@@ -378,37 +402,41 @@
             </mat-expansion-panel-header>
 
             <div class="form-section-body">
-              <section class="grid one-col">
-                <mat-form-field
-                  appearance="outline"
-                  class="imr-full-width taetigkeit-textarea-field"
-                  subscriptSizing="dynamic"
-                >
-                  <mat-label>Lage beim Eintreffen</mat-label>
-                  <textarea
-                    matInput
-                    rows="3"
-                    formControlName="lageBeimEintreffen"
-                  ></textarea>
-                </mat-form-field>
+              <section class="imr-grid mb-3">
+                <div class="imr-col-12">
+                  <mat-form-field
+                    appearance="outline"
+                    class="imr-full-width taetigkeit-textarea-field"
+                    subscriptSizing="dynamic"
+                  >
+                    <mat-label>Lage beim Eintreffen</mat-label>
+                    <textarea
+                      matInput
+                      rows="3"
+                      formControlName="lageBeimEintreffen"
+                    ></textarea>
+                  </mat-form-field>
+                </div>
 
-                <mat-form-field
-                  appearance="outline"
-                  class="imr-full-width taetigkeit-textarea-field"
-                  subscriptSizing="dynamic"
-                >
-                  <mat-label>Gesetzte Maßnahmen</mat-label>
-                  <textarea
-                    matInput
-                    rows="3"
-                    formControlName="gesetzteMassnahmen"
-                  ></textarea>
-                </mat-form-field>
+                <div class="imr-col-12">
+                  <mat-form-field
+                    appearance="outline"
+                    class="imr-full-width taetigkeit-textarea-field"
+                    subscriptSizing="dynamic"
+                  >
+                    <mat-label>Gesetzte Maßnahmen</mat-label>
+                    <textarea
+                      matInput
+                      rows="3"
+                      formControlName="gesetzteMassnahmen"
+                    ></textarea>
+                  </mat-form-field>
+                </div>
               </section>
             </div>
           </mat-expansion-panel>
 
-          <mat-expansion-panel class="form-section">
+          <mat-expansion-panel class="form-section" hideToggle>
             <mat-expansion-panel-header>
               <mat-panel-title>
                 <span class="form-section-title">3. Einsatzspezifisch</span>
@@ -416,11 +444,11 @@
             </mat-expansion-panel-header>
 
             <div class="form-section-body">
-              <section class="grid two-col">
-                <div class="conditional-block einsatzdetails-block">
+              <section class="imr-grid mb-3">
+                <div class="imr-col-12 imr-col-md-6 conditional-block einsatzdetails-block">
                   @if (isBrand) {
-                    <section class="grid two-col einsatzdetails-grid">
-                      <mat-form-field class="imr-full-width">
+                    <section class="imr-grid">
+                      <mat-form-field class="imr-full-width imr-col-12 imr-col-md-6">
                         <mat-label>Brand Kategorie</mat-label>
                         <mat-select formControlName="brandKategorie">
                           @for (
@@ -438,7 +466,7 @@
                           }
                         </mat-select>
                       </mat-form-field>
-                      <mat-form-field class="imr-full-width">
+                      <mat-form-field class="imr-full-width imr-col-12 imr-col-md-6">
                         <mat-label>Brand aus</mat-label>
                         <input
                           matInput
@@ -448,15 +476,17 @@
                       </mat-form-field>
                     </section>
                   } @else if (isTechnisch) {
-                    <section class="grid one-col einsatzdetails-grid">
-                      <mat-form-field class="imr-full-width">
-                        <mat-label>Technische Kategorie</mat-label>
-                        <mat-select formControlName="technischKategorie">
-                          @for (opt of technischOptionen; track opt) {
-                            <mat-option [value]="opt">{{ opt }}</mat-option>
-                          }
-                        </mat-select>
-                      </mat-form-field>
+                    <section class="imr-grid einsatzdetails-grid">
+                      <div class="imr-col-12">
+                        <mat-form-field class="imr-full-width">
+                          <mat-label>Technische Kategorie</mat-label>
+                          <mat-select formControlName="technischKategorie">
+                            @for (opt of technischOptionen; track opt) {
+                              <mat-option [value]="opt">{{ opt }}</mat-option>
+                            }
+                          </mat-select>
+                        </mat-form-field>
+                      </div>
                     </section>
                   } @else {
                     <p class="empty">
@@ -465,33 +495,39 @@
                     </p>
                   }
                   @if (isBMA) {
-                    <section class="grid two-col einsatzdetails-grid">
-                      <mat-form-field class="imr-full-width">
-                        <mat-label>Meldergruppe</mat-label>
-                        <input matInput formControlName="bmaMeldergruppe" />
-                      </mat-form-field>
-                      <mat-form-field class="imr-full-width">
-                        <mat-label>Melder</mat-label>
-                        <input matInput formControlName="bmaMelder" />
-                      </mat-form-field>
-                      <mat-form-field class="imr-full-width">
-                        <mat-label>Fehl- oder Täuschungsalarm</mat-label>
-                        <mat-select formControlName="bmaFehlTauschungsalarm">
-                          @for (
-                            opt of bmaFehlTauschungsalarmOptionen;
-                            track opt
-                          ) {
-                            <mat-option [value]="opt.value">{{
-                              opt.label
-                            }}</mat-option>
-                          }
-                        </mat-select>
-                      </mat-form-field>
+                    <section class="imr-grid einsatzdetails-grid">
+                      <div class="imr-col-12 imr-col-md-6">
+                        <mat-form-field class="imr-full-width">
+                          <mat-label>Meldergruppe</mat-label>
+                          <input matInput formControlName="bmaMeldergruppe" />
+                        </mat-form-field>
+                      </div>
+                      <div class="imr-col-12 imr-col-md-6">
+                        <mat-form-field class="imr-full-width">
+                          <mat-label>Melder</mat-label>
+                          <input matInput formControlName="bmaMelder" />
+                        </mat-form-field>
+                      </div>
+                      <div class="imr-col-12 imr-col-md-6">
+                        <mat-form-field class="imr-full-width">
+                          <mat-label>Fehl- oder Täuschungsalarm</mat-label>
+                          <mat-select formControlName="bmaFehlTauschungsalarm">
+                            @for (
+                              opt of bmaFehlTauschungsalarmOptionen;
+                              track opt
+                            ) {
+                              <mat-option [value]="opt.value">{{
+                                opt.label
+                              }}</mat-option>
+                            }
+                          </mat-select>
+                        </mat-form-field>
+                      </div>
                     </section>
                   }
                 </div>
 
-                <div class="conditional-block einsatzdetails-block">
+                <div class="imr-col-12 imr-col-md-6 conditional-block einsatzdetails-block">
                   <div class="autocomplete-multi">
                     <mat-form-field class="imr-full-width">
                       <mat-label>Mitalarmiert hinzufügen</mat-label>
@@ -537,7 +573,7 @@
             </div>
           </mat-expansion-panel>
 
-          <mat-expansion-panel class="form-section">
+          <mat-expansion-panel class="form-section" hideToggle>
             <mat-expansion-panel-header>
               <mat-panel-title>
                 <span class="form-section-title">4. Dokumentation</span>
@@ -879,7 +915,7 @@
             </div>
           </mat-expansion-panel>
 
-          <mat-expansion-panel class="form-section">
+          <mat-expansion-panel class="form-section" hideToggle>
             <mat-expansion-panel-header>
               <mat-panel-title>
                 <span class="form-section-title"
@@ -889,81 +925,85 @@
             </mat-expansion-panel-header>
 
             <div class="form-section-body">
-              <section class="grid two-col">
-                <div class="autocomplete-multi">
-                  <mat-form-field class="imr-full-width">
-                    <mat-label>Fahrzeug hinzufügen</mat-label>
-                    <input
-                      matInput
-                      [formControl]="fahrzeugSuche"
-                      [matAutocomplete]="fahrzeugAuto"
-                      placeholder="Fahrzeugname"
-                    />
-                    <mat-autocomplete
-                      #fahrzeugAuto="matAutocomplete"
-                      (optionSelected)="onFahrzeugSelected($event)"
-                    >
-                      @for (
-                        fahrzeug of filteredFahrzeugOptionen;
-                        track fahrzeug.id
-                      ) {
-                        <mat-option [value]="fahrzeug.id">{{
-                          fahrzeug.label
-                        }}</mat-option>
-                      }
-                      @if (filteredFahrzeugOptionen.length === 0) {
-                        <mat-option disabled
-                          >Keine Fahrzeuge gefunden.</mat-option
-                        >
-                      }
-                    </mat-autocomplete>
-                  </mat-form-field>
-
-                  <mat-chip-set class="imr-chips">
-                    @for (
-                      fahrzeug of selectedFahrzeugOptionen;
-                      track fahrzeug.id
-                    ) {
-                      <mat-chip
-                        [removable]="true"
-                        (removed)="removeFahrzeug(fahrzeug.id)"
+              <section class="imr-grid mb-3">
+                <div class="imr-col-12 imr-col-md-6">
+                  <div class="autocomplete-multi">
+                    <mat-form-field class="imr-full-width">
+                      <mat-label>Fahrzeug hinzufügen</mat-label>
+                      <input
+                        matInput
+                        [formControl]="fahrzeugSuche"
+                        [matAutocomplete]="fahrzeugAuto"
+                        placeholder="Fahrzeugname"
+                      />
+                      <mat-autocomplete
+                        #fahrzeugAuto="matAutocomplete"
+                        (optionSelected)="onFahrzeugSelected($event)"
                       >
-                        {{ fahrzeug.label }}
-                        <button matChipRemove>
-                          <mat-icon>cancel</mat-icon>
-                        </button>
-                      </mat-chip>
-                    }
-                  </mat-chip-set>
-                </div>
-
-                <div class="autocomplete-multi">
-                  <mat-form-field class="imr-full-width">
-                    <mat-label>Mitglieder</mat-label>
-                    <mat-select formControlName="mitglieder" [multiple]="true">
-                      <mat-select-trigger>
-                        {{ mitgliederAuswahlTriggerText }}
-                        @if (mitgliederAuswahlCounter > 1) {
-                          <span class="selection-counter"
-                            >(+{{ mitgliederAuswahlCounter - 1 }})</span
+                        @for (
+                          fahrzeug of filteredFahrzeugOptionen;
+                          track fahrzeug.id
+                        ) {
+                          <mat-option [value]="fahrzeug.id">{{
+                            fahrzeug.label
+                          }}</mat-option>
+                        }
+                        @if (filteredFahrzeugOptionen.length === 0) {
+                          <mat-option disabled
+                            >Keine Fahrzeuge gefunden.</mat-option
                           >
                         }
-                      </mat-select-trigger>
+                      </mat-autocomplete>
+                    </mat-form-field>
 
+                    <mat-chip-set class="imr-chips">
                       @for (
-                        mitglied of sortedMitgliedOptionen;
-                        track mitglied.id
+                        fahrzeug of selectedFahrzeugOptionen;
+                        track fahrzeug.id
                       ) {
-                        <mat-option [value]="mitglied.id">{{
-                          mitglied.label
-                        }}</mat-option>
+                        <mat-chip
+                          [removable]="true"
+                          (removed)="removeFahrzeug(fahrzeug.id)"
+                        >
+                          {{ fahrzeug.label }}
+                          <button matChipRemove>
+                            <mat-icon>cancel</mat-icon>
+                          </button>
+                        </mat-chip>
                       }
-                    </mat-select>
-                  </mat-form-field>
+                    </mat-chip-set>
+                  </div>
+                </div>
 
-                  <p class="selection-description">
-                    Ausgewählt: {{ mitgliederAuswahlCounter }}
-                  </p>
+                <div class="imr-col-12 imr-col-md-6">
+                  <div class="autocomplete-multi">
+                    <mat-form-field class="imr-full-width">
+                      <mat-label>Mitglieder</mat-label>
+                      <mat-select formControlName="mitglieder" [multiple]="true">
+                        <mat-select-trigger>
+                          {{ mitgliederAuswahlTriggerText }}
+                          @if (mitgliederAuswahlCounter > 1) {
+                            <span class="selection-counter"
+                              >(+{{ mitgliederAuswahlCounter - 1 }})</span
+                            >
+                          }
+                        </mat-select-trigger>
+
+                        @for (
+                          mitglied of sortedMitgliedOptionen;
+                          track mitglied.id
+                        ) {
+                          <mat-option [value]="mitglied.id">{{
+                            mitglied.label
+                          }}</mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
+
+                    <p class="selection-description">
+                      Ausgewählt: {{ mitgliederAuswahlCounter }}
+                    </p>
+                  </div>
                 </div>
               </section>
             </div>
@@ -984,4 +1024,5 @@
     }
   </imr-section>
 </imr-page-layout>
+
 

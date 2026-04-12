@@ -2,10 +2,10 @@
 
 <imr-page-layout [title]="title" pageClass="start-page atemschutz-page">
   <imr-card title="Atemschutz">
-    <div class="module-grid">
+    <div class="module-grid imr-grid">
       @for (item of moduleCards; track item.routerLink) {
         <a
-          class="module-card-link"
+          class="module-card-link imr-col-12 imr-col-md-6 imr-col-lg-3"
           [routerLink]="item.routerLink"
           [attr.aria-label]="'Modul öffnen: ' + item.titel"
         >
@@ -22,6 +22,7 @@
     </div>
   </imr-card>
 </imr-page-layout>
+
 
 
 

@@ -48,21 +48,6 @@
     // margin-top: .2rem
     padding-top: 0
 
-.grid
-    display: grid
-    gap: .75rem
-    margin-bottom: .75rem
-
-.one-col
-    grid-template-columns: 1fr
-
-.two-col
-    grid-template-columns: repeat(2, minmax(0, 1fr))
-    align-items: start
-
-.three-col
-    grid-template-columns: repeat(3, minmax(0, 1fr))
-
 .conditional-block
     border: 1px solid rgba(theme.$imr-border, .65)
     border-radius: 0
@@ -302,8 +287,6 @@
         opacity: .75
 
 @media (max-width: 992px)
-    .two-col,
-    .three-col,
     .prefill-row
         grid-template-columns: 1fr
 
@@ -348,6 +331,7 @@
     .preview-grid
         grid-template-columns: 1fr
 
-    .grid
+    .form-section-body .imr-grid
         gap: .55rem
+
 

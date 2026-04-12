@@ -94,11 +94,11 @@
                 Abbrechen
               </button>
             </div>
-            <div class="app-grid">
+            <div class="imr-grid">
             @if (username === "admin") {
               <input hidden type="text" formControlName="username" />
             } @else {
-                <div class="app-col-12 app-col-lg-4">
+                <div class="imr-col-12 imr-col-lg-4">
                   <mat-form-field class="imr-full-width">
                     <mat-label>Benutzername</mat-label>
                     <input matInput type="text" formControlName="username" />
@@ -106,14 +106,14 @@
                 </div>
             }
 
-              <div class="app-col-12 app-col-lg-4">
+              <div class="imr-col-12 imr-col-lg-4">
                 <mat-form-field class="imr-full-width">
                   <mat-label>E-Mail-Adresse</mat-label>
                   <input matInput type="email" formControlName="email" />
                 </mat-form-field>
               </div>
 
-              <div class="app-col-12 app-col-lg-4">
+              <div class="imr-col-12 imr-col-lg-4">
                 <mat-form-field class="imr-full-width">
                   <mat-label>Mitgliederzugehörigkeit</mat-label>
                   <input
@@ -135,10 +135,10 @@
               </div>
             </div>
 
-            <div class="role-row" aria-label="Rollen">
+            <div class="role-row imr-grid" aria-label="Rollen">
               @for (rolle of rollen; track rolle) {
                 @if (rolle.key !== 'MITGLIED') {
-                  <div class="role-option">
+                  <div class="role-option imr-col-12 imr-col-md-6 imr-col-lg-4">
                     <mat-checkbox
                       class="role-checkbox"
                       [checked]="formModul.controls['roles'].value?.includes(rolle.key)"
@@ -175,20 +175,20 @@
             }
 
             @if (formModul.controls['id'].value || !sendInviteMode) {
-            <section class="app-grid imr-form-grid">
-              <div class="app-col-12 app-col-lg-4 mb-3">
+            <section class="imr-grid imr-form-grid">
+              <div class="imr-col-12 imr-col-lg-4 mb-3">
                 <mat-form-field class="imr-full-width">
                   <mat-label>Passwort</mat-label>
                   <input matInput type="password" formControlName="password1" />
                 </mat-form-field>
               </div>
-              <div class="app-col-12 app-col-lg-4 mb-3">
+              <div class="imr-col-12 imr-col-lg-4 mb-3">
                 <mat-form-field class="imr-full-width">
                   <mat-label>Passwort wiederholen</mat-label>
                   <input matInput type="password" formControlName="password2" />
                 </mat-form-field>
               </div>
-              <div class="app-col-12 app-col-lg-4 password-action">
+              <div class="imr-col-12 imr-col-lg-4 password-action">
                 <button mat-flat-button
                   color="accent"
                   [hidden]="!formModul.controls['id'].value"
@@ -265,6 +265,7 @@
       </imr-section>
     </mat-tab>
   </mat-tab-group>
+
 
 
 

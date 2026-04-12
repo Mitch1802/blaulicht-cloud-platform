@@ -28,45 +28,45 @@
             </button>
           </div>
 
-          <section class="app-grid imr-form-grid">
-            <div class="app-col-12 app-col-lg-6 mb-3">
+          <section class="imr-grid imr-form-grid">
+            <div class="imr-col-12 imr-col-lg-6 mb-3">
               <mat-form-field class="imr-full-width">
                 <mat-label>Bezeichnung</mat-label>
                 <input matInput type="text" formControlName="bezeichnung" />
                 <mat-hint>* Pflichtfeld</mat-hint>
               </mat-form-field>
             </div>
-            <div class="app-col-12 app-col-lg-6 mb-3">
+            <div class="imr-col-12 imr-col-lg-6 mb-3">
               <mat-form-field class="imr-full-width">
                 <mat-label>Anzahl</mat-label>
                 <input matInput type="number" formControlName="anzahl" />
               </mat-form-field>
             </div>
-            <div class="app-col-12 app-col-lg-6 mb-3">
+            <div class="imr-col-12 imr-col-lg-6 mb-3">
               <mat-form-field class="imr-full-width">
                 <mat-label>Lagerort</mat-label>
                 <input matInput type="text" formControlName="lagerort" />
               </mat-form-field>
             </div>
-            <div class="app-col-12 app-col-lg-6 mb-3">
+            <div class="imr-col-12 imr-col-lg-6 mb-3">
               <mat-form-field class="imr-full-width">
                 <mat-label>Wartung zuletzt erledigt</mat-label>
                 <input matInput type="date" formControlName="wartung_zuletzt_am" appDateInputMask="iso" />
               </mat-form-field>
             </div>
-            <div class="app-col-12 app-col-lg-6 mb-3">
+            <div class="imr-col-12 imr-col-lg-6 mb-3">
               <mat-form-field class="imr-full-width">
                 <mat-label>Nächste Wartung</mat-label>
                 <input matInput type="date" formControlName="wartung_naechstes_am" appDateInputMask="iso" />
               </mat-form-field>
             </div>
-            <div class="app-col-12 app-col-lg-12 mb-3">
+            <div class="imr-col-12 imr-col-lg-12 mb-3">
               <div class="leihstatus-checkbox">
                 <mat-checkbox formControlName="ist_verliehen">Aktuell verliehen</mat-checkbox>
               </div>
             </div>
             @if (isVerliehenAktiv()) {
-            <div class="app-col-12 app-col-lg-12 mb-3">
+            <div class="imr-col-12 imr-col-lg-12 mb-3">
               <div class="imr-lending-panel">
                 <div class="imr-lending-panel-head">
                   <strong>Verleihungen</strong>
@@ -80,8 +80,8 @@
                 }
 
                 @for (eintrag of verleihungenForm; track $index) {
-                <div class="imr-lending-row app-grid">
-                  <div class="app-col-12 app-col-lg-4 mb-2">
+                <div class="imr-lending-row imr-grid">
+                  <div class="imr-col-12 imr-col-lg-4 mb-2">
                     <mat-form-field class="imr-full-width">
                       <mat-label>Entlehner</mat-label>
                       <input
@@ -92,7 +92,7 @@
                       />
                     </mat-form-field>
                   </div>
-                  <div class="app-col-12 app-col-lg-3 mb-2">
+                  <div class="imr-col-12 imr-col-lg-3 mb-2">
                     <mat-form-field class="imr-full-width">
                       <mat-label>Anzahl</mat-label>
                       <input
@@ -104,7 +104,7 @@
                       />
                     </mat-form-field>
                   </div>
-                  <div class="app-col-12 app-col-lg-3 mb-2">
+                  <div class="imr-col-12 imr-col-lg-3 mb-2">
                     <mat-form-field class="imr-full-width">
                       <mat-label>Verliehen bis</mat-label>
                       <input
@@ -116,7 +116,7 @@
                       />
                     </mat-form-field>
                   </div>
-                  <div class="app-col-12 app-col-lg-2 mb-2 imr-lending-row-remove">
+                  <div class="imr-col-12 imr-col-lg-2 mb-2 imr-lending-row-remove">
                     <button mat-flat-button color="warn" type="button" (click)="removeVerleihungZeile($index)">
                       Entfernen
                     </button>
@@ -131,13 +131,13 @@
               </div>
             </div>
             }
-            <div class="app-col-12 app-col-lg-12 mb-3">
+            <div class="imr-col-12 imr-col-lg-12 mb-3">
               <mat-form-field appearance="outline" class="imr-full-width" subscriptSizing="dynamic">
                 <mat-label>Notiz</mat-label>
                 <textarea matInput formControlName="notiz" rows="5"></textarea>
               </mat-form-field>
             </div>
-            <div class="app-col-12 app-col-lg-6 mb-3">
+            <div class="imr-col-12 imr-col-lg-6 mb-3">
               <button mat-flat-button type="button" color="primary" class="upload-button" (click)="fotoUpload.click()">{{ btnText }}</button>
               <input hidden #fotoUpload type="file" id="fotoUpload" accept=".jpg,.jpeg,.png" (change)="onFotoSelected($event)" />
               <div >
@@ -356,6 +356,7 @@
   <img class="modal-content" id="img01" [src]="filePfad" alt="Inventarbild Vorschau" />
   <div id="inventar-image-title" class="modal-caption">{{ fileName }}</div>
 </div>
+
 
 
 

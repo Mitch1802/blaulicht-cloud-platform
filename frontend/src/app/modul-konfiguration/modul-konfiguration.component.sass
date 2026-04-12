@@ -25,8 +25,6 @@
 	resize: vertical
 
 .pdf-mapping
-	display: grid
-	grid-template-columns: 1fr
 	gap: .5rem
 
 .jugend-hilfe-box
@@ -61,20 +59,12 @@
 		font-size: .82rem
 
 .hilfe-grid
-	display: grid
-	grid-template-columns: repeat(2, minmax(0, 1fr))
 	gap: .65rem
 
 .token-grid
-	display: grid
-	grid-template-columns: repeat(2, minmax(0, 1fr))
 	gap: .35rem .85rem
 
 .token-item
 	font-size: .84rem
 
-@media (max-width: 768px)
-	.hilfe-grid,
-	.token-grid
-		grid-template-columns: 1fr
 

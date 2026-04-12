@@ -100,33 +100,43 @@
           <mat-card-header>
             <mat-card-title>{{ selectedId ? 'Fahrzeug bearbeiten' : 'Neues Fahrzeug' }}</mat-card-title>
           </mat-card-header>
-            <form [formGroup]="fahrzeugForm" class="imr-form-grid mb-3">
-              <mat-form-field>
-                <mat-label>Name</mat-label>
-                <input matInput formControlName="name" />
-              </mat-form-field>
+            <form [formGroup]="fahrzeugForm" class="imr-grid imr-form-grid mb-3">
+              <div class="imr-col-12 imr-col-md-6">
+                <mat-form-field class="imr-full-width">
+                  <mat-label>Name</mat-label>
+                  <input matInput formControlName="name" />
+                </mat-form-field>
+              </div>
 
-              <mat-form-field>
-                <mat-label>Bezeichnung</mat-label>
-                <input matInput formControlName="bezeichnung" />
-              </mat-form-field>
+              <div class="imr-col-12 imr-col-md-6">
+                <mat-form-field class="imr-full-width">
+                  <mat-label>Bezeichnung</mat-label>
+                  <input matInput formControlName="bezeichnung" />
+                </mat-form-field>
+              </div>
 
-              <mat-form-field>
-                <mat-label>Service zuletzt erledigt</mat-label>
-                <input matInput type="date" formControlName="service_zuletzt_am" appDateInputMask="iso" />
-              </mat-form-field>
+              <div class="imr-col-12 imr-col-md-6">
+                <mat-form-field class="imr-full-width">
+                  <mat-label>Service zuletzt erledigt</mat-label>
+                  <input matInput type="date" formControlName="service_zuletzt_am" appDateInputMask="iso" />
+                </mat-form-field>
+              </div>
 
-              <mat-form-field>
-                <mat-label>Nächstes Service</mat-label>
-                <input matInput type="date" formControlName="service_naechstes_am" appDateInputMask="iso" />
-              </mat-form-field>
+              <div class="imr-col-12 imr-col-md-6">
+                <mat-form-field class="imr-full-width">
+                  <mat-label>Nächstes Service</mat-label>
+                  <input matInput type="date" formControlName="service_naechstes_am" appDateInputMask="iso" />
+                </mat-form-field>
+              </div>
 
-              <mat-form-field appearance="outline" class="imr-full-width" subscriptSizing="dynamic">
-                <mat-label>Beschreibung</mat-label>
-                <textarea matInput rows="3" formControlName="beschreibung"></textarea>
-              </mat-form-field>
+              <div class="imr-col-12">
+                <mat-form-field appearance="outline" class="imr-full-width" subscriptSizing="dynamic">
+                  <mat-label>Beschreibung</mat-label>
+                  <textarea matInput rows="3" formControlName="beschreibung"></textarea>
+                </mat-form-field>
+              </div>
 
-              <div class="photo-block imr-full-width">
+              <div class="photo-block imr-col-12">
                 <p class="photo-label">Fahrzeugfoto</p>
 
                 @if (selected?.foto_url) {
@@ -166,7 +176,7 @@
                 }
               </div>
 
-              <div class="actions-row imr-full-width">
+              <div class="actions-row imr-col-12">
                 <button mat-flat-button
                   color="accent"
                   type="button"
@@ -246,13 +256,13 @@
                   <p class="inventar-subtitle">Räume, Fotos und Ausstattung zentral verwalten.</p>
                 </div>
 
-                <div class="inventar-stats">
-                  <article class="stat-card">
+                <div class="inventar-stats imr-grid">
+                  <article class="stat-card imr-col-12 imr-col-md-6">
                     <span class="stat-label">Räume</span>
                     <strong>{{ f.raeume.length }}</strong>
                   </article>
 
-                  <article class="stat-card">
+                  <article class="stat-card imr-col-12 imr-col-md-6">
                     <span class="stat-label">Items</span>
                     <strong>{{ countItems(f.raeume) }}</strong>
                   </article>
@@ -265,18 +275,18 @@
                   <p>Räume zuerst erfassen, danach die Ausstattung pro Raum pflegen.</p>
                 </div>
 
-                <form [formGroup]="raumForm" class="raum-create-form">
-                  <mat-form-field>
+                <form [formGroup]="raumForm" class="raum-create-form imr-grid align-items-center">
+                  <mat-form-field class="imr-col-12 imr-col-lg-4">
                     <mat-label>Raumname</mat-label>
                     <input matInput formControlName="name" />
                   </mat-form-field>
 
-                  <mat-form-field>
+                  <mat-form-field class="imr-col-12 imr-col-lg-2">
                     <mat-label>Reihenfolge</mat-label>
                     <input matInput type="number" formControlName="reihenfolge" />
                   </mat-form-field>
 
-                  <div class="upload-row">
+                  <div class="upload-row imr-col-12 imr-col-lg-4">
                     <label class="upload-label" for="newRaumFotoDatei">Raumfoto</label>
                     <input
                       #newRaumFotoUpload
@@ -299,7 +309,7 @@
                     }
                   </div>
 
-                  <div>
+                  <div class="imr-col-12 imr-col-lg-2">
                     <button mat-flat-button color="accent" type="button" (click)="addRaum()">
                       <mat-icon>add</mat-icon>
                       Raum anlegen
@@ -321,18 +331,18 @@
                           #{{ raum.reihenfolge }} | {{ raum.items.length }} Items
                         </mat-panel-description>
 
-                      <form [formGroup]="raumEditFormFor(raum)" class="raum-edit-form mb-3">
-                        <mat-form-field>
+                      <form [formGroup]="raumEditFormFor(raum)" class="raum-edit-form imr-grid mb-3">
+                        <mat-form-field class="imr-col-12 imr-col-lg-4">
                           <mat-label>Raumname</mat-label>
                           <input matInput formControlName="name" />
                         </mat-form-field>
 
-                        <mat-form-field>
+                        <mat-form-field class="imr-col-12 imr-col-lg-2">
                           <mat-label>Reihenfolge</mat-label>
                           <input matInput type="number" formControlName="reihenfolge" />
                         </mat-form-field>
 
-                        <div class="room-photo-wrap">
+                        <div class="room-photo-wrap imr-col-12 imr-col-lg-6">
                           @if (raum.foto_url) {
                             <img [src]="raum.foto_url" alt="Raumfoto" class="room-photo-preview" />
                           }
@@ -362,7 +372,7 @@
                           </div>
                         </div>
 
-                        <div class="raum-actions">
+                        <div class="raum-actions imr-col-12">
                           <button mat-flat-button color="accent" type="button" (click)="saveRaum(raum)">
                             <mat-icon>save</mat-icon>
                             Raum speichern
@@ -426,43 +436,43 @@
                           }
 
                           @for (item of raum.items; track item.id) {
-                            <form [formGroup]="itemEditFormFor(item)" class="item-edit-form mb-2">
-                              <mat-form-field class="item-field-name">
+                            <form [formGroup]="itemEditFormFor(item)" class="item-edit-form imr-grid mb-2">
+                              <mat-form-field class="item-field-name imr-col-12 imr-col-lg-8">
                                 <mat-label>Item Name</mat-label>
                                 <input matInput formControlName="name" />
                               </mat-form-field>
 
-                              <mat-form-field class="item-field-menge">
+                              <mat-form-field class="item-field-menge imr-col-12 imr-col-lg-2">
                                 <mat-label>Menge</mat-label>
                                 <input matInput type="number" formControlName="menge" />
                               </mat-form-field>
 
-                              <mat-form-field class="item-field-einheit">
+                              <mat-form-field class="item-field-einheit imr-col-12 imr-col-lg-2">
                                 <mat-label>Einheit</mat-label>
                                 <input matInput formControlName="einheit" />
                               </mat-form-field>
 
-                              <mat-form-field class="item-field-wartung-zuletzt">
+                              <mat-form-field class="item-field-wartung-zuletzt imr-col-12 imr-col-lg-6">
                                 <mat-label>Wartung zuletzt erledigt</mat-label>
                                 <input matInput type="date" formControlName="wartung_zuletzt_am" appDateInputMask="iso" />
                               </mat-form-field>
 
-                              <mat-form-field class="item-field-wartung-naechstes">
+                              <mat-form-field class="item-field-wartung-naechstes imr-col-12 imr-col-lg-6">
                                 <mat-label>Nächste Wartung</mat-label>
                                 <input matInput type="date" formControlName="wartung_naechstes_am" appDateInputMask="iso" />
                               </mat-form-field>
 
-                              <mat-form-field class="item-field-reihenfolge">
+                              <mat-form-field class="item-field-reihenfolge imr-col-12 imr-col-lg-2">
                                 <mat-label>Reihenfolge</mat-label>
                                 <input matInput type="number" formControlName="reihenfolge" />
                               </mat-form-field>
 
-                              <mat-form-field class="item-field-notiz">
+                              <mat-form-field class="item-field-notiz imr-col-12 imr-col-lg-10">
                                 <mat-label>Notiz</mat-label>
                                 <input matInput formControlName="notiz" />
                               </mat-form-field>
 
-                              <div class="item-actions">
+                              <div class="item-actions imr-col-12">
                                 <button mat-flat-button color="accent" type="button" (click)="saveItem(raum, item)">
                                   <mat-icon>save</mat-icon>
                                   Item speichern
@@ -478,43 +488,43 @@
 
                           <section class="item-new-card mt-2">
                             <h4 class="items-title">Neues Item</h4>
-                            <form [formGroup]="itemCreateFormFor(raum.id)" class="item-add-form">
-                              <mat-form-field class="item-field-name">
+                            <form [formGroup]="itemCreateFormFor(raum.id)" class="item-add-form imr-grid">
+                              <mat-form-field class="item-field-name imr-col-12 imr-col-lg-8">
                                 <mat-label>Item Name</mat-label>
                                 <input matInput formControlName="name" />
                               </mat-form-field>
 
-                              <mat-form-field class="item-field-menge">
+                              <mat-form-field class="item-field-menge imr-col-12 imr-col-lg-2">
                                 <mat-label>Menge</mat-label>
                                 <input matInput type="number" formControlName="menge" />
                               </mat-form-field>
 
-                              <mat-form-field class="item-field-einheit">
+                              <mat-form-field class="item-field-einheit imr-col-12 imr-col-lg-2">
                                 <mat-label>Einheit</mat-label>
                                 <input matInput formControlName="einheit" />
                               </mat-form-field>
 
-                              <mat-form-field class="item-field-wartung-zuletzt">
+                              <mat-form-field class="item-field-wartung-zuletzt imr-col-12 imr-col-lg-6">
                                 <mat-label>Wartung zuletzt erledigt</mat-label>
                                 <input matInput type="date" formControlName="wartung_zuletzt_am" appDateInputMask="iso" />
                               </mat-form-field>
 
-                              <mat-form-field class="item-field-wartung-naechstes">
+                              <mat-form-field class="item-field-wartung-naechstes imr-col-12 imr-col-lg-6">
                                 <mat-label>Nächste Wartung</mat-label>
                                 <input matInput type="date" formControlName="wartung_naechstes_am" appDateInputMask="iso" />
                               </mat-form-field>
 
-                              <mat-form-field class="item-field-reihenfolge">
+                              <mat-form-field class="item-field-reihenfolge imr-col-12 imr-col-lg-2">
                                 <mat-label>Reihenfolge</mat-label>
                                 <input matInput type="number" formControlName="reihenfolge" />
                               </mat-form-field>
 
-                              <mat-form-field class="item-field-notiz">
+                              <mat-form-field class="item-field-notiz imr-col-12 imr-col-lg-10">
                                 <mat-label>Notiz</mat-label>
                                 <input matInput formControlName="notiz" />
                               </mat-form-field>
 
-                              <div>
+                              <div class="imr-col-12">
                                 <button mat-flat-button color="accent" type="button" (click)="addItem(raum)">
                                   <mat-icon>add</mat-icon>
                                   Item anlegen
@@ -535,6 +545,7 @@
       }
   </imr-card>
 </imr-page-layout>
+
 
 
 

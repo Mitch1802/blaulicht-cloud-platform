@@ -70,7 +70,6 @@
 
     .newsfeed-content
         display: grid
-        grid-template-columns: 1fr
         grid-template-rows: calc((100% - var(--newsfeed-gap)) * .7) calc((100% - var(--newsfeed-gap)) * .3)
         gap: var(--newsfeed-gap)
         align-items: stretch
@@ -303,8 +302,6 @@
             color: theme.$imr-primary
 
     .termine-grid
-        display: grid
-        grid-template-columns: 1fr
         width: 100%
         align-content: start
         gap: .3rem
@@ -352,17 +349,11 @@
             margin: 0 calc(50% - 50vw)
             padding: .9rem .95rem
 
-        .newsfeed-content
-            grid-template-columns: 1fr
-
         .feature-media
             min-height: 220px
 
         .termine-panel
             position: relative
-
-        .termine-grid
-            grid-template-columns: 1fr
 
 @media (max-height: 900px)
     :host ::ng-deep .news-extern-page
@@ -478,6 +469,3 @@
         .feature-nav
             button
                 width: 100%
-
-        .termine-grid
-            grid-template-columns: 1fr

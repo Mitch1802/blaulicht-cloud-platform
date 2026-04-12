@@ -4,15 +4,15 @@
   <form [formGroup]="formModul">
     <input hidden type="text" formControlName="id" />
     <imr-section title="Persönliche Daten">
-      <div class="app-grid">
-        <div class="app-col-12 app-col-lg-8">
+      <div class="imr-grid">
+        <div class="imr-col-12 imr-col-lg-8">
           <mat-form-field>
             <mat-label>E-Mail-Adresse</mat-label>
             <input matInput type="email" formControlName="email" />
           </mat-form-field>
         </div>
 
-        <div class="app-col-12 app-col-lg-4">
+        <div class="imr-col-12 imr-col-lg-4">
           <button mat-flat-button color="accent" class="imr-full-width" type="button" [disabled]="formModul.disabled" (click)="emailSpeichern()">
             E-Mail speichern
           </button>
@@ -20,20 +20,20 @@
       </div>
     </imr-section>
     <imr-section title="Passwort">
-      <div class="app-grid">
-        <div class="app-col-12 app-col-lg-4">
+      <div class="imr-grid">
+        <div class="imr-col-12 imr-col-lg-4">
           <mat-form-field>
             <mat-label>Passwort</mat-label>
             <input matInput type="password" formControlName="password1" />
           </mat-form-field>
         </div>
-        <div class="app-col-12 app-col-lg-4">
+        <div class="imr-col-12 imr-col-lg-4">
           <mat-form-field>
             <mat-label>Passwort wiederholen</mat-label>
             <input matInput type="password" formControlName="password2" />
           </mat-form-field>
         </div>
-        <div class="app-col-12 app-col-lg-4">
+        <div class="imr-col-12 imr-col-lg-4">
           <button mat-flat-button color="accent" class="imr-full-width" type="button" [disabled]="formModul.disabled || !passwortAendernErlaubt" (click)="passwortAendern()">
             Passwort ändern
           </button>
@@ -42,6 +42,7 @@
     </imr-section>
   </form>
 </imr-page-layout>
+
 
 
 

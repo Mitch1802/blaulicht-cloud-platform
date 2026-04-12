@@ -29,6 +29,11 @@
             "inlineStyleLanguage": "sass",
             "assets": [
               {
+                "glob": "version.json",
+                "input": "src/assets",
+                "output": "assets"
+              },
+              {
                 "glob": "**/*",
                 "input": "public"
               },
@@ -60,10 +65,7 @@
             },
             "scripts": [],
             "allowedCommonJsDependencies": [
-              "papaparse",
-              "axe-core",
-              "semver",
-              "strip-ansi"
+              "papaparse"
             ],
             "serviceWorker": false,
             "baseHref": "/",
@@ -155,36 +157,6 @@
               "src/**/*.ts",
               "src/**/*.html"
             ]
-          }
-        },
-        "storybook": {
-          "builder": "@storybook/angular:start-storybook",
-          "options": {
-            "configDir": ".storybook",
-            "browserTarget": "web-app:build:development",
-            "compodoc": false,
-            "compodocArgs": [
-              "-e",
-              "json",
-              "-d",
-              "."
-            ],
-            "port": 6006
-          }
-        },
-        "build-storybook": {
-          "builder": "@storybook/angular:build-storybook",
-          "options": {
-            "configDir": ".storybook",
-            "browserTarget": "web-app:build",
-            "compodoc": true,
-            "compodocArgs": [
-              "-e",
-              "json",
-              "-d",
-              "."
-            ],
-            "outputDir": "storybook-static"
           }
         }
       }

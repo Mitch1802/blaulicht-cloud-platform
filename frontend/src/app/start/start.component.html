@@ -6,10 +6,10 @@
   }@else {
     @for (category of categorizedItems; track category.name) {
       <imr-section [title]="category.name">
-        <div class="app-grid">
+        <div class="imr-grid">
           @for (item of category.items; track item) {
             @if (isPlannedItem(item)) {
-              <div class="app-col-12 app-col-lg-2">
+              <div class="imr-col-12 imr-col-lg-2">
                 <imr-card cardClass="module-card planned" [wrapContent]="false" aria-disabled="true">
                   <span class="badge planned-badge">GEPLANT</span>
                   <div class="module-icon-shell">
@@ -22,7 +22,7 @@
               </div>
             } @else {
               <a
-                class="module-card-link app-col-12 app-col-lg-2"
+                class="module-card-link imr-col-12 imr-col-lg-2"
                 [routerLink]="item.routerlink"
                 [attr.aria-label]="'Modul öffnen: ' + item.modul"
               >
@@ -45,6 +45,7 @@
     }
   }
 </imr-page-layout>
+
 
 
 

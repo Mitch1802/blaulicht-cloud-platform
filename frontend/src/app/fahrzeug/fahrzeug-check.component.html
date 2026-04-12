@@ -22,14 +22,14 @@
                 <h3 class="m-0 mb-2">{{ raum.name }}</h3>
 
                 @for (item of raum.items; track item.index) {
-                  <div class="app-grid mb-2" [formGroupName]="item.index">
-                    <div class="app-col-12 app-col-md-6">
+                  <div class="imr-grid mb-2" [formGroupName]="item.index">
+                    <div class="imr-col-12 imr-col-md-6">
                       <mat-checkbox formControlName="checked">
                         {{ item.name }} (Soll: {{ item.menge }} {{ item.einheit }})
                       </mat-checkbox>
                     </div>
 
-                    <div class="app-col-12 app-col-md-6">
+                    <div class="imr-col-12 imr-col-md-6">
                       <mat-form-field>
                         <mat-label>Notiz</mat-label>
                         <input matInput formControlName="notiz" placeholder="Optional" />
@@ -49,6 +49,7 @@
         </form>
   </imr-section>
 </imr-page-layout>
+
 
 
 

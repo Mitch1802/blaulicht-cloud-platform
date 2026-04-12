@@ -6,20 +6,20 @@
       <div class="actions-top">
         <button mat-flat-button color="primary" type="button" (click)="reload()">Aktualisieren</button>
       </div>
-      <div class="summary-grid">
-        <article class="summary-card">
+      <div class="summary-grid imr-grid">
+        <article class="summary-card imr-col-12 imr-col-md-6 imr-col-lg-3">
           <h3>Gesamt</h3>
           <p>{{ summary.gesamt }}</p>
         </article>
-        <article class="summary-card summary-card--warn">
+        <article class="summary-card summary-card--warn imr-col-12 imr-col-md-6 imr-col-lg-3">
           <h3>Überfällig</h3>
           <p>{{ summary.ueberfaellig }}</p>
         </article>
-        <article class="summary-card summary-card--today">
+        <article class="summary-card summary-card--today imr-col-12 imr-col-md-6 imr-col-lg-3">
           <h3>Heute</h3>
           <p>{{ summary.heute }}</p>
         </article>
-        <article class="summary-card summary-card--ok">
+        <article class="summary-card summary-card--ok imr-col-12 imr-col-md-6 imr-col-lg-3">
           <h3>Anstehend</h3>
           <p>{{ summary.anstehend }}</p>
         </article>
@@ -84,6 +84,7 @@
       }
   </imr-card>
 </imr-page-layout>
+
 
 
 

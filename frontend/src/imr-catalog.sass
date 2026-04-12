@@ -1,4 +1,4 @@
-// -----------------------------------------------------------------------------
+﻿// -----------------------------------------------------------------------------
 // imr-catalog.sass - IMR UI catalog, design tokens and component styles
 //
 // Central styling source for the IMR UI library.
@@ -162,7 +162,7 @@ h1
         grid-column: span 6
 
     .imr-two-col-md.mb-3,
-    .imr-form-grid .app-col-lg-12.mb-3
+    .imr-form-grid .imr-col-lg-12.mb-3
         margin-bottom: .6rem !important
 
 @media only screen and (max-width: 700px)
@@ -448,7 +448,7 @@ mat-card-content > button.imr-delete-btn[mat-flat-button]
 .atemschutz-masken-page,
 .atemschutz-messgeraete-page
     .imr-form-grid
-        > [class*='app-col-']
+        > [class*='imr-col-']
             margin-bottom: .55rem !important
 
         > div > mat-checkbox
@@ -512,7 +512,7 @@ mat-card-content > button.imr-delete-btn[mat-flat-button]
     padding-left: 1rem
     padding-right: 1rem
 
-.row, .app-grid
+.row, .imr-grid
     display: grid
     grid-template-columns: repeat(var(--imr-grid-columns), minmax(0, 1fr))
     gap: var(--imr-grid-row-gap) var(--imr-grid-col-gap)
@@ -521,95 +521,101 @@ mat-card-content > button.imr-delete-btn[mat-flat-button]
     margin: 0
 
 @media (max-width: 768px)
-    .row, .app-grid
+    .row, .imr-grid
         margin-left: 0
         margin-right: 0
 
 .row > :where([class*='col-']),
-.row > :where([class*='app-col-']),
+.row > :where([class*='imr-col-']),
 .row > :where(.col),
-.app-grid > :where([class*='col-']),
-.app-grid > :where([class*='app-col-']),
-.app-grid > :where(.col),
-.app-grid > :where(.app-col)
+.imr-grid > :where([class*='col-']),
+.imr-grid > :where([class*='imr-col-']),
+.imr-grid > :where(.col),
+.imr-grid > :where(.imr-col)
     grid-column: span 12
     min-width: 0
 
 .row.justify-content-center > :where([class*='col-']),
-.row.justify-content-center > :where([class*='app-col-']),
+.row.justify-content-center > :where([class*='imr-col-']),
 .row.justify-content-center > :where(.col),
-.app-grid.justify-content-center > :where([class*='col-']),
-.app-grid.justify-content-center > :where([class*='app-col-']),
-.app-grid.justify-content-center > :where(.col),
-.app-grid.justify-content-center > :where(.app-col)
+.imr-grid.justify-content-center > :where([class*='col-']),
+.imr-grid.justify-content-center > :where([class*='imr-col-']),
+.imr-grid.justify-content-center > :where(.col),
+.imr-grid.justify-content-center > :where(.imr-col)
     justify-self: center
 
-.row.align-items-center, .app-grid.align-items-center
+.row.align-items-center, .imr-grid.align-items-center
     align-items: center
 
-.row.align-items-end, .app-grid.align-items-end
+.row.align-items-end, .imr-grid.align-items-end
     align-items: end
 
-.col, .app-col
+.col, .imr-col
     grid-column: span 12
 
-.col-auto, .app-col-auto
+.col-auto, .imr-col-auto
     grid-column: auto
 
-.col-2, .app-col-2
+.col-2, .imr-col-2
     grid-column: span 2
 
-.col-3, .app-col-3
+.col-3, .imr-col-3
     grid-column: span 3
 
-.col-4, .app-col-4
+.col-4, .imr-col-4
     grid-column: span 4
 
-.col-6, .app-col-6
+.col-6, .imr-col-6
     grid-column: span 6
 
-.col-7, .app-col-7
+.col-7, .imr-col-7
     grid-column: span 7
 
-.col-8, .app-col-8
+.col-8, .imr-col-8
     grid-column: span 8
 
-.col-12, .app-col-12
+.col-12, .imr-col-12
     grid-column: span 12
 
 @media (min-width: 768px)
-    .col-md-6, .app-col-md-6
+    .col-md-3, .imr-col-md-3
+        grid-column: span 3
+
+    .col-md-6, .imr-col-md-6
         grid-column: span 6
 
-    .col-md-10, .app-col-md-10
+    .col-md-10, .imr-col-md-10
         grid-column: span 10
 
 @media (min-width: 1200px)
-    .col-lg-2, .app-col-lg-2
+    .col-lg-2, .imr-col-lg-2
         grid-column: span 2
 
-    .col-lg-3, .app-col-lg-3
+    .col-lg-3, .imr-col-lg-3
         grid-column: span 3
 
-    .col-lg-4, .app-col-lg-4
+    .col-lg-4, .imr-col-lg-4
         grid-column: span 4
 
-    .col-lg-5, .app-col-lg-5
+    .col-lg-5, .imr-col-lg-5
         grid-column: span 5
 
-    .col-lg-6, .app-col-lg-6
+    .col-lg-6, .imr-col-lg-6
         grid-column: span 6
 
-    .col-lg-7, .app-col-lg-7
+    .col-lg-7, .imr-col-lg-7
         grid-column: span 7
 
-    .col-lg-8, .app-col-lg-8
+    .col-lg-8, .imr-col-lg-8
         grid-column: span 8
 
-    .col-lg-9, .app-col-lg-9
+    .col-lg-9, .imr-col-lg-9
         grid-column: span 9
 
-    .col-lg-12, .app-col-lg-12
+    .col-lg-10, .imr-col-lg-10
+        grid-column: span 10
+
+    .col-lg-12, .imr-col-lg-12
         grid-column: span 12
 
 
@@ -693,7 +699,7 @@ mat-card-content > button.imr-delete-btn[mat-flat-button]
 // ------------------------------------------------------------------------------
 
 @media only screen and (min-width: 768px)
-    // Reserviert für desktop-spezifische globale Grid-Erweiterungen.
+    // Reserviert fÃ¼r desktop-spezifische globale Grid-Erweiterungen.
 
 @media only screen and (max-width: 700px)
     .actions-row
@@ -722,4 +728,5 @@ mat-card-content > button.imr-delete-btn[mat-flat-button]
 @media (max-width: 768px)
     .mat-mdc-card
         border-radius: 0
+
 

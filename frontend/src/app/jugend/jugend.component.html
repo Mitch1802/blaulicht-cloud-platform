@@ -96,10 +96,10 @@
               <h3>Teilgenommene Events</h3>
               <div class="mitglied-events-list">
                 @for (event of getMitgliedEvents(selectedMitglied); track event.id) {
-                  <div class="mitglied-event-row">
-                    <span class="mitglied-event-datum">{{ event.datum }}</span>
-                    <span class="mitglied-event-kategorie">{{ getEventKategorieText(event) }}</span>
-                    <span class="mitglied-event-alter">
+                  <div class="mitglied-event-row imr-grid">
+                    <span class="mitglied-event-datum imr-col-12 imr-col-md-3">{{ event.datum }}</span>
+                    <span class="mitglied-event-kategorie imr-col-12 imr-col-md-6">{{ getEventKategorieText(event) }}</span>
+                    <span class="mitglied-event-alter imr-col-12 imr-col-md-3">
                       Alter bei Event: {{ getAlterBeimEvent(selectedMitglied, event.datum) }}
                     </span>
                   </div>
@@ -181,8 +181,8 @@
             <button mat-flat-button color="primary" type="button" (click)="eventFormAbbrechen()">Abbrechen</button>
           </div>
 
-          <section class="app-grid imr-form-grid">
-            <div class="app-col-12 app-col-lg-6">
+          <section class="imr-grid imr-form-grid">
+            <div class="imr-col-12 imr-col-lg-6">
               <mat-form-field class="imr-full-width">
                 <mat-label>Datum</mat-label>
                 <mat-hint>* Pflichtfeld</mat-hint>
@@ -190,7 +190,7 @@
               </mat-form-field>
             </div>
 
-            <div class="app-col-12 app-col-lg-6">
+            <div class="imr-col-12 imr-col-lg-6">
               <mat-form-field class="imr-full-width">
                 <mat-label>Art</mat-label>
                 <mat-hint>* Pflichtfeld</mat-hint>
@@ -202,21 +202,21 @@
               </mat-form-field>
             </div>
 
-            <div class="app-col-12 app-col-lg-12">
+            <div class="imr-col-12 imr-col-lg-12">
               <mat-checkbox formControlName="stand_x_override" (change)="onStandXOverrideGeaendert()">
                 Voraussetzungen für dieses Event außer Kraft setzen
               </mat-checkbox>
             </div>
 
             @if (isVoraussetzungenOverrideAktiv()) {
-              <div class="app-col-12 app-col-lg-12">
+              <div class="imr-col-12 imr-col-lg-12">
                 <div class="override-hinweis">
                   Level können unabhängig von den Voraussetzungen vergeben werden.
                 </div>
               </div>
             }
 
-            <div class="app-col-12 app-col-lg-12">
+            <div class="imr-col-12 imr-col-lg-12">
               <mat-form-field class="imr-full-width">
                 <mat-label>Teilnehmer</mat-label>
                 <mat-select formControlName="teilnehmer_ids" multiple [disabled]="!isDatumFilled()" (selectionChange)="onEventTeilnehmerAuswahlGeaendert()">
@@ -228,19 +228,19 @@
             </div>
 
             @if (getAusgewaehlteEventMitglieder().length > 0) {
-              <div class="app-col-12 app-col-lg-12">
+              <div class="imr-col-12 imr-col-lg-12">
                 <div class="teilnehmer-level-card">
                   <h3>Erreichtes Level pro Mitglied</h3>
 
                   @for (member of getAusgewaehlteEventMitglieder(); track member.pkid) {
-                    <div class="teilnehmer-level-row">
-                      <div class="teilnehmer-name">
+                    <div class="teilnehmer-level-row imr-grid">
+                      <div class="teilnehmer-name imr-col-12 imr-col-lg-8">
                         {{ getMitgliedMitRangText(member) }}
                         <span class="teilnehmer-alter-hint">
                           (Alter bei Event: {{ getAlterBeimEvent(member, formEvent.controls.datum.value) }})
                         </span>
                       </div>
-                      <mat-form-field class="teilnehmer-level-field">
+                      <mat-form-field class="teilnehmer-level-field imr-col-12 imr-col-lg-4">
                         <mat-label>Level</mat-label>
                         <mat-select
                           [disabled]="getLevelOptionenForMitglied(member).length === 0"
@@ -255,7 +255,7 @@
                       </mat-form-field>
 
                       @if (getLevelOptionenForMitglied(member).length === 0) {
-                        <div class="teilnehmer-level-hinweis">Keine erlaubte Stufe laut Voraussetzungen.</div>
+                        <div class="teilnehmer-level-hinweis imr-col-12 imr-col-lg-4">Keine erlaubte Stufe laut Voraussetzungen.</div>
                       }
                     </div>
                   }
@@ -263,7 +263,7 @@
               </div>
             }
 
-            <div class="app-col-12 app-col-lg-12">
+            <div class="imr-col-12 imr-col-lg-12">
               <mat-form-field class="imr-full-width">
                 <mat-label>Ort</mat-label>
                 <input matInput formControlName="ort" [disabled]="!isDatumFilled()" />
@@ -309,6 +309,7 @@
 
   </mat-tab-group>
 </imr-page-layout>
+
 
 
 

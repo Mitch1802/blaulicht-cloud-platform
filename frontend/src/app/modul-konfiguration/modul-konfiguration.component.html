@@ -48,8 +48,8 @@
           </button>
         </div>
 
-        <section class="app-grid imr-form-grid">
-          <div class="app-col-12 app-col-lg-12 mb-3">
+        <section class="imr-grid imr-form-grid">
+          <div class="imr-col-12 imr-col-lg-12 mb-3">
             <mat-form-field class="imr-full-width">
               <mat-label>Verfügbare Module auswählen</mat-label>
               <mat-select formControlName="modul" (selectionChange)="onModulChange()">
@@ -60,11 +60,11 @@
             </mat-form-field>
           </div>
 
-          <div class="app-col-12 app-col-lg-12 mb-3">
+          <div class="imr-col-12 imr-col-lg-12 mb-3">
             @if (formModul.controls['modul'].value === 'pdf') {
-              <div [formGroup]="pdfMappingForm" class="pdf-mapping">
+              <div [formGroup]="pdfMappingForm" class="pdf-mapping imr-grid">
                 @for (ex of pdfExports; track ex.key) {
-                  <mat-form-field appearance="outline" class="imr-full-width">
+                  <mat-form-field appearance="outline" class="imr-full-width imr-col-12">
                     <mat-label>{{ ex.label }}</mat-label>
                     <mat-select [formControlName]="ex.key">
                       <mat-option [value]="null">Bitte auswählen</mat-option>
@@ -97,8 +97,8 @@
                   <h3>Jugend-Konfiguration Hilfe</h3>
                   <p>Regeln werden unter <code>regeln.&lt;track&gt;.&lt;level&gt;</code> definiert.</p>
 
-                  <div class="hilfe-grid">
-                    <div>
+                  <div class="hilfe-grid imr-grid">
+                    <div class="imr-col-12 imr-col-md-6">
                       <h4>Track-Keys</h4>
                       <ul>
                         @for (info of jugendTrackInfos; track info.key) {
@@ -107,7 +107,7 @@
                       </ul>
                     </div>
 
-                    <div>
+                    <div class="imr-col-12 imr-col-md-6">
                       <h4>Unterstützte Felder je Level</h4>
                       <ul>
                         <li><code>min_age</code>: Mindestalter in Jahren</li>
@@ -118,9 +118,9 @@
                   </div>
 
                   <h4>Erlaubte Tokens für <code>requires_all</code></h4>
-                  <div class="token-grid">
+                  <div class="token-grid imr-grid">
                     @for (token of jugendTokenInfos; track token.token) {
-                      <div class="token-item"><code>{{ token.token }}</code> - {{ token.label }}</div>
+                      <div class="token-item imr-col-12 imr-col-md-6"><code>{{ token.token }}</code> - {{ token.label }}</div>
                     }
                   </div>
 
@@ -153,6 +153,7 @@
       </div>
   </imr-section>
 </imr-page-layout>
+
 
 
 

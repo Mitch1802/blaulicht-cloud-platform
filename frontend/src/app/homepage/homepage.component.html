@@ -14,8 +14,8 @@
     <div class="sections-wrap">
       @for (section of sections; track section.local_id) {
         <section class="plan-section">
-          <header class="plan-section-head app-grid">
-            <div class="app-col-12 app-col-lg-4">
+          <header class="plan-section-head imr-grid">
+            <div class="imr-col-12 imr-col-lg-4">
               <mat-form-field class="imr-full-width">
                 <mat-label>Sektionstitel</mat-label>
                 <input
@@ -28,7 +28,7 @@
                 <mat-hint>* Pflichtfeld</mat-hint>
               </mat-form-field>
             </div>
-            <div class="app-col-12 app-col-lg-3">
+            <div class="imr-col-12 imr-col-lg-3">
               <mat-form-field class="imr-full-width">
                 <mat-label>Sektions-ID</mat-label>
                 <input
@@ -41,7 +41,7 @@
                 <mat-hint>* Pflichtfeld</mat-hint>
               </mat-form-field>
             </div>
-            <div class="app-col-12 app-col-lg-5 section-actions">
+            <div class="imr-col-12 imr-col-lg-5 section-actions">
               <button mat-flat-button color="accent" type="button" (click)="addPosition(section)" [disabled]="loading">
                 Position hinzufügen
               </button>
@@ -53,8 +53,8 @@
 
           <div class="plan-rows">
             @for (row of section.members; track row.local_id; let rowIndex = $index) {
-              <div class="plan-row app-grid">
-                <div class="app-col-12 app-col-lg-3">
+              <div class="plan-row imr-grid">
+                <div class="imr-col-12 imr-col-lg-3">
                   <mat-form-field class="imr-full-width">
                     <mat-label>Position</mat-label>
                     <input
@@ -68,7 +68,7 @@
                   </mat-form-field>
                 </div>
 
-                <div class="app-col-12 app-col-lg-4">
+                <div class="imr-col-12 imr-col-lg-4">
                   <mat-form-field class="imr-full-width">
                     <mat-label>Name auswaehlen</mat-label>
                     <input
@@ -88,7 +88,7 @@
                   </mat-form-field>
                 </div>
 
-                <div class="app-col-12 app-col-lg-5">
+                <div class="imr-col-12 imr-col-lg-5">
                   <div class="photo-upload-box">
                     <div class="photo-upload-actions">
                       <label class="photo-upload-label" [class.disabled]="loading">
@@ -147,6 +147,7 @@
     </section>
   </div>
 }
+
 
 
 

@@ -18,8 +18,8 @@
 
     <mat-tab-group (selectedIndexChange)="onTabChange($event)">
       <mat-tab label="Übersicht">
-        <section class="app-grid mt-3 mb-3 mx-0">
-          <div class="app-col-12 app-col-lg-4">
+        <section class="imr-grid mt-3 mb-3 mx-0">
+          <div class="imr-col-12 imr-col-lg-4">
             <h2>Tauglichkeit</h2>
             @if (chartTauglichkeit.datasets[0].data.length) {
             <canvas
@@ -31,7 +31,7 @@
             </canvas>
             }
           </div>
-          <div class="app-col-12 app-col-lg-4">
+          <div class="imr-col-12 imr-col-lg-4">
             <h2>Untersuchung</h2>
             @if (chartUntersuchung.datasets[0].data.length) {
             <canvas
@@ -43,7 +43,7 @@
             </canvas>
             }
           </div>
-          <div class="app-col-12 app-col-lg-4">
+          <div class="imr-col-12 imr-col-lg-4">
             <h2>Altersverteilung</h2>
             @if (chartAlter.datasets[0].data.length) {
             <canvas
@@ -108,8 +108,8 @@
             </button>
           </div>
 
-          <section class="app-grid imr-form-grid">
-            <div class="app-col-12 app-col-lg-8 mb-3">
+          <section class="imr-grid imr-form-grid">
+            <div class="imr-col-12 imr-col-lg-8 mb-3">
               <mat-form-field class="imr-full-width">
                 <mat-label>Mitglied auswählen</mat-label>
                 <mat-select formControlName="mitglied_id">
@@ -122,7 +122,7 @@
                 </mat-select>
               </mat-form-field>
             </div>
-            <div class="app-col-12 app-col-lg-4 mb-3">
+            <div class="imr-col-12 imr-col-lg-4 mb-3">
               <mat-form-field class="imr-full-width">
                 <mat-label>FDISK Update</mat-label>
                 <input
@@ -145,7 +145,7 @@
                 }
               </mat-form-field>
             </div>
-            <div class="app-col-12 app-col-lg-4 mb-3">
+            <div class="imr-col-12 imr-col-lg-4 mb-3">
               <mat-form-field class="imr-full-width">
                 <mat-label>Arzttyp auswählen</mat-label>
                 <mat-select formControlName="arzt_typ">
@@ -155,13 +155,13 @@
                 </mat-select>
               </mat-form-field>
             </div>
-            <div class="app-col-12 app-col-lg-8 mb-3">
+            <div class="imr-col-12 imr-col-lg-8 mb-3">
               <mat-form-field class="imr-full-width">
                 <mat-label>Behandelnder Arzt</mat-label>
                 <input matInput type="text" formControlName="arzt" />
               </mat-form-field>
             </div>
-            <div class="app-col-12 app-col-lg-4 mb-3">
+            <div class="imr-col-12 imr-col-lg-4 mb-3">
               <mat-form-field class="imr-full-width">
                 <mat-label>Letzte Untersuchung</mat-label>
                 <input
@@ -184,7 +184,7 @@
                 }
               </mat-form-field>
             </div>
-            <div class="app-col-12 app-col-lg-4 mb-3">
+            <div class="imr-col-12 imr-col-lg-4 mb-3">
               <mat-form-field class="imr-full-width">
                 <mat-label>Leistungstest</mat-label>
                 <input
@@ -194,7 +194,7 @@
                 />
               </mat-form-field>
             </div>
-            <div class="app-col-12 app-col-lg-4 mb-3">
+            <div class="imr-col-12 imr-col-lg-4 mb-3">
               <mat-form-field class="imr-full-width">
                 <mat-label>Leistungstest Art</mat-label>
                 <mat-select formControlName="leistungstest_art">
@@ -204,7 +204,7 @@
                 </mat-select>
               </mat-form-field>
             </div>
-            <div class="app-col-12 app-col-lg-12 mb-3">
+            <div class="imr-col-12 imr-col-lg-12 mb-3">
               <mat-form-field class="imr-full-width">
                 <mat-label>Notizen</mat-label>
                 <input matInput type="text" formControlName="notizen" />
@@ -446,9 +446,9 @@
       </mat-tab>
       <mat-tab label="Export">
         <div class="app-container p-3 export-wrap">
-          <div class="app-grid m-0 pt-2">
-            <div class="app-col-7">Offene Untersuchungen:</div>
-            <div class="app-col-auto">
+          <div class="imr-grid m-0 pt-2">
+            <div class="imr-col-7">Offene Untersuchungen:</div>
+            <div class="imr-col-auto">
               <button mat-flat-button
                 color="primary"
                 (click)="printOffeneUntersuchugen()"
@@ -457,9 +457,9 @@
               </button>
             </div>
           </div>
-          <div class="app-grid m-0 pt-2">
-            <div class="app-col-7">Tauglichkeit:</div>
-            <div class="app-col-auto">
+          <div class="imr-grid m-0 pt-2">
+            <div class="imr-col-7">Tauglichkeit:</div>
+            <div class="imr-col-auto">
               <button mat-flat-button
                 color="primary"
                 (click)="printTauglichkeit()"
@@ -468,9 +468,9 @@
               </button>
             </div>
           </div>
-          <div class="app-grid m-0 pt-2">
-            <div class="app-col-7">Leistungstest:</div>
-            <div class="app-col-auto">
+          <div class="imr-grid m-0 pt-2">
+            <div class="imr-col-7">Leistungstest:</div>
+            <div class="imr-col-auto">
               <button mat-flat-button
                 color="primary"
                 (click)="printLeistungstest()"
@@ -479,9 +479,9 @@
               </button>
             </div>
           </div>
-          <div class="app-grid m-0 pt-2">
-            <div class="app-col-7">Alle Mitglieder:</div>
-            <div class="app-col-auto">
+          <div class="imr-grid m-0 pt-2">
+            <div class="imr-col-7">Alle Mitglieder:</div>
+            <div class="imr-col-auto">
               <button mat-flat-button
                 color="primary"
                 (click)="printAlleMitglieder()"
@@ -504,6 +504,7 @@
     }
   </imr-card>
 </imr-page-layout>
+
 
 
 
