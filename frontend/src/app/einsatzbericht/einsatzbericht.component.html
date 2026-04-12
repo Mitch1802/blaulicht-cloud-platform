@@ -3,7 +3,7 @@
 <imr-page-layout [title]="title">
   <imr-section>
     @if (viewMode === "list") {
-      <div class="mb-3">
+      <div class="imr-top-actions bericht-table">
         @if (canEditBerichte) {
           <button
             mat-flat-button
@@ -22,7 +22,7 @@
       </div>
 
       @if (berichte.length === 0) {
-        <p class="empty">Noch keine Einsatzberichte vorhanden.</p>
+        <p class="empty">Noch keine Einsatzberichte vorhanden!</p>
       } @else {
         <div class="imr-table-wrap">
           <div class="table-toolbar">
@@ -222,7 +222,7 @@
         (ngSubmit)="speichereBericht()"
         class="bericht-form"
       >
-        <div>
+        <div class="imr-top-actions">
           <button
             mat-flat-button
             type="button"
@@ -231,13 +231,20 @@
           >
             Zur Liste
           </button>
+          <button
+            mat-flat-button
+            color="accent"
+            type="submit"
+            [disabled]="!canEditBerichte"
+          >
+            Einsatzbericht speichern
+          </button>
         </div>
 
-        <mat-accordion class="bericht-accordion m-2" [multi]="false">
+        <mat-accordion class="bericht-accordion" [multi]="false">
           <mat-expansion-panel
             class="form-section"
             [class.has-error]="section1HasError"
-            hideToggle
           >
             <mat-expansion-panel-header>
               <mat-panel-title>
@@ -390,7 +397,6 @@
           <mat-expansion-panel
             class="form-section"
             [class.has-error]="section2HasError"
-            hideToggle
           >
             <mat-expansion-panel-header>
               <mat-panel-title>
@@ -436,7 +442,7 @@
             </div>
           </mat-expansion-panel>
 
-          <mat-expansion-panel class="form-section" hideToggle>
+          <mat-expansion-panel class="form-section">
             <mat-expansion-panel-header>
               <mat-panel-title>
                 <span class="form-section-title">3. Einsatzspezifisch</span>
@@ -573,7 +579,7 @@
             </div>
           </mat-expansion-panel>
 
-          <mat-expansion-panel class="form-section" hideToggle>
+          <mat-expansion-panel class="form-section">
             <mat-expansion-panel-header>
               <mat-panel-title>
                 <span class="form-section-title">4. Dokumentation</span>
@@ -915,7 +921,7 @@
             </div>
           </mat-expansion-panel>
 
-          <mat-expansion-panel class="form-section" hideToggle>
+          <mat-expansion-panel class="form-section">
             <mat-expansion-panel-header>
               <mat-panel-title>
                 <span class="form-section-title"
@@ -1009,17 +1015,6 @@
             </div>
           </mat-expansion-panel>
         </mat-accordion>
-
-        <div>
-          <button
-            mat-flat-button
-            color="accent"
-            type="submit"
-            [disabled]="!canEditBerichte"
-          >
-            Einsatzbericht speichern
-          </button>
-        </div>
       </form>
     }
   </imr-section>

@@ -1,11 +1,14 @@
 ﻿@use '../../theme' as theme
 
+.imr-top-actions.bericht-table
+    margin-bottom: 0 !important
+
 .form-section
     border: 1px solid rgba(theme.$imr-border, .95)
     border-radius: 0
     background: transparent
-    box-shadow: none
-    overflow: hidden
+    // box-shadow: none
+    // overflow: hidden
 
     &:hover
         border-color: rgba(theme.$imr-primary, .45)
@@ -40,12 +43,7 @@
     margin-left: auto
     flex-shrink: 0
 
-.form-section-subtitle
-    opacity: .72
-    font-size: .84rem
-
 .form-section-body
-    // margin-top: .2rem
     padding-top: 0
 
 .conditional-block
@@ -297,9 +295,6 @@
 
         .mat-expansion-panel-header
             padding: .45rem .65rem
-
-    .permission-hints
-        flex-direction: column
 
     .upload-row
         flex-direction: column
