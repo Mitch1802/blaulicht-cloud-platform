@@ -668,13 +668,13 @@ export class UserComponent implements OnInit {
   getInviteStatusClass(user: IBenutzer): string {
     switch (user?.invite_status) {
       case 'password_set':
-        return 'status-badge success-badge';
+        return 'role-badge mitglied-badge';
       case 'invite_pending':
-        return 'status-badge warning-badge';
+        return 'role-badge admin-badge';
       case 'missing_email':
-        return 'status-badge neutral-badge';
+        return 'role-badge mitglied-badge';
       default:
-        return 'status-badge neutral-badge';
+        return 'role-badge mitglied-badge';
     }
   }
 

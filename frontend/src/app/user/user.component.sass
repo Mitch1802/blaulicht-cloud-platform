@@ -15,19 +15,22 @@
 
 :host .status-cell
 	white-space: nowrap
-	display: grid
-	gap: .2rem
+	min-width: 0
 
-:host .status-meta
-	font-size: .75rem
-	line-height: 1.2
-	color: rgba(theme.$imr-text, .72)
+:host .mat-column-status
+	flex: 0 0 184px
+	max-width: 184px
+
+:host .mat-column-actions
+	flex: 0 0 132px
+	max-width: 132px
 
 :host .invite-status-panel
 	margin: 0 0 1rem
-	padding: .9rem 1rem
+	padding: .82rem .95rem
 	border: 1px solid var(--imr-control-border)
-	background: rgba(theme.$imr-border, .18)
+	border-left: 3px solid rgba(theme.$imr-primary, .82)
+	background: var(--imr-control-bg)
 
 :host .invite-status-copy
 	display: flex
@@ -39,7 +42,7 @@
 	font-weight: 700
 	letter-spacing: .04em
 	text-transform: uppercase
-	color: rgba(theme.$imr-text, .68)
+	color: rgba(theme.$imr-text, .62)
 
 :host .invite-status-value
 	font-size: .95rem
@@ -54,23 +57,13 @@
 	display: inline-flex
 	align-items: center
 	justify-content: center
-	font-size: .65rem
+	font-size: .62rem
 	font-weight: 700
 	letter-spacing: .04em
-	padding: .15rem .45rem
+	padding: .16rem .42rem
 	border-radius: 0
-
-:host .success-badge
-	background: rgba(theme.$imr-success, .14)
-	color: theme.$imr-success
-
-:host .warning-badge
-	background: rgba(theme.$imr-warning, .16)
-	color: theme.$imr-primary
-
-:host .neutral-badge
-	background: rgba(theme.$imr-border, .9)
-	color: theme.$imr-text
+	border: 1px solid transparent
+	text-transform: uppercase
 
 :host .admin-badge
 	background: rgba(theme.$imr-warning, .9)
@@ -83,6 +76,8 @@
 :host .imr-action-cell
 	display: flex
 	align-items: center
+	justify-content: flex-end
+	flex-wrap: nowrap
 	gap: .4rem
 
 @media (max-width: 768px)
@@ -98,6 +93,14 @@
 
 	.imr-table-wrap
 		margin-top: .5rem
+
+		.mat-column-status
+			flex: 0 0 152px
+			max-width: 152px
+
+		.mat-column-actions
+			flex: 0 0 116px
+			max-width: 116px
 
 		.mat-column-rolle
 			width: 116px

@@ -51,7 +51,6 @@
                 <th mat-header-cell *matHeaderCellDef>Status</th>
                 <td mat-cell *matCellDef="let element" class="status-cell">
                   <span [class]="getInviteStatusClass(element)">{{ getInviteStatusLabel(element) }}</span>
-                  <span class="status-meta">{{ getInviteSentAtLabel(element) }}</span>
                 </td>
               </ng-container>
 
