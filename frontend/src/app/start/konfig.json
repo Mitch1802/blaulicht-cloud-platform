@@ -138,5 +138,19 @@
     "rolle": "ADMIN, VERWALTUNG",
     "kategorie": "Verwaltung",
     "routerlink": "/homepage"
+  },
+  {
+    "icon": "school",
+    "modul": "Grundausbildung",
+    "rolle": "ADMIN, AUSBILDUNG",
+    "kategorie": "Geplant",
+    "routerlink": "/grundausbildung"
+  },
+  {
+    "icon": "emoji_events",
+    "modul": "Bewerb",
+    "rolle": "ADMIN, BEWERB",
+    "kategorie": "Geplant",
+    "routerlink": "/bewerb"
   }
 ]

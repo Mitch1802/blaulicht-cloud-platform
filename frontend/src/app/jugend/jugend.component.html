@@ -288,7 +288,7 @@
 
             <ng-container matColumnDef="teilnehmer">
               <th mat-header-cell *matHeaderCellDef>Teilnehmer</th>
-              <td mat-cell *matCellDef="let element">{{ getEventTeilnehmerText(element) }}</td>
+              <td mat-cell *matCellDef="let element">{{ element.teilnehmer?.length ?? 0 }}</td>
             </ng-container>
 
             <ng-container matColumnDef="actions">
