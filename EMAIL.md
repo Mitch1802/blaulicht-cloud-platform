@@ -71,12 +71,12 @@ Alle E-Mail-Einstellungen werden über Umgebungsvariablen gesteuert. Diese werde
 
 ```env
 DJANGO_EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
-DJANGO_EMAIL_HOST=smtp.example.com
+DJANGO_EMAIL_HOST=smtp.world4you.com
 DJANGO_EMAIL_PORT=587
 DJANGO_EMAIL_USE_TLS=True
-DJANGO_EMAIL_HOST_USER=noreply@feuerwehr.at
-DJANGO_EMAIL_HOST_PASSWORD=geheimes_passwort
-DJANGO_DEFAULT_FROM_EMAIL=noreply@feuerwehr.at
+DJANGO_EMAIL_HOST_USER=app@blaulichtcloud.at
+DJANGO_EMAIL_HOST_PASSWORD=9d9MXrBA9jKYmAMq
+DJANGO_DEFAULT_FROM_EMAIL=app@blaulichtcloud.at
 DJANGO_EMAIL_TIMEOUT=10
 ```
 

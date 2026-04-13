@@ -227,7 +227,8 @@ class AdminCreateUserSerializer(serializers.ModelSerializer):
         invite_sent = False
         if send_invite:
             invite_token = make_invite_token(user)
-            invite_url = build_invite_url(invite_token)
+            request = self.context.get("request")
+            invite_url = build_invite_url(invite_token, request=request)
             invite_sent = send_account_invite_email(
                 username=user.username,
                 email=user.email or "",

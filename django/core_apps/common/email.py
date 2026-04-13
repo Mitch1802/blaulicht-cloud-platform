@@ -7,15 +7,15 @@ from django.core.mail import send_mail
 logger = logging.getLogger(__name__)
 
 
-def _safe_frontend_base_url() -> str:
-    return str(getattr(settings, "FRONTEND_URL", "")).strip().rstrip("/")
-
-
-def build_invite_url(token: str) -> str:
-    frontend_base_url = _safe_frontend_base_url()
-    if not frontend_base_url:
+def build_invite_url(token: str, request=None) -> str:
+    if request is not None:
+        base = request.build_absolute_uri("/").rstrip("/")
+    else:
+        base = ""
+    if not base:
+        logger.warning("build_invite_url: kein request übergeben, Einladungs-URL kann nicht gebaut werden.")
         return ""
-    return f"{frontend_base_url}/einladung?token={quote(token)}"
+    return f"{base}/einladung?token={quote(token)}"
 
 
 def send_account_invite_email(username: str, email: str, invite_url: str, first_name: str = "") -> bool:
