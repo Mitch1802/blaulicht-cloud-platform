@@ -29,6 +29,9 @@ type KonfigResponse = { main: IKonfiguration[]; rollen: RolleEintrag[]; backups:
 type BackupOperationResponse = { msg?: string; backups?: string[] };
 type BackupCleanupItem = { target?: string; orphans?: string[] };
 type BackupCleanupResponse = { summary?: { orphan?: number }; deleted?: number; items?: BackupCleanupItem[] };
+type EmailTestType = 'account_invite' | 'service_reminder';
+type EmailTestResult = { key: string; label: string; sent: boolean };
+type EmailTestResponse = { email: string; result: EmailTestResult; available_types?: Array<{ key: EmailTestType; label: string }> };
 
 @Component({
     selector: 'app-konfiguration',
@@ -75,8 +78,15 @@ export class KonfigurationComponent implements OnInit {
   cleanupRunning = false;
   cleanupSummary = '';
   cleanupFiles: Array<{ target: string; targetLabel: string; filename: string }> = [];
+  emailTestRunning = false;
+  emailTestResult: EmailTestResult | null = null;
   backupFilter = '';
   cleanupFilter = '';
+
+  readonly emailTestTypeOptions: Array<{ key: EmailTestType; label: string }> = [
+    { key: 'account_invite', label: 'Einladungs-E-Mail' },
+    { key: 'service_reminder', label: 'Service-Erinnerung' },
+  ];
 
   private readonly cleanupTargetLabels: Record<string, string> = {
     all: 'Alle Pfade',
@@ -144,6 +154,12 @@ export class KonfigurationComponent implements OnInit {
     rolle: new FormControl('')
   });
 
+  emailTestControl = new FormControl('', [Validators.required, Validators.email]);
+  emailTestTypeControl = new FormControl<EmailTestType>('account_invite', {
+    nonNullable: true,
+    validators: [Validators.required],
+  });
+
   formKonfig = new FormGroup({
     id: new FormControl(''),
     fw_nummer: new FormControl('', Validators.required),
@@ -190,6 +206,10 @@ export class KonfigurationComponent implements OnInit {
               fw_iban: details.fw_iban,
               fw_bic: details.fw_bic
             })
+
+            if (!String(this.emailTestControl.value || '').trim()) {
+              this.emailTestControl.setValue(details.fw_email || '');
+            }
           }
           this.rollen = erg.rollen;
           this.backups = this.convertBackups(erg.backups);
@@ -439,6 +459,36 @@ export class KonfigurationComponent implements OnInit {
       error: (error: unknown) => {
         this.authSessionService.errorAnzeigen(error);
         this.cleanupRunning = false;
+      }
+    });
+  }
+
+  sendEmailTests(): void {
+    const email = String(this.emailTestControl.value || '').trim();
+    const emailType = this.emailTestTypeControl.value;
+    if (!email || this.emailTestControl.invalid || !emailType || this.emailTestTypeControl.invalid || this.emailTestRunning) {
+      this.emailTestControl.markAsTouched();
+      this.emailTestTypeControl.markAsTouched();
+      this.uiMessageService.erstelleMessage('error', 'Bitte eine gültige E-Mail-Adresse für den Test angeben.');
+      return;
+    }
+
+    this.emailTestRunning = true;
+    this.apiHttpService.post<EmailTestResponse>(`${this.modul2}/test-emails`, { email, email_type: emailType }, false).subscribe({
+      next: (response) => {
+        this.emailTestResult = response.result || null;
+
+        if (response.result?.sent) {
+          this.uiMessageService.erstelleMessage('success', `${response.result.label} wurde an ${response.email} versendet.`);
+        } else {
+          this.uiMessageService.erstelleMessage('info', `${response.result?.label || 'Test-E-Mail'} konnte nicht an ${response.email} versendet werden.`);
+        }
+      },
+      error: (error: unknown) => {
+        this.authSessionService.errorAnzeigen(error);
+      },
+      complete: () => {
+        this.emailTestRunning = false;
       }
     });
   }

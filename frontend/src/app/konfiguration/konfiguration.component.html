@@ -117,6 +117,53 @@
     </form>
   </imr-section>
 
+  <imr-section title="E-Mail Tests">
+    <div class="email-test-wrap">
+      <p class="email-test-copy">
+        Testet alle verfügbaren E-Mail-Typen mit einer frei wählbaren Empfängeradresse.
+      </p>
+
+      <div class="email-test-row imr-grid align-items-start">
+        <mat-form-field class="imr-full-width imr-col-12 imr-col-lg-6" appearance="outline">
+          <mat-label>Test-E-Mail-Adresse</mat-label>
+          <input matInput type="email" [formControl]="emailTestControl" placeholder="z. B. test@example.com" />
+          @if (emailTestControl.invalid && emailTestControl.touched) {
+            <mat-error>Bitte eine gültige E-Mail-Adresse eingeben.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field class="imr-full-width imr-col-12 imr-col-lg-3" appearance="outline">
+          <mat-label>E-Mail-Art</mat-label>
+          <mat-select [formControl]="emailTestTypeControl">
+            @for (emailType of emailTestTypeOptions; track emailType.key) {
+              <mat-option [value]="emailType.key">{{ emailType.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <button
+          mat-flat-button
+          color="accent"
+          class="imr-col-12 imr-col-lg-3"
+          type="button"
+          [disabled]="emailTestControl.invalid || emailTestTypeControl.invalid || emailTestRunning"
+          (click)="sendEmailTests()"
+        >
+          <mat-icon>mark_email_read</mat-icon>
+          Test-Mail senden
+        </button>
+      </div>
+
+      @if (emailTestResult) {
+        <mat-chip-set class="imr-chips email-test-results">
+          <mat-chip [highlighted]="true">
+            {{ emailTestResult.label }}: {{ emailTestResult.sent ? 'OK' : 'Fehler' }}
+          </mat-chip>
+        </mat-chip-set>
+      }
+    </div>
+  </imr-section>
+
   <imr-section [title]="title3">
       <section class="config-section backup-section">
         <header class="config-section-head">

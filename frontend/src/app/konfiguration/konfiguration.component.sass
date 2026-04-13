@@ -124,6 +124,24 @@
     overflow: hidden
     text-overflow: ellipsis
 
+.email-test-wrap
+    display: grid
+    gap: .55rem
+
+.email-test-copy
+    margin: 0
+    color: theme.$imr-text-muted
+
+.email-test-row
+    gap: .55rem
+    align-items: start
+
+    button
+        min-width: 220px
+
+.email-test-results
+    margin-top: .15rem
+
 @media (max-width: 768px)
     .config-section-head,
     .config-section-body
@@ -177,3 +195,7 @@
 
     .cleanup-summary
         margin: .6rem 0 .35rem
+
+    .email-test-row
+        button
+            width: 100%

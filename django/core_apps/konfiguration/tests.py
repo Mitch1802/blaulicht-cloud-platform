@@ -20,6 +20,7 @@ class KonfigurationEndpointTests(EndpointSmokeMixin, APITestCase):
     def test_all_konfiguration_endpoints_resolve(self):
         endpoints = [
             "konfiguration/",
+            "konfiguration/test-emails/",
             f"konfiguration/{uuid4()}/",
         ]
 
@@ -63,3 +64,71 @@ class KonfigurationEndpointTests(EndpointSmokeMixin, APITestCase):
     def test_konfiguration_model_str(self):
         obj = Konfiguration(fw_nummer="201", fw_name="FF Demo")
         self.assertEqual(str(obj), "FF Demo")
+
+    @patch("core_apps.konfiguration.views.send_service_reminder_email", return_value=True)
+    @patch("core_apps.konfiguration.views.send_account_invite_email", return_value=True)
+    def test_konfiguration_test_emails_admin_success(self, invite_mock, reminder_mock):
+        self.client.force_authenticate(user=self.admin)
+
+        response = self.request_method(
+            "post",
+            "konfiguration/test-emails/",
+            data={"email": "test@example.com", "email_type": "account_invite"},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["email"], "test@example.com")
+        self.assertEqual(response.data["result"]["key"], "account_invite")
+        self.assertTrue(response.data["result"]["sent"])
+        invite_mock.assert_called_once()
+        reminder_mock.assert_not_called()
+
+    @patch("core_apps.konfiguration.views.send_service_reminder_email", return_value=True)
+    @patch("core_apps.konfiguration.views.send_account_invite_email", return_value=True)
+    def test_konfiguration_test_emails_service_type_calls_only_service_mail(self, invite_mock, reminder_mock):
+        self.client.force_authenticate(user=self.admin)
+
+        response = self.request_method(
+            "post",
+            "konfiguration/test-emails/",
+            data={"email": "test@example.com", "email_type": "service_reminder"},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["result"]["key"], "service_reminder")
+        self.assertTrue(response.data["result"]["sent"])
+        invite_mock.assert_not_called()
+        reminder_mock.assert_called_once()
+
+    def test_konfiguration_test_emails_member_forbidden(self):
+        self.client.force_authenticate(user=self.member)
+
+        response = self.request_method(
+            "post",
+            "konfiguration/test-emails/",
+            data={"email": "test@example.com", "email_type": "account_invite"},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_konfiguration_test_emails_rejects_invalid_email(self):
+        self.client.force_authenticate(user=self.admin)
+
+        response = self.request_method(
+            "post",
+            "konfiguration/test-emails/",
+            data={"email": "ungueltig", "email_type": "account_invite"},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_konfiguration_test_emails_rejects_invalid_type(self):
+        self.client.force_authenticate(user=self.admin)
+
+        response = self.request_method(
+            "post",
+            "konfiguration/test-emails/",
+            data={"email": "test@example.com", "email_type": "invalid_type"},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
