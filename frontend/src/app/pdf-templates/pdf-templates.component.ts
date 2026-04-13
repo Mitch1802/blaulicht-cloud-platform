@@ -74,6 +74,7 @@ export class PdfTemplatesComponent implements OnInit {
     'ATEMSCHUTZ',
     'FMD',
     'INVENTAR',
+    'JUGEND',
     'VERWALTUNG',
   ];
 

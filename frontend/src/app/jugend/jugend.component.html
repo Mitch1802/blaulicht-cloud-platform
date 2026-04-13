@@ -297,6 +297,9 @@
                 <button mat-flat-button  color="primary" (click)="editEvent(element)">
                   <mat-icon class="m-0">edit</mat-icon>
                 </button>
+                <button mat-flat-button color="accent" type="button" (click)="druckeEventAusdruck(element)">
+                  <mat-icon class="m-0">picture_as_pdf</mat-icon>
+                </button>
               </td>
             </ng-container>
 
@@ -305,6 +308,41 @@
           </table>
         </div>
       }
+    </mat-tab>
+
+    <!-- Tab 3: Ausdrucke -->
+    <mat-tab label="Ausdrucke">
+      <div class="ausdrucke-hinweis">
+        Hier planst du naechste Teilnahmen nach Eventart. Einzelne Event-Ausdrucke findest du im Events-Tab.
+      </div>
+
+      <div class="ausdrucke-toolbar imr-grid">
+        <div class="imr-col-12 imr-col-lg-4">
+          <mat-form-field class="imr-full-width" appearance="outline">
+            <mat-label>Eventart</mat-label>
+            <mat-select [value]="ausdruckPlanKategorie" (selectionChange)="ausdruckPlanKategorie = $event.value">
+              <mat-option [value]="''">Bitte waehlen</mat-option>
+              @for (option of eventKategorien; track option.value) {
+                <mat-option [value]="option.value">{{ option.label }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="imr-col-12 imr-col-lg-4">
+          <mat-form-field class="imr-full-width" appearance="outline">
+            <mat-label>Geplantes Event-Datum</mat-label>
+            <input matInput appDateInputMask="dmy" placeholder="TT.MM.YYYY" [(ngModel)]="ausdruckPlanDatum" [ngModelOptions]="{ standalone: true }" />
+          </mat-form-field>
+        </div>
+
+        <div class="imr-col-12 imr-col-lg-4 ausdrucke-toolbar-actions">
+          <button mat-flat-button color="primary" type="button" (click)="planeNaechsteTeilnahmenAusdruck()">
+            <mat-icon class="m-0">event_note</mat-icon>
+            Naechste Teilnahmen planen
+          </button>
+        </div>
+      </div>
     </mat-tab>
 
   </mat-tab-group>

@@ -46,6 +46,22 @@ interface IModulKonfigurationEintrag {
   konfiguration?: unknown;
 }
 
+type PdfKonfiguration = {
+  idJugendEventReport?: string;
+  [key: string]: unknown;
+};
+
+type StammdatenKonfiguration = {
+  fw_name?: string;
+  fw_nummer?: string;
+  fw_street?: string;
+  fw_plz?: string;
+  fw_ort?: string;
+  fw_email?: string;
+  fw_telefon?: string;
+  [key: string]: unknown;
+};
+
 type JugendRegelTrackKey =
   | 'erprobung'
   | 'wissentest'
@@ -179,6 +195,10 @@ export class JugendComponent implements OnInit {
     jugendRegelConfig as IJugendRegelKonfiguration;
 
   private jugendRegelKonfiguration: IJugendRegelKonfiguration = this.defaultJugendRegelKonfiguration;
+  private pdfKonfiguration: PdfKonfiguration = {};
+  private stammdatenKonfiguration: StammdatenKonfiguration = {};
+  ausdruckPlanKategorie: JugendEventKategorie | '' = '';
+  ausdruckPlanDatum = '';
 
   showMitgliedDetail = false;
   showEventForm = false;
@@ -202,6 +222,7 @@ export class JugendComponent implements OnInit {
     this.loadMitglieder();
     this.loadAusbildung();
     this.loadEvents();
+    this.loadStammdatenKonfiguration();
     this.loadJugendRegelKonfiguration();
   }
 
@@ -782,6 +803,171 @@ export class JugendComponent implements OnInit {
       .join(', ');
   }
 
+  druckeEventAusdruck(event: IJugendEvent): void {
+    const templateId = String(this.pdfKonfiguration.idJugendEventReport ?? '').trim();
+    if (!templateId) {
+      this.uiMessageService.erstelleMessage(
+        'error',
+        'Kein PDF-Template konfiguriert. Bitte unter modul_konfiguration den Schlüssel "idJugendEventReport" setzen.',
+      );
+      return;
+    }
+
+    const eventKategorie = this.parseEventKategorie(event.kategorie);
+    if (!eventKategorie) {
+      this.uiMessageService.erstelleMessage('error', 'Event-Kategorie ist nicht gueltig.');
+      return;
+    }
+
+    const eventDatumIso = this.toIsoDateOrFallback(event.datum, this.formatDateIso(new Date()));
+    const eventTeilnehmerSet = new Set((event.teilnehmer ?? []).map((item) => item.pkid));
+    const mitgliederReport = this.baueMitgliederReport(
+      eventKategorie,
+      eventDatumIso,
+      Boolean(event.stand_x_override),
+      eventTeilnehmerSet,
+    );
+
+    const payload = {
+      druck_datum: new Date().toLocaleDateString('de-DE'),
+      ...this.buildStammdatenPayload(),
+      event: {
+        id: event.id,
+        titel: event.titel,
+        datum: eventDatumIso,
+        ort: event.ort ?? '',
+        kategorie: eventKategorie,
+        kategorie_label: this.getEventKategorieText(event),
+        stand_x_override: Boolean(event.stand_x_override),
+      },
+      jugendmitglieder: mitgliederReport,
+      teilnehmer_anzahl: eventTeilnehmerSet.size,
+      jugendmitglieder_anzahl: mitgliederReport.length,
+    };
+
+    const abfrageUrl = `pdf/templates/${templateId}/render`;
+    this.apiHttpService.postBlob(abfrageUrl, payload).subscribe({
+      next: (blob: Blob) => {
+        if (blob.size === 0) {
+          this.uiMessageService.erstelleMessage('error', 'PDF ist leer (0 Bytes).');
+          return;
+        }
+        const url = URL.createObjectURL(blob);
+        window.open(url, '_blank');
+      },
+      error: (error) => this.authSessionService.errorAnzeigen(error),
+    });
+  }
+
+  planeNaechsteTeilnahmenAusdruck(): void {
+    const templateId = String(this.pdfKonfiguration.idJugendEventReport ?? '').trim();
+    if (!templateId) {
+      this.uiMessageService.erstelleMessage(
+        'error',
+        'Kein PDF-Template konfiguriert. Bitte unter modul_konfiguration den Schlüssel "idJugendEventReport" setzen.',
+      );
+      return;
+    }
+
+    const kategorie = this.ausdruckPlanKategorie;
+    if (!kategorie) {
+      this.uiMessageService.erstelleMessage('error', 'Bitte zuerst eine Eventart auswählen.');
+      return;
+    }
+
+    const planDatumRaw = String(this.ausdruckPlanDatum ?? '').trim();
+    if (planDatumRaw === '') {
+      this.uiMessageService.erstelleMessage('error', 'Bitte das geplante Event-Datum angeben.');
+      return;
+    }
+
+    const parsedPlanDatum = this.parseDate(planDatumRaw);
+    if (!parsedPlanDatum && !/^\d{4}-\d{2}-\d{2}$/.test(planDatumRaw)) {
+      this.uiMessageService.erstelleMessage('error', 'Bitte ein gueltiges Datum angeben (TT.MM.JJJJ).');
+      return;
+    }
+
+    const eventDatumIso = this.toIsoDateOrFallback(planDatumRaw, this.formatDateIso(new Date()));
+    const mitgliederReport = this.baueMitgliederReport(
+      kategorie,
+      eventDatumIso,
+      false,
+      new Set<number>(),
+    );
+
+    const payload = {
+      druck_datum: new Date().toLocaleDateString('de-DE'),
+      ...this.buildStammdatenPayload(),
+      event: {
+        id: '',
+        titel: 'Planung naechste Teilnahmen',
+        datum: eventDatumIso,
+        ort: '',
+        kategorie,
+        kategorie_label: this.getKategorieLabel(kategorie),
+        stand_x_override: false,
+      },
+      jugendmitglieder: mitgliederReport,
+      teilnehmer_anzahl: 0,
+      jugendmitglieder_anzahl: mitgliederReport.length,
+      planungsmodus: true,
+    };
+
+    const abfrageUrl = `pdf/templates/${templateId}/render`;
+    this.apiHttpService.postBlob(abfrageUrl, payload).subscribe({
+      next: (blob: Blob) => {
+        if (blob.size === 0) {
+          this.uiMessageService.erstelleMessage('error', 'PDF ist leer (0 Bytes).');
+          return;
+        }
+        const url = URL.createObjectURL(blob);
+        window.open(url, '_blank');
+      },
+      error: (error) => this.authSessionService.errorAnzeigen(error),
+    });
+  }
+
+  private baueMitgliederReport(
+    eventKategorie: JugendEventKategorie,
+    eventDatumIso: string,
+    standXOverride: boolean,
+    eventTeilnehmerSet: Set<number>,
+  ): Array<Record<string, unknown>> {
+    return this.jugendMitglieder.map((mitglied) => {
+      const erreichteStufe = this.getBereitsErreichtesLevelFuerKategorie(mitglied, eventKategorie);
+      const erlaubteLevel = this.getErlaubteLevelFuerMitgliedUndKategorieImKontext(
+        mitglied,
+        eventKategorie,
+        eventDatumIso,
+        standXOverride,
+      );
+      const naechsteStufe = erlaubteLevel.length > 0 ? erlaubteLevel[0] : null;
+      const istFertigkeitsabzeichen = this.isFertigkeitsabzeichenKategorie(eventKategorie);
+
+      return {
+        stbnr: mitglied.stbnr,
+        vorname: mitglied.vorname,
+        nachname: mitglied.nachname,
+        dienstgrad: this.getRangText(mitglied.dienstgrad),
+        alter_bei_event: this.getAlterBeimEvent(mitglied, eventDatumIso),
+        teilnahme_markiert: eventTeilnehmerSet.has(mitglied.pkid),
+        teilnahme_text: eventTeilnehmerSet.has(mitglied.pkid) ? 'Ja' : 'Nein',
+        aktueller_stand_level: erreichteStufe,
+        aktueller_stand_text: erreichteStufe > 0
+          ? (istFertigkeitsabzeichen
+            ? this.getFertigkeitsabzeichenLevelDropdownLabel(erreichteStufe)
+            : this.getStandardLevelDropdownLabel(erreichteStufe))
+          : '-',
+        naechste_stufe_level: naechsteStufe,
+        naechste_stufe_text: naechsteStufe !== null
+          ? (istFertigkeitsabzeichen
+            ? this.getFertigkeitsabzeichenLevelDropdownLabel(naechsteStufe)
+            : this.getStandardLevelDropdownLabel(naechsteStufe))
+          : 'noch nicht berechtigt',
+      };
+    });
+  }
+
   private isLevelPflichtKategorie(kategorie: JugendEventKategorie | ''): boolean {
     if (kategorie === '') {
       return false;
@@ -844,6 +1030,20 @@ export class JugendComponent implements OnInit {
     mitglied: IMitglied,
     kategorie: JugendEventKategorie | '',
   ): number[] {
+    return this.getErlaubteLevelFuerMitgliedUndKategorieImKontext(
+      mitglied,
+      kategorie,
+      this.formEvent.controls.datum.value,
+      this.isVoraussetzungenOverrideAktiv(),
+    );
+  }
+
+  private getErlaubteLevelFuerMitgliedUndKategorieImKontext(
+    mitglied: IMitglied,
+    kategorie: JugendEventKategorie | '',
+    eventDatum: string,
+    voraussetzungenOverride: boolean,
+  ): number[] {
     if (kategorie === '') {
       return [];
     }
@@ -853,13 +1053,12 @@ export class JugendComponent implements OnInit {
       return [];
     }
 
-    const eventDatum = this.formEvent.controls.datum.value;
     const referenceDate = eventDatum ? (this.parseDate(eventDatum) ?? new Date()) : new Date();
     const age = this.getAlterAtDate(mitglied, referenceDate);
     const erreichteTokens = this.getErreichteTokensFuerMitglied(mitglied);
     const bereitsErreichtesLevel = this.getBereitsErreichtesLevelFuerKategorie(mitglied, kategorie);
     const maxLevel = this.getMaxLevelForKategorie(kategorie);
-    if (this.isVoraussetzungenOverrideAktiv()) {
+    if (voraussetzungenOverride) {
       return Array.from({ length: maxLevel }, (_, idx) => idx + 1)
         .filter((level) => level > bereitsErreichtesLevel);
     }
@@ -1042,6 +1241,15 @@ export class JugendComponent implements OnInit {
     this.apiHttpService.get<unknown>('modul_konfiguration').subscribe({
       next: (erg) => {
         const eintraege = this.extractModulKonfigurationListe(erg);
+        const pdfEintrag = eintraege.find(
+          (item) => String(item?.modul ?? '').trim().toLowerCase() === 'pdf',
+        );
+        if (pdfEintrag && typeof pdfEintrag.konfiguration === 'object' && pdfEintrag.konfiguration !== null) {
+          this.pdfKonfiguration = pdfEintrag.konfiguration as PdfKonfiguration;
+        } else {
+          this.pdfKonfiguration = {};
+        }
+
         const jugendEintrag = eintraege.find(
           (item) => String(item?.modul ?? '').trim().toLowerCase() === 'jugend',
         );
@@ -1056,9 +1264,51 @@ export class JugendComponent implements OnInit {
         );
       },
       error: () => {
+        this.pdfKonfiguration = {};
         this.jugendRegelKonfiguration = this.defaultJugendRegelKonfiguration;
       },
     });
+  }
+
+  private loadStammdatenKonfiguration(): void {
+    this.apiHttpService.get<unknown>('konfiguration').subscribe({
+      next: (erg) => {
+        const eintrag = this.extractStammdatenEintrag(erg);
+        this.stammdatenKonfiguration = eintrag ?? {};
+      },
+      error: () => {
+        this.stammdatenKonfiguration = {};
+      },
+    });
+  }
+
+  private extractStammdatenEintrag(payload: unknown): StammdatenKonfiguration | null {
+    if (Array.isArray(payload)) {
+      return (payload[0] as StammdatenKonfiguration) ?? null;
+    }
+
+    if (payload && typeof payload === 'object') {
+      const main = (payload as { main?: unknown }).main;
+      if (Array.isArray(main)) {
+        return (main[0] as StammdatenKonfiguration) ?? null;
+      }
+
+      return payload as StammdatenKonfiguration;
+    }
+
+    return null;
+  }
+
+  private buildStammdatenPayload(): Record<string, string> {
+    return {
+      fw_name: String(this.stammdatenKonfiguration.fw_name ?? ''),
+      fw_nummer: String(this.stammdatenKonfiguration.fw_nummer ?? ''),
+      fw_street: String(this.stammdatenKonfiguration.fw_street ?? ''),
+      fw_plz: String(this.stammdatenKonfiguration.fw_plz ?? ''),
+      fw_ort: String(this.stammdatenKonfiguration.fw_ort ?? ''),
+      fw_email: String(this.stammdatenKonfiguration.fw_email ?? ''),
+      fw_telefon: String(this.stammdatenKonfiguration.fw_telefon ?? ''),
+    };
   }
 
   private extractModulKonfigurationListe(payload: unknown): IModulKonfigurationEintrag[] {

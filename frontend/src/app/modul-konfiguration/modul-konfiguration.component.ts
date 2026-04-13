@@ -139,6 +139,7 @@ export class ModulKonfigurationComponent implements OnInit {
   pdfExports = [
     { key: 'idFmdDeckblatt', label: 'FMD: Deckblatt (Checkliste)' },
     { key: 'idFmdListe', label: 'FMD: Listen (Tauglichkeit/Leistungstest/Untersuchungen)' },
+    { key: 'idJugendEventReport', label: 'JUGEND: Event-Ausdruck (naechste Stufe)' },
     { key: 'idVerwaltungTombola', label: 'VERWALTUNG: Tombolabestätigung' },
     { key: 'idVerwaltungRechnung', label: 'VERWALTUNG: Rechnungsaufstellung' },
     { key: 'idEinsatzberichtPdf', label: 'EINSATZBERICHT: Einsatzbericht PDF' },
@@ -150,6 +151,7 @@ export class ModulKonfigurationComponent implements OnInit {
   pdfMappingForm = new FormGroup({
     idFmdDeckblatt: new FormControl<string | null>(null, Validators.required),
     idFmdListe: new FormControl<string | null>(null, Validators.required),
+    idJugendEventReport: new FormControl<string | null>(null),
     idVerwaltungTombola: new FormControl<string | null>(null, Validators.required),
     idVerwaltungRechnung: new FormControl<string | null>(null, Validators.required),
     idEinsatzberichtPdf: new FormControl<string | null>(null),
@@ -238,6 +240,7 @@ export class ModulKonfigurationComponent implements OnInit {
       objekt.konfiguration = {
         idFmdDeckblatt: this.pdfMappingForm.controls['idFmdDeckblatt'].value,
         idFmdListe: this.pdfMappingForm.controls['idFmdListe'].value,
+        idJugendEventReport: this.pdfMappingForm.controls['idJugendEventReport'].value,
         idVerwaltungTombola: this.pdfMappingForm.controls['idVerwaltungTombola'].value,
         idVerwaltungRechnung: this.pdfMappingForm.controls['idVerwaltungRechnung'].value,
         idEinsatzberichtPdf: this.pdfMappingForm.controls['idEinsatzberichtPdf'].value,
@@ -360,6 +363,7 @@ export class ModulKonfigurationComponent implements OnInit {
     this.pdfMappingForm.patchValue({
       idFmdDeckblatt: this.stringOrNull(cfg['idFmdDeckblatt']),
       idFmdListe: this.stringOrNull(cfg['idFmdListe']),
+      idJugendEventReport: this.stringOrNull(cfg['idJugendEventReport']),
       idVerwaltungTombola: this.stringOrNull(cfg['idVerwaltungTombola']),
       idVerwaltungRechnung: this.stringOrNull(cfg['idVerwaltungRechnung']),
       idEinsatzberichtPdf: this.stringOrNull(cfg['idEinsatzberichtPdf']),
