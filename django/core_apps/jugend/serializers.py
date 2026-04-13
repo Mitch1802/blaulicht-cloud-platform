@@ -93,6 +93,10 @@ class JugendEventSerializer(serializers.ModelSerializer):
         if self.instance is not None and kategorie is None:
             kategorie = self.instance.kategorie
 
+        stand_x_override = attrs.get("stand_x_override")
+        if self.instance is not None and stand_x_override is None:
+            stand_x_override = self.instance.stand_x_override
+
         teilnehmer_ids = attrs.get("teilnehmer_ids")
         teilnehmer_levels = attrs.get("teilnehmer_levels")
 
@@ -120,7 +124,7 @@ class JugendEventSerializer(serializers.ModelSerializer):
                     }
                 )
 
-        if kategorie is not None and teilnehmer_levels is not None:
+        if kategorie is not None and teilnehmer_levels is not None and stand_x_override is not True:
             ausbildung_by_pkid = {
                 ausbildung.mitglied.pkid: ausbildung
                 for ausbildung in JugendAusbildung.objects.select_related("mitglied").filter(

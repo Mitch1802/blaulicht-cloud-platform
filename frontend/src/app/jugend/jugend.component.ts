@@ -15,6 +15,7 @@ import { UiMessageService } from 'src/app/_service/ui-message.service';
 import { DateInputMaskDirective } from '../_directive/date-input-mask.directive';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
@@ -496,8 +497,9 @@ export class JugendComponent implements OnInit {
     this.synchronisiereTitelMitKategorie();
   }
 
-  onStandXOverrideGeaendert(): void {
-    this.ensureTeilnehmerLevelInRange();
+  onStandXOverrideGeaendert(event: MatCheckboxChange): void {
+    this.formEvent.controls.stand_x_override.setValue(event.checked);
+    this.ensureTeilnehmerLevelInRange(event.checked);
   }
 
   getAusgewaehlteEventMitglieder(): IMitglied[] {
@@ -524,9 +526,10 @@ export class JugendComponent implements OnInit {
   }
 
   getLevelOptionenForMitglied(mitglied: IMitglied): number[] {
-    return this.getErlaubteLevelFuerMitgliedUndKategorie(
+    return this.getEventLevelOptionenForMitglied(
       mitglied,
       this.formEvent.controls.kategorie.value,
+      this.isVoraussetzungenOverrideAktiv(),
     );
   }
 
@@ -988,53 +991,72 @@ export class JugendComponent implements OnInit {
     return 5;
   }
 
-  private ensureTeilnehmerLevelInRange(): void {
+  private ensureTeilnehmerLevelInRange(voraussetzungenOverride = this.isVoraussetzungenOverrideAktiv()): void {
     for (const [pkid, level] of this.teilnehmerLevelByPkid.entries()) {
       if (level === null || level === undefined) {
         continue;
       }
 
-      if (!this.istEventLevelErlaubt(pkid, level)) {
+      if (!this.istEventLevelErlaubt(pkid, level, voraussetzungenOverride)) {
         this.teilnehmerLevelByPkid.set(pkid, null);
       }
     }
   }
 
-  private istEventLevelErlaubt(pkid: number, level: number): boolean {
+  private istEventLevelErlaubt(pkid: number, level: number, voraussetzungenOverride = this.isVoraussetzungenOverrideAktiv()): boolean {
     const mitglied = this.jugendMitglieder.find((item) => item.pkid === pkid);
     if (!mitglied) {
       return false;
     }
 
-    const erlaubteLevel = this.getErlaubteLevelFuerMitgliedUndKategorie(
+    const erlaubteLevel = this.getEventLevelOptionenForMitglied(
       mitglied,
       this.formEvent.controls.kategorie.value,
+      voraussetzungenOverride,
     );
     return erlaubteLevel.includes(level);
   }
 
-  private hatErlaubteEventLevel(pkid: number): boolean {
+  private hatErlaubteEventLevel(pkid: number, voraussetzungenOverride = this.isVoraussetzungenOverrideAktiv()): boolean {
     const mitglied = this.jugendMitglieder.find((item) => item.pkid === pkid);
     if (!mitglied) {
       return false;
     }
 
-    const erlaubteLevel = this.getErlaubteLevelFuerMitgliedUndKategorie(
+    const erlaubteLevel = this.getEventLevelOptionenForMitglied(
       mitglied,
       this.formEvent.controls.kategorie.value,
+      voraussetzungenOverride,
     );
     return erlaubteLevel.length > 0;
+  }
+
+  private getEventLevelOptionenForMitglied(
+    mitglied: IMitglied,
+    kategorie: JugendEventKategorie | '',
+    voraussetzungenOverride: boolean,
+  ): number[] {
+    if (kategorie === '') {
+      return [];
+    }
+
+    if (voraussetzungenOverride) {
+      return Array.from({ length: this.getMaxLevelForKategorie(kategorie) }, (_, index) => index + 1);
+    }
+
+    return this.getErlaubteLevelFuerMitgliedUndKategorie(mitglied, kategorie, false);
   }
 
   private getErlaubteLevelFuerMitgliedUndKategorie(
     mitglied: IMitglied,
     kategorie: JugendEventKategorie | '',
+    voraussetzungenOverride = this.isVoraussetzungenOverrideAktiv(),
   ): number[] {
     return this.getErlaubteLevelFuerMitgliedUndKategorieImKontext(
       mitglied,
       kategorie,
       this.formEvent.controls.datum.value,
-      this.isVoraussetzungenOverrideAktiv(),
+      voraussetzungenOverride,
     );
   }
 

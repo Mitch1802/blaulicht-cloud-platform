@@ -282,6 +282,36 @@ class JugendApiTests(EndpointSmokeMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("teilnehmer_levels", response.data)
 
+    def test_event_override_allows_manually_setting_already_reached_level(self):
+        self.client.force_authenticate(user=self.user_jugend)
+        JugendAusbildung.objects.create(
+            mitglied=self.jugend_mitglied,
+            wissentest_lv1=True,
+            wissentest_lv2=True,
+            wissentest_lv3=True,
+            wissentest_lv4=True,
+        )
+
+        payload = {
+            "titel": "Wissentest Override",
+            "datum": "15.07.2026",
+            "ort": "Feuerwehrhaus",
+            "kategorie": "WISSENSTEST",
+            "stand_x_override": True,
+            "teilnehmer_ids": [self.jugend_mitglied.pkid],
+            "teilnehmer_levels": [
+                {
+                    "pkid": self.jugend_mitglied.pkid,
+                    "level": 2,
+                }
+            ],
+        }
+
+        response = self.request_method("post", "jugend/events/", data=payload)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(response.data.get("stand_x_override"))
+        self.assertEqual(response.data["teilnehmer"][0].get("level"), 2)
+
     def test_event_update_removing_member_rebuilds_ausbildung(self):
         self.client.force_authenticate(user=self.user_jugend)
         weiteres_jugend_mitglied = Mitglied.objects.create(
