@@ -277,6 +277,7 @@ class UserSecurityTests(APITestCase):
         created_user = User.objects.get(username="neu_user_invite")
         self.assertFalse(created_user.has_usable_password())
         self.assertTrue(created_user.has_role("MITGLIED"))
+        self.assertIsNotNone(created_user.last_invite_sent_at)
         send_invite_email_mock.assert_called_once()
 
     def test_admin_create_user_invite_mode_requires_email(self):
@@ -311,6 +312,70 @@ class UserSecurityTests(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    @patch("core_apps.users.serializers.send_account_invite_email", return_value=True)
+    def test_admin_can_resend_invite_for_user_without_password(self, send_invite_email_mock):
+        invited_user = User.objects.create_user(
+            username="invite_again",
+            email="invite-again@example.com",
+            password=None,
+        )
+        invited_user.set_unusable_password()
+        invited_user.save(update_fields=["password"])
+
+        self.client.force_authenticate(user=self.admin)
+
+        url = reverse("user-resend-invite", kwargs={"id": invited_user.id})
+        response = self.client.post(url, {}, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(response.data["invite_sent"])
+        self.assertTrue(response.data["user"]["can_resend_invite"])
+        self.assertEqual(response.data["user"]["invite_status"], "invite_pending")
+        self.assertIsNotNone(response.data["user"]["last_invite_sent_at"])
+        invited_user.refresh_from_db()
+        self.assertIsNotNone(invited_user.last_invite_sent_at)
+        send_invite_email_mock.assert_called_once()
+
+    def test_admin_cannot_resend_invite_for_user_with_password(self):
+        invited_user = User.objects.create_user(
+            username="already_set",
+            email="already-set@example.com",
+            password="Strong!123Passwort",
+        )
+
+        self.client.force_authenticate(user=self.admin)
+
+        url = reverse("user-resend-invite", kwargs={"id": invited_user.id})
+        response = self.client.post(url, {}, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("detail", response.data)
+
+    def test_user_list_contains_password_status_fields(self):
+        invited_user = User.objects.create_user(
+            username="pending_user",
+            email="pending@example.com",
+            password=None,
+        )
+        invited_user.set_unusable_password()
+        invited_user.save(update_fields=["password"])
+
+        self.client.force_authenticate(user=self.admin)
+
+        response = self.client.get(reverse("user-list"), format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        users = response.data if isinstance(response.data, list) else response.data["data"]
+        pending_entry = next(user for user in users if user["id"] == str(invited_user.id))
+        admin_entry = next(user for user in users if user["id"] == str(self.admin.id))
+
+        self.assertFalse(pending_entry["password_set"])
+        self.assertEqual(pending_entry["invite_status"], "invite_pending")
+        self.assertTrue(pending_entry["can_resend_invite"])
+        self.assertIsNone(pending_entry["last_invite_sent_at"])
+        self.assertTrue(admin_entry["password_set"])
+        self.assertEqual(admin_entry["invite_status"], "password_set")
 
 
 class PublicTokenHelperTests(TestCase):
@@ -352,6 +417,7 @@ class UsersEndpointSmokeTests(EndpointSmokeMixin, APITestCase):
             f"users/{uuid4()}/",
             "users/create/",
             f"users/change_password/{uuid4()}/",
+            f"users/resend_invite/{uuid4()}/",
             "users/rolle/",
             "users/rolle/1/",
             "auth/csrf/",
@@ -426,6 +492,7 @@ class UsersEndpointSmokeTests(EndpointSmokeMixin, APITestCase):
             f"users/{uuid4()}/",
             "users/create/",
             f"users/change_password/{uuid4()}/",
+            f"users/resend_invite/{uuid4()}/",
             "users/rolle/",
             "users/rolle/1/",
             "auth/csrf/",

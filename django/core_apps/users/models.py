@@ -29,6 +29,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(verbose_name=_("email address"), null=True, blank=True)
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(default=timezone.now)
+    last_invite_sent_at = models.DateTimeField(null=True, blank=True)
 
     # Mitgliederzugehörigkeit (optional)
     mitglied = models.OneToOneField(

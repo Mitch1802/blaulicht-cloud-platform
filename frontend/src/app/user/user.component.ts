@@ -56,6 +56,11 @@ type UserCreateResponse = {
   invite_sent?: boolean;
 };
 
+type UserInviteResponse = {
+  user?: IBenutzer;
+  invite_sent?: boolean;
+};
+
 type UserUpdateResponse = {
   data: IBenutzer;
 };
@@ -114,6 +119,7 @@ export class UserComponent implements OnInit {
   modul = 'users';
   username = '';
   sendInviteMode = true;
+  editedUser: IBenutzer | null = null;
 
   dataSource = new MatTableDataSource<IBenutzer>([]);
 
@@ -138,8 +144,8 @@ export class UserComponent implements OnInit {
   rollenUebersichtSpalten: string[] = ['benutzer'];
   rollenMatrix: Record<string, string[]> = {};
   rollenMatrixDirty: Set<string> = new Set();
-  private readonly desktopSpaltenBenutzer = ['username', 'mitglied_name', 'rolle', 'actions'];
-  private readonly mobileSpaltenBenutzer = ['username', 'rolle', 'actions'];
+  private readonly desktopSpaltenBenutzer = ['username', 'mitglied_name', 'rolle', 'status', 'actions'];
+  private readonly mobileSpaltenBenutzer = ['username', 'status', 'actions'];
   sichtbareSpaltenBenutzer: string[] = [...this.desktopSpaltenBenutzer];
 
   private normalizeFilterValue(value: string): string {
@@ -152,8 +158,9 @@ export class UserComponent implements OnInit {
     const roles = this.normalizeRoleKeys(user?.roles)
       .map((roleKey) => this.rollen.find((rolle) => rolle.key === roleKey)?.verbose_name || roleKey)
       .join(' ');
+    const statusLabel = this.getInviteStatusLabel(user);
 
-    return `${user.username} ${mitgliedLabel} ${roles}`.toLowerCase();
+    return `${user.username} ${mitgliedLabel} ${roles} ${statusLabel}`.toLowerCase();
   }
 
   private createEmptyFormValue(): UserFormValue {
@@ -228,10 +235,18 @@ export class UserComponent implements OnInit {
   private setUsers(users: IBenutzer[]): void {
     this.benutzer = this.sortUsers(users);
     this.dataSource.data = this.benutzer;
+
+    if (this.editedUser?.id) {
+      this.editedUser = this.benutzer.find((user) => user.id === this.editedUser?.id) || this.editedUser;
+    }
   }
 
   private findMitgliedById(mitgliedId: number | null | undefined): IMitglied | undefined {
     return this.mitglieder.find((mitglied) => mitglied.pkid === mitgliedId);
+  }
+
+  private updateEditedUser(user: IBenutzer | null): void {
+    this.editedUser = user;
   }
 
   private updateCredentialValidators(): void {
@@ -254,6 +269,7 @@ export class UserComponent implements OnInit {
 
   private resetEditor(disabled = true): void {
     this.username = '';
+    this.updateEditedUser(null);
     this.formModul.reset(this.createEmptyFormValue());
     this.mitgliedSuche.setValue('');
     this.sendInviteMode = true;
@@ -401,6 +417,7 @@ export class UserComponent implements OnInit {
       next: (erg: UserDetailResponse) => {
         const details = erg.data.user;
         this.username = details.username;
+        this.updateEditedUser(details);
         this.sendInviteMode = false;
         this.formModul.enable();
 
@@ -540,6 +557,23 @@ export class UserComponent implements OnInit {
     }
   }
 
+  getInviteSentAtLabel(user: IBenutzer | null | undefined): string {
+    const rawValue = user?.last_invite_sent_at;
+    if (!rawValue) {
+      return 'Noch nicht versendet';
+    }
+
+    const parsed = new Date(rawValue);
+    if (Number.isNaN(parsed.getTime())) {
+      return 'Unbekannter Zeitpunkt';
+    }
+
+    return new Intl.DateTimeFormat('de-AT', {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    }).format(parsed);
+  }
+
   applyFilter(value: string): void {
     this.dataSource.filter = this.normalizeFilterValue(value);
     this.paginator?.firstPage();
@@ -567,6 +601,17 @@ export class UserComponent implements OnInit {
       next: () => {
         this.formModul.controls.password1.setValue('');
         this.formModul.controls.password2.setValue('');
+        const currentUser = this.benutzer.find((user) => user.id === idValue);
+        if (currentUser) {
+          const updatedUser: IBenutzer = {
+            ...currentUser,
+            password_set: true,
+            invite_status: 'password_set',
+            can_resend_invite: false,
+          };
+          this.setUsers(this.benutzer.map((user) => user.id === idValue ? updatedUser : user));
+          this.updateEditedUser(updatedUser);
+        }
         this.uiMessageService.erstelleMessage('success', 'User Passwort erfolgreich geändert!');
       },
       error: (error: unknown) => {
@@ -597,6 +642,67 @@ export class UserComponent implements OnInit {
 
   isAdminUser(user: IBenutzer): boolean {
     return this.normalizeRoleKeys(user?.roles).includes('ADMIN');
+  }
+
+  hasPasswordSet(user: IBenutzer): boolean {
+    return Boolean(user?.password_set);
+  }
+
+  canResendInvite(user: IBenutzer): boolean {
+    return Boolean(user?.can_resend_invite);
+  }
+
+  getInviteStatusLabel(user: IBenutzer): string {
+    switch (user?.invite_status) {
+      case 'password_set':
+        return 'Passwort vergeben';
+      case 'invite_pending':
+        return 'Einladung offen';
+      case 'missing_email':
+        return 'Keine E-Mail';
+      default:
+        return this.hasPasswordSet(user) ? 'Passwort vergeben' : 'Unbekannt';
+    }
+  }
+
+  getInviteStatusClass(user: IBenutzer): string {
+    switch (user?.invite_status) {
+      case 'password_set':
+        return 'status-badge success-badge';
+      case 'invite_pending':
+        return 'status-badge warning-badge';
+      case 'missing_email':
+        return 'status-badge neutral-badge';
+      default:
+        return 'status-badge neutral-badge';
+    }
+  }
+
+  resendInvite(user: IBenutzer): void {
+    if (!user?.id || !this.canResendInvite(user)) {
+      return;
+    }
+
+    this.apiHttpService.post<UserInviteResponse>(`users/resend_invite/${user.id}`, {}, false).subscribe({
+      next: (erg: UserInviteResponse) => {
+        const updatedUser = erg.user;
+        if (updatedUser) {
+          this.setUsers(this.benutzer.map((entry) => entry.id === updatedUser.id ? updatedUser : entry));
+          if (this.formModul.controls.id.value === updatedUser.id) {
+            this.updateEditedUser(updatedUser);
+          }
+        }
+
+        if (erg.invite_sent) {
+          this.uiMessageService.erstelleMessage('success', `Einladungslink an ${user.username} erneut versendet.`);
+        } else {
+          this.uiMessageService.erstelleMessage('info', `Einladungslink für ${user.username} konnte nicht versendet werden.`);
+        }
+      },
+      error: (error: unknown) => {
+        this.authSessionService.errorAnzeigen(error);
+      }
+    });
   }
 
   initRollenMatrix(): void {

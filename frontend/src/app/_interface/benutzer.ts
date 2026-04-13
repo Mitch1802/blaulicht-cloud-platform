@@ -8,6 +8,10 @@ export interface IBenutzer {
     is_active: boolean,
     password: string,
     roles: BenutzerRolle[] | string,
-    mitglied_id?: number | null
+    mitglied_id?: number | null,
+    last_invite_sent_at?: string | null,
+    password_set?: boolean,
+    invite_status?: 'password_set' | 'invite_pending' | 'missing_email',
+    can_resend_invite?: boolean
 }
 

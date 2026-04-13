@@ -8,7 +8,8 @@ from .views import (
     ChangePasswordView,
     RoleViewSet,
     CustomUserDetailsView,
-    AdminCreateUserView
+    AdminCreateUserView,
+    ResendInviteView,
 )
 
 router = DefaultRouter()
@@ -21,5 +22,6 @@ urlpatterns = [
     path("<uuid:id>/", UserRetrieveUpdateDestroyView.as_view(), name="user-retrieve-update-destroy"),
     path("create/", AdminCreateUserView.as_view(), name="user-create"),
     path("change_password/<uuid:id>/", ChangePasswordView.as_view(), name="user-change-password"),
+    path("resend_invite/<uuid:id>/", ResendInviteView.as_view(), name="user-resend-invite"),
     path("", include(router.urls)),
 ]

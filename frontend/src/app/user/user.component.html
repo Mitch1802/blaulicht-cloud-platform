@@ -47,11 +47,28 @@
                 </td>
               </ng-container>
 
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef>Status</th>
+                <td mat-cell *matCellDef="let element" class="status-cell">
+                  <span [class]="getInviteStatusClass(element)">{{ getInviteStatusLabel(element) }}</span>
+                  <span class="status-meta">{{ getInviteSentAtLabel(element) }}</span>
+                </td>
+              </ng-container>
+
               <ng-container matColumnDef="actions">
                 <th mat-header-cell *matHeaderCellDef class="imr-table-actions-head">Aktionen</th>
                 <td mat-cell *matCellDef="let element" class="imr-action-cell">
+                  @if (canResendInvite(element)) {
+                    <button mat-flat-button
+                      color="accent"
+                      type="button"
+                      (click)="resendInvite(element)"
+                      [attr.aria-label]="'Einladungslink für ' + element.username + ' erneut versenden'"
+                    >
+                      <mat-icon class="m-0">mail</mat-icon>
+                    </button>
+                  }
                   <button mat-flat-button
-                    
                     color="primary"
                     (click)="auswahlBearbeiten(element)"
                     [attr.aria-label]="'Benutzer ' + element.username + ' bearbeiten'"
@@ -157,6 +174,28 @@
               <section class="password-note">
                 <p>Das Benutzer Passwort kann nur durch "Passwort ändern" geändert werden!</p>
               </section>
+              @if (editedUser) {
+                <section class="invite-status-panel imr-grid">
+                  <div class="imr-col-12 imr-col-lg-4 invite-status-copy">
+                    <span class="invite-status-label">Status</span>
+                    <span [class]="getInviteStatusClass(editedUser)">{{ getInviteStatusLabel(editedUser) }}</span>
+                  </div>
+                  <div class="imr-col-12 imr-col-lg-4 invite-status-copy">
+                    <span class="invite-status-label">Zuletzt gesendet</span>
+                    <span class="invite-status-value">{{ getInviteSentAtLabel(editedUser) }}</span>
+                  </div>
+                  <div class="imr-col-12 imr-col-lg-4 invite-status-action">
+                    <button mat-flat-button
+                      color="accent"
+                      type="button"
+                      [disabled]="!canResendInvite(editedUser)"
+                      (click)="resendInvite(editedUser)"
+                    >
+                      Einladungslink erneut senden
+                    </button>
+                  </div>
+                </section>
+              }
             } @else {
               <section class="password-note">
                 <mat-checkbox

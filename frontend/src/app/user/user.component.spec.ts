@@ -19,8 +19,30 @@ const MOCK_ROLLEN = [
 ];
 
 const MOCK_BENUTZER = [
-  { id: '1', username: 'user1', name: 'User One', is_active: true, password: '', roles: ['PROTOKOLL'] },
-  { id: '2', username: 'admin', name: 'Admin User', is_active: true, password: '', roles: ['ADMIN'] },
+  {
+    id: '1',
+    username: 'user1',
+    name: 'User One',
+    is_active: true,
+    password: '',
+    roles: ['PROTOKOLL'],
+    last_invite_sent_at: '2026-04-13T10:30:00Z',
+    password_set: false,
+    invite_status: 'invite_pending',
+    can_resend_invite: true,
+  },
+  {
+    id: '2',
+    username: 'admin',
+    name: 'Admin User',
+    is_active: true,
+    password: '',
+    roles: ['ADMIN'],
+    last_invite_sent_at: null,
+    password_set: true,
+    invite_status: 'password_set',
+    can_resend_invite: false,
+  },
 ] satisfies IBenutzer[];
 
 type UserCreateResponse = {
@@ -47,7 +69,7 @@ describe('UserComponent', () => {
     breakpointObserverSpy = jasmine.createSpyObj<BreakpointObserver>('BreakpointObserver', ['observe']);
 
     navigationServiceSpy.ladeBreadcrumb.and.returnValue([]);
-    collectionUtilsServiceSpy.arraySortByKey.and.callFake((array: IBenutzer[]) => array);
+    collectionUtilsServiceSpy.arraySortByKey.and.callFake(<T extends object>(array: T[]) => array);
     breakpointObserverSpy.observe.and.returnValue(of({ matches: false, breakpoints: {} as Record<string, boolean> }));
     apiHttpServiceSpy.get.and.callFake(<T>(url: string) => {
       if (url === 'users/context') {
@@ -55,7 +77,12 @@ describe('UserComponent', () => {
       }
       return of({ data: [] } as T);
     });
-    apiHttpServiceSpy.post.and.returnValue(of({}));
+    apiHttpServiceSpy.post.and.callFake(<T>(url: string) => {
+      if (url.startsWith('users/resend_invite/')) {
+        return of({ user: MOCK_BENUTZER[0], invite_sent: true } as T);
+      }
+      return of({} as T);
+    });
     apiHttpServiceSpy.patch.and.returnValue(of({ data: MOCK_BENUTZER[0] }));
     apiHttpServiceSpy.delete.and.returnValue(of({}));
 
@@ -172,6 +199,25 @@ describe('UserComponent', () => {
 
       expect(apiHttpServiceSpy.post).not.toHaveBeenCalled();
       expect(uiMessageServiceSpy.erstelleMessage).toHaveBeenCalledWith('error', jasmine.stringMatching(/Initialpasswort/));
+    });
+
+    it('zeigt den Invite-Status eines Benutzers an', () => {
+      expect(component.getInviteStatusLabel(MOCK_BENUTZER[0])).toBe('Einladung offen');
+      expect(component.getInviteStatusLabel(MOCK_BENUTZER[1])).toBe('Passwort vergeben');
+      expect(component.getInviteSentAtLabel(MOCK_BENUTZER[0])).not.toBe('Noch nicht versendet');
+      expect(component.getInviteSentAtLabel(MOCK_BENUTZER[1])).toBe('Noch nicht versendet');
+      expect(component.canResendInvite(MOCK_BENUTZER[0])).toBeTrue();
+      expect(component.canResendInvite(MOCK_BENUTZER[1])).toBeFalse();
+    });
+
+    it('versendet einen Einladungslink erneut', () => {
+      component['benutzer'] = [...MOCK_BENUTZER];
+      component.dataSource.data = [...MOCK_BENUTZER];
+
+      component.resendInvite(MOCK_BENUTZER[0]);
+
+      expect(apiHttpServiceSpy.post).toHaveBeenCalledWith('users/resend_invite/1', {}, false);
+      expect(uiMessageServiceSpy.erstelleMessage).toHaveBeenCalledWith('success', jasmine.stringMatching(/erneut versendet/));
     });
   });
 });

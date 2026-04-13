@@ -19,6 +19,7 @@ from .serializers import (
     RoleSerializer,
     UserSelfSerializer,
     UserSerializer,
+    send_user_invite,
 )
 from .invite_tokens import resolve_invite_token
 from core_apps.common.permissions import IsAdminPermission, HasAnyRolePermission
@@ -166,6 +167,38 @@ class AdminCreateUserView(generics.CreateAPIView):
                 "invite_sent": invite_sent,
             },
             status=status.HTTP_201_CREATED,
+        )
+
+
+class ResendInviteView(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsAdminPermission]
+
+    def post(self, request, id):
+        try:
+            user = User.objects.get(id=id)
+        except User.DoesNotExist:
+            raise Http404
+
+        if user.has_usable_password():
+            return Response(
+                {"detail": "Der Benutzer hat bereits ein Passwort vergeben."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if not str(user.email or "").strip():
+            return Response(
+                {"detail": "Für diesen Benutzer ist keine E-Mail-Adresse hinterlegt."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        invite_sent = send_user_invite(user, request=request)
+
+        return Response(
+            {
+                "user": UserSerializer(user).data,
+                "invite_sent": invite_sent,
+            },
+            status=status.HTTP_200_OK,
         )
 
 

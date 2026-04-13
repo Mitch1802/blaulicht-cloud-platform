@@ -2,6 +2,7 @@ import logging
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
+from django.utils import timezone
 from rest_framework import serializers
 
 from core_apps.common.email import build_invite_url, send_account_invite_email
@@ -11,6 +12,28 @@ from .invite_tokens import make_invite_token
 logger = logging.getLogger(__name__)
 
 User = get_user_model()
+
+
+def _get_user_invite_first_name(user: User) -> str:
+    mitglied = getattr(user, "mitglied", None)
+    if mitglied is not None:
+        return str(getattr(mitglied, "vorname", "") or "").strip()
+    return str(getattr(user, "first_name", "") or "").strip()
+
+
+def send_user_invite(user: User, request=None) -> bool:
+    invite_token = make_invite_token(user)
+    invite_url = build_invite_url(invite_token, request=request)
+    sent = send_account_invite_email(
+        username=user.username,
+        email=user.email or "",
+        invite_url=invite_url,
+        first_name=_get_user_invite_first_name(user),
+    )
+    if sent:
+        user.last_invite_sent_at = timezone.now()
+        user.save(update_fields=["last_invite_sent_at"])
+    return sent
 
 
 class RoleKeyRelatedField(serializers.SlugRelatedField):
@@ -34,11 +57,27 @@ class UserSerializer(serializers.ModelSerializer):
         required=False
     )
     mitglied_id = serializers.SerializerMethodField()
+    password_set = serializers.SerializerMethodField()
+    invite_status = serializers.SerializerMethodField()
+    can_resend_invite = serializers.SerializerMethodField()
 
     def get_mitglied_id(self, obj):
         # Django auto-generates `mitglied_id` as the integer FK column for the OneToOneField,
         # pointing to the primary key (pkid) of the related Mitglied object.
         return obj.mitglied_id
+
+    def get_password_set(self, obj):
+        return obj.has_usable_password()
+
+    def get_invite_status(self, obj):
+        if obj.has_usable_password():
+            return "password_set"
+        if str(obj.email or "").strip():
+            return "invite_pending"
+        return "missing_email"
+
+    def get_can_resend_invite(self, obj):
+        return not obj.has_usable_password() and bool(str(obj.email or "").strip())
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -91,8 +130,12 @@ class UserSerializer(serializers.ModelSerializer):
             "date_joined",
             "roles",
             "mitglied_id",
+            "last_invite_sent_at",
+            "password_set",
+            "invite_status",
+            "can_resend_invite",
         ]
-        read_only_fields = ["pkid", "id", "is_superuser", "date_joined"]
+        read_only_fields = ["pkid", "id", "is_superuser", "date_joined", "last_invite_sent_at", "password_set", "invite_status", "can_resend_invite"]
 
     def to_representation(self, instance):
         representation = super(UserSerializer, self).to_representation(instance)
@@ -226,15 +269,8 @@ class AdminCreateUserSerializer(serializers.ModelSerializer):
 
         invite_sent = False
         if send_invite:
-            invite_token = make_invite_token(user)
             request = self.context.get("request")
-            invite_url = build_invite_url(invite_token, request=request)
-            invite_sent = send_account_invite_email(
-                username=user.username,
-                email=user.email or "",
-                invite_url=invite_url,
-                first_name="",
-            )
+            invite_sent = send_user_invite(user, request=request)
 
         setattr(user, "invite_sent", invite_sent)
 

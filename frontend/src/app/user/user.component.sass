@@ -13,6 +13,78 @@
 	display: flex
 	align-items: flex-end
 
+:host .status-cell
+	white-space: nowrap
+	display: grid
+	gap: .2rem
+
+:host .status-meta
+	font-size: .75rem
+	line-height: 1.2
+	color: rgba(theme.$imr-text, .72)
+
+:host .invite-status-panel
+	margin: 0 0 1rem
+	padding: .9rem 1rem
+	border: 1px solid var(--imr-control-border)
+	background: rgba(theme.$imr-border, .18)
+
+:host .invite-status-copy
+	display: flex
+	flex-direction: column
+	gap: .35rem
+
+:host .invite-status-label
+	font-size: .75rem
+	font-weight: 700
+	letter-spacing: .04em
+	text-transform: uppercase
+	color: rgba(theme.$imr-text, .68)
+
+:host .invite-status-value
+	font-size: .95rem
+	color: theme.$imr-text
+
+:host .invite-status-action
+	display: flex
+	align-items: flex-end
+
+:host .status-badge,
+:host .role-badge
+	display: inline-flex
+	align-items: center
+	justify-content: center
+	font-size: .65rem
+	font-weight: 700
+	letter-spacing: .04em
+	padding: .15rem .45rem
+	border-radius: 0
+
+:host .success-badge
+	background: rgba(theme.$imr-success, .14)
+	color: theme.$imr-success
+
+:host .warning-badge
+	background: rgba(theme.$imr-warning, .16)
+	color: theme.$imr-primary
+
+:host .neutral-badge
+	background: rgba(theme.$imr-border, .9)
+	color: theme.$imr-text
+
+:host .admin-badge
+	background: rgba(theme.$imr-warning, .9)
+	color: theme.$imr-primary
+
+:host .mitglied-badge
+	background: rgba(theme.$imr-border, .9)
+	color: theme.$imr-text
+
+:host .imr-action-cell
+	display: flex
+	align-items: center
+	gap: .4rem
+
 @media (max-width: 768px)
 	:host .user-toolbar .filter-field
 		width: 100%
@@ -37,24 +109,6 @@
 
 	.role-cell
 		white-space: nowrap
-
-	.role-badge
-		display: inline-flex
-		align-items: center
-		justify-content: center
-		font-size: .65rem
-		font-weight: 700
-		letter-spacing: .04em
-		padding: .15rem .45rem
-		border-radius: 0
-
-	.admin-badge
-		background: rgba(theme.$imr-warning, .9)
-		color: theme.$imr-primary
-
-	.mitglied-badge
-		background: rgba(theme.$imr-border, .9)
-		color: theme.$imr-text
 
 	.role-row
 		margin-top: .2rem
@@ -81,6 +135,10 @@
 	.password-action
 		display: flex
 		align-items: center
+
+	.invite-status-action
+		button
+			width: 100%
 
 
 	.rollen-matrix-actions
@@ -133,9 +191,13 @@
 			.mat-column-username
 				overflow-wrap: anywhere
 
+			.mat-column-status
+				width: 130px
+				min-width: 130px
+
 			.mat-column-actions
-				width: 72px
-				min-width: 72px
+				width: 124px
+				min-width: 124px
 
 		.imr-top-actions,
 		.imr-form-actions
