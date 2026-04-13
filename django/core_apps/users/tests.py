@@ -233,7 +233,27 @@ class UserSecurityTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         created_user = User.objects.get(username="neu_user_2")
         self.assertTrue(created_user.has_role("MITGLIED"))
+        self.assertTrue(created_user.check_password("StarkesPasswort!123"))
         self.assertFalse(response.data["invite_sent"])
+
+    def test_admin_create_user_rejects_unknown_role(self):
+        self.client.force_authenticate(user=self.admin)
+
+        url = reverse("user-create")
+        response = self.client.post(
+            url,
+            {
+                "username": "neu_user_bad_role",
+                "email": "neu-bad-role@example.com",
+                "password1": "StarkesPasswort!123",
+                "password2": "StarkesPasswort!123",
+                "roles": ["GIBT_ES_NICHT"],
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("roles", response.data)
 
     @patch("core_apps.users.serializers.send_account_invite_email", return_value=True)
     def test_admin_create_user_with_invite_mode_sends_invite(self, send_invite_email_mock):

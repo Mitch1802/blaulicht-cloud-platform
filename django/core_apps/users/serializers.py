@@ -153,6 +153,18 @@ class AdminCreateUserSerializer(serializers.ModelSerializer):
         fields = ("username", "email", "password1", "password2", "send_invite", "roles", "mitglied_id")
 
     def validate(self, attrs):
+        roles = [str(role or "").strip() for role in (attrs.get("roles") or [])]
+        roles = [role for role in roles if role]
+
+        if not roles:
+            raise serializers.ValidationError({"roles": "Mindestens eine Rolle ist erforderlich."})
+
+        unknown_roles = sorted(set(roles) - set(Role.objects.filter(key__in=roles).values_list("key", flat=True)))
+        if unknown_roles:
+            raise serializers.ValidationError({"roles": f"Unbekannte Rollen: {', '.join(unknown_roles)}"})
+
+        attrs["roles"] = list(dict.fromkeys(roles))
+
         password1 = str(attrs.get("password1") or "")
         password2 = str(attrs.get("password2") or "")
         send_invite = attrs.get("send_invite")
