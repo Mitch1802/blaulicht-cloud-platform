@@ -168,6 +168,39 @@ div:has(> .mat-mdc-button-disabled)
     background: rgba(theme.$imr-error, .12)
     border-color: rgba(theme.$imr-error, .45)
 
+.imr-action-cell .mat-mdc-icon-button.mat-primary,
+.table-mobile-actions .mat-mdc-icon-button.mat-primary
+    color: #fff
+    background: theme.$imr-primary !important
+    border-color: rgba(theme.$imr-primary, .92) !important
+
+    &:hover:not(:disabled)
+        color: #fff
+        background: theme.$imr-primary !important
+        border-color: rgba(theme.$imr-primary, .95) !important
+
+.imr-action-cell .mat-mdc-icon-button.mat-accent,
+.table-mobile-actions .mat-mdc-icon-button.mat-accent
+    color: #fff
+    background: theme.$imr-secondary !important
+    border-color: rgba(theme.$imr-secondary, .86) !important
+
+    &:hover:not(:disabled)
+        color: #fff
+        background: color-mix(in srgb, #{theme.$imr-secondary} 86%, #000 14%) !important
+        border-color: rgba(theme.$imr-secondary, .95) !important
+
+.imr-action-cell .mat-mdc-icon-button.mat-warn,
+.table-mobile-actions .mat-mdc-icon-button.mat-warn
+    color: #fff
+    background: theme.$imr-error !important
+    border-color: rgba(theme.$imr-error, .88) !important
+
+    &:hover:not(:disabled)
+        color: #fff
+        background: color-mix(in srgb, #{theme.$imr-error} 86%, #000 14%) !important
+        border-color: rgba(theme.$imr-error, .95) !important
+
 .mat-mdc-button-base:disabled
     opacity: .55
     box-shadow: none

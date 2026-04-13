@@ -108,16 +108,16 @@
               <button mat-icon-button  color="primary" type="button" (click)="auswahlBearbeiten(element)">
                 <mat-icon class="m-0">edit</mat-icon>
               </button>
-              <button mat-icon-button  color="primary" type="button" (click)="test(element)">
+              <button mat-icon-button  color="accent" type="button" (click)="test(element)">
                 <mat-icon class="m-0">bug_report</mat-icon>
               </button>
               @if (element.status === 'DRAFT') {
-                <button mat-icon-button  color="primary" type="button" (click)="publish(element)">
+                <button mat-icon-button  color="accent" type="button" (click)="publish(element)">
                   <mat-icon class="m-0">public</mat-icon>
                 </button>
               }
               @if (element.status === 'PUBLISHED') {
-                <button mat-icon-button  color="primary" type="button" (click)="newVersion(element)">
+                <button mat-icon-button  color="accent" type="button" (click)="newVersion(element)">
                   <mat-icon class="m-0">upgrade</mat-icon>
                 </button>
               }
