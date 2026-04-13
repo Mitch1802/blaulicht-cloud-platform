@@ -1,7 +1,7 @@
 <imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <imr-page-layout title="Fahrzeuge verwalten" class="fahrzeug-page">
-  <imr-section [title]="'Fahrzeuge & Beladung'">
+  <imr-section>
       @if (!editorOpen && !inventarEditorOpen) {
         <div class="mb-3">
           <a mat-flat-button color="primary" [routerLink]="['/public/fahrzeuge']" target="_blank" rel="noopener">
