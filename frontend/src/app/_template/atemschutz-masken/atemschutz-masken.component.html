@@ -1,11 +1,11 @@
 <imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <imr-page-layout [title]="title" class="atemschutz-masken-page">
-  <imr-section [title]="'Masken verwalten'">
+  <imr-section>
     
         @if (sichtbarkeitModul() === "tableListe")
         {
-        <div>
+        <div class="imr-top-actions">
           <button mat-flat-button
             color="accent"
             (click)="neueDetails()"

@@ -1,10 +1,10 @@
 <imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <imr-page-layout [title]="title" class="atemschutz-geraete-page">
-  <imr-section [title]="'Geräte verwalten'">
+  <imr-section>
         @if (sichtbarkeitModul() === "tableListe")
         {
-        <div>
+        <div class="imr-top-actions">
           <button mat-flat-button
             color="accent"
             (click)="neueDetails()"
