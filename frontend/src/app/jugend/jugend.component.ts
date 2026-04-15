@@ -6,6 +6,7 @@ import {
   ImrBreadcrumbItem,
   ImrHeaderComponent,
   ImrPageLayoutComponent,
+  ImrSectionComponent,
 } from '../imr-ui-library';
 import { ApiHttpService } from 'src/app/_service/api-http.service';
 import { AuthSessionService } from 'src/app/_service/auth-session.service';
@@ -102,6 +103,7 @@ type IJugendFertigkeitsDatumKey =
   imports: [
     ImrHeaderComponent,
     ImrPageLayoutComponent,
+    ImrSectionComponent,
     FormsModule,
     ReactiveFormsModule,
     MatButtonModule,

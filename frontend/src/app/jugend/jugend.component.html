@@ -1,351 +1,344 @@
 <imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <imr-page-layout [title]="title" class="jugend-page">
-  <mat-tab-group (selectedIndexChange)="onTabChange($event)">
+  <imr-section>
+    <mat-tab-group (selectedIndexChange)="onTabChange($event)">
+      <mat-tab label="Mitglieder">
 
-    <!-- Tab 1: Mitglieder -->
-    <mat-tab label="Mitglieder">
-
-      @if (showMitgliedDetail && selectedMitglied) {
-        <div class="mitglied-detail-view">
-          <div class="imr-form-actions">
-            <button mat-flat-button color="primary" type="button" (click)="mitgliedDetailZurueck()">Zurück</button>
-            @if (kannUeberstelltWerden(selectedMitglied)) {
-              <button mat-flat-button color="accent" type="button" (click)="ueberstellen(selectedMitglied)">Überstellen</button>
-            }
-          </div>
-
-          <section class="mitglied-summary">
-            <div class="summary-title">
-              <h3>{{ getVollerName(selectedMitglied) }}</h3>
-              <p>
-                Stbnr {{ selectedMitglied.stbnr }}
-                ·
-                {{ getStatusText(selectedMitglied) }}
-                ·
-                {{ getAlter(selectedMitglied) }} Jahre
-              </p>
-            </div>
-
-            <div class="summary-badges">
-              <span class="summary-badge">Erprobung: {{ getErprobungLevelText(selectedMitglied) }}</span>
-              <span class="summary-badge">Wissentest: {{ getWissentestLevelText(selectedMitglied) }}</span>
-              <span class="summary-badge">Melder: {{ getFertigkeitsabzeichenMelderText(selectedMitglied) }}</span>
-              <span class="summary-badge">FW-Technik: {{ getFertigkeitsabzeichenFwTechnikText(selectedMitglied) }}</span>
-              <span class="summary-badge">Sicher zu Wasser: {{ getFertigkeitsabzeichenSicherZuWasserText(selectedMitglied) }}</span>
-            </div>
-
-            <div class="inline-hinweis mt-2">
-              <strong>Überstellung:</strong>
-              {{ getUeberstellungHinweis(selectedMitglied) }}
-            </div>
-          </section>
-
-          <section class="edit-group">
-            <h3>Erprobung</h3>
-            <div class="level-detail-list">
-              @for (lvl of [1, 2, 3, 4, 5]; track lvl) {
-                <div class="level-detail-item" [class.level-achieved]="isErprobungLevelErreicht(selectedMitglied, lvl)">
-                  <span class="level-detail-name">{{ getStandardLevelLabel(lvl) }}</span>
-                  <span class="level-detail-date">
-                    {{ isErprobungLevelErreicht(selectedMitglied, lvl)
-                       ? (getAusbildungLevelDatum(selectedMitglied, 'erprobung', lvl) || '–')
-                       : '–' }}
-                  </span>
-                </div>
+        @if (showMitgliedDetail && selectedMitglied) {
+          <div class="mitglied-detail-view">
+            <div class="imr-top-actions">
+              <button mat-flat-button color="primary" type="button" (click)="mitgliedDetailZurueck()">Zurück</button>
+              @if (kannUeberstelltWerden(selectedMitglied)) {
+                <button mat-flat-button color="accent" type="button" (click)="ueberstellen(selectedMitglied)">Überstellen</button>
               }
             </div>
-          </section>
 
-          <section class="edit-group">
-            <h3>Wissentest</h3>
-            <div class="level-detail-list">
-              @for (lvl of [1, 2, 3, 4, 5]; track lvl) {
-                <div class="level-detail-item" [class.level-achieved]="isWissentestLevelErreicht(selectedMitglied, lvl)">
-                  <span class="level-detail-name">{{ getStandardLevelLabel(lvl) }}</span>
-                  <span class="level-detail-date">
-                    {{ isWissentestLevelErreicht(selectedMitglied, lvl)
-                       ? (getAusbildungLevelDatum(selectedMitglied, 'wissentest', lvl) || '–')
-                       : '–' }}
-                  </span>
-                </div>
-              }
-            </div>
-          </section>
+            <section class="mitglied-summary">
+              <div class="summary-title">
+                <h3>{{ getVollerName(selectedMitglied) }}</h3>
+                <p>
+                  Stbnr {{ selectedMitglied.stbnr }}
+                  ·
+                  {{ getStatusText(selectedMitglied) }}
+                  ·
+                  {{ getAlter(selectedMitglied) }} Jahre
+                </p>
+              </div>
 
-          <section class="edit-group">
-            <h3>Fertigkeitsabzeichen</h3>
-            <div class="level-detail-list">
-              <div class="level-detail-item level-detail-item--label">
-                <span class="level-detail-name"><strong>Melder</strong></span>
-                <span class="level-detail-date">{{ getFertigkeitsabzeichenMelderText(selectedMitglied) }}</span>
+              <div class="summary-badges">
+                <span class="summary-badge">Erprobung: {{ getErprobungLevelText(selectedMitglied) }}</span>
+                <span class="summary-badge">Wissentest: {{ getWissentestLevelText(selectedMitglied) }}</span>
+                <span class="summary-badge">Melder: {{ getFertigkeitsabzeichenMelderText(selectedMitglied) }}</span>
+                <span class="summary-badge">FW-Technik: {{ getFertigkeitsabzeichenFwTechnikText(selectedMitglied) }}</span>
+                <span class="summary-badge">Sicher zu Wasser: {{ getFertigkeitsabzeichenSicherZuWasserText(selectedMitglied) }}</span>
               </div>
-              <div class="level-detail-item level-detail-item--label">
-                <span class="level-detail-name"><strong>FW-Technik</strong></span>
-                <span class="level-detail-date">{{ getFertigkeitsabzeichenFwTechnikText(selectedMitglied) }}</span>
-              </div>
-              <div class="level-detail-item level-detail-item--label">
-                <span class="level-detail-name"><strong>Sicher zu Wasser</strong></span>
-                <span class="level-detail-date">{{ getFertigkeitsabzeichenSicherZuWasserText(selectedMitglied) }}</span>
-              </div>
-            </div>
-          </section>
 
-          @if (getMitgliedEvents(selectedMitglied).length > 0) {
+              <div class="inline-hinweis mt-2">
+                <strong>Überstellung:</strong>
+                {{ getUeberstellungHinweis(selectedMitglied) }}
+              </div>
+            </section>
+
             <section class="edit-group">
-              <h3>Teilgenommene Events</h3>
-              <div class="mitglied-events-list">
-                @for (event of getMitgliedEvents(selectedMitglied); track event.id) {
-                  <div class="mitglied-event-row imr-grid">
-                    <span class="mitglied-event-datum imr-col-12 imr-col-md-3">{{ event.datum }}</span>
-                    <span class="mitglied-event-kategorie imr-col-12 imr-col-md-6">{{ getEventKategorieText(event) }}</span>
-                    <span class="mitglied-event-alter imr-col-12 imr-col-md-3">
-                      Alter bei Event: {{ getAlterBeimEvent(selectedMitglied, event.datum) }}
+              <h3>Erprobung</h3>
+              <div class="level-detail-list">
+                @for (lvl of [1, 2, 3, 4, 5]; track lvl) {
+                  <div class="level-detail-item" [class.level-achieved]="isErprobungLevelErreicht(selectedMitglied, lvl)">
+                    <span class="level-detail-name">{{ getStandardLevelLabel(lvl) }}</span>
+                    <span class="level-detail-date">
+                      {{ isErprobungLevelErreicht(selectedMitglied, lvl)
+                        ? (getAusbildungLevelDatum(selectedMitglied, 'erprobung', lvl) || '–')
+                        : '–' }}
                     </span>
                   </div>
                 }
               </div>
             </section>
-          }
-        </div>
-      }
 
-      @if (!showMitgliedDetail) {
-        <div class="imr-table-wrap">
-          <table mat-table [dataSource]="dataSourceJugend">
-            <ng-container matColumnDef="stbnr">
-              <th mat-header-cell *matHeaderCellDef>Stbnr.</th>
-              <td mat-cell *matCellDef="let element">{{ element.stbnr }}</td>
-            </ng-container>
+            <section class="edit-group">
+              <h3>Wissentest</h3>
+              <div class="level-detail-list">
+                @for (lvl of [1, 2, 3, 4, 5]; track lvl) {
+                  <div class="level-detail-item" [class.level-achieved]="isWissentestLevelErreicht(selectedMitglied, lvl)">
+                    <span class="level-detail-name">{{ getStandardLevelLabel(lvl) }}</span>
+                    <span class="level-detail-date">
+                      {{ isWissentestLevelErreicht(selectedMitglied, lvl)
+                        ? (getAusbildungLevelDatum(selectedMitglied, 'wissentest', lvl) || '–')
+                        : '–' }}
+                    </span>
+                  </div>
+                }
+              </div>
+            </section>
 
-            <ng-container matColumnDef="name">
-              <th mat-header-cell *matHeaderCellDef>Name</th>
-              <td mat-cell *matCellDef="let element">{{ getVollerName(element) }}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="status">
-              <th mat-header-cell *matHeaderCellDef>Status</th>
-              <td mat-cell *matCellDef="let element">{{ getStatusText(element) }}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="abzeichen">
-              <th mat-header-cell *matHeaderCellDef>Abzeichen</th>
-              <td mat-cell *matCellDef="let element">{{ getAbzeichenText(element) }}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="ausbildung">
-              <th mat-header-cell *matHeaderCellDef>Ausbildung</th>
-              <td mat-cell *matCellDef="let element">{{ getAusbildungText(element) }}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="alter">
-              <th mat-header-cell *matHeaderCellDef>Alter</th>
-              <td mat-cell *matCellDef="let element">{{ getAlter(element) }}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="ueberstellung">
-              <th mat-header-cell *matHeaderCellDef>Überstellung Aktivstand</th>
-              <td mat-cell *matCellDef="let element">{{ getUeberstellungSpalteText(element) }}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="actions">
-              <th mat-header-cell *matHeaderCellDef>Aktionen</th>
-              <td mat-cell *matCellDef="let element" class="imr-action-cell">
-                <button mat-flat-button  color="primary" (click)="viewMitglied(element)">
-                  <mat-icon class="m-0">visibility</mat-icon>
-                </button>
-              </td>
-            </ng-container>
-
-            <tr mat-header-row *matHeaderRowDef="sichtbareSpaltenJugend"></tr>
-            <tr mat-row *matRowDef="let row; columns: sichtbareSpaltenJugend"></tr>
-          </table>
-        </div>
-      }
-    </mat-tab>
-
-    <!-- Tab 2: Events -->
-    <mat-tab label="Events">
-
-      @if (!showEventForm) {
-        <div class="actions-top">
-          <button mat-flat-button color="accent" type="button" (click)="neuesEvent()">Neues Event</button>
-        </div>
-      }
-
-      @if (showEventForm) {
-        <form [formGroup]="formEvent" (ngSubmit)="speichernEvent()" class="edit-form">
-          <div class="imr-form-actions">
-            <button mat-flat-button color="accent" type="submit">Event speichern</button>
-            <button mat-flat-button color="warn" type="button" [hidden]="!formEvent.controls['id'].value" (click)="eventLoeschen()">Löschen</button>
-            <button mat-flat-button color="primary" type="button" (click)="eventFormAbbrechen()">Abbrechen</button>
-          </div>
-
-          <section class="imr-grid">
-            <div class="imr-col-12 imr-col-lg-6">
-              <mat-form-field class="imr-full-width">
-                <mat-label>Datum</mat-label>
-                <mat-hint>* Pflichtfeld</mat-hint>
-                <input matInput formControlName="datum" appDateInputMask="dmy" placeholder="TT.MM.YYYY" />
-              </mat-form-field>
-            </div>
-
-            <div class="imr-col-12 imr-col-lg-6">
-              <mat-form-field class="imr-full-width">
-                <mat-label>Art</mat-label>
-                <mat-hint>* Pflichtfeld</mat-hint>
-                <mat-select formControlName="kategorie" [disabled]="!isDatumFilled()" (selectionChange)="onEventKategorieGeaendert()">
-                  @for (option of eventKategorien; track option.value) {
-                    <mat-option [value]="option.value">{{ option.label }}</mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
-            </div>
-
-            <div class="imr-col-12 imr-col-lg-12">
-              <mat-checkbox formControlName="stand_x_override" (change)="onStandXOverrideGeaendert($event)">
-                Voraussetzungen für dieses Event außer Kraft setzen
-              </mat-checkbox>
-            </div>
-
-            @if (isVoraussetzungenOverrideAktiv()) {
-              <div class="imr-col-12 imr-col-lg-12">
-                <div class="override-hinweis">
-                  Level können unabhängig von den Voraussetzungen vergeben werden.
+            <section class="edit-group">
+              <h3>Fertigkeitsabzeichen</h3>
+              <div class="level-detail-list">
+                <div class="level-detail-item level-detail-item--label">
+                  <span class="level-detail-name"><strong>Melder</strong></span>
+                  <span class="level-detail-date">{{ getFertigkeitsabzeichenMelderText(selectedMitglied) }}</span>
+                </div>
+                <div class="level-detail-item level-detail-item--label">
+                  <span class="level-detail-name"><strong>FW-Technik</strong></span>
+                  <span class="level-detail-date">{{ getFertigkeitsabzeichenFwTechnikText(selectedMitglied) }}</span>
+                </div>
+                <div class="level-detail-item level-detail-item--label">
+                  <span class="level-detail-name"><strong>Sicher zu Wasser</strong></span>
+                  <span class="level-detail-date">{{ getFertigkeitsabzeichenSicherZuWasserText(selectedMitglied) }}</span>
                 </div>
               </div>
-            }
+            </section>
 
-            <div class="imr-col-12 imr-col-lg-12">
-              <mat-form-field class="imr-full-width">
-                <mat-label>Teilnehmer</mat-label>
-                <mat-select formControlName="teilnehmer_ids" multiple [disabled]="!isDatumFilled()" (selectionChange)="onEventTeilnehmerAuswahlGeaendert()">
-                  @for (member of sortedJugendMitglieder; track member.pkid) {
-                    <mat-option [value]="member.pkid">{{ getMitgliedMitRangText(member) }}</mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
-            </div>
-
-            @if (getAusgewaehlteEventMitglieder().length > 0) {
-              <div class="imr-col-12 imr-col-lg-12">
-                <div class="teilnehmer-level-card">
-                  <h3>Erreichtes Level pro Mitglied</h3>
-
-                  @for (member of getAusgewaehlteEventMitglieder(); track member.pkid) {
-                    <div class="teilnehmer-level-row imr-grid">
-                      <div class="teilnehmer-name imr-col-12 imr-col-lg-8">
-                        {{ getMitgliedMitRangText(member) }}
-                        <span class="teilnehmer-alter-hint">
-                          (Alter bei Event: {{ getAlterBeimEvent(member, formEvent.controls.datum.value) }})
-                        </span>
-                      </div>
-                      <mat-form-field class="teilnehmer-level-field imr-col-12 imr-col-lg-4">
-                        <mat-label>Level</mat-label>
-                        <mat-select
-                          [disabled]="getLevelOptionenForMitglied(member).length === 0"
-                          [value]="getTeilnehmerLevel(member.pkid)"
-                          (selectionChange)="setTeilnehmerLevel(member.pkid, $event.value)"
-                        >
-                          <mat-option [value]="null">nicht angetreten</mat-option>
-                          @for (level of getLevelOptionenForMitglied(member); track level) {
-                            <mat-option [value]="level">{{ getLevelLabel(level) }}</mat-option>
-                          }
-                        </mat-select>
-                      </mat-form-field>
-
-                      @if (getLevelOptionenForMitglied(member).length === 0) {
-                        <div class="teilnehmer-level-hinweis imr-col-12 imr-col-lg-4">Keine erlaubte Stufe laut Voraussetzungen.</div>
-                      }
+            @if (getMitgliedEvents(selectedMitglied).length > 0) {
+              <section class="edit-group">
+                <h3>Teilgenommene Events</h3>
+                <div class="mitglied-events-list">
+                  @for (event of getMitgliedEvents(selectedMitglied); track event.id) {
+                    <div class="mitglied-event-row imr-grid">
+                      <span class="mitglied-event-datum imr-col-12 imr-col-md-3">{{ event.datum }}</span>
+                      <span class="mitglied-event-kategorie imr-col-12 imr-col-md-6">{{ getEventKategorieText(event) }}</span>
+                      <span class="mitglied-event-alter imr-col-12 imr-col-md-3">
+                        Alter bei Event: {{ getAlterBeimEvent(selectedMitglied, event.datum) }}
+                      </span>
                     </div>
                   }
                 </div>
-              </div>
+              </section>
             }
+          </div>
+        }
 
-            <div class="imr-col-12 imr-col-lg-12">
-              <mat-form-field class="imr-full-width">
-                <mat-label>Ort</mat-label>
-                <input matInput formControlName="ort" [disabled]="!isDatumFilled()" />
-              </mat-form-field>
+        @if (!showMitgliedDetail) {
+          <div class="imr-table-wrap">
+            <table mat-table [dataSource]="dataSourceJugend">
+              <ng-container matColumnDef="stbnr">
+                <th mat-header-cell *matHeaderCellDef>Stbnr.</th>
+                <td mat-cell *matCellDef="let element">{{ element.stbnr }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef>Name</th>
+                <td mat-cell *matCellDef="let element">{{ getVollerName(element) }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef>Status</th>
+                <td mat-cell *matCellDef="let element">{{ getStatusText(element) }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="abzeichen">
+                <th mat-header-cell *matHeaderCellDef>Abzeichen</th>
+                <td mat-cell *matCellDef="let element">{{ getAbzeichenText(element) }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="ausbildung">
+                <th mat-header-cell *matHeaderCellDef>Ausbildung</th>
+                <td mat-cell *matCellDef="let element">{{ getAusbildungText(element) }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="alter">
+                <th mat-header-cell *matHeaderCellDef>Alter</th>
+                <td mat-cell *matCellDef="let element">{{ getAlter(element) }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="ueberstellung">
+                <th mat-header-cell *matHeaderCellDef>Überstellung Aktivstand</th>
+                <td mat-cell *matCellDef="let element">{{ getUeberstellungSpalteText(element) }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Aktionen</th>
+                <td mat-cell *matCellDef="let element" class="imr-action-cell">
+                  <button mat-flat-button  color="primary" (click)="viewMitglied(element)">
+                    <mat-icon class="m-0">visibility</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="sichtbareSpaltenJugend"></tr>
+              <tr mat-row *matRowDef="let row; columns: sichtbareSpaltenJugend"></tr>
+            </table>
+          </div>
+        }
+      </mat-tab>
+
+      <mat-tab label="Events">
+
+        @if (!showEventForm) {
+          <div class="actions-top">
+            <button mat-flat-button color="accent" type="button" (click)="neuesEvent()">Neues Event</button>
+          </div>
+        }
+
+        @if (showEventForm) {
+          <form [formGroup]="formEvent" (ngSubmit)="speichernEvent()" class="edit-form">
+            <div class="imr-form-actions">
+              <button mat-flat-button color="accent" type="submit">Event speichern</button>
+              <button mat-flat-button color="warn" type="button" [hidden]="!formEvent.controls['id'].value" (click)="eventLoeschen()">Löschen</button>
+              <button mat-flat-button color="primary" type="button" (click)="eventFormAbbrechen()">Abbrechen</button>
             </div>
-          </section>
-        </form>
-      }
 
-      @if (!showEventForm) {
-        <div class="imr-table-wrap">
-          <table mat-table [dataSource]="dataSourceEvents">
-            <ng-container matColumnDef="datum">
-              <th mat-header-cell *matHeaderCellDef>Datum</th>
-              <td mat-cell *matCellDef="let element">{{ element.datum }}</td>
-            </ng-container>
+            <section class="imr-grid">
+              <div class="imr-col-12 imr-col-lg-6">
+                <mat-form-field class="imr-full-width">
+                  <mat-label>Datum</mat-label>
+                  <mat-hint>* Pflichtfeld</mat-hint>
+                  <input matInput formControlName="datum" appDateInputMask="dmy" placeholder="TT.MM.YYYY" />
+                </mat-form-field>
+              </div>
 
-            <ng-container matColumnDef="kategorie">
-              <th mat-header-cell *matHeaderCellDef>Art</th>
-              <td mat-cell *matCellDef="let element">{{ getEventKategorieText(element) }}</td>
-            </ng-container>
+              <div class="imr-col-12 imr-col-lg-6">
+                <mat-form-field class="imr-full-width">
+                  <mat-label>Art</mat-label>
+                  <mat-hint>* Pflichtfeld</mat-hint>
+                  <mat-select formControlName="kategorie" [disabled]="!isDatumFilled()" (selectionChange)="onEventKategorieGeaendert()">
+                    @for (option of eventKategorien; track option.value) {
+                      <mat-option [value]="option.value">{{ option.label }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              </div>
 
-            <ng-container matColumnDef="teilnehmer">
-              <th mat-header-cell *matHeaderCellDef>Teilnehmer</th>
-              <td mat-cell *matCellDef="let element">{{ element.teilnehmer?.length ?? 0 }}</td>
-            </ng-container>
+              <div class="imr-col-12 imr-col-lg-12">
+                <mat-checkbox formControlName="stand_x_override" (change)="onStandXOverrideGeaendert($event)">
+                  Voraussetzungen für dieses Event außer Kraft setzen
+                </mat-checkbox>
+              </div>
 
-            <ng-container matColumnDef="actions">
-              <th mat-header-cell *matHeaderCellDef>Aktionen</th>
-              <td mat-cell *matCellDef="let element" class="imr-action-cell">
-                <button mat-flat-button  color="primary" (click)="editEvent(element)">
-                  <mat-icon class="m-0">edit</mat-icon>
-                </button>
-                <button mat-flat-button color="accent" type="button" (click)="druckeEventAusdruck(element)">
-                  <mat-icon class="m-0">picture_as_pdf</mat-icon>
-                </button>
-              </td>
-            </ng-container>
-
-            <tr mat-header-row *matHeaderRowDef="sichtbareSpaltenEvents"></tr>
-            <tr mat-row *matRowDef="let row; columns: sichtbareSpaltenEvents"></tr>
-          </table>
-        </div>
-      }
-    </mat-tab>
-
-    <!-- Tab 3: Ausdrucke -->
-    <mat-tab label="Ausdrucke">
-      <div class="ausdrucke-hinweis">
-        Hier planst du naechste Teilnahmen nach Eventart. Einzelne Event-Ausdrucke findest du im Events-Tab.
-      </div>
-
-      <div class="ausdrucke-toolbar imr-grid">
-        <div class="imr-col-12 imr-col-lg-4">
-          <mat-form-field class="imr-full-width" appearance="outline">
-            <mat-label>Eventart</mat-label>
-            <mat-select [value]="ausdruckPlanKategorie" (selectionChange)="ausdruckPlanKategorie = $event.value">
-              <mat-option [value]="''">Bitte waehlen</mat-option>
-              @for (option of eventKategorien; track option.value) {
-                <mat-option [value]="option.value">{{ option.label }}</mat-option>
+              @if (isVoraussetzungenOverrideAktiv()) {
+                <div class="imr-col-12 imr-col-lg-12">
+                  <div class="override-hinweis">
+                    Level können unabhängig von den Voraussetzungen vergeben werden.
+                  </div>
+                </div>
               }
-            </mat-select>
-          </mat-form-field>
-        </div>
 
-        <div class="imr-col-12 imr-col-lg-4">
-          <mat-form-field class="imr-full-width" appearance="outline">
-            <mat-label>Geplantes Event-Datum</mat-label>
-            <input matInput appDateInputMask="dmy" placeholder="TT.MM.YYYY" [(ngModel)]="ausdruckPlanDatum" [ngModelOptions]="{ standalone: true }" />
-          </mat-form-field>
-        </div>
+              <div class="imr-col-12 imr-col-lg-12">
+                <mat-form-field class="imr-full-width">
+                  <mat-label>Teilnehmer</mat-label>
+                  <mat-select formControlName="teilnehmer_ids" multiple [disabled]="!isDatumFilled()" (selectionChange)="onEventTeilnehmerAuswahlGeaendert()">
+                    @for (member of sortedJugendMitglieder; track member.pkid) {
+                      <mat-option [value]="member.pkid">{{ getMitgliedMitRangText(member) }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              </div>
 
-        <div class="imr-col-12 imr-col-lg-4 ausdrucke-toolbar-actions">
-          <button mat-flat-button color="primary" type="button" (click)="planeNaechsteTeilnahmenAusdruck()">
-            <mat-icon class="m-0">event_note</mat-icon>
-            Naechste Teilnahmen planen
-          </button>
-        </div>
-      </div>
-    </mat-tab>
+              @if (getAusgewaehlteEventMitglieder().length > 0) {
+                <div class="imr-col-12 imr-col-lg-12">
+                  <div class="teilnehmer-level-card">
+                    <h3>Erreichtes Level pro Mitglied</h3>
 
-  </mat-tab-group>
+                    @for (member of getAusgewaehlteEventMitglieder(); track member.pkid) {
+                      <div class="teilnehmer-level-row imr-grid">
+                        <div class="teilnehmer-name imr-col-12 imr-col-lg-8">
+                          {{ getMitgliedMitRangText(member) }}
+                          <span class="teilnehmer-alter-hint">
+                            (Alter bei Event: {{ getAlterBeimEvent(member, formEvent.controls.datum.value) }})
+                          </span>
+                        </div>
+                        <mat-form-field class="teilnehmer-level-field imr-col-12 imr-col-lg-4">
+                          <mat-label>Level</mat-label>
+                          <mat-select
+                            [disabled]="getLevelOptionenForMitglied(member).length === 0"
+                            [value]="getTeilnehmerLevel(member.pkid)"
+                            (selectionChange)="setTeilnehmerLevel(member.pkid, $event.value)"
+                          >
+                            <mat-option [value]="null">nicht angetreten</mat-option>
+                            @for (level of getLevelOptionenForMitglied(member); track level) {
+                              <mat-option [value]="level">{{ getLevelLabel(level) }}</mat-option>
+                            }
+                          </mat-select>
+                        </mat-form-field>
+
+                        @if (getLevelOptionenForMitglied(member).length === 0) {
+                          <div class="teilnehmer-level-hinweis imr-col-12 imr-col-lg-4">Keine erlaubte Stufe laut Voraussetzungen.</div>
+                        }
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+
+              <div class="imr-col-12 imr-col-lg-12">
+                <mat-form-field class="imr-full-width">
+                  <mat-label>Ort</mat-label>
+                  <input matInput formControlName="ort" [disabled]="!isDatumFilled()" />
+                </mat-form-field>
+              </div>
+            </section>
+          </form>
+        }
+
+        @if (!showEventForm) {
+          <div class="imr-table-wrap">
+            <table mat-table [dataSource]="dataSourceEvents">
+              <ng-container matColumnDef="datum">
+                <th mat-header-cell *matHeaderCellDef>Datum</th>
+                <td mat-cell *matCellDef="let element">{{ element.datum }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="kategorie">
+                <th mat-header-cell *matHeaderCellDef>Art</th>
+                <td mat-cell *matCellDef="let element">{{ getEventKategorieText(element) }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="teilnehmer">
+                <th mat-header-cell *matHeaderCellDef>Teilnehmer</th>
+                <td mat-cell *matCellDef="let element">{{ element.teilnehmer?.length ?? 0 }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Aktionen</th>
+                <td mat-cell *matCellDef="let element" class="imr-action-cell">
+                  <button mat-flat-button  color="primary" (click)="editEvent(element)">
+                    <mat-icon class="m-0">edit</mat-icon>
+                  </button>
+                  <button mat-flat-button color="accent" type="button" (click)="druckeEventAusdruck(element)">
+                    <mat-icon class="m-0">picture_as_pdf</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="sichtbareSpaltenEvents"></tr>
+              <tr mat-row *matRowDef="let row; columns: sichtbareSpaltenEvents"></tr>
+            </table>
+          </div>
+        }
+      </mat-tab>
+
+      <mat-tab label="Ausdruck">
+        <div class="ausdrucke-toolbar imr-grid">
+          <div class="imr-col-12 imr-col-lg-4">
+            <mat-form-field class="imr-full-width" appearance="outline">
+              <mat-label>Eventart</mat-label>
+              <mat-select [value]="ausdruckPlanKategorie" (selectionChange)="ausdruckPlanKategorie = $event.value">
+                <mat-option [value]="''">Bitte wählen</mat-option>
+                @for (option of eventKategorien; track option.value) {
+                  <mat-option [value]="option.value">{{ option.label }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="imr-col-12 imr-col-lg-4">
+            <mat-form-field class="imr-full-width" appearance="outline">
+              <mat-label>Geplantes Event-Datum</mat-label>
+              <input matInput appDateInputMask="dmy" placeholder="TT.MM.YYYY" [(ngModel)]="ausdruckPlanDatum" [ngModelOptions]="{ standalone: true }" />
+            </mat-form-field>
+          </div>
+
+          <div class="imr-col-12 imr-col-lg-4 ausdrucke-toolbar-actions">
+            <button mat-flat-button color="primary" type="button" (click)="planeNaechsteTeilnahmenAusdruck()">
+              Nächste Teilnahmen planen
+            </button>
+          </div>
+        </div>
+      </mat-tab>
+
+    </mat-tab-group>
+  </imr-section>
 </imr-page-layout>
 
 
