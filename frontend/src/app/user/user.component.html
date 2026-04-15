@@ -3,7 +3,7 @@
 <imr-page-layout [title]="title">
   <mat-tab-group>
     <mat-tab label="Benutzer">
-      <imr-section title="Benutzer verwalten">
+      <imr-section>
           @if (formModul.disabled) {
           <div>
             <button mat-flat-button color="accent" (click)="neueDetails()" type="button">
@@ -257,7 +257,7 @@
       </imr-section>
     </mat-tab>
     <mat-tab label="Rollenübersicht">
-      <imr-section title="Rollenübersicht">
+      <imr-section>
         <div class="rollen-matrix-actions">
           <button mat-flat-button color="accent" type="button" (click)="rollenMatrixSpeichern()">
             Rollen speichern

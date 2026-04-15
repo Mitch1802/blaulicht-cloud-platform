@@ -638,11 +638,11 @@ export class JugendComponent implements OnInit {
 
   getStandardLevelLabel(level: number): string {
     if (level === 0) return 'nicht angetreten';
-    if (level === 1) return '1 - Bronze Spiel';
-    if (level === 2) return '2 - Silber Spiel';
-    if (level === 3) return '3 - Bronze';
-    if (level === 4) return '4 - Silber';
-    if (level === 5) return '5 - Gold';
+    if (level === 1) return 'Bronze Spiel';
+    if (level === 2) return 'Silber Spiel';
+    if (level === 3) return 'Bronze';
+    if (level === 4) return 'Silber';
+    if (level === 5) return 'Gold';
     return `Level ${level}`;
   }
 
@@ -658,8 +658,8 @@ export class JugendComponent implements OnInit {
 
   getFertigkeitsabzeichenLevelLabel(level: number): string {
     if (level === 0) return 'nicht angetreten';
-    if (level === 1) return 'Level 1 (Spiel)';
-    return 'Level 2 (Abzeichen)';
+    if (level === 1) return 'Spiel';
+    return 'Abzeichen';
   }
 
   getFertigkeitsabzeichenLevelDropdownLabel(level: number): string {

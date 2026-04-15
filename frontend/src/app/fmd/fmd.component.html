@@ -19,7 +19,7 @@
     <mat-tab-group (selectedIndexChange)="onTabChange($event)">
       <mat-tab label="Übersicht">
         <section class="imr-grid mt-3 mb-3 mx-0">
-          <div class="imr-col-12 imr-col-lg-4">
+          <div class="imr-col-12 imr-col-md-4">
             <h2>Tauglichkeit</h2>
             @if (chartTauglichkeit.datasets[0].data.length) {
             <canvas
@@ -31,7 +31,7 @@
             </canvas>
             }
           </div>
-          <div class="imr-col-12 imr-col-lg-4">
+          <div class="imr-col-12 imr-col-md-4">
             <h2>Untersuchung</h2>
             @if (chartUntersuchung.datasets[0].data.length) {
             <canvas
@@ -43,7 +43,7 @@
             </canvas>
             }
           </div>
-          <div class="imr-col-12 imr-col-lg-4">
+          <div class="imr-col-12 imr-col-md-4">
             <h2>Altersverteilung</h2>
             @if (chartAlter.datasets[0].data.length) {
             <canvas
