@@ -223,15 +223,16 @@ div:has(> .mat-mdc-button-disabled)
     --mat-paginator-container-background-color: #{theme.$imr-surface}
 
 .mat-mdc-tab-group
+    --mat-tab-container-height: var(--imr-control-height)
+
     .mat-mdc-tab-header
         border-bottom: 0
-        height: var(--imr-control-height)
 
     .mat-mdc-tab-header .mat-mdc-tab-label-container
         border-bottom: 0
 
     .mat-mdc-tab-header .mat-mdc-tab-list
-        gap: .35rem
+        // gap: .35rem
         padding: 0
 
     .mdc-tab-indicator
@@ -239,7 +240,7 @@ div:has(> .mat-mdc-button-disabled)
 
     .mdc-tab
         min-width: 0
-        padding: 1rem 0 0 0
+        padding: 0
         height: auto
         border: 1px solid theme.$imr-primary
         background: rgba(#fff, .72)
@@ -249,12 +250,13 @@ div:has(> .mat-mdc-button-disabled)
         padding: 0
 
     .mdc-tab__text-label
-        padding: .5rem 1rem
+        // padding: .5rem 1rem
         color: theme.$imr-primary
         font-size: 1rem
         font-weight: 700
         letter-spacing: .05em
         text-transform: uppercase
+        // height: var(--imr-control-height)
 
     .mdc-tab:hover
         background: rgba(#fff, .92)
