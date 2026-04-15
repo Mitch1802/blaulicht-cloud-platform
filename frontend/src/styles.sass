@@ -241,7 +241,7 @@ div:has(> .mat-mdc-button-disabled)
     .mdc-tab
         min-width: 0
         padding: 0
-        height: auto
+        height: var(--imr-control-height)
         border: 1px solid theme.$imr-primary
         background: rgba(#fff, .72)
         transition: background-color 120ms ease, border-color 120ms ease
@@ -270,6 +270,9 @@ div:has(> .mat-mdc-button-disabled)
     .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label span,
     .mdc-tab--active .mdc-tab__text-label
         color: #fff !important
+    
+    .mat-mdc-atb-body-wrapper
+        padding-top: 1rem
 
 .app-snackbar
     --mdc-snackbar-supporting-text-size: 1rem
