@@ -224,8 +224,8 @@ div:has(> .mat-mdc-button-disabled)
 
 .mat-mdc-tab-group
     .mat-mdc-tab-header
-        margin-bottom: .75rem
         border-bottom: 0
+        height: var(--imr-control-height)
 
     .mat-mdc-tab-header .mat-mdc-tab-label-container
         border-bottom: 0
@@ -239,9 +239,9 @@ div:has(> .mat-mdc-button-disabled)
 
     .mdc-tab
         min-width: 0
-        padding: 0
+        padding: 1rem 0 0 0
         height: auto
-        border: 1px solid rgba(theme.$imr-primary, .14)
+        border: 1px solid theme.$imr-primary
         background: rgba(#fff, .72)
         transition: background-color 120ms ease, border-color 120ms ease
 
