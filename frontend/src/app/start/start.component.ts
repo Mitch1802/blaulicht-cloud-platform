@@ -169,7 +169,8 @@ export class StartComponent implements OnInit {
       icon: new FormControl<string>(item.icon ?? '', Validators.required),
       modul: new FormControl<string>(item.modul ?? '', Validators.required),
       rolle: new FormControl<string>(rolleStr),
-      kategorie: new FormControl<string>(item.kategorie ?? item.category ?? ''),
+      // Legacy-Support: ältere Einträge nutzen 'category', neuere 'kategorie'
+    kategorie: new FormControl<string>(item.kategorie ?? item.category ?? ''),
       routerlink: new FormControl<string>(item.routerlink ?? '', Validators.required),
     });
   }
