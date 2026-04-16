@@ -161,6 +161,14 @@ export class StartComponent implements OnInit {
     this.settingsPanelOpen = false;
   }
 
+  toggleSettings(): void {
+    if (this.settingsPanelOpen) {
+      this.closeSettings();
+    } else {
+      this.openSettings();
+    }
+  }
+
   addRow(): void {
     this.settingsRows.push(this.createRow());
   }

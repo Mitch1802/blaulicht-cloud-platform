@@ -2,17 +2,17 @@
 
 <imr-page-layout [title]="display_name">
   @if (isAdmin) {
-    <div class="start-settings-trigger">
-      <button
-        mat-icon-button
-        color="primary"
-        type="button"
-        aria-label="Startseite konfigurieren"
-        (click)="settingsPanelOpen ? closeSettings() : openSettings()"
-      >
-        <mat-icon>{{ settingsPanelOpen ? 'close' : 'settings' }}</mat-icon>
-      </button>
-    </div>
+    <button
+      imrPageHeadActions
+      mat-icon-button
+      color="primary"
+      type="button"
+      class="start-settings-btn"
+      aria-label="Startseite konfigurieren"
+      (click)="toggleSettings()"
+    >
+      <mat-icon class="start-settings-icon">{{ settingsPanelOpen ? 'close' : 'settings' }}</mat-icon>
+    </button>
   }
 
   @if (settingsPanelOpen) {
@@ -24,7 +24,7 @@
     </mat-autocomplete>
 
     <imr-section title="Startseite Konfiguration">
-      <div class="konfig-table-wrap">
+      <div class="imr-table-wrap">
         <table class="konfig-table">
           <thead>
             <tr>

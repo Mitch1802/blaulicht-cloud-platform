@@ -2,6 +2,7 @@
       @if (title) {
         <header class="imr-page__head">
           <h1>{{ title }}</h1>
+          <ng-content select="[imrPageHeadActions]"></ng-content>
         </header>
       }
       <ng-content></ng-content>

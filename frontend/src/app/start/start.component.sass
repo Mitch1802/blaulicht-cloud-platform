@@ -188,13 +188,17 @@
                 height: auto
 
 // ==============================================
-// Settings Trigger Button
+// Settings Trigger Button (next to page heading)
 // ==============================================
 
-.start-settings-trigger
-    display: flex
-    justify-content: flex-end
-    margin-bottom: -.25rem
+.start-settings-btn
+    flex-shrink: 0
+
+    .start-settings-icon
+        font-size: clamp(1.5rem, 2.4vw, 2.1rem)
+        width: clamp(1.5rem, 2.4vw, 2.1rem)
+        height: clamp(1.5rem, 2.4vw, 2.1rem)
+        line-height: 1.2
 
 // ==============================================
 // Settings Actions (inline section)
@@ -212,39 +216,38 @@
         margin-top: 1rem
 
 // ==============================================
-// Konfig Tabelle
+// Konfig Tabelle (Material-style)
 // ==============================================
-
-.konfig-table-wrap
-    overflow-x: auto
-    border: 1px solid rgba(0, 0, 0, .1)
 
 .konfig-table
     width: 100%
     border-collapse: collapse
-    font-size: .87rem
+    font-size: .875rem
     min-width: 780px
 
     th
-        padding: .45rem .6rem
-        background: rgba(theme.$imr-primary, .06)
-        color: theme.$imr-primary
-        font-weight: 600
-        font-size: .8rem
+        padding: 0 .75rem
+        height: 56px
+        color: theme.$imr-text-muted
+        font-weight: 500
+        font-size: .75rem
+        letter-spacing: .0178em
         text-align: left
         white-space: nowrap
-        border-bottom: 2px solid rgba(theme.$imr-primary, .18)
+        border-bottom: 1px solid rgba(theme.$imr-border, .7)
+        background: transparent
 
     td
-        padding: .3rem .4rem
-        border-bottom: 1px solid rgba(0, 0, 0, .07)
+        padding: 0 .75rem
+        height: 48px
+        border-bottom: 1px solid rgba(theme.$imr-border, .5)
         vertical-align: middle
 
     tr:last-child td
         border-bottom: none
 
     tr:hover td
-        background: rgba(theme.$imr-primary, .03)
+        background: rgba(theme.$imr-primary, .04)
 
     .konfig-row--invalid td
         background: rgba(theme.$imr-error, .04)
