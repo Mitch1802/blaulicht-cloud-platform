@@ -184,7 +184,7 @@
             <tr mat-row *matRowDef="let row; columns: sichtbareSpaltenATS"></tr>
           </table>
           <mat-paginator [pageSizeOptions]="pageOptions" showFirstLastButtons
-            aria-label="Auswahl Anzahl der sichtbaren Elemente">
+            aria-label="Auswahl Anzahl der sichtbaren Elemente"></mat-paginator>
         </div>
         </mat-paginator>
       </imr-section>
@@ -245,7 +245,7 @@
               "></tr>
           </table>
           <mat-paginator [pageSizeOptions]="pageOptions" showFirstLastButtons
-            aria-label="Auswahl Anzahl der sichtbaren Elemente">
+            aria-label="Auswahl Anzahl der sichtbaren Elemente"></mat-paginator>
         </div>
       </imr-section>
     </mat-tab>
@@ -304,7 +304,7 @@
               [class.green-cell]="isLeistungstestOk(row.leistungstest)"></tr>
           </table>
           <mat-paginator [pageSizeOptions]="pageOptions" showFirstLastButtons
-            aria-label="Auswahl Anzahl der sichtbaren Elemente">
+            aria-label="Auswahl Anzahl der sichtbaren Elemente"></mat-paginator>
         </div>
       </imr-section>
     </mat-tab>
@@ -353,7 +353,7 @@
               [class.red-cell]="row.tauglichkeit === 'nein'" [class.green-cell]="row.tauglichkeit === 'tauglich'"></tr>
           </table>
           <mat-paginator [pageSizeOptions]="pageOptions" showFirstLastButtons
-            aria-label="Auswahl Anzahl der sichtbaren Elemente">
+            aria-label="Auswahl Anzahl der sichtbaren Elemente"></mat-paginator>
         </div>
       </imr-section>
     </mat-tab>
