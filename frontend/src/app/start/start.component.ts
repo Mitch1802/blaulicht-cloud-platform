@@ -1,10 +1,9 @@
 ﻿import { Component, OnInit, inject } from '@angular/core';
 import {
+  FormArray,
   FormControl,
   FormGroup,
   Validators,
-  ValidatorFn,
-  AbstractControl,
   ReactiveFormsModule,
 } from '@angular/forms';
 import { ApiHttpService } from '../_service/api-http.service';
@@ -19,9 +18,7 @@ import {
   ImrSectionComponent,
 } from '../imr-ui-library';
 import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
 import { RouterLink } from '@angular/router';
 import startRegelConfig from './konfig.json';
 
@@ -63,9 +60,7 @@ type ModulKonfigSaveResult = { id: number; modul: string; konfiguration: StartKo
     ImrSectionComponent,
     ImrCardComponent,
     MatButtonModule,
-    MatFormFieldModule,
     MatIconModule,
-    MatInputModule,
     RouterLink,
   ]
 })
@@ -91,9 +86,8 @@ export class StartComponent implements OnInit {
   // --- Settings Panel ---
   settingsPanelOpen = false;
   startModulId: number | null = null;
-  settingsForm = new FormGroup({
-    konfiguration: new FormControl<string>('', [Validators.required, this.validJson()]),
-  });
+
+  settingsRows = new FormArray<FormGroup>([]);
 
   get isAdmin(): boolean {
     return this.meine_rollen.includes(this.adminRoleKey);
@@ -134,9 +128,10 @@ export class StartComponent implements OnInit {
   }
 
   openSettings(): void {
-    this.settingsForm.patchValue({
-      konfiguration: JSON.stringify(this.start_konfig, null, 2),
-    });
+    this.settingsRows.clear();
+    for (const item of this.start_konfig) {
+      this.settingsRows.push(this.createRow(item));
+    }
     this.settingsPanelOpen = true;
   }
 
@@ -144,13 +139,60 @@ export class StartComponent implements OnInit {
     this.settingsPanelOpen = false;
   }
 
+  addRow(): void {
+    this.settingsRows.push(this.createRow());
+  }
+
+  removeRow(index: number): void {
+    this.settingsRows.removeAt(index);
+  }
+
+  moveUp(index: number): void {
+    if (index <= 0) return;
+    const row = this.settingsRows.at(index);
+    this.settingsRows.removeAt(index);
+    this.settingsRows.insert(index - 1, row);
+  }
+
+  moveDown(index: number): void {
+    if (index >= this.settingsRows.length - 1) return;
+    const row = this.settingsRows.at(index);
+    this.settingsRows.removeAt(index);
+    this.settingsRows.insert(index + 1, row);
+  }
+
+  private createRow(item: StartKonfigItem = {}): FormGroup {
+    const rolleStr = Array.isArray(item.rolle)
+      ? item.rolle.join(', ')
+      : (item.rolle ?? '');
+    return new FormGroup({
+      icon: new FormControl<string>(item.icon ?? '', Validators.required),
+      modul: new FormControl<string>(item.modul ?? '', Validators.required),
+      rolle: new FormControl<string>(rolleStr),
+      kategorie: new FormControl<string>(item.kategorie ?? item.category ?? ''),
+      routerlink: new FormControl<string>(item.routerlink ?? '', Validators.required),
+    });
+  }
+
   settingsSpeichern(): void {
-    if (this.settingsForm.invalid) {
-      this.uiMessageService.erstelleMessage('error', 'Bitte gültiges JSON eingeben!');
+    if (this.settingsRows.invalid) {
+      this.uiMessageService.erstelleMessage('error', 'Bitte alle Pflichtfelder (Icon, Modul, Routerlink) ausfüllen!');
       return;
     }
 
-    const konfiguration = JSON.parse(this.settingsForm.controls['konfiguration'].value!);
+    const konfiguration: StartKonfigItem[] = this.settingsRows.controls.map((row) => {
+      const v = (row as FormGroup).value as {
+        icon: string; modul: string; rolle: string; kategorie: string; routerlink: string;
+      };
+      return {
+        icon: v.icon,
+        modul: v.modul,
+        rolle: v.rolle,
+        kategorie: v.kategorie,
+        routerlink: v.routerlink,
+      };
+    });
+
     const objekt = { modul: 'start', konfiguration };
 
     if (!this.startModulId) {
@@ -217,19 +259,6 @@ export class StartComponent implements OnInit {
       this.userHasAccess(item) && !this.isHiddenItem(item)
     );
     this.categorizedItems = this.buildCategories(allowed);
-  }
-
-  private validJson(): ValidatorFn {
-    return (control: AbstractControl) => {
-      const v = control.value;
-      if (!v) return null;
-      try {
-        JSON.parse(v);
-        return null;
-      } catch {
-        return { jsonInvalid: true };
-      }
-    };
   }
 
   /* ============================
