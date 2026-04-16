@@ -17,6 +17,7 @@ import {
   ImrPageLayoutComponent,
   ImrSectionComponent,
 } from '../imr-ui-library';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
@@ -59,6 +60,7 @@ type ModulKonfigSaveResult = { id: number; modul: string; konfiguration: StartKo
     ImrPageLayoutComponent,
     ImrSectionComponent,
     ImrCardComponent,
+    MatAutocompleteModule,
     MatButtonModule,
     MatIconModule,
     RouterLink,
@@ -88,6 +90,26 @@ export class StartComponent implements OnInit {
   startModulId: number | null = null;
 
   settingsRows = new FormArray<FormGroup>([]);
+
+  // --- Kategorie Autocomplete ---
+  private readonly standardKategorien: string[] = [
+    'Dokumentation', 'Fachchargen', 'Verwaltung', 'Administration', 'Geplant',
+  ];
+  gefilterteKategorien: string[] = [...this.standardKategorien];
+
+  updateKategorieFilter(event: Event): void {
+    const value = (event.target as HTMLInputElement).value.toLowerCase();
+    const alle = this.getAlleKategorien();
+    this.gefilterteKategorien = alle.filter(k => k.toLowerCase().includes(value));
+  }
+
+  private getAlleKategorien(): string[] {
+    const used = this.settingsRows.controls
+      .map(row => ((row as FormGroup).get('kategorie')?.value as string) ?? '')
+      .filter(Boolean);
+    const unique = new Set([...this.standardKategorien, ...used]);
+    return Array.from(unique).sort();
+  }
 
   get isAdmin(): boolean {
     return this.meine_rollen.includes(this.adminRoleKey);

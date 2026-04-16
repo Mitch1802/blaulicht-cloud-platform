@@ -84,6 +84,13 @@
 
   <div class="settings-panel__body">
 
+    <!-- Autocomplete Panel für Kategorie (einmalig definiert, von allen Zeilen geteilt) -->
+    <mat-autocomplete #autoKategorie="matAutocomplete">
+      @for (opt of gefilterteKategorien; track opt) {
+        <mat-option [value]="opt">{{ opt }}</mat-option>
+      }
+    </mat-autocomplete>
+
     <div class="konfig-table-wrap">
       <table class="konfig-table">
         <thead>
@@ -135,7 +142,14 @@
                 <input class="konfig-input" formControlName="rolle" placeholder="ADMIN, FMD" />
               </td>
               <td class="col-kategorie">
-                <input class="konfig-input" formControlName="kategorie" placeholder="Kategorie" />
+                <input
+                  class="konfig-input"
+                  formControlName="kategorie"
+                  placeholder="Kategorie"
+                  [matAutocomplete]="autoKategorie"
+                  (focus)="updateKategorieFilter($event)"
+                  (input)="updateKategorieFilter($event)"
+                />
               </td>
               <td class="col-routerlink">
                 <input class="konfig-input" formControlName="routerlink" placeholder="/pfad" />
