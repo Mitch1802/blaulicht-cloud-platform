@@ -1569,7 +1569,7 @@ export class EinsatzberichtComponent implements OnInit {
 
     const templateId = String(this.pdf_konfig['idEinsatzberichtPdf'] ?? '');
     if (!templateId) {
-      this.uiMessageService.erstelleMessage('error', 'Kein PDF-Template konfiguriert. Bitte unter modul_konfiguration den Schlüssel "idEinsatzberichtPdf" eintragen.');
+      this.uiMessageService.erstelleMessage('error', 'Kein PDF-Template konfiguriert. Bitte die PDF-Konfiguration prüfen.');
       return;
     }
 

@@ -14,7 +14,6 @@ import {
 } from '../imr-ui-library';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatListModule } from '@angular/material/list';
 import { MatTabsModule } from '@angular/material/tabs';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IStammdaten } from '../_interface/stammdaten';
@@ -22,6 +21,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
+import { IPdfTemplate } from '../_interface/pdf_template';
+import { MatTableModule } from '@angular/material/table';
 
 type RechnungPosition = {
   bezeichnung: string;
@@ -34,9 +35,23 @@ type SevdeskKontakt = {
 };
 
 type ModulKonfigurationEintrag = {
+  id?: number;
   modul?: string;
   konfiguration?: Record<string, unknown>;
 };
+
+type ModulKonfigurationResponse = {
+  user?: { roles?: string[] | string };
+  main?: ModulKonfigurationEintrag[];
+} | ModulKonfigurationEintrag[];
+
+type ModulKonfigurationSaveResult = {
+  id: number;
+  modul: string;
+  konfiguration?: Record<string, unknown>;
+};
+
+type PdfTemplatesResponse = { main?: IPdfTemplate[] } | IPdfTemplate[];
 
 type VerwaltungResponse = {
   sevdesk?: { objects?: SevdeskKontakt[] };
@@ -67,13 +82,14 @@ type VerwaltungKontakteResponse = {
     MatTabsModule,
     MatButtonModule,
     MatFormFieldModule,
-    MatListModule,
     ReactiveFormsModule,
     FormsModule,
     MatInputModule,
     MatIconModule,
     MatSelectModule,
-    MatOptionModule,],
+    MatOptionModule,
+    MatTableModule,
+  ],
   templateUrl: './verwaltung.component.html',
   styleUrl: './verwaltung.component.sass'
 })
@@ -83,11 +99,17 @@ export class VerwaltungComponent implements OnInit {
   private collectionUtilsService = inject(CollectionUtilsService);
   private navigationService = inject(NavigationService);
   private uiMessageService = inject(UiMessageService);
+  private readonly adminRoleKey = 'ADMIN';
+  private readonly modulKonfigurationEndpoint = 'modul_konfiguration';
   title = 'Verwaltung';
   modul = 'verwaltung';
 
   breadcrumb: ImrBreadcrumbItem[] = [];
+  meine_rollen: string[] = [];
+  pdfKonfigId: number | null = null;
   pdf_konfig: Record<string, unknown> = {};
+  pdfTemplates: IPdfTemplate[] = [];
+  private pdfTemplatesLoaded = false;
   stammdaten: IStammdaten | null = null;
   kontakte: SevdeskKontakt[] = [];
 
@@ -96,6 +118,11 @@ export class VerwaltungComponent implements OnInit {
 
   formAuswahl = new FormGroup({
     name: new FormControl('')
+  });
+
+  formPdfSettings = new FormGroup({
+    idVerwaltungRechnung: new FormControl<string | null>(null),
+    idVerwaltungTombola: new FormControl<string | null>(null),
   });
 
   formRechnung = new FormGroup({
@@ -131,6 +158,12 @@ export class VerwaltungComponent implements OnInit {
     return p.toFixed(2).replace('.', ',');
   }
 
+  readonly sichtbareSpaltenPositionen: string[] = ['bezeichnung', 'preis', 'actions'];
+
+  get isAdmin(): boolean {
+    return this.meine_rollen.includes(this.adminRoleKey);
+  }
+
   ngOnInit(): void {
     sessionStorage.setItem('PageNumber', '2');
     sessionStorage.setItem('Page2', 'VER');
@@ -149,12 +182,53 @@ export class VerwaltungComponent implements OnInit {
           const templates = (erg.modul_konfig ?? []).find((m: ModulKonfigurationEintrag) => m.modul === 'pdf');
           this.pdf_konfig = templates?.konfiguration ?? {};
           this.stammdaten = erg.konfig?.[0] ?? null;
+          this.syncPdfSettingsForm();
         } catch (e: unknown) {
           this.uiMessageService.erstelleMessage('error', String(e));
         }
       },
       error: (error: unknown) => this.authSessionService.errorAnzeigen(error)
     });
+
+    this.loadPdfSettingsContext();
+  }
+
+  savePdfSettings(): void {
+    if (!this.isAdmin) {
+      return;
+    }
+
+    const payload = {
+      modul: 'pdf',
+      konfiguration: {
+        ...this.pdf_konfig,
+        idVerwaltungRechnung: this.stringOrNull(this.formPdfSettings.controls.idVerwaltungRechnung.value),
+        idVerwaltungTombola: this.stringOrNull(this.formPdfSettings.controls.idVerwaltungTombola.value),
+      },
+    };
+
+    if (this.pdfKonfigId) {
+      this.apiHttpService.patch<ModulKonfigurationSaveResult>(this.modulKonfigurationEndpoint, this.pdfKonfigId, payload, false).subscribe({
+        next: (saved) => {
+          this.applySavedPdfKonfig(saved);
+          this.uiMessageService.erstelleMessage('success', 'PDF-Zuweisungen gespeichert.');
+        },
+        error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
+      });
+      return;
+    }
+
+    this.apiHttpService.post<ModulKonfigurationSaveResult>(this.modulKonfigurationEndpoint, payload, false).subscribe({
+      next: (saved) => {
+        this.applySavedPdfKonfig(saved);
+        this.uiMessageService.erstelleMessage('success', 'PDF-Zuweisungen gespeichert.');
+      },
+      error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
+    });
+  }
+
+  resetPdfSettings(): void {
+    this.syncPdfSettingsForm();
   }
 
   private parsePreis(input: string): number | null {
@@ -231,7 +305,7 @@ export class VerwaltungComponent implements OnInit {
 
     const idVerwaltungRechnung = String(this.pdf_konfig['idVerwaltungRechnung'] ?? '').trim();
     if (!idVerwaltungRechnung) {
-      this.uiMessageService.erstelleMessage('error', 'Kein PDF-Template konfiguriert. Bitte unter modul_konfiguration den Schlüssel "idVerwaltungRechnung" setzen.');
+      this.uiMessageService.erstelleMessage('error', 'Kein PDF-Template konfiguriert. Bitte die PDF-Zuordnung im Einstellungstab pflegen.');
       return;
     }
 
@@ -335,6 +409,99 @@ export class VerwaltungComponent implements OnInit {
     }
 
     return '';
+  }
+
+  private loadPdfSettingsContext(): void {
+    this.apiHttpService.get<ModulKonfigurationResponse>(this.modulKonfigurationEndpoint).subscribe({
+      next: (erg) => {
+        this.meine_rollen = this.extractRolesFromPayload(erg);
+        const eintraege = this.normalizeModulKonfigEntries(erg);
+        const pdfEntry = eintraege.find((item) => String(item.modul ?? '').trim().toLowerCase() === 'pdf');
+        this.pdfKonfigId = typeof pdfEntry?.id === 'number' ? pdfEntry.id : null;
+        this.pdf_konfig = pdfEntry?.konfiguration ?? this.pdf_konfig;
+        this.syncPdfSettingsForm();
+
+        if (this.isAdmin) {
+          this.loadPdfTemplatesOnce();
+        }
+      },
+      error: () => {
+        this.meine_rollen = [];
+        this.pdfKonfigId = null;
+        this.syncPdfSettingsForm();
+      },
+    });
+  }
+
+  private loadPdfTemplatesOnce(): void {
+    if (this.pdfTemplatesLoaded) {
+      return;
+    }
+
+    this.apiHttpService.get<PdfTemplatesResponse>('pdf/templates').subscribe({
+      next: (erg) => {
+        this.pdfTemplates = Array.isArray(erg) ? erg : (erg.main ?? []);
+        this.pdfTemplatesLoaded = true;
+      },
+      error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
+    });
+  }
+
+  private syncPdfSettingsForm(): void {
+    this.formPdfSettings.patchValue({
+      idVerwaltungRechnung: this.stringOrNull(this.pdf_konfig['idVerwaltungRechnung']),
+      idVerwaltungTombola: this.stringOrNull(this.pdf_konfig['idVerwaltungTombola']),
+    }, { emitEvent: false });
+    this.formPdfSettings.markAsPristine();
+    this.formPdfSettings.markAsUntouched();
+  }
+
+  private applySavedPdfKonfig(saved: ModulKonfigurationSaveResult): void {
+    this.pdfKonfigId = saved.id;
+    this.pdf_konfig = saved.konfiguration ?? {};
+    this.syncPdfSettingsForm();
+  }
+
+  private normalizeModulKonfigEntries(payload: unknown): ModulKonfigurationEintrag[] {
+    if (Array.isArray(payload)) {
+      return payload as ModulKonfigurationEintrag[];
+    }
+
+    if (payload && typeof payload === 'object') {
+      const main = (payload as { main?: unknown }).main;
+      if (Array.isArray(main)) {
+        return main as ModulKonfigurationEintrag[];
+      }
+    }
+
+    return [];
+  }
+
+  private extractRolesFromPayload(payload: unknown): string[] {
+    if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+      return [];
+    }
+
+    return this.normalizeRoles((payload as { user?: { roles?: unknown } }).user?.roles);
+  }
+
+  private normalizeRoles(value: unknown): string[] {
+    if (Array.isArray(value)) {
+      return value.map((item) => String(item).trim().toUpperCase()).filter(Boolean);
+    }
+
+    return String(value ?? '')
+      .split(',')
+      .map((item) => item.trim().toUpperCase())
+      .filter(Boolean);
+  }
+
+  private stringOrNull(value: unknown): string | null {
+    if (value === null || value === undefined || value === '') {
+      return null;
+    }
+
+    return String(value);
   }
 
   sevdeskKontaktUebernehmen(): void {

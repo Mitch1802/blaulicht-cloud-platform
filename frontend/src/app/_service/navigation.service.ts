@@ -101,9 +101,6 @@ export class NavigationService {
     } else if (page === 'JUGEND') {
       link = '/jugend';
       kuerzel = 'Jugend';
-    } else if (page === 'V_MK') {
-      link = '/modul_konfiguration';
-      kuerzel = 'Modul Konfiguration';
     } else if (page === 'V_B') {
       link = '/benutzer';
       kuerzel = 'Benutzer';

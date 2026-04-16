@@ -70,13 +70,6 @@
     "routerlink": "/mitglied"
   },
   {
-    "icon": "tune",
-    "modul": "Modul Konfiguration",
-    "rolle": "ADMIN",
-    "kategorie": "Administration",
-    "routerlink": "/modul_konfiguration"
-  },
-  {
     "icon": "engineering",
     "modul": "Benutzerverwaltung",
     "rolle": "ADMIN",

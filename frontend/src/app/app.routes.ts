@@ -124,11 +124,6 @@ export const routes: Routes = [
     loadComponent: () => import("./pdf-templates/pdf-templates.component").then(m => m.PdfTemplatesComponent),
   },
   {
-    path: 'modul_konfiguration',
-    canActivate: [authGuard],
-    loadComponent: () => import("./modul-konfiguration/modul-konfiguration.component").then(m => m.ModulKonfigurationComponent),
-  },
-  {
     path: 'benutzer',
     canActivate: [authGuard],
     loadComponent: () => import("./user/user.component").then(m => m.UserComponent),

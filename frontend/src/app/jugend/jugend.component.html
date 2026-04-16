@@ -555,5 +555,122 @@
         </div>
       </imr-section>
     </mat-tab>
+
+    @if (isAdmin) {
+      <mat-tab label="Einstellungen">
+        <imr-section>
+          <div class="imr-top-actions">
+            <button
+              mat-flat-button
+              color="accent"
+              type="button"
+              [disabled]="settingsSaveDisabled"
+              (click)="saveSettings()"
+            >
+              Einstellungen speichern
+            </button>
+            <button
+              mat-flat-button
+              color="warn"
+              type="button"
+              (click)="resetSettingsToDefaults()"
+            >
+              Auf Standard zurücksetzen
+            </button>
+          </div>
+
+          <div class="jugend-settings-panel">
+            <section class="jugend-settings-pdf">
+              <h3>PDF-Zuordnung</h3>
+              <div [formGroup]="settingsPdfForm" class="jugend-settings-pdf-form">
+                <mat-form-field appearance="outline" class="imr-full-width">
+                  <mat-label>Jugend Event-Ausdruck</mat-label>
+                  <mat-select formControlName="idJugendEventReport">
+                    <mat-option [value]="null">Keine Vorlage</mat-option>
+                    @for (template of pdfTemplates; track template.id) {
+                      <mat-option [value]="template.id">
+                        {{ template.typ }} v{{ template.version }} - {{ template.bezeichnung }}
+                      </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            </section>
+
+            <section class="jugend-settings-regeln">
+              <h3>Jugend-Regeln</h3>
+              <div class="imr-table-wrap">
+                <table mat-table [dataSource]="settingsRows.controls" class="jugend-settings-table">
+                  <ng-container matColumnDef="track">
+                    <th mat-header-cell *matHeaderCellDef>Bereich</th>
+                    <td mat-cell *matCellDef="let row" [formGroup]="$any(row)">
+                      {{ getRegelTrackLabel($any(row).get('track')?.value) }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="level">
+                    <th mat-header-cell *matHeaderCellDef>Level</th>
+                    <td mat-cell *matCellDef="let row" [formGroup]="$any(row)">
+                      {{ getRegelLevelLabel($any(row).get('track')?.value, $any(row).get('level')?.value) }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="min_age">
+                    <th mat-header-cell *matHeaderCellDef>Min. Alter</th>
+                    <td mat-cell *matCellDef="let row" [formGroup]="$any(row)">
+                      <input matInput class="jugend-settings-input" type="number" formControlName="min_age" />
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="max_age">
+                    <th mat-header-cell *matHeaderCellDef>Max. Alter</th>
+                    <td mat-cell *matCellDef="let row" [formGroup]="$any(row)">
+                      <input matInput class="jugend-settings-input" type="number" formControlName="max_age" />
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="min_membership_months">
+                    <th mat-header-cell *matHeaderCellDef>Mitgliedschaft Monate</th>
+                    <td mat-cell *matCellDef="let row" [formGroup]="$any(row)">
+                      <input matInput class="jugend-settings-input" type="number" formControlName="min_membership_months" />
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="requires_all">
+                    <th mat-header-cell *matHeaderCellDef>Voraussetzungen</th>
+                    <td mat-cell *matCellDef="let row" [formGroup]="$any(row)">
+                      <div class="jugend-settings-requires">
+                        <mat-select class="jugend-settings-select" formControlName="requires_all" multiple>
+                          @for (token of jugendTokenInfos; track token.token) {
+                            <mat-option [value]="token.token">{{ token.label }}</mat-option>
+                          }
+                        </mat-select>
+                        <div class="jugend-settings-requires-copy">
+                          {{ getSelectedTokenLabels($any(row).get('requires_all')?.value) }}
+                        </div>
+                      </div>
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="hinweis">
+                    <th mat-header-cell *matHeaderCellDef>Hinweis</th>
+                    <td mat-cell *matCellDef="let row" [formGroup]="$any(row)">
+                      <input matInput class="jugend-settings-input" type="text" formControlName="hinweis" />
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="sichtbareSpaltenSettings"></tr>
+                  <tr
+                    mat-row
+                    *matRowDef="let row; let i = index; columns: sichtbareSpaltenSettings"
+                    [class.jugend-settings-row--group-start]="isSettingsGroupStart(i)"
+                  ></tr>
+                </table>
+              </div>
+            </section>
+          </div>
+        </imr-section>
+      </mat-tab>
+    }
   </mat-tab-group>
 </imr-page-layout>

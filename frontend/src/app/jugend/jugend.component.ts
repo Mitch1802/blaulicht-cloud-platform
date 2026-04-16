@@ -1,5 +1,5 @@
 ﻿import { Component, HostListener, OnInit, inject } from '@angular/core';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatInputModule } from '@angular/material/input';
 import {
@@ -24,6 +24,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { IMitglied } from '../_interface/mitglied';
 import { IJugendEvent } from '../_interface/jugend_event';
 import { IJugendAusbildung } from '../_interface/jugend_ausbildung';
+import { IPdfTemplate } from '../_interface/pdf_template';
 import jugendRegelConfig from './config.json';
 
 type JugendEventKategorie =
@@ -44,9 +45,25 @@ interface IEventTeilnehmerLevelInput {
 }
 
 interface IModulKonfigurationEintrag {
+  id?: number;
   modul?: string;
   konfiguration?: unknown;
 }
+
+type ModulKonfigurationResponse = {
+  user?: {
+    roles?: string[] | string;
+  };
+  main?: IModulKonfigurationEintrag[];
+} | IModulKonfigurationEintrag[];
+
+type ModulKonfigurationSaveResult = {
+  id: number;
+  modul: string;
+  konfiguration: unknown;
+};
+
+type PdfTemplatesResponse = { main?: IPdfTemplate[] } | IPdfTemplate[];
 
 type PdfKonfiguration = {
   idJugendEventReport?: string;
@@ -72,11 +89,11 @@ type JugendRegelTrackKey =
   | 'fertigkeit_sicher_zu_wasser';
 
 interface IJugendLevelRegel {
-  min_age?: number;
-  max_age?: number;
-  min_membership_months?: number;
+  min_age?: number | null;
+  max_age?: number | null;
+  min_membership_months?: number | null;
   requires_all?: string[];
-  hinweis?: string;
+  hinweis?: string | null;
 }
 
 type IJugendTrackRegeln = Partial<Record<'1' | '2' | '3' | '4' | '5', IJugendLevelRegel>>;
@@ -87,7 +104,29 @@ interface IJugendRegelKonfiguration {
   letzte_aktualisierung?: string;
   hinweis?: string;
   regeln?: Partial<Record<JugendRegelTrackKey, IJugendTrackRegeln>>;
+  [key: string]: unknown;
 }
+
+type JugendRegelRowValue = {
+  track: JugendRegelTrackKey;
+  level: number;
+  min_age: number | null;
+  max_age: number | null;
+  min_membership_months: number | null;
+  requires_all: string[];
+  hinweis: string;
+};
+
+type JugendRegelTrackInfo = {
+  key: JugendRegelTrackKey;
+  label: string;
+  levels: readonly number[];
+};
+
+type JugendTokenInfo = {
+  token: string;
+  label: string;
+};
 
 type IJugendFertigkeitsDatumKey =
   | 'fwtechnik_spiel_datum'
@@ -125,8 +164,11 @@ export class JugendComponent implements OnInit {
   private collectionUtilsService = inject(CollectionUtilsService);
   private navigationService = inject(NavigationService);
   private uiMessageService = inject(UiMessageService);
+  private readonly adminRoleKey = 'ADMIN';
+  private readonly modulKonfigurationEndpoint = 'modul_konfiguration';
   title = 'Jugend';
   breadcrumb: ImrBreadcrumbItem[] = [];
+  meine_rollen: string[] = [];
 
   mitglieder: IMitglied[] = [];
   jugendMitglieder: IMitglied[] = [];
@@ -144,6 +186,7 @@ export class JugendComponent implements OnInit {
 
   sichtbareSpaltenJugend: string[] = [...this.desktopSpaltenJugend];
   sichtbareSpaltenEvents: string[] = ['datum', 'kategorie', 'teilnehmer', 'actions'];
+  readonly sichtbareSpaltenSettings: string[] = ['track', 'level', 'min_age', 'max_age', 'min_membership_months', 'requires_all', 'hinweis'];
 
   readonly eventKategorien: ReadonlyArray<IEventKategorieOption> = [
     { value: 'WISSENSTEST', label: 'Wissentest' },
@@ -197,14 +240,49 @@ export class JugendComponent implements OnInit {
   private readonly defaultJugendRegelKonfiguration: IJugendRegelKonfiguration =
     jugendRegelConfig as IJugendRegelKonfiguration;
 
+  private readonly jugendRegelTracks: ReadonlyArray<JugendRegelTrackInfo> = [
+    { key: 'erprobung', label: 'Erprobung', levels: [1, 2, 3, 4, 5] },
+    { key: 'wissentest', label: 'Wissentest', levels: [1, 2, 3, 4, 5] },
+    { key: 'fertigkeit_melder', label: 'Fertigkeitsabzeichen Melder', levels: [1, 2] },
+    { key: 'fertigkeit_fwtechnik', label: 'Fertigkeitsabzeichen FW-Technik', levels: [1, 2] },
+    { key: 'fertigkeit_sicher_zu_wasser', label: 'Fertigkeitsabzeichen Sicher zu Wasser', levels: [1, 2] },
+  ];
+
+  readonly jugendTokenInfos: ReadonlyArray<JugendTokenInfo> = [
+    { token: 'erprobung_1', label: 'Erprobung Bronze Spiel' },
+    { token: 'erprobung_2', label: 'Erprobung Silber Spiel' },
+    { token: 'erprobung_3', label: 'Erprobung Bronze' },
+    { token: 'erprobung_4', label: 'Erprobung Silber' },
+    { token: 'erprobung_5', label: 'Erprobung Gold' },
+    { token: 'wissentest_1', label: 'Wissentest Bronze Spiel' },
+    { token: 'wissentest_2', label: 'Wissentest Silber Spiel' },
+    { token: 'wissentest_3', label: 'Wissentest Bronze' },
+    { token: 'wissentest_4', label: 'Wissentest Silber' },
+    { token: 'wissentest_5', label: 'Wissentest Gold' },
+    { token: 'fertigkeit_melder_1', label: 'Melder Spiel' },
+    { token: 'fertigkeit_melder_2', label: 'Fertigkeitsabzeichen Melder' },
+    { token: 'fertigkeit_fwtechnik_1', label: 'FW-Technik Spiel' },
+    { token: 'fertigkeit_fwtechnik_2', label: 'Fertigkeitsabzeichen FW-Technik' },
+    { token: 'fertigkeit_sicher_zu_wasser_1', label: 'Sicher zu Wasser Spiel' },
+    { token: 'fertigkeit_sicher_zu_wasser_2', label: 'Fertigkeitsabzeichen Sicher zu Wasser' },
+  ];
+
   private jugendRegelKonfiguration: IJugendRegelKonfiguration = this.defaultJugendRegelKonfiguration;
   private pdfKonfiguration: PdfKonfiguration = {};
   private stammdatenKonfiguration: StammdatenKonfiguration = {};
+  jugendModulId: number | null = null;
+  pdfModulId: number | null = null;
+  pdfTemplates: IPdfTemplate[] = [];
+  private pdfTemplatesLoaded = false;
   ausdruckPlanKategorie: JugendEventKategorie | '' = '';
   ausdruckPlanDatum = '';
 
   showMitgliedDetail = false;
   showEventForm = false;
+  settingsRows = new FormArray<FormGroup>([]);
+  settingsPdfForm = new FormGroup({
+    idJugendEventReport: new FormControl<string | null>(null),
+  });
 
   formEvent = new FormGroup({
     id: new FormControl<string>(''),
@@ -227,6 +305,14 @@ export class JugendComponent implements OnInit {
     this.loadEvents();
     this.loadStammdatenKonfiguration();
     this.loadJugendRegelKonfiguration();
+  }
+
+  get isAdmin(): boolean {
+    return this.meine_rollen.includes(this.adminRoleKey);
+  }
+
+  get settingsSaveDisabled(): boolean {
+    return this.settingsRows.invalid || this.settingsPdfForm.invalid;
   }
 
   @HostListener('window:resize')
@@ -553,6 +639,140 @@ export class JugendComponent implements OnInit {
     return this.getKategorieLabel(this.parseEventKategorie(event.kategorie));
   }
 
+  getRegelTrackLabel(track: JugendRegelTrackKey): string {
+    return this.jugendRegelTracks.find((item) => item.key === track)?.label ?? track;
+  }
+
+  getRegelLevelLabel(track: JugendRegelTrackKey, level: number): string {
+    if (track === 'fertigkeit_melder' || track === 'fertigkeit_fwtechnik' || track === 'fertigkeit_sicher_zu_wasser') {
+      return this.getFertigkeitsabzeichenLevelLabel(level);
+    }
+    return this.getStandardLevelLabel(level);
+  }
+
+  getTokenLabel(token: string): string {
+    return this.jugendTokenInfos.find((item) => item.token === token)?.label ?? token;
+  }
+
+  getSelectedTokenLabels(tokens: unknown): string {
+    if (!Array.isArray(tokens) || tokens.length === 0) {
+      return 'Keine Voraussetzungen';
+    }
+
+    return tokens.map((token) => this.getTokenLabel(String(token))).join(', ');
+  }
+
+  isSettingsGroupStart(index: number): boolean {
+    if (index === 0) {
+      return true;
+    }
+
+    const currentTrack = this.settingsRows.at(index).get('track')?.value;
+    const previousTrack = this.settingsRows.at(index - 1).get('track')?.value;
+    return currentTrack !== previousTrack;
+  }
+
+  resetSettingsToDefaults(): void {
+    this.settingsRows.clear();
+    for (const row of this.buildRegelRows(this.defaultJugendRegelKonfiguration)) {
+      this.settingsRows.push(this.createSettingsRow(row));
+    }
+    this.settingsPdfForm.patchValue({ idJugendEventReport: null }, { emitEvent: false });
+    this.markSettingsPristine();
+  }
+
+  saveSettings(): void {
+    if (!this.isAdmin) {
+      return;
+    }
+
+    if (this.settingsSaveDisabled) {
+      this.uiMessageService.erstelleMessage('error', 'Bitte die Einstellungen vollständig und gültig ausfüllen.');
+      return;
+    }
+
+    const jugendPayload = {
+      modul: 'jugend',
+      konfiguration: this.buildJugendRegelKonfigurationFromRows(),
+    };
+
+    const pdfSelection = this.stringOrNull(this.settingsPdfForm.controls.idJugendEventReport.value);
+    const shouldPersistPdf = this.pdfModulId !== null || pdfSelection !== null;
+    const pdfPayload = {
+      modul: 'pdf',
+      konfiguration: {
+        ...this.pdfKonfiguration,
+        idJugendEventReport: pdfSelection,
+      },
+    };
+
+    const savePdfConfig = (): void => {
+      if (!shouldPersistPdf) {
+        this.syncSettingsFormsFromConfig();
+        this.uiMessageService.erstelleMessage('success', 'Jugend-Einstellungen gespeichert.');
+        return;
+      }
+
+      if (this.pdfModulId) {
+        this.apiHttpService.patch<ModulKonfigurationSaveResult>(
+          this.modulKonfigurationEndpoint,
+          this.pdfModulId,
+          pdfPayload,
+          false,
+        ).subscribe({
+          next: (saved) => {
+            this.applySavedPdfKonfiguration(saved);
+            this.syncSettingsFormsFromConfig();
+            this.uiMessageService.erstelleMessage('success', 'Jugend-Einstellungen gespeichert.');
+          },
+          error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
+        });
+        return;
+      }
+
+      this.apiHttpService.post<ModulKonfigurationSaveResult>(
+        this.modulKonfigurationEndpoint,
+        pdfPayload,
+        false,
+      ).subscribe({
+        next: (saved) => {
+          this.applySavedPdfKonfiguration(saved);
+          this.syncSettingsFormsFromConfig();
+          this.uiMessageService.erstelleMessage('success', 'Jugend-Einstellungen gespeichert.');
+        },
+        error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
+      });
+    };
+
+    if (this.jugendModulId) {
+      this.apiHttpService.patch<ModulKonfigurationSaveResult>(
+        this.modulKonfigurationEndpoint,
+        this.jugendModulId,
+        jugendPayload,
+        false,
+      ).subscribe({
+        next: (saved) => {
+          this.applySavedJugendKonfiguration(saved);
+          savePdfConfig();
+        },
+        error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
+      });
+      return;
+    }
+
+    this.apiHttpService.post<ModulKonfigurationSaveResult>(
+      this.modulKonfigurationEndpoint,
+      jugendPayload,
+      false,
+    ).subscribe({
+      next: (saved) => {
+        this.applySavedJugendKonfiguration(saved);
+        savePdfConfig();
+      },
+      error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
+    });
+  }
+
   getStatusText(m: IMitglied): string {
     const status = String(m.dienststatus ?? '').toUpperCase();
     if (status === 'JUGEND') {
@@ -813,7 +1033,7 @@ export class JugendComponent implements OnInit {
     if (!templateId) {
       this.uiMessageService.erstelleMessage(
         'error',
-        'Kein PDF-Template konfiguriert. Bitte unter modul_konfiguration den Schlüssel "idJugendEventReport" setzen.',
+        'Kein PDF-Template konfiguriert. Bitte die PDF-Zuordnung im Einstellungstab pflegen.',
       );
       return;
     }
@@ -869,7 +1089,7 @@ export class JugendComponent implements OnInit {
     if (!templateId) {
       this.uiMessageService.erstelleMessage(
         'error',
-        'Kein PDF-Template konfiguriert. Bitte unter modul_konfiguration den Schlüssel "idJugendEventReport" setzen.',
+        'Kein PDF-Template konfiguriert. Bitte die PDF-Zuordnung im Einstellungstab pflegen.',
       );
       return;
     }
@@ -1262,12 +1482,14 @@ export class JugendComponent implements OnInit {
   }
 
   private loadJugendRegelKonfiguration(): void {
-    this.apiHttpService.get<unknown>('modul_konfiguration').subscribe({
+    this.apiHttpService.get<ModulKonfigurationResponse>(this.modulKonfigurationEndpoint).subscribe({
       next: (erg) => {
+        this.meine_rollen = this.extractRolesFromPayload(erg);
         const eintraege = this.extractModulKonfigurationListe(erg);
         const pdfEintrag = eintraege.find(
           (item) => String(item?.modul ?? '').trim().toLowerCase() === 'pdf',
         );
+        this.pdfModulId = typeof pdfEintrag?.id === 'number' ? pdfEintrag.id : null;
         if (pdfEintrag && typeof pdfEintrag.konfiguration === 'object' && pdfEintrag.konfiguration !== null) {
           this.pdfKonfiguration = pdfEintrag.konfiguration as PdfKonfiguration;
         } else {
@@ -1277,19 +1499,32 @@ export class JugendComponent implements OnInit {
         const jugendEintrag = eintraege.find(
           (item) => String(item?.modul ?? '').trim().toLowerCase() === 'jugend',
         );
+        this.jugendModulId = typeof jugendEintrag?.id === 'number' ? jugendEintrag.id : null;
 
         if (!jugendEintrag || typeof jugendEintrag.konfiguration !== 'object' || jugendEintrag.konfiguration === null) {
           this.jugendRegelKonfiguration = this.defaultJugendRegelKonfiguration;
+          this.syncSettingsFormsFromConfig();
+          if (this.isAdmin) {
+            this.loadPdfTemplatesOnce();
+          }
           return;
         }
 
         this.jugendRegelKonfiguration = this.mergeJugendRegelKonfiguration(
           jugendEintrag.konfiguration as IJugendRegelKonfiguration,
         );
+        this.syncSettingsFormsFromConfig();
+        if (this.isAdmin) {
+          this.loadPdfTemplatesOnce();
+        }
       },
       error: () => {
+        this.meine_rollen = [];
+        this.jugendModulId = null;
+        this.pdfModulId = null;
         this.pdfKonfiguration = {};
         this.jugendRegelKonfiguration = this.defaultJugendRegelKonfiguration;
+        this.syncSettingsFormsFromConfig();
       },
     });
   }
@@ -1333,6 +1568,141 @@ export class JugendComponent implements OnInit {
       fw_email: String(this.stammdatenKonfiguration.fw_email ?? ''),
       fw_telefon: String(this.stammdatenKonfiguration.fw_telefon ?? ''),
     };
+  }
+
+  private createSettingsRow(item: JugendRegelRowValue): FormGroup {
+    return new FormGroup({
+      track: new FormControl<JugendRegelTrackKey>(item.track, { nonNullable: true }),
+      level: new FormControl<number>(item.level, { nonNullable: true }),
+      min_age: new FormControl<number | null>(item.min_age),
+      max_age: new FormControl<number | null>(item.max_age),
+      min_membership_months: new FormControl<number | null>(item.min_membership_months),
+      requires_all: new FormControl<string[]>(item.requires_all, { nonNullable: true }),
+      hinweis: new FormControl<string>(item.hinweis, { nonNullable: true }),
+    });
+  }
+
+  private buildRegelRows(config: IJugendRegelKonfiguration): JugendRegelRowValue[] {
+    return this.jugendRegelTracks.flatMap((trackInfo) =>
+      trackInfo.levels.map((level) => {
+        const regel = config.regeln?.[trackInfo.key]?.[String(level) as keyof IJugendTrackRegeln];
+        return {
+          track: trackInfo.key,
+          level,
+          min_age: this.numberOrNull(regel?.min_age),
+          max_age: this.numberOrNull(regel?.max_age),
+          min_membership_months: this.numberOrNull(regel?.min_membership_months),
+          requires_all: Array.isArray(regel?.requires_all) ? regel.requires_all.map((item) => String(item)) : [],
+          hinweis: typeof regel?.hinweis === 'string' ? regel.hinweis : '',
+        };
+      }),
+    );
+  }
+
+  private syncSettingsFormsFromConfig(): void {
+    this.settingsRows.clear();
+    for (const row of this.buildRegelRows(this.jugendRegelKonfiguration)) {
+      this.settingsRows.push(this.createSettingsRow(row));
+    }
+    this.settingsPdfForm.patchValue({
+      idJugendEventReport: this.stringOrNull(this.pdfKonfiguration.idJugendEventReport),
+    }, { emitEvent: false });
+    this.markSettingsPristine();
+  }
+
+  private markSettingsPristine(): void {
+    this.settingsRows.markAsPristine();
+    this.settingsRows.markAsUntouched();
+    this.settingsPdfForm.markAsPristine();
+    this.settingsPdfForm.markAsUntouched();
+  }
+
+  private buildJugendRegelKonfigurationFromRows(): IJugendRegelKonfiguration {
+    const regeln: IJugendRegelKonfiguration['regeln'] = {};
+
+    for (const rawRow of this.settingsRows.getRawValue() as JugendRegelRowValue[]) {
+      const track = rawRow.track;
+      const levelKey = String(rawRow.level) as '1' | '2' | '3' | '4' | '5';
+      const trackRegeln = regeln?.[track] ?? {};
+      trackRegeln[levelKey] = {
+        min_age: this.numberOrNull(rawRow.min_age),
+        max_age: this.numberOrNull(rawRow.max_age),
+        min_membership_months: this.numberOrNull(rawRow.min_membership_months),
+        requires_all: Array.isArray(rawRow.requires_all) ? rawRow.requires_all : [],
+        hinweis: String(rawRow.hinweis ?? '').trim(),
+      };
+      regeln![track] = trackRegeln;
+    }
+
+    return {
+      ...this.defaultJugendRegelKonfiguration,
+      ...this.jugendRegelKonfiguration,
+      regeln,
+    };
+  }
+
+  private applySavedJugendKonfiguration(saved: ModulKonfigurationSaveResult): void {
+    this.jugendModulId = saved.id;
+    if (saved.konfiguration && typeof saved.konfiguration === 'object') {
+      this.jugendRegelKonfiguration = this.mergeJugendRegelKonfiguration(
+        saved.konfiguration as IJugendRegelKonfiguration,
+      );
+    }
+  }
+
+  private applySavedPdfKonfiguration(saved: ModulKonfigurationSaveResult): void {
+    this.pdfModulId = saved.id;
+    if (saved.konfiguration && typeof saved.konfiguration === 'object') {
+      this.pdfKonfiguration = saved.konfiguration as PdfKonfiguration;
+    }
+  }
+
+  private loadPdfTemplatesOnce(): void {
+    if (this.pdfTemplatesLoaded) {
+      return;
+    }
+
+    this.apiHttpService.get<PdfTemplatesResponse>('pdf/templates').subscribe({
+      next: (erg) => {
+        this.pdfTemplates = Array.isArray(erg) ? erg : (erg.main ?? []);
+        this.pdfTemplatesLoaded = true;
+      },
+      error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
+    });
+  }
+
+  private stringOrNull(value: unknown): string | null {
+    if (value === null || value === undefined || value === '') {
+      return null;
+    }
+    return String(value);
+  }
+
+  private numberOrNull(value: unknown): number | null {
+    if (value === null || value === undefined || value === '') {
+      return null;
+    }
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  private extractRolesFromPayload(payload: unknown): string[] {
+    if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+      return [];
+    }
+    const user = (payload as { user?: { roles?: unknown } }).user;
+    return this.normalizeRoles(user?.roles);
+  }
+
+  private normalizeRoles(value: unknown): string[] {
+    if (Array.isArray(value)) {
+      return value.map((item) => String(item).trim().toUpperCase()).filter(Boolean);
+    }
+
+    return String(value ?? '')
+      .split(',')
+      .map((item) => item.trim().toUpperCase())
+      .filter(Boolean);
   }
 
   private extractModulKonfigurationListe(payload: unknown): IModulKonfigurationEintrag[] {

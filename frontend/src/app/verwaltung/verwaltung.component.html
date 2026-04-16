@@ -1,9 +1,9 @@
 <imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <imr-page-layout [title]="title" class="verwaltung-page">
-  <imr-section title="Rechnungen & Vorlagen">
-      <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" class="invoice-tabs">
-          <mat-tab label="Rechnung">
+  <mat-tab-group>
+    <mat-tab label="Rechnung">
+      <imr-section>
             <section class="verwaltung-block">
             <h3 class="section-title">SevDesk</h3>
             <form
@@ -11,14 +11,8 @@
               (ngSubmit)="sevdeskKontaktUebernehmen()"
               class="verwaltung-form"
             >
-              <div class="imr-top-actions imr-form-actions">
-                <button mat-flat-button color="primary" type="submit">
-                  übernehmen
-                </button>
-              </div>
-
               <section class="imr-grid m-0 mt-3">
-                <div class="imr-col-12 imr-col-lg-9">
+                <div class="imr-col-12 imr-col-lg-9 mb-3">
                   <mat-form-field>
                     <mat-label>SevDesk Kontakt auswählen</mat-label>
                     <mat-select formControlName="name">
@@ -29,6 +23,11 @@
                       }
                     </mat-select>
                   </mat-form-field>
+                </div>
+                <div class="imr-col-12 imr-col-lg-3 mb-3 verwaltung-inline-action">
+                  <button mat-flat-button color="primary" type="submit">
+                    übernehmen
+                  </button>
                 </div>
               </section>
             </form>
@@ -122,12 +121,6 @@
               (ngSubmit)="addPosition()"
               class="verwaltung-form"
             >
-              <div class="imr-top-actions imr-form-actions">
-                <button mat-flat-button color="accent" type="submit">
-                  Hinzufügen
-                </button>
-              </div>
-
               <section class="imr-grid mt-2 mx-0">
                 <div class="imr-col-12 imr-col-lg-6 mb-3">
                   <mat-form-field>
@@ -148,32 +141,96 @@
                     }
                   </mat-form-field>
                 </div>
+                  <div class="imr-col-12 imr-col-lg-3 mb-3 verwaltung-inline-action">
+                    <button mat-flat-button color="accent" type="submit">
+                      Hinzufügen
+                    </button>
+                  </div>
               </section>
             </form>
             <section class="position-list-wrap">
-              <mat-list class="position-list">
-                @for (
-                  pos of formRechnung.controls.positionen.value;
-                  track $index;
-                  let i = $index
-                ) {
-                  <mat-list-item class="imr-grid">
-                    <div class="imr-col-7">{{ pos.bezeichnung }}</div>
-                    <div class="imr-col-3">{{ formatPreis(pos.preis) }}</div>
-                    <div class="imr-col-2 text-end">
-                      <button mat-icon-button  color="warn" type="button" aria-label="Position löschen" (click)="removePosition(i)">
+              <div class="imr-table-wrap">
+                <table mat-table [dataSource]="formRechnung.controls.positionen.value" class="verwaltung-positionen-table">
+                  <ng-container matColumnDef="bezeichnung">
+                    <th mat-header-cell *matHeaderCellDef>Bezeichnung</th>
+                    <td mat-cell *matCellDef="let pos">{{ pos.bezeichnung }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="preis">
+                    <th mat-header-cell *matHeaderCellDef>Betrag</th>
+                    <td mat-cell *matCellDef="let pos" class="verwaltung-positionen-preis">{{ formatPreis(pos.preis) }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef class="imr-table-actions-head">Aktionen</th>
+                    <td mat-cell *matCellDef="let pos; let i = index" class="imr-action-cell">
+                      <button mat-icon-button color="warn" type="button" aria-label="Position löschen" (click)="removePosition(i)">
                         <mat-icon>delete</mat-icon>
                       </button>
-                    </div>
-                  </mat-list-item>
-                }
-              </mat-list>
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="sichtbareSpaltenPositionen"></tr>
+                  <tr mat-row *matRowDef="let row; columns: sichtbareSpaltenPositionen"></tr>
+                  <tr class="mat-row" *matNoDataRow>
+                    <td class="mat-cell imr-table-empty-cell" [attr.colspan]="sichtbareSpaltenPositionen.length">
+                      <div class="imr-table-empty-state compact">
+                        <mat-icon class="imr-table-empty-icon">receipt_long</mat-icon>
+                        <span class="imr-table-empty-title">Noch keine Positionen erfasst</span>
+                        <span class="imr-table-empty-copy">Bitte Position anlegen, um sie zur Rechnung hinzuzufügen.</span>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+              </div>
             </section>
             </section>
-          </mat-tab>
-          <mat-tab label="Coming Soon" disabled></mat-tab>
-      </mat-tab-group>
-  </imr-section>
+      </imr-section>
+    </mat-tab>
+    <mat-tab label="Coming Soon" disabled></mat-tab>
+
+    @if (isAdmin) {
+      <mat-tab label="Einstellungen">
+        <imr-section>
+              <section class="verwaltung-settings-block">
+                <div class="imr-top-actions imr-form-actions">
+                  <button mat-flat-button color="accent" type="button" (click)="savePdfSettings()">
+                    PDF-Zuweisung speichern
+                  </button>
+                  <button mat-flat-button color="primary" type="button" (click)="resetPdfSettings()">
+                    Zurücksetzen
+                  </button>
+                </div>
+
+                <div class="imr-grid m-0" [formGroup]="formPdfSettings">
+                  <div class="imr-col-12 imr-col-lg-6 mb-3">
+                    <mat-form-field appearance="outline" class="imr-full-width">
+                      <mat-label>Rechnungsaufstellung</mat-label>
+                      <mat-select formControlName="idVerwaltungRechnung">
+                        <mat-option [value]="null">Keine Vorlage</mat-option>
+                        @for (template of pdfTemplates; track template.id) {
+                          <mat-option [value]="template.id">{{ template.typ }} v{{ template.version }} - {{ template.bezeichnung }}</mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="imr-col-12 imr-col-lg-6 mb-3">
+                    <mat-form-field appearance="outline" class="imr-full-width">
+                      <mat-label>Tombolabestätigung</mat-label>
+                      <mat-select formControlName="idVerwaltungTombola">
+                        <mat-option [value]="null">Keine Vorlage</mat-option>
+                        @for (template of pdfTemplates; track template.id) {
+                          <mat-option [value]="template.id">{{ template.typ }} v{{ template.version }} - {{ template.bezeichnung }}</mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+              </section>
+        </imr-section>
+      </mat-tab>
+    }
+  </mat-tab-group>
 </imr-page-layout>
 
 

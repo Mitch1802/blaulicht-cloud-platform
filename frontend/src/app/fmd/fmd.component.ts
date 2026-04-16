@@ -27,15 +27,19 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTabsModule } from '@angular/material/tabs';
 import { IStammdaten } from '../_interface/stammdaten';
+import { IPdfTemplate } from '../_interface/pdf_template';
 import { forkJoin } from 'rxjs';
 import { DateInputMaskDirective } from '../_directive/date-input-mask.directive';
 
 type FmdKonfigIntervall = { von: number; bis: number; intervall: number };
 type FmdModulKonfig = { intervall?: FmdKonfigIntervall[]; [key: string]: unknown };
 type FmdPdfKonfig = { idFmdDeckblatt?: string; idFmdListe?: string; [key: string]: unknown };
-type FmdModulKonfigItem = { modul: string; konfiguration?: Record<string, unknown> };
+type FmdModulKonfigItem = { id?: number; modul: string; konfiguration?: Record<string, unknown> };
 type FmdContextResponse = { modul_konfig?: unknown; modulKonfig?: unknown; konfig?: unknown; mitglieder?: unknown };
 type FmdMainResponse = { main?: unknown; mitglieder?: unknown; results?: unknown } | unknown[];
+type ModulKonfigurationResponse = { user?: { roles?: string[] | string }; main?: FmdModulKonfigItem[] } | FmdModulKonfigItem[];
+type ModulKonfigurationSaveResult = { id: number; modul: string; konfiguration?: Record<string, unknown> };
+type PdfTemplatesResponse = { main?: IPdfTemplate[] } | IPdfTemplate[];
 
 type MitgliedMitAts = IMitglied & {
   tauglichkeit?: string | null;
@@ -93,6 +97,8 @@ export class FmdComponent implements OnInit, AfterViewInit {
   private collectionUtilsService = inject(CollectionUtilsService);
   private navigationService = inject(NavigationService);
   private uiMessageService = inject(UiMessageService);
+  private readonly adminRoleKey = 'ADMIN';
+  private readonly modulKonfigurationEndpoint = 'modul_konfiguration';
   router = inject(Router);
   cd = inject(ChangeDetectorRef)
 
@@ -104,6 +110,10 @@ export class FmdComponent implements OnInit, AfterViewInit {
   atstraeger: IATSTraeger[] = [];
   currentYear = new Date().getFullYear();
   activeTabIndex = 0;
+  meine_rollen: string[] = [];
+  pdfKonfigId: number | null = null;
+  pdfTemplates: IPdfTemplate[] = [];
+  private pdfTemplatesLoaded = false;
 
   private readonly tabsMitTabelle = new Set<number>([1, 2, 3, 4]);
   private readonly sortIndexByTab: Record<number, number> = { 1: 0, 2: 1, 3: 2, 4: 3 };
@@ -217,10 +227,18 @@ export class FmdComponent implements OnInit, AfterViewInit {
   modul_konfig: FmdModulKonfig = {};
   pdf_konfig: FmdPdfKonfig = {};
   stammdaten: IStammdaten = {} as IStammdaten;
+  formPdfSettings = new FormGroup({
+    idFmdDeckblatt: new FormControl<string | null>(null),
+    idFmdListe: new FormControl<string | null>(null),
+  });
 
   @ViewChildren(BaseChartDirective) charts?: QueryList<BaseChartDirective>;
   @ViewChild(MatPaginator, { static: false }) paginator?: MatPaginator;
   @ViewChildren(MatSort) sorts?: QueryList<MatSort>;
+
+  get isAdmin(): boolean {
+    return this.meine_rollen.includes(this.adminRoleKey);
+  }
 
   ngAfterViewInit() {
     if (this.hasTable(this.activeTabIndex) && this.paginator) {
@@ -319,6 +337,7 @@ export class FmdComponent implements OnInit, AfterViewInit {
           this.dataSource.data = this.atstraeger;
           this.updateTauglichkeitFürAlle();
           this.updateChartData();
+          this.syncPdfSettingsForm();
         } catch (e: unknown) {
           const fallbackRows = this.normalizeArrayPayload<IATSTraeger>(main);
           this.atstraeger = fallbackRows;
@@ -331,6 +350,46 @@ export class FmdComponent implements OnInit, AfterViewInit {
         this.authSessionService.errorAnzeigen(error);
       }
     });
+
+    this.loadPdfSettingsContext();
+  }
+
+  savePdfSettings(): void {
+    if (!this.isAdmin) {
+      return;
+    }
+
+    const payload = {
+      modul: 'pdf',
+      konfiguration: {
+        ...this.pdf_konfig,
+        idFmdDeckblatt: this.stringOrNull(this.formPdfSettings.controls.idFmdDeckblatt.value),
+        idFmdListe: this.stringOrNull(this.formPdfSettings.controls.idFmdListe.value),
+      },
+    };
+
+    if (this.pdfKonfigId) {
+      this.apiHttpService.patch<ModulKonfigurationSaveResult>(this.modulKonfigurationEndpoint, this.pdfKonfigId, payload, false).subscribe({
+        next: (saved) => {
+          this.applySavedPdfKonfig(saved);
+          this.uiMessageService.erstelleMessage('success', 'PDF-Zuweisungen gespeichert.');
+        },
+        error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
+      });
+      return;
+    }
+
+    this.apiHttpService.post<ModulKonfigurationSaveResult>(this.modulKonfigurationEndpoint, payload, false).subscribe({
+      next: (saved) => {
+        this.applySavedPdfKonfig(saved);
+        this.uiMessageService.erstelleMessage('success', 'PDF-Zuweisungen gespeichert.');
+      },
+      error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
+    });
+  }
+
+  resetPdfSettings(): void {
+    this.syncPdfSettingsForm();
   }
 
   applyFilter(value: string): void {
@@ -782,6 +841,99 @@ export class FmdComponent implements OnInit, AfterViewInit {
         this.dataSource.sort = undefined;
       }
     });
+  }
+
+  private loadPdfSettingsContext(): void {
+    this.apiHttpService.get<ModulKonfigurationResponse>(this.modulKonfigurationEndpoint).subscribe({
+      next: (erg) => {
+        this.meine_rollen = this.extractRolesFromPayload(erg);
+        const eintraege = this.normalizeModulKonfigEntries(erg);
+        const pdfEntry = eintraege.find((item) => String(item.modul ?? '').trim().toLowerCase() === 'pdf');
+        this.pdfKonfigId = typeof pdfEntry?.id === 'number' ? pdfEntry.id : null;
+        this.pdf_konfig = (pdfEntry?.konfiguration ?? this.pdf_konfig ?? {}) as FmdPdfKonfig;
+        this.syncPdfSettingsForm();
+
+        if (this.isAdmin) {
+          this.loadPdfTemplatesOnce();
+        }
+      },
+      error: () => {
+        this.meine_rollen = [];
+        this.pdfKonfigId = null;
+        this.syncPdfSettingsForm();
+      },
+    });
+  }
+
+  private loadPdfTemplatesOnce(): void {
+    if (this.pdfTemplatesLoaded) {
+      return;
+    }
+
+    this.apiHttpService.get<PdfTemplatesResponse>('pdf/templates').subscribe({
+      next: (erg) => {
+        this.pdfTemplates = Array.isArray(erg) ? erg : (erg.main ?? []);
+        this.pdfTemplatesLoaded = true;
+      },
+      error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
+    });
+  }
+
+  private syncPdfSettingsForm(): void {
+    this.formPdfSettings.patchValue({
+      idFmdDeckblatt: this.stringOrNull(this.pdf_konfig.idFmdDeckblatt),
+      idFmdListe: this.stringOrNull(this.pdf_konfig.idFmdListe),
+    }, { emitEvent: false });
+    this.formPdfSettings.markAsPristine();
+    this.formPdfSettings.markAsUntouched();
+  }
+
+  private applySavedPdfKonfig(saved: ModulKonfigurationSaveResult): void {
+    this.pdfKonfigId = saved.id;
+    this.pdf_konfig = (saved.konfiguration ?? {}) as FmdPdfKonfig;
+    this.syncPdfSettingsForm();
+  }
+
+  private normalizeModulKonfigEntries(payload: unknown): FmdModulKonfigItem[] {
+    if (Array.isArray(payload)) {
+      return payload as FmdModulKonfigItem[];
+    }
+
+    if (payload && typeof payload === 'object') {
+      const main = (payload as { main?: unknown }).main;
+      if (Array.isArray(main)) {
+        return main as FmdModulKonfigItem[];
+      }
+    }
+
+    return [];
+  }
+
+  private extractRolesFromPayload(payload: unknown): string[] {
+    if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+      return [];
+    }
+
+    return this.normalizeRoles((payload as { user?: { roles?: unknown } }).user?.roles);
+  }
+
+  private normalizeRoles(value: unknown): string[] {
+    if (Array.isArray(value)) {
+      return value.map((item) => String(item).trim().toUpperCase()).filter(Boolean);
+    }
+
+    return String(value ?? '')
+      .split(',')
+      .map((item) => item.trim().toUpperCase())
+      .filter(Boolean);
+  }
+
+  private stringOrNull(value: unknown): string | null {
+    if (value === null || value === undefined || value === '') {
+      return null;
+    }
+
+    return String(value);
   }
 
   isLeistungstestOk(value: unknown): boolean {

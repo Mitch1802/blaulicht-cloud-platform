@@ -193,31 +193,33 @@
 
 .start-settings-btn
     flex-shrink: 0
+    background: transparent !important
+    box-shadow: none !important
+    color: theme.$imr-primary !important
+
+    &:hover,
+    &:focus-visible,
+    &:active
+        background: rgba(theme.$imr-primary, .08) !important
+
+    .mat-mdc-button-persistent-ripple,
+    .mdc-icon-button__ripple,
+    .mat-mdc-button-touch-target
+        border-radius: 0 !important
 
     .start-settings-icon
         font-size: clamp(1.5rem, 2.4vw, 2.1rem)
         width: clamp(1.5rem, 2.4vw, 2.1rem)
         height: clamp(1.5rem, 2.4vw, 2.1rem)
         line-height: 1.2
+        color: theme.$imr-primary
 
 @media (max-width: 700px)
     .start-settings-btn
         display: none
 
-// ==============================================
-// Settings Actions (inline section)
-// ==============================================
-
-.settings-actions
-    display: flex
-    gap: .5rem
-    flex-wrap: wrap
-    margin-top: .75rem
-
-    &--save
-        padding-top: .75rem
-        border-top: 1px solid rgba(0, 0, 0, .08)
-        margin-top: 1rem
+.settings-top-actions
+    margin-bottom: .9rem
 
 // ==============================================
 // Konfig Tabelle (Material-style)
@@ -225,11 +227,11 @@
 
 .konfig-table
     width: 100%
-    border-collapse: collapse
     font-size: .875rem
     min-width: 780px
+    background: transparent
 
-    th
+    .mat-mdc-header-cell
         padding: 0 .75rem
         height: 56px
         color: theme.$imr-text-muted
@@ -241,20 +243,25 @@
         border-bottom: 1px solid rgba(theme.$imr-border, .7)
         background: transparent
 
-    td
+    .mat-mdc-cell
         padding: 0 .75rem
-        height: 48px
+        min-height: 48px
         border-bottom: 1px solid rgba(theme.$imr-border, .5)
         vertical-align: middle
+        background: transparent
 
-    tr:last-child td
+    .mat-mdc-row:last-child .mat-mdc-cell
         border-bottom: none
 
-    tr:hover td
+    .mat-mdc-row:hover .mat-mdc-cell
         background: rgba(theme.$imr-primary, .04)
 
-    .konfig-row--invalid td
+    .konfig-row--invalid .mat-mdc-cell
         background: rgba(theme.$imr-error, .04)
+
+    .mat-mdc-header-row,
+    .mat-mdc-row
+        background: transparent
 
 .col-order
     width: 90px

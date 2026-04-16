@@ -21,6 +21,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
+import { MatTableModule } from '@angular/material/table';
 import { RouterLink } from '@angular/router';
 import startRegelConfig from './konfig.json';
 
@@ -65,6 +66,7 @@ type ModulKonfigSaveResult = { id: number; modul: string; konfiguration: StartKo
     MatButtonModule,
     MatIconModule,
     MatSelectModule,
+    MatTableModule,
     RouterLink,
   ]
 })
@@ -97,6 +99,7 @@ export class StartComponent implements OnInit {
   // --- Settings Panel ---
   settingsPanelOpen = false;
   startModulId: number | null = null;
+  readonly settingsColumns: string[] = ['order', 'icon', 'modul', 'rolle', 'kategorie', 'routerlink', 'actions'];
 
   settingsRows = new FormArray<FormGroup>([]);
 

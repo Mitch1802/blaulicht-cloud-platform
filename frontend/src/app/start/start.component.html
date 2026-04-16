@@ -5,10 +5,10 @@
     <button
       imrPageHeadActions
       mat-icon-button
-      color="primary"
       type="button"
       class="start-settings-btn"
       [attr.aria-label]="settingsPanelOpen ? 'Konfiguration schließen' : 'Startseite konfigurieren'"
+      [attr.aria-expanded]="settingsPanelOpen"
       (click)="toggleSettings()"
     >
       <mat-icon class="start-settings-icon">{{ settingsPanelOpen ? 'close' : 'settings' }}</mat-icon>
@@ -24,97 +24,10 @@
     </mat-autocomplete>
 
     <imr-section title="Startseite Konfiguration">
-      <div class="imr-table-wrap">
-        <table class="konfig-table">
-          <thead>
-            <tr>
-              <th class="col-order">Reihenfolge</th>
-              <th class="col-icon">Icon</th>
-              <th class="col-modul">Modul</th>
-              <th class="col-rolle">Rolle(n)</th>
-              <th class="col-kategorie">Kategorie</th>
-              <th class="col-routerlink">Routerlink</th>
-              <th class="col-actions">Aktionen</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (row of settingsRows.controls; track $index; let i = $index) {
-              <tr [formGroup]="$any(row)" [class.konfig-row--invalid]="row.invalid && row.dirty">
-                <td class="col-order">
-                  <div class="order-btns">
-                    <button
-                      mat-icon-button
-                      type="button"
-                      class="order-btn"
-                      [disabled]="i === 0"
-                      (click)="moveUp(i)"
-                      aria-label="Nach oben"
-                    >
-                      <mat-icon>arrow_upward</mat-icon>
-                    </button>
-                    <span class="order-num">{{ i + 1 }}</span>
-                    <button
-                      mat-icon-button
-                      type="button"
-                      class="order-btn"
-                      [disabled]="i === settingsRows.length - 1"
-                      (click)="moveDown(i)"
-                      aria-label="Nach unten"
-                    >
-                      <mat-icon>arrow_downward</mat-icon>
-                    </button>
-                  </div>
-                </td>
-                <td class="col-icon">
-                  <input class="konfig-input" formControlName="icon" placeholder="z.B. book" />
-                </td>
-                <td class="col-modul">
-                  <input class="konfig-input" formControlName="modul" placeholder="Name" />
-                </td>
-                <td class="col-rolle">
-                  <mat-select class="konfig-rolle-select" formControlName="rolle" multiple>
-                    @for (rolle of alleRollen; track rolle) {
-                      <mat-option [value]="rolle">{{ rolle }}</mat-option>
-                    }
-                  </mat-select>
-                </td>
-                <td class="col-kategorie">
-                  <input
-                    class="konfig-input"
-                    formControlName="kategorie"
-                    placeholder="Kategorie"
-                    [matAutocomplete]="autoKategorie"
-                    (focus)="updateKategorieFilter($event)"
-                    (input)="updateKategorieFilter($event)"
-                  />
-                </td>
-                <td class="col-routerlink">
-                  <input class="konfig-input" formControlName="routerlink" placeholder="/pfad" />
-                </td>
-                <td class="col-actions">
-                  <button
-                    mat-icon-button
-                    type="button"
-                    color="warn"
-                    (click)="removeRow(i)"
-                    aria-label="Zeile löschen"
-                  >
-                    <mat-icon>delete</mat-icon>
-                  </button>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-
-      <div class="settings-actions">
+      <div class="imr-top-actions settings-top-actions">
         <button mat-flat-button color="accent" type="button" (click)="addRow()">
-          <mat-icon>add</mat-icon> Zeile hinzufügen
+          Zeile hinzufügen
         </button>
-      </div>
-
-      <div class="settings-actions settings-actions--save">
         <button
           mat-flat-button
           color="accent"
@@ -133,50 +46,153 @@
           </button>
         }
       </div>
+
+      <div class="imr-table-wrap">
+        <table mat-table [dataSource]="settingsRows.controls" class="konfig-table">
+          <ng-container matColumnDef="order">
+            <th mat-header-cell *matHeaderCellDef class="col-order">Reihenfolge</th>
+            <td mat-cell *matCellDef="let row; let i = index" class="col-order" [formGroup]="$any(row)">
+              <div class="order-btns">
+                <button
+                  mat-icon-button
+                  type="button"
+                  class="order-btn"
+                  [disabled]="i === 0"
+                  (click)="moveUp(i)"
+                  aria-label="Nach oben"
+                >
+                  <mat-icon>arrow_upward</mat-icon>
+                </button>
+                <span class="order-num">{{ i + 1 }}</span>
+                <button
+                  mat-icon-button
+                  type="button"
+                  class="order-btn"
+                  [disabled]="i === settingsRows.length - 1"
+                  (click)="moveDown(i)"
+                  aria-label="Nach unten"
+                >
+                  <mat-icon>arrow_downward</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="icon">
+            <th mat-header-cell *matHeaderCellDef class="col-icon">Icon</th>
+            <td mat-cell *matCellDef="let row" class="col-icon" [formGroup]="$any(row)">
+              <input class="konfig-input" formControlName="icon" placeholder="z.B. book" />
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="modul">
+            <th mat-header-cell *matHeaderCellDef class="col-modul">Modul</th>
+            <td mat-cell *matCellDef="let row" class="col-modul" [formGroup]="$any(row)">
+              <input class="konfig-input" formControlName="modul" placeholder="Name" />
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="rolle">
+            <th mat-header-cell *matHeaderCellDef class="col-rolle">Rolle(n)</th>
+            <td mat-cell *matCellDef="let row" class="col-rolle" [formGroup]="$any(row)">
+              <mat-select class="konfig-rolle-select" formControlName="rolle" multiple>
+                @for (rolle of alleRollen; track rolle) {
+                  <mat-option [value]="rolle">{{ rolle }}</mat-option>
+                }
+              </mat-select>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="kategorie">
+            <th mat-header-cell *matHeaderCellDef class="col-kategorie">Kategorie</th>
+            <td mat-cell *matCellDef="let row" class="col-kategorie" [formGroup]="$any(row)">
+              <input
+                class="konfig-input"
+                formControlName="kategorie"
+                placeholder="Kategorie"
+                [matAutocomplete]="autoKategorie"
+                (focus)="updateKategorieFilter($event)"
+                (input)="updateKategorieFilter($event)"
+              />
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="routerlink">
+            <th mat-header-cell *matHeaderCellDef class="col-routerlink">Routerlink</th>
+            <td mat-cell *matCellDef="let row" class="col-routerlink" [formGroup]="$any(row)">
+              <input class="konfig-input" formControlName="routerlink" placeholder="/pfad" />
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="col-actions imr-table-actions-head">Aktionen</th>
+            <td mat-cell *matCellDef="let row; let i = index" class="col-actions imr-action-cell" [formGroup]="$any(row)">
+              <button
+                mat-icon-button
+                type="button"
+                color="warn"
+                (click)="removeRow(i)"
+                aria-label="Zeile löschen"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="settingsColumns"></tr>
+          <tr
+            mat-row
+            *matRowDef="let row; columns: settingsColumns"
+            [class.konfig-row--invalid]="row.invalid && row.dirty"
+          ></tr>
+        </table>
+      </div>
     </imr-section>
   }
 
-  @if (categorizedItems.length === 0) {
-    <imr-section title="Für deine Rollen sind aktuell keine Module freigeschaltet!"></imr-section>
-  }@else {
-    @for (category of categorizedItems; track category.name) {
-      <imr-section [title]="category.name">
-        <div class="imr-grid">
-          @for (item of category.items; track item) {
-            @if (isPlannedItem(item)) {
-              <div class="imr-col-12 imr-col-lg-2">
-                <imr-card cardClass="module-card planned" [wrapContent]="false" aria-disabled="true">
-                  <span class="badge planned-badge">GEPLANT</span>
-                  <div class="module-icon-shell">
-                    <mat-icon class="module-icon">{{ item.icon }}</mat-icon>
-                  </div>
-                  <div class="module-card-body">
-                    <div class="module-title">{{ item.modul }}</div>
-                  </div>
-                </imr-card>
-              </div>
-            } @else {
-              <a
-                class="module-card-link imr-col-12 imr-col-lg-2"
-                [routerLink]="item.routerlink"
-                [attr.aria-label]="'Modul öffnen: ' + item.modul"
-              >
-                <imr-card [cardClass]="'module-card ' + (isAdminOnly(item) ? ' admin-only' : '')" [wrapContent]="false">
-                  @if (isAdminOnly(item)) {
-                    <span class="badge admin-badge">ADMIN</span>
-                  }
-                  <div class="module-icon-shell">
-                    <mat-icon class="module-icon">{{ item.icon }}</mat-icon>
-                  </div>
-                  <div class="module-card-body">
-                    <div class="module-title">{{ item.modul }}</div>
-                  </div>
-                </imr-card>
-              </a>
+  @if (!settingsPanelOpen) {
+    @if (categorizedItems.length === 0) {
+      <imr-section title="Für deine Rollen sind aktuell keine Module freigeschaltet!"></imr-section>
+    }@else {
+      @for (category of categorizedItems; track category.name) {
+        <imr-section [title]="category.name">
+          <div class="imr-grid">
+            @for (item of category.items; track item) {
+              @if (isPlannedItem(item)) {
+                <div class="imr-col-12 imr-col-lg-2">
+                  <imr-card cardClass="module-card planned" [wrapContent]="false" aria-disabled="true">
+                    <span class="badge planned-badge">GEPLANT</span>
+                    <div class="module-icon-shell">
+                      <mat-icon class="module-icon">{{ item.icon }}</mat-icon>
+                    </div>
+                    <div class="module-card-body">
+                      <div class="module-title">{{ item.modul }}</div>
+                    </div>
+                  </imr-card>
+                </div>
+              } @else {
+                <a
+                  class="module-card-link imr-col-12 imr-col-lg-2"
+                  [routerLink]="item.routerlink"
+                  [attr.aria-label]="'Modul öffnen: ' + item.modul"
+                >
+                  <imr-card [cardClass]="'module-card ' + (isAdminOnly(item) ? ' admin-only' : '')" [wrapContent]="false">
+                    @if (isAdminOnly(item)) {
+                      <span class="badge admin-badge">ADMIN</span>
+                    }
+                    <div class="module-icon-shell">
+                      <mat-icon class="module-icon">{{ item.icon }}</mat-icon>
+                    </div>
+                    <div class="module-card-body">
+                      <div class="module-title">{{ item.modul }}</div>
+                    </div>
+                  </imr-card>
+                </a>
+              }
             }
-          }
-        </div>
-      </imr-section>
+          </div>
+        </imr-section>
+      }
     }
   }
 </imr-page-layout>

@@ -4,14 +4,8 @@
     +theme.imr-admin-page-shell
     +theme.imr-admin-page-mobile(768px)
 
-    .invoice-tabs
-        margin-top: .2rem
-
-        mat-form-field
-            width: 100%
-
-        mat-list-item
-            border-bottom: 1px solid rgba(theme.$imr-border, .9)
+    mat-form-field
+        width: 100%
 
     .verwaltung-block
         margin-top: 1rem
@@ -32,26 +26,36 @@
     .verwaltung-form
         margin: 0
 
-    .imr-form-actions
-        margin: 0 0 .65rem
+    .verwaltung-settings-block
+        border: 1px solid rgba(theme.$imr-primary, .16)
+        padding: .9rem 1rem
+        background: #fff
+
+    .verwaltung-inline-action
+        display: flex
+        align-items: flex-start
 
     .position-list-wrap
         margin-top: .35rem
-        border: 1px solid rgba(theme.$imr-border, .86)
-        background: rgba(theme.$imr-surface, .9)
+        margin-top: .35rem
 
-    .position-list
-        display: block
+    .verwaltung-positionen-table
+        width: 100%
 
-    :host ::ng-deep .position-list .mat-mdc-list-item,
-    :host ::ng-deep .position-list .mdc-list-item
-        min-height: 44px
+    .verwaltung-positionen-preis
+        font-variant-numeric: tabular-nums
+        text-align: right
 
 @media (max-width: 768px)
     .verwaltung-page
         .verwaltung-block
             margin-top: .8rem
             padding-top: .55rem
+
+        .verwaltung-inline-action
+            button
+                width: 100%
+                margin-top: 0
 
         .imr-form-actions
             > *
