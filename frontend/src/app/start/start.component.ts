@@ -1,4 +1,11 @@
 ﻿import { Component, OnInit, inject } from '@angular/core';
+import {
+  FormArray,
+  FormControl,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { ApiHttpService } from '../_service/api-http.service';
 import { AuthSessionService } from '../_service/auth-session.service';
 import { NavigationService } from '../_service/navigation.service';
@@ -10,6 +17,8 @@ import {
   ImrPageLayoutComponent,
   ImrSectionComponent,
 } from '../imr-ui-library';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import startRegelConfig from './konfig.json';
@@ -24,6 +33,7 @@ type StartKonfigItem = {
 };
 
 type StartModulEintrag = {
+  id?: number;
   modul?: string;
   konfiguration?: StartKonfigItem[];
 };
@@ -37,18 +47,23 @@ type StartResponse = {
   main?: StartModulEintrag[];
 };
 
+type ModulKonfigSaveResult = { id: number; modul: string; konfiguration: StartKonfigItem[] };
+
 @Component({
   selector: 'app-start',
   templateUrl: './start.component.html',
   styleUrls: ['./start.component.sass'],
   standalone: true,
   imports: [
+    ReactiveFormsModule,
     ImrHeaderComponent,
     ImrPageLayoutComponent,
     ImrSectionComponent,
     ImrCardComponent,
+    MatAutocompleteModule,
+    MatButtonModule,
     MatIconModule,
-    RouterLink
+    RouterLink,
   ]
 })
 export class StartComponent implements OnInit {
@@ -58,6 +73,7 @@ export class StartComponent implements OnInit {
   private navigationService = inject(NavigationService);
   private uiMessageService = inject(UiMessageService);
   private readonly adminRoleKey = 'ADMIN';
+  private readonly modulEndpoint = 'modul_konfiguration';
 
   breadcrumb: ImrBreadcrumbItem[] = [];
   start_konfig: StartKonfigItem[] = [];
@@ -68,6 +84,36 @@ export class StartComponent implements OnInit {
   categorizedItems: { name: string; items: StartKonfigItem[] }[] = [];
 
   readonly defaultKonfig: StartKonfigItem[] = startRegelConfig;
+
+  // --- Settings Panel ---
+  settingsPanelOpen = false;
+  startModulId: number | null = null;
+
+  settingsRows = new FormArray<FormGroup>([]);
+
+  // --- Kategorie Autocomplete ---
+  private readonly standardKategorien: string[] = [
+    'Dokumentation', 'Fachchargen', 'Verwaltung', 'Administration', 'Geplant',
+  ];
+  gefilterteKategorien: string[] = [...this.standardKategorien];
+
+  updateKategorieFilter(event: Event): void {
+    const value = (event.target as HTMLInputElement).value.toLowerCase();
+    const alle = this.getAlleKategorien();
+    this.gefilterteKategorien = alle.filter(k => k.toLowerCase().includes(value));
+  }
+
+  private getAlleKategorien(): string[] {
+    const used = this.settingsRows.controls
+      .map(row => ((row as FormGroup).get('kategorie')?.value as string) ?? '')
+      .filter(Boolean);
+    const unique = new Set([...this.standardKategorien, ...used]);
+    return Array.from(unique).sort();
+  }
+
+  get isAdmin(): boolean {
+    return this.meine_rollen.includes(this.adminRoleKey);
+  }
 
   ngOnInit(): void {
     sessionStorage.setItem('PageNumber', '1');
@@ -85,16 +131,13 @@ export class StartComponent implements OnInit {
           this.display_name = 'Hallo ' + (user?.display_name || this.username) + '!';
 
           const main = Array.isArray(erg?.main) ? erg.main : [];
-          const konfigs = main.find((m: StartModulEintrag) => m.modul === 'start');
+          const startEntry = main.find((m: StartModulEintrag) => m.modul === 'start');
+          this.startModulId = startEntry?.id ?? null;
 
-          const configured = Array.isArray(konfigs?.konfiguration) ? konfigs.konfiguration : [];
+          const configured = Array.isArray(startEntry?.konfiguration) ? startEntry.konfiguration : [];
           this.start_konfig = configured.length > 0 ? configured : this.defaultKonfig;
 
-          const allowed = this.start_konfig.filter((item) =>
-            this.userHasAccess(item) && !this.isHiddenItem(item)
-          );
-
-          this.categorizedItems = this.buildCategories(allowed);
+          this.rebuildCategorizedItems();
 
         } catch (e: unknown) {
           this.uiMessageService.erstelleMessage('error', String(e));
@@ -104,6 +147,141 @@ export class StartComponent implements OnInit {
         this.authSessionService.errorAnzeigen(error);
       }
     });
+  }
+
+  openSettings(): void {
+    this.settingsRows.clear();
+    for (const item of this.start_konfig) {
+      this.settingsRows.push(this.createRow(item));
+    }
+    this.settingsPanelOpen = true;
+  }
+
+  closeSettings(): void {
+    this.settingsPanelOpen = false;
+  }
+
+  addRow(): void {
+    this.settingsRows.push(this.createRow());
+  }
+
+  removeRow(index: number): void {
+    this.settingsRows.removeAt(index);
+  }
+
+  moveUp(index: number): void {
+    if (index <= 0) return;
+    const row = this.settingsRows.at(index);
+    this.settingsRows.removeAt(index);
+    this.settingsRows.insert(index - 1, row);
+  }
+
+  moveDown(index: number): void {
+    if (index >= this.settingsRows.length - 1) return;
+    const row = this.settingsRows.at(index);
+    this.settingsRows.removeAt(index);
+    this.settingsRows.insert(index + 1, row);
+  }
+
+  private createRow(item: StartKonfigItem = {}): FormGroup {
+    const rolleStr = Array.isArray(item.rolle)
+      ? item.rolle.join(', ')
+      : (item.rolle ?? '');
+    return new FormGroup({
+      icon: new FormControl<string>(item.icon ?? '', Validators.required),
+      modul: new FormControl<string>(item.modul ?? '', Validators.required),
+      rolle: new FormControl<string>(rolleStr),
+      // Legacy-Support: ältere Einträge nutzen 'category', neuere 'kategorie'
+    kategorie: new FormControl<string>(item.kategorie ?? item.category ?? ''),
+      routerlink: new FormControl<string>(item.routerlink ?? '', Validators.required),
+    });
+  }
+
+  settingsSpeichern(): void {
+    if (this.settingsRows.invalid) {
+      this.uiMessageService.erstelleMessage('error', 'Bitte alle Pflichtfelder (Icon, Modul, Routerlink) ausfüllen!');
+      return;
+    }
+
+    const konfiguration: StartKonfigItem[] = this.settingsRows.controls.map((row) => {
+      const v = (row as FormGroup).value as {
+        icon: string; modul: string; rolle: string; kategorie: string; routerlink: string;
+      };
+      return {
+        icon: v.icon,
+        modul: v.modul,
+        rolle: v.rolle,
+        kategorie: v.kategorie,
+        routerlink: v.routerlink,
+      };
+    });
+
+    const objekt = { modul: 'start', konfiguration };
+
+    if (!this.startModulId) {
+      this.apiHttpService.post<ModulKonfigSaveResult>(this.modulEndpoint, objekt, false).subscribe({
+        next: (saved) => {
+          try {
+            if (!Array.isArray(saved.konfiguration)) {
+              this.uiMessageService.erstelleMessage('error', 'Ungültige Serverantwort – Konfiguration konnte nicht übernommen werden!');
+              return;
+            }
+            this.startModulId = saved.id;
+            this.start_konfig = saved.konfiguration;
+            this.rebuildCategorizedItems();
+            this.closeSettings();
+            this.uiMessageService.erstelleMessage('success', 'Startseite Konfiguration gespeichert!');
+          } catch (e: unknown) {
+            this.uiMessageService.erstelleMessage('error', String(e));
+          }
+        },
+        error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
+      });
+    } else {
+      this.apiHttpService.patch<ModulKonfigSaveResult>(this.modulEndpoint, this.startModulId, objekt, false).subscribe({
+        next: (saved) => {
+          try {
+            if (!Array.isArray(saved.konfiguration)) {
+              this.uiMessageService.erstelleMessage('error', 'Ungültige Serverantwort – Konfiguration konnte nicht übernommen werden!');
+              return;
+            }
+            this.start_konfig = saved.konfiguration;
+            this.rebuildCategorizedItems();
+            this.closeSettings();
+            this.uiMessageService.erstelleMessage('success', 'Startseite Konfiguration aktualisiert!');
+          } catch (e: unknown) {
+            this.uiMessageService.erstelleMessage('error', String(e));
+          }
+        },
+        error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
+      });
+    }
+  }
+
+  settingsLoeschen(): void {
+    if (!this.startModulId) return;
+
+    this.apiHttpService.delete(this.modulEndpoint, this.startModulId).subscribe({
+      next: () => {
+        try {
+          this.startModulId = null;
+          this.start_konfig = [...this.defaultKonfig];
+          this.rebuildCategorizedItems();
+          this.closeSettings();
+          this.uiMessageService.erstelleMessage('success', 'Startseite Konfiguration gelöscht!');
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage('error', String(e));
+        }
+      },
+      error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
+    });
+  }
+
+  private rebuildCategorizedItems(): void {
+    const allowed = this.start_konfig.filter((item) =>
+      this.userHasAccess(item) && !this.isHiddenItem(item)
+    );
+    this.categorizedItems = this.buildCategories(allowed);
   }
 
   /* ============================
