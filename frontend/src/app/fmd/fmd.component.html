@@ -8,36 +8,21 @@
           <div class="imr-col-12 imr-col-md-4">
             <h2>Tauglichkeit</h2>
             @if (chartTauglichkeit.datasets[0].data.length) {
-            <canvas
-              baseChart
-              [data]="chartTauglichkeit"
-              [type]="pieChartType"
-              [options]="pieChartOptions"
-            >
+            <canvas baseChart [data]="chartTauglichkeit" [type]="pieChartType" [options]="pieChartOptions">
             </canvas>
             }
           </div>
           <div class="imr-col-12 imr-col-md-4">
             <h2>Untersuchung</h2>
             @if (chartUntersuchung.datasets[0].data.length) {
-            <canvas
-              baseChart
-              [data]="chartUntersuchung"
-              [type]="pieChartType"
-              [options]="pieChartOptions"
-            >
+            <canvas baseChart [data]="chartUntersuchung" [type]="pieChartType" [options]="pieChartOptions">
             </canvas>
             }
           </div>
           <div class="imr-col-12 imr-col-md-4">
             <h2>Altersverteilung</h2>
             @if (chartAlter.datasets[0].data.length) {
-            <canvas
-              baseChart
-              [data]="chartAlter"
-              [type]="pieChartType"
-              [options]="pieChartOptions"
-            >
+            <canvas baseChart [data]="chartAlter" [type]="pieChartType" [options]="pieChartOptions">
             </canvas>
             }
           </div>
@@ -49,59 +34,27 @@
         <div class="imr-table-toolbar">
           <mat-form-field class="filter-field" appearance="outline">
             <mat-label>Filter</mat-label>
-            <input
-              matInput
-              (input)="applyFilter($any($event.target).value)"
-              placeholder="Suchen..."
-            />
+            <input matInput (input)="applyFilter($any($event.target).value)" placeholder="Suchen..." />
           </mat-form-field>
         </div>
         @if (formModul.disabled) {
-        <div>
-          <button mat-flat-button
-            color="accent"
-            (click)="neueDetails()"
-            type="button"
-          >
+        <div class="imr-top-actions">
+          <button mat-flat-button color="accent" (click)="neueDetails()" type="button">
             Hinzufügen
           </button>
         </div>
         }
-        <form
-          [formGroup]="formModul"
-          (ngSubmit)="datenSpeichern()"
-          [hidden]="formModul.disabled"
-          class="edit-form"
-        >
-          <input
-            hidden
-            type="text"
-            
-            formControlName="id"
-          />
+        <form [formGroup]="formModul" (ngSubmit)="datenSpeichern()" [hidden]="formModul.disabled" class="edit-form">
+          <input hidden type="text" formControlName="id" />
           <div class="imr-form-actions">
-            <button mat-flat-button
-              color="accent"
-              [hidden]="!formModul.valid"
-              type="submit"
-            >
+            <button mat-flat-button color="accent" [hidden]="!formModul.valid" type="submit">
               Daten speichern
             </button>
-            <button mat-flat-button
-              color="primary"
-              [hidden]="formModul.disabled"
-              type="button"
-              (click)="abbrechen()"
-            >
+            <button mat-flat-button color="primary" [hidden]="formModul.disabled" type="button" (click)="abbrechen()">
               Abbrechen
             </button>
-            <button mat-flat-button
-              color="warn"
-              class="imr-delete-btn"
-              [hidden]="!formModul.controls['id'].value"
-              type="button"
-              (click)="datenLoeschen()"
-            >
+            <button mat-flat-button color="warn" class="imr-delete-btn" [hidden]="!formModul.controls['id'].value"
+              type="button" (click)="datenLoeschen()">
               Daten löschen
             </button>
           </div>
@@ -123,19 +76,12 @@
             <div class="imr-col-12 imr-col-lg-4 mb-3">
               <mat-form-field class="imr-full-width">
                 <mat-label>FDISK Update</mat-label>
-                <input
-                  matInput
-                  type="text"
-                  formControlName="fdisk_aenderung"
-                  appDateInputMask="dmy"
-                  placeholder="TT.MM.YYYY"
-                />
+                <input matInput type="text" formControlName="fdisk_aenderung" appDateInputMask="dmy"
+                  placeholder="TT.MM.YYYY" />
                 @if
                 (formModul.controls['fdisk_aenderung'].hasError('pattern'))
                 {
-                <mat-error
-                  >Ungültiges Format. Bitte TT.MM.YYYY eingeben.</mat-error
-                >
+                <mat-error>Ungültiges Format. Bitte TT.MM.YYYY eingeben.</mat-error>
                 } @if
                 (formModul.controls['fdisk_aenderung'].hasError('dateInvalid'))
                 {
@@ -162,19 +108,12 @@
             <div class="imr-col-12 imr-col-lg-4 mb-3">
               <mat-form-field class="imr-full-width">
                 <mat-label>Letzte Untersuchung</mat-label>
-                <input
-                  matInput
-                  type="text"
-                  formControlName="letzte_untersuchung"
-                  appDateInputMask="dmy"
-                  placeholder="TT.MM.YYYY"
-                />
+                <input matInput type="text" formControlName="letzte_untersuchung" appDateInputMask="dmy"
+                  placeholder="TT.MM.YYYY" />
                 @if
                 (formModul.controls['letzte_untersuchung'].hasError('pattern'))
                 {
-                <mat-error
-                  >Ungültiges Format. Bitte TT.MM.YYYY eingeben.</mat-error
-                >
+                <mat-error>Ungültiges Format. Bitte TT.MM.YYYY eingeben.</mat-error>
                 } @if
                 (formModul.controls['letzte_untersuchung'].hasError('dateInvalid'))
                 {
@@ -185,11 +124,7 @@
             <div class="imr-col-12 imr-col-lg-4 mb-3">
               <mat-form-field class="imr-full-width">
                 <mat-label>Leistungstest</mat-label>
-                <input
-                  matInput
-                  type="text"
-                  formControlName="leistungstest"
-                />
+                <input matInput type="text" formControlName="leistungstest" />
               </mat-form-field>
             </div>
             <div class="imr-col-12 imr-col-lg-4 mb-3">
@@ -211,11 +146,7 @@
           </section>
         </form>
         <div class="imr-table-wrap" [hidden]="!formModul.disabled">
-          <table
-            mat-table
-            [dataSource]="dataSource"
-            matSort
-          >
+          <table mat-table [dataSource]="dataSource" matSort>
             <ng-container matColumnDef="stbnr">
               <th mat-header-cell *matHeaderCellDef mat-sort-header>
                 Stbnr.
@@ -241,29 +172,21 @@
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef>Aktionen</th>
               <td mat-cell *matCellDef="let element" class="imr-action-cell">
-                <button mat-flat-button
-                  
-                  color="primary"
-                  (click)="auswahlBearbeiten(element)"
-                >
+                <button mat-flat-button color="primary" (click)="auswahlBearbeiten(element)">
                   <mat-icon class="m-0">edit</mat-icon>
                 </button>
-                <button mat-flat-button
-                  
-                  color="primary"
-                  (click)="printChecklist(element)"
-                >
+                <button mat-flat-button color="primary" (click)="printChecklist(element)">
                   <mat-icon class="m-0">checklist</mat-icon>
                 </button>
               </td>
             </ng-container>
             <tr mat-header-row *matHeaderRowDef="sichtbareSpaltenATS"></tr>
-            <tr
-              mat-row
-              *matRowDef="let row; columns: sichtbareSpaltenATS"
-            ></tr>
+            <tr mat-row *matRowDef="let row; columns: sichtbareSpaltenATS"></tr>
           </table>
+          <mat-paginator [pageSizeOptions]="pageOptions" showFirstLastButtons
+            aria-label="Auswahl Anzahl der sichtbaren Elemente">
         </div>
+        </mat-paginator>
       </imr-section>
     </mat-tab>
     <mat-tab label="Untersuchungen">
@@ -271,19 +194,11 @@
         <div class="imr-table-toolbar">
           <mat-form-field class="filter-field" appearance="outline">
             <mat-label>Filter</mat-label>
-            <input
-              matInput
-              (input)="applyFilter($any($event.target).value)"
-              placeholder="Suchen..."
-            />
+            <input matInput (input)="applyFilter($any($event.target).value)" placeholder="Suchen..." />
           </mat-form-field>
         </div>
         <div class="imr-table-wrap">
-          <table
-            mat-table
-            [dataSource]="dataSource"
-            matSort
-          >
+          <table mat-table [dataSource]="dataSource" matSort>
             <ng-container matColumnDef="stbnr">
               <th mat-header-cell *matHeaderCellDef mat-sort-header>
                 Stbnr.
@@ -310,11 +225,7 @@
               <th mat-header-cell *matHeaderCellDef mat-sort-header>
                 Letzte Untersuchung
               </th>
-              <td
-                mat-cell
-                *matCellDef="let element"
-                [class.red-cell]="element.letzte_untersuchung === null"
-              >
+              <td mat-cell *matCellDef="let element" [class.red-cell]="element.letzte_untersuchung === null">
                 {{ element.letzte_untersuchung }}
               </td>
             </ng-container>
@@ -327,19 +238,14 @@
               </td>
             </ng-container>
 
-            <tr
-              mat-header-row
-              *matHeaderRowDef="sichtbareSpaltenUntersuchung"
-            ></tr>
-            <tr
-              mat-row
-              *matRowDef="let row; columns: sichtbareSpaltenUntersuchung"
-              [class.red-cell]="
+            <tr mat-header-row *matHeaderRowDef="sichtbareSpaltenUntersuchung"></tr>
+            <tr mat-row *matRowDef="let row; columns: sichtbareSpaltenUntersuchung" [class.red-cell]="
                 +row.naechste_untersuchung <= currentYear ||
                 row.naechste_untersuchung === null
-              "
-            ></tr>
+              "></tr>
           </table>
+          <mat-paginator [pageSizeOptions]="pageOptions" showFirstLastButtons
+            aria-label="Auswahl Anzahl der sichtbaren Elemente">
         </div>
       </imr-section>
     </mat-tab>
@@ -348,19 +254,11 @@
         <div class="imr-table-toolbar">
           <mat-form-field class="filter-field" appearance="outline">
             <mat-label>Filter</mat-label>
-            <input
-              matInput
-              (input)="applyFilter($any($event.target).value)"
-              placeholder="Suchen..."
-            />
+            <input matInput (input)="applyFilter($any($event.target).value)" placeholder="Suchen..." />
           </mat-form-field>
         </div>
         <div class="imr-table-wrap">
-          <table
-            mat-table
-            [dataSource]="dataSource"
-            matSort
-          >
+          <table mat-table [dataSource]="dataSource" matSort>
             <ng-container matColumnDef="stbnr">
               <th mat-header-cell *matHeaderCellDef mat-sort-header>
                 Stbnr.
@@ -400,17 +298,13 @@
               </td>
             </ng-container>
 
-            <tr
-              mat-header-row
-              *matHeaderRowDef="sichtbareSpaltenLeistungstest"
-            ></tr>
-            <tr
-              mat-row
-              *matRowDef="let row; columns: sichtbareSpaltenLeistungstest"
+            <tr mat-header-row *matHeaderRowDef="sichtbareSpaltenLeistungstest"></tr>
+            <tr mat-row *matRowDef="let row; columns: sichtbareSpaltenLeistungstest"
               [class.red-cell]="!isLeistungstestOk(row.leistungstest)"
-              [class.green-cell]="isLeistungstestOk(row.leistungstest)"
-            ></tr>
+              [class.green-cell]="isLeistungstestOk(row.leistungstest)"></tr>
           </table>
+          <mat-paginator [pageSizeOptions]="pageOptions" showFirstLastButtons
+            aria-label="Auswahl Anzahl der sichtbaren Elemente">
         </div>
       </imr-section>
     </mat-tab>
@@ -419,19 +313,11 @@
         <div class="imr-table-toolbar">
           <mat-form-field class="filter-field" appearance="outline">
             <mat-label>Filter</mat-label>
-            <input
-              matInput
-              (input)="applyFilter($any($event.target).value)"
-              placeholder="Suchen..."
-            />
+            <input matInput (input)="applyFilter($any($event.target).value)" placeholder="Suchen..." />
           </mat-form-field>
         </div>
         <div class="imr-table-wrap">
-          <table
-            mat-table
-            [dataSource]="dataSource"
-            matSort
-          >
+          <table mat-table [dataSource]="dataSource" matSort>
             <ng-container matColumnDef="stbnr">
               <th mat-header-cell *matHeaderCellDef mat-sort-header>
                 Stbnr.
@@ -462,17 +348,12 @@
                 {{ element.tauglichkeit }}
               </td>
             </ng-container>
-            <tr
-              mat-header-row
-              *matHeaderRowDef="sichtbareSpaltenTauglichkeit"
-            ></tr>
-            <tr
-              mat-row
-              *matRowDef="let row; columns: sichtbareSpaltenTauglichkeit"
-              [class.red-cell]="row.tauglichkeit === 'nein'"
-              [class.green-cell]="row.tauglichkeit === 'tauglich'"
-            ></tr>
+            <tr mat-header-row *matHeaderRowDef="sichtbareSpaltenTauglichkeit"></tr>
+            <tr mat-row *matRowDef="let row; columns: sichtbareSpaltenTauglichkeit"
+              [class.red-cell]="row.tauglichkeit === 'nein'" [class.green-cell]="row.tauglichkeit === 'tauglich'"></tr>
           </table>
+          <mat-paginator [pageSizeOptions]="pageOptions" showFirstLastButtons
+            aria-label="Auswahl Anzahl der sichtbaren Elemente">
         </div>
       </imr-section>
     </mat-tab>
@@ -482,10 +363,7 @@
           <div class="imr-grid m-0 pt-2">
             <div class="imr-col-7">Offene Untersuchungen:</div>
             <div class="imr-col-auto">
-              <button mat-flat-button
-                color="primary"
-                (click)="printOffeneUntersuchugen()"
-              >
+              <button mat-flat-button color="primary" (click)="printOffeneUntersuchugen()">
                 <mat-icon class="m-0">picture_as_pdf</mat-icon>
               </button>
             </div>
@@ -493,10 +371,7 @@
           <div class="imr-grid m-0 pt-2">
             <div class="imr-col-7">Tauglichkeit:</div>
             <div class="imr-col-auto">
-              <button mat-flat-button
-                color="primary"
-                (click)="printTauglichkeit()"
-              >
+              <button mat-flat-button color="primary" (click)="printTauglichkeit()">
                 <mat-icon class="m-0">picture_as_pdf</mat-icon>
               </button>
             </div>
@@ -504,10 +379,7 @@
           <div class="imr-grid m-0 pt-2">
             <div class="imr-col-7">Leistungstest:</div>
             <div class="imr-col-auto">
-              <button mat-flat-button
-                color="primary"
-                (click)="printLeistungstest()"
-              >
+              <button mat-flat-button color="primary" (click)="printLeistungstest()">
                 <mat-icon class="m-0">picture_as_pdf</mat-icon>
               </button>
             </div>
@@ -515,10 +387,7 @@
           <div class="imr-grid m-0 pt-2">
             <div class="imr-col-7">Alle Mitglieder:</div>
             <div class="imr-col-auto">
-              <button mat-flat-button
-                color="primary"
-                (click)="printAlleMitglieder()"
-              >
+              <button mat-flat-button color="primary" (click)="printAlleMitglieder()">
                 <mat-icon class="m-0">picture_as_pdf</mat-icon>
               </button>
             </div>
@@ -527,19 +396,4 @@
       </imr-section>
     </mat-tab>
   </mat-tab-group>
-
-  @if (hasTable(activeTabIndex)) {
-  <mat-paginator
-    [pageSizeOptions]="pageOptions"
-    showFirstLastButtons
-    aria-label="Auswahl Anzahl der sichtbaren Elemente"
-  >
-  </mat-paginator>
-  }
 </imr-page-layout>
-
-
-
-
-
-
