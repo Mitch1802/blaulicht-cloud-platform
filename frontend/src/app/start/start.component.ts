@@ -20,6 +20,7 @@ import {
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSelectModule } from '@angular/material/select';
 import { RouterLink } from '@angular/router';
 import startRegelConfig from './konfig.json';
 
@@ -63,6 +64,7 @@ type ModulKonfigSaveResult = { id: number; modul: string; konfiguration: StartKo
     MatAutocompleteModule,
     MatButtonModule,
     MatIconModule,
+    MatSelectModule,
     RouterLink,
   ]
 })
@@ -84,6 +86,13 @@ export class StartComponent implements OnInit {
   categorizedItems: { name: string; items: StartKonfigItem[] }[] = [];
 
   readonly defaultKonfig: StartKonfigItem[] = startRegelConfig;
+
+  // --- Rollen ---
+  readonly alleRollen: string[] = [
+    'ADMIN', 'ANWESENHEIT', 'ATEMSCHUTZ', 'AUSBILDUNG', 'BEWERB', 'BERICHT',
+    'FAHRZEUG', 'FMD', 'INVENTAR', 'JUGEND', 'KOMMANDO', 'MITGLIED',
+    'NEWS', 'VERWALTUNG',
+  ];
 
   // --- Settings Panel ---
   settingsPanelOpen = false;
@@ -161,6 +170,14 @@ export class StartComponent implements OnInit {
     this.settingsPanelOpen = false;
   }
 
+  toggleSettings(): void {
+    if (this.settingsPanelOpen) {
+      this.closeSettings();
+    } else {
+      this.openSettings();
+    }
+  }
+
   addRow(): void {
     this.settingsRows.push(this.createRow());
   }
@@ -184,13 +201,13 @@ export class StartComponent implements OnInit {
   }
 
   private createRow(item: StartKonfigItem = {}): FormGroup {
-    const rolleStr = Array.isArray(item.rolle)
-      ? item.rolle.join(', ')
-      : (item.rolle ?? '');
+    const rolleArr = Array.isArray(item.rolle)
+      ? item.rolle.map(r => r.trim().toUpperCase()).filter(Boolean)
+      : String(item.rolle ?? '').split(',').map(r => r.trim().toUpperCase()).filter(Boolean);
     return new FormGroup({
       icon: new FormControl<string>(item.icon ?? '', Validators.required),
       modul: new FormControl<string>(item.modul ?? '', Validators.required),
-      rolle: new FormControl<string>(rolleStr),
+      rolle: new FormControl<string[]>(rolleArr),
       // Legacy-Support: ältere Einträge nutzen 'category', neuere 'kategorie'
     kategorie: new FormControl<string>(item.kategorie ?? item.category ?? ''),
       routerlink: new FormControl<string>(item.routerlink ?? '', Validators.required),
@@ -205,12 +222,12 @@ export class StartComponent implements OnInit {
 
     const konfiguration: StartKonfigItem[] = this.settingsRows.controls.map((row) => {
       const v = (row as FormGroup).value as {
-        icon: string; modul: string; rolle: string; kategorie: string; routerlink: string;
+        icon: string; modul: string; rolle: string[]; kategorie: string; routerlink: string;
       };
       return {
         icon: v.icon,
         modul: v.modul,
-        rolle: v.rolle,
+        rolle: Array.isArray(v.rolle) ? v.rolle.join(', ') : '',
         kategorie: v.kategorie,
         routerlink: v.routerlink,
       };
