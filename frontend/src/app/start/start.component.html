@@ -1,6 +1,20 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <imr-page-layout [title]="display_name">
+  @if (isAdmin) {
+    <div class="start-settings-trigger">
+      <button
+        mat-icon-button
+        color="primary"
+        type="button"
+        aria-label="Startseite konfigurieren"
+        (click)="openSettings()"
+      >
+        <mat-icon>settings</mat-icon>
+      </button>
+    </div>
+  }
+
   @if (categorizedItems.length === 0) {
     <imr-section title="Für deine Rollen sind aktuell keine Module freigeschaltet!"></imr-section>
   }@else {
@@ -46,6 +60,62 @@
   }
 </imr-page-layout>
 
+<!-- Settings Overlay Backdrop -->
+<div
+  class="settings-overlay"
+  [class.settings-overlay--open]="settingsPanelOpen"
+  (click)="closeSettings()"
+  aria-hidden="true"
+></div>
 
+<!-- Settings Side Panel -->
+<aside
+  class="settings-panel"
+  [class.settings-panel--open]="settingsPanelOpen"
+  role="dialog"
+  aria-label="Startseite Konfiguration"
+>
+  <div class="settings-panel__header">
+    <h2 class="settings-panel__title">Startseite Konfiguration</h2>
+    <button mat-icon-button type="button" (click)="closeSettings()" aria-label="Schließen">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
 
+  <div class="settings-panel__body">
+    <form [formGroup]="settingsForm" (ngSubmit)="settingsSpeichern()">
+      <mat-form-field appearance="outline" class="imr-full-width settings-json-field">
+        <mat-label>Konfiguration (JSON)</mat-label>
+        <textarea
+          matInput
+          class="settings-json-input"
+          formControlName="konfiguration"
+          rows="20"
+          placeholder="[ { ... } ]"
+        ></textarea>
+        @if (settingsForm.controls['konfiguration'].hasError('jsonInvalid')) {
+          <mat-error>Ungültiges JSON-Format</mat-error>
+        }
+      </mat-form-field>
 
+      <div class="settings-panel__actions">
+        <button
+          mat-flat-button
+          color="accent"
+          type="submit"
+          [disabled]="settingsForm.invalid"
+        >
+          Speichern
+        </button>
+        <button mat-flat-button color="primary" type="button" (click)="closeSettings()">
+          Abbrechen
+        </button>
+        @if (startModulId) {
+          <button mat-flat-button color="warn" type="button" (click)="settingsLoeschen()">
+            Löschen
+          </button>
+        }
+      </div>
+    </form>
+  </div>
+</aside>

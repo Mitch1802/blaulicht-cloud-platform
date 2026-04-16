@@ -187,3 +187,101 @@
                 inset: 0 auto 0 0
                 width: 4px
                 height: auto
+
+// ==============================================
+// Settings Trigger Button
+// ==============================================
+
+.start-settings-trigger
+    display: flex
+    justify-content: flex-end
+    margin-bottom: -.25rem
+
+// ==============================================
+// Settings Overlay Backdrop
+// ==============================================
+
+.settings-overlay
+    display: none
+    position: fixed
+    inset: 0
+    background: rgba(0, 0, 0, .38)
+    z-index: 900
+    cursor: pointer
+
+    &--open
+        display: block
+
+// ==============================================
+// Settings Side Panel
+// ==============================================
+
+.settings-panel
+    position: fixed
+    top: 0
+    right: 0
+    bottom: 0
+    width: 480px
+    max-width: 95vw
+    background: #fff
+    z-index: 950
+    display: flex
+    flex-direction: column
+    transform: translateX(100%)
+    transition: transform .28s ease
+    box-shadow: -4px 0 24px rgba(0, 0, 0, .15)
+
+    &--open
+        transform: translateX(0)
+
+.settings-panel__header
+    display: flex
+    align-items: center
+    justify-content: space-between
+    padding: .75rem 1rem .75rem 1.5rem
+    border-bottom: 1px solid rgba(0, 0, 0, .1)
+    flex-shrink: 0
+
+.settings-panel__title
+    margin: 0
+    font-size: 1.1rem
+    font-weight: 600
+    color: theme.$imr-primary
+
+.settings-panel__body
+    flex: 1
+    overflow-y: auto
+    padding: 1.25rem 1.5rem
+
+:host ::ng-deep
+    .settings-json-field
+        .mat-mdc-text-field-wrapper
+            min-height: 320px !important
+            height: auto !important
+
+        .mat-mdc-form-field-flex
+            min-height: 320px !important
+            height: auto !important
+            align-items: stretch !important
+
+        .mat-mdc-form-field-infix
+            min-height: 280px !important
+            height: auto !important
+            padding-top: .5rem !important
+            padding-bottom: .5rem !important
+
+.settings-json-input
+    min-height: 280px !important
+    height: auto !important
+    line-height: 1.35
+    resize: vertical
+    font-family: monospace
+    font-size: .85rem
+
+.settings-panel__actions
+    display: flex
+    gap: .5rem
+    flex-wrap: wrap
+    margin-top: 1rem
+    padding-bottom: .5rem
+

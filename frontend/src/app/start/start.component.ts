@@ -1,4 +1,12 @@
 ﻿import { Component, OnInit, inject } from '@angular/core';
+import {
+  FormControl,
+  FormGroup,
+  Validators,
+  ValidatorFn,
+  AbstractControl,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { ApiHttpService } from '../_service/api-http.service';
 import { AuthSessionService } from '../_service/auth-session.service';
 import { NavigationService } from '../_service/navigation.service';
@@ -10,7 +18,10 @@ import {
   ImrPageLayoutComponent,
   ImrSectionComponent,
 } from '../imr-ui-library';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { RouterLink } from '@angular/router';
 import startRegelConfig from './konfig.json';
 
@@ -24,6 +35,7 @@ type StartKonfigItem = {
 };
 
 type StartModulEintrag = {
+  id?: number;
   modul?: string;
   konfiguration?: StartKonfigItem[];
 };
@@ -37,18 +49,24 @@ type StartResponse = {
   main?: StartModulEintrag[];
 };
 
+type ModulKonfigSaveResult = { id: number; modul: string; konfiguration: StartKonfigItem[] };
+
 @Component({
   selector: 'app-start',
   templateUrl: './start.component.html',
   styleUrls: ['./start.component.sass'],
   standalone: true,
   imports: [
+    ReactiveFormsModule,
     ImrHeaderComponent,
     ImrPageLayoutComponent,
     ImrSectionComponent,
     ImrCardComponent,
+    MatButtonModule,
+    MatFormFieldModule,
     MatIconModule,
-    RouterLink
+    MatInputModule,
+    RouterLink,
   ]
 })
 export class StartComponent implements OnInit {
@@ -58,6 +76,7 @@ export class StartComponent implements OnInit {
   private navigationService = inject(NavigationService);
   private uiMessageService = inject(UiMessageService);
   private readonly adminRoleKey = 'ADMIN';
+  private readonly modulEndpoint = 'modul_konfiguration';
 
   breadcrumb: ImrBreadcrumbItem[] = [];
   start_konfig: StartKonfigItem[] = [];
@@ -68,6 +87,17 @@ export class StartComponent implements OnInit {
   categorizedItems: { name: string; items: StartKonfigItem[] }[] = [];
 
   readonly defaultKonfig: StartKonfigItem[] = startRegelConfig;
+
+  // --- Settings Panel ---
+  settingsPanelOpen = false;
+  startModulId: number | null = null;
+  settingsForm = new FormGroup({
+    konfiguration: new FormControl<string>('', [Validators.required, this.validJson()]),
+  });
+
+  get isAdmin(): boolean {
+    return this.meine_rollen.includes(this.adminRoleKey);
+  }
 
   ngOnInit(): void {
     sessionStorage.setItem('PageNumber', '1');
@@ -85,16 +115,13 @@ export class StartComponent implements OnInit {
           this.display_name = 'Hallo ' + (user?.display_name || this.username) + '!';
 
           const main = Array.isArray(erg?.main) ? erg.main : [];
-          const konfigs = main.find((m: StartModulEintrag) => m.modul === 'start');
+          const startEntry = main.find((m: StartModulEintrag) => m.modul === 'start');
+          this.startModulId = startEntry?.id ?? null;
 
-          const configured = Array.isArray(konfigs?.konfiguration) ? konfigs.konfiguration : [];
+          const configured = Array.isArray(startEntry?.konfiguration) ? startEntry.konfiguration : [];
           this.start_konfig = configured.length > 0 ? configured : this.defaultKonfig;
 
-          const allowed = this.start_konfig.filter((item) =>
-            this.userHasAccess(item) && !this.isHiddenItem(item)
-          );
-
-          this.categorizedItems = this.buildCategories(allowed);
+          this.rebuildCategorizedItems();
 
         } catch (e: unknown) {
           this.uiMessageService.erstelleMessage('error', String(e));
@@ -104,6 +131,97 @@ export class StartComponent implements OnInit {
         this.authSessionService.errorAnzeigen(error);
       }
     });
+  }
+
+  openSettings(): void {
+    this.settingsForm.patchValue({
+      konfiguration: JSON.stringify(this.start_konfig, null, 2),
+    });
+    this.settingsPanelOpen = true;
+  }
+
+  closeSettings(): void {
+    this.settingsPanelOpen = false;
+  }
+
+  settingsSpeichern(): void {
+    if (this.settingsForm.invalid) {
+      this.uiMessageService.erstelleMessage('error', 'Bitte gültiges JSON eingeben!');
+      return;
+    }
+
+    const konfiguration = JSON.parse(this.settingsForm.controls['konfiguration'].value!);
+    const objekt = { modul: 'start', konfiguration };
+
+    if (!this.startModulId) {
+      this.apiHttpService.post<ModulKonfigSaveResult>(this.modulEndpoint, objekt, false).subscribe({
+        next: (saved) => {
+          try {
+            this.startModulId = saved.id;
+            this.start_konfig = Array.isArray(saved.konfiguration) ? saved.konfiguration : [...this.defaultKonfig];
+            this.rebuildCategorizedItems();
+            this.closeSettings();
+            this.uiMessageService.erstelleMessage('success', 'Startseite Konfiguration gespeichert!');
+          } catch (e: unknown) {
+            this.uiMessageService.erstelleMessage('error', String(e));
+          }
+        },
+        error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
+      });
+    } else {
+      this.apiHttpService.patch<ModulKonfigSaveResult>(this.modulEndpoint, this.startModulId, objekt, false).subscribe({
+        next: (saved) => {
+          try {
+            this.start_konfig = Array.isArray(saved.konfiguration) ? saved.konfiguration : [...this.defaultKonfig];
+            this.rebuildCategorizedItems();
+            this.closeSettings();
+            this.uiMessageService.erstelleMessage('success', 'Startseite Konfiguration aktualisiert!');
+          } catch (e: unknown) {
+            this.uiMessageService.erstelleMessage('error', String(e));
+          }
+        },
+        error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
+      });
+    }
+  }
+
+  settingsLoeschen(): void {
+    if (!this.startModulId) return;
+
+    this.apiHttpService.delete(this.modulEndpoint, this.startModulId).subscribe({
+      next: () => {
+        try {
+          this.startModulId = null;
+          this.start_konfig = [...this.defaultKonfig];
+          this.rebuildCategorizedItems();
+          this.closeSettings();
+          this.uiMessageService.erstelleMessage('success', 'Startseite Konfiguration gelöscht!');
+        } catch (e: unknown) {
+          this.uiMessageService.erstelleMessage('error', String(e));
+        }
+      },
+      error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
+    });
+  }
+
+  private rebuildCategorizedItems(): void {
+    const allowed = this.start_konfig.filter((item) =>
+      this.userHasAccess(item) && !this.isHiddenItem(item)
+    );
+    this.categorizedItems = this.buildCategories(allowed);
+  }
+
+  private validJson(): ValidatorFn {
+    return (control: AbstractControl) => {
+      const v = control.value;
+      if (!v) return null;
+      try {
+        JSON.parse(v);
+        return null;
+      } catch {
+        return { jsonInvalid: true };
+      }
+    };
   }
 
   /* ============================
