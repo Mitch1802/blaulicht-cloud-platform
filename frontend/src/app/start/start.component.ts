@@ -157,8 +157,12 @@ export class StartComponent implements OnInit {
       this.apiHttpService.post<ModulKonfigSaveResult>(this.modulEndpoint, objekt, false).subscribe({
         next: (saved) => {
           try {
+            if (!Array.isArray(saved.konfiguration)) {
+              this.uiMessageService.erstelleMessage('error', 'Ungültige Serverantwort – Konfiguration konnte nicht übernommen werden!');
+              return;
+            }
             this.startModulId = saved.id;
-            this.start_konfig = Array.isArray(saved.konfiguration) ? saved.konfiguration : [...this.defaultKonfig];
+            this.start_konfig = saved.konfiguration;
             this.rebuildCategorizedItems();
             this.closeSettings();
             this.uiMessageService.erstelleMessage('success', 'Startseite Konfiguration gespeichert!');
@@ -172,7 +176,11 @@ export class StartComponent implements OnInit {
       this.apiHttpService.patch<ModulKonfigSaveResult>(this.modulEndpoint, this.startModulId, objekt, false).subscribe({
         next: (saved) => {
           try {
-            this.start_konfig = Array.isArray(saved.konfiguration) ? saved.konfiguration : [...this.defaultKonfig];
+            if (!Array.isArray(saved.konfiguration)) {
+              this.uiMessageService.erstelleMessage('error', 'Ungültige Serverantwort – Konfiguration konnte nicht übernommen werden!');
+              return;
+            }
+            this.start_konfig = saved.konfiguration;
             this.rebuildCategorizedItems();
             this.closeSettings();
             this.uiMessageService.erstelleMessage('success', 'Startseite Konfiguration aktualisiert!');
