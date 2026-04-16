@@ -839,7 +839,7 @@ export class JugendComponent implements OnInit {
       event: {
         id: event.id,
         titel: event.titel,
-        datum: eventDatumIso,
+        datum: new Date(eventDatumIso).toLocaleDateString('de-DE'),
         ort: event.ort ?? '',
         kategorie: eventKategorie,
         kategorie_label: this.getEventKategorieText(event),
@@ -906,7 +906,7 @@ export class JugendComponent implements OnInit {
       event: {
         id: '',
         titel: 'Planung naechste Teilnahmen',
-        datum: eventDatumIso,
+        datum: new Date(eventDatumIso).toLocaleDateString('de-DE'),
         ort: '',
         kategorie,
         kategorie_label: this.getKategorieLabel(kategorie),
@@ -968,7 +968,7 @@ export class JugendComponent implements OnInit {
           ? (istFertigkeitsabzeichen
             ? this.getFertigkeitsabzeichenLevelDropdownLabel(naechsteStufe)
             : this.getStandardLevelDropdownLabel(naechsteStufe))
-          : 'noch nicht berechtigt',
+          : '-',
       };
     });
   }
