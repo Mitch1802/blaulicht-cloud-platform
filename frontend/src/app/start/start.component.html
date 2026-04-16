@@ -8,7 +8,7 @@
       color="primary"
       type="button"
       class="start-settings-btn"
-      aria-label="Startseite konfigurieren"
+      [attr.aria-label]="settingsPanelOpen ? 'Konfiguration schließen' : 'Startseite konfigurieren'"
       (click)="toggleSettings()"
     >
       <mat-icon class="start-settings-icon">{{ settingsPanelOpen ? 'close' : 'settings' }}</mat-icon>
@@ -72,7 +72,11 @@
                   <input class="konfig-input" formControlName="modul" placeholder="Name" />
                 </td>
                 <td class="col-rolle">
-                  <input class="konfig-input" formControlName="rolle" placeholder="ADMIN, FMD" />
+                  <mat-select class="konfig-rolle-select" formControlName="rolle" multiple>
+                    @for (rolle of alleRollen; track rolle) {
+                      <mat-option [value]="rolle">{{ rolle }}</mat-option>
+                    }
+                  </mat-select>
                 </td>
                 <td class="col-kategorie">
                   <input

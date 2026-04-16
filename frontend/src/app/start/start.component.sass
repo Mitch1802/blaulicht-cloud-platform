@@ -200,6 +200,10 @@
         height: clamp(1.5rem, 2.4vw, 2.1rem)
         line-height: 1.2
 
+@media (max-width: 700px)
+    .start-settings-btn
+        display: none
+
 // ==============================================
 // Settings Actions (inline section)
 // ==============================================
@@ -263,7 +267,7 @@
     width: 130px
 
 .col-rolle
-    width: 130px
+    width: 180px
 
 .col-kategorie
     width: 110px
@@ -316,3 +320,7 @@
 
     &.ng-invalid.ng-dirty
         border-color: theme.$imr-error
+
+.konfig-rolle-select
+    width: 100%
+    font-size: .85rem
