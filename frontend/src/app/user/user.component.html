@@ -5,7 +5,7 @@
     <mat-tab label="Benutzer">
       <imr-section>
           @if (formModul.disabled) {
-          <div>
+          <div class="imr-top-actions">
             <button mat-flat-button color="accent" (click)="neueDetails()" type="button">
               Hinzufügen
             </button>
@@ -102,7 +102,7 @@
           <form [formGroup]="formModul" (ngSubmit)="datenSpeichern()" [hidden]="formModul.disabled" class="edit-form">
             <input hidden type="text"  formControlName="id" />
 
-            <div>
+            <div class="imr-top-actions">
               <button mat-flat-button color="accent" [hidden]="!formModul.valid" type="submit">
                 Daten speichern
               </button>
@@ -258,7 +258,7 @@
     </mat-tab>
     <mat-tab label="Rollenübersicht">
       <imr-section>
-        <div class="rollen-matrix-actions">
+        <div class="imr-top-actions">
           <button mat-flat-button color="accent" type="button" (click)="rollenMatrixSpeichern()">
             Rollen speichern
           </button>
