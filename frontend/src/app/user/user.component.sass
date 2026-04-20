@@ -96,36 +96,17 @@
         .filter-field
             max-width: 320px
 
-        .imr-table-wrap
-            margin-top: .5rem
-
-            .mat-column-status
-                flex: 0 0 152px
-                max-width: 152px
-
-            .mat-column-actions
-                flex: 0 0 116px
-                max-width: 116px
-
-            .mat-column-rolle
-                width: 116px
-                min-width: 116px
-
-            .imr-table-toolbar
-                .table-status-badge
-                    flex-shrink: 0
-
         .role-cell
             white-space: nowrap
 
         .role-row
             margin-top: .2rem
-            gap: .55rem .75rem
+            gap: .45rem
 
         .role-option
             margin-bottom: 0
             min-height: var(--imr-control-height)
-            padding: .35rem .65rem
+            padding: .45rem .6rem
             border: 1px solid var(--imr-control-border)
             border-radius: var(--imr-control-radius)
             background: var(--imr-control-bg)
@@ -144,9 +125,39 @@
             display: flex
             align-items: center
 
+            button
+                width: 100%
+
         .invite-status-action
             button
                 width: 100%
+
+        .imr-table-wrap
+            margin-top: .35rem
+
+            .imr-table-toolbar
+                .table-status-badge
+                    width: 100%
+                    justify-content: center
+
+            .mat-column-status
+                flex: 0 0 152px
+                max-width: 152px
+                width: 130px
+                min-width: 130px
+
+            .mat-column-actions
+                flex: 0 0 116px
+                max-width: 116px
+                width: 124px
+                min-width: 124px
+
+            .mat-column-rolle
+                width: 94px
+                min-width: 94px
+
+            .mat-column-username
+                overflow-wrap: anywhere
 
         .rollen-matrix-wrap
             overflow-x: auto
@@ -167,41 +178,3 @@
         .rollen-matrix-role-cell
             text-align: center
             padding: .3rem .5rem
-
-        .password-action
-            button
-                width: 100%
-
-        .role-row
-            gap: .45rem
-
-        .role-option
-            padding: .45rem .6rem
-
-        .imr-table-wrap
-            margin-top: .35rem
-
-            .imr-table-toolbar
-                .table-status-badge
-                    width: 100%
-                    justify-content: center
-
-            .mat-column-rolle
-                width: 94px
-                min-width: 94px
-
-            .mat-column-username
-                overflow-wrap: anywhere
-
-            .mat-column-status
-                width: 130px
-                min-width: 130px
-
-            .mat-column-actions
-                width: 124px
-                min-width: 124px
-
-        .imr-top-actions,
-        .imr-form-actions
-            button
-                width: 100%
