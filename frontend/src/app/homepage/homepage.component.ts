@@ -565,23 +565,6 @@ export class HomepageComponent implements OnInit, OnDestroy {
     }
   }
 
-  getPhotoStatusText(row: HomepageRowDraft): string {
-    const pendingFile = this.pendingPhotoUploads.get(row.local_id);
-    if (pendingFile) {
-      return `Neues Foto bereit: ${pendingFile.name}`;
-    }
-
-    if (this.pendingPhotoRemovals.has(row.local_id)) {
-      return 'Foto wird beim Speichern entfernt.';
-    }
-
-    if (row.photo_url) {
-      return 'Eigenes Foto gespeichert.';
-    }
-
-    return 'Kein eigenes Foto gespeichert.';
-  }
-
   getMitgliedLabel(mitglied: IMitglied): string {
     const stbnr = mitglied.stbnr ?? '-';
     const rang = this.getRangText(mitglied.dienstgrad);

@@ -4,7 +4,7 @@
   <mat-tab-group (selectedIndexChange)="onTabChange($event)">
     <mat-tab label="Übersicht">
       <imr-section>
-        <section class="imr-grid mt-3 mb-3 mx-0">
+        <section class="imr-grid">
           <div class="imr-col-12 imr-col-md-4">
             <h2>Tauglichkeit</h2>
             @if (chartTauglichkeit.datasets[0].data.length) {
@@ -31,12 +31,6 @@
     </mat-tab>
     <mat-tab label="ATS Träger">
       <imr-section>
-        <div class="imr-table-toolbar">
-          <mat-form-field class="filter-field" appearance="outline">
-            <mat-label>Filter</mat-label>
-            <input matInput (input)="applyFilter($any($event.target).value)" placeholder="Suchen..." />
-          </mat-form-field>
-        </div>
         @if (formModul.disabled) {
         <div class="imr-top-actions">
           <button mat-flat-button color="accent" (click)="neueDetails()" type="button">
@@ -44,9 +38,15 @@
           </button>
         </div>
         }
+        <div class="imr-table-toolbar">
+          <mat-form-field class="filter-field" appearance="outline">
+            <mat-label>Filter</mat-label>
+            <input matInput (input)="applyFilter($any($event.target).value)" placeholder="Suchen..." />
+          </mat-form-field>
+        </div>
         <form [formGroup]="formModul" (ngSubmit)="datenSpeichern()" [hidden]="formModul.disabled" class="edit-form">
           <input hidden type="text" formControlName="id" />
-          <div class="imr-form-actions">
+          <div class="imr-top-actions">
             <button mat-flat-button color="accent" [hidden]="!formModul.valid" type="submit">
               Daten speichern
             </button>
