@@ -1,8 +1,8 @@
-﻿@use '../../theme' as theme
+﻿@use '../../imr-layout' as layout
 
 .wartung-service-page
-    +theme.imr-admin-page-shell
-    +theme.imr-admin-page-mobile(640px)
+    +layout.imr-admin-page-shell
+    +layout.imr-admin-page-mobile(640px)
 
     .imr-card
         border-radius: 0
@@ -11,15 +11,15 @@
         margin: .4rem 0 1rem
 
     .summary-card
-        border: 1px solid theme.$imr-primary
+        border: 1px solid var(--imr-primary)
         border-radius: 0
-        background: rgba(theme.$imr-primary, .35)
+        background: color-mix(in srgb, var(--imr-primary) 35%, transparent)
         padding: .7rem .75rem
 
         h3
             margin: 0
             font-size: .88rem
-            color: theme.$imr-primary
+            color: var(--imr-primary)
 
         p
             margin: .3rem 0 0

@@ -7,11 +7,16 @@
 //   3. Komponenten-spezifische Overrides, die nicht generisch genug
 //      für den Katalog sind (z. B. Atemschutz-Teilkomponenten)
 // ─────────────────────────────────────────────────────────────────────────────
+@use '@angular/material' as mat
 @use './theme' as theme
 @use './imr-catalog'
 @import '@fontsource/roboto/400.css'
 @import '@fontsource/roboto/500.css'
 @import '@fontsource/roboto/700.css'
+
+@include mat.core()
+@include mat.all-component-themes(theme.$blaulichtcloud-theme)
+@include mat.color-variants-backwards-compatibility(theme.$blaulichtcloud-theme)
 
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -51,21 +56,21 @@ div:has(> .mat-mdc-button-disabled)
     letter-spacing: .1px
     border: 1px solid var(--imr-control-border)
     background: var(--imr-control-bg)
-    color: theme.$imr-text
+    color: var(--imr-text)
     box-shadow: none
     transition: var(--imr-control-transition)
 
     &:hover:not(:disabled)
         transform: none
         background: #f7f7f7
-        border-color: rgba(theme.$imr-primary, .45)
-        color: theme.$imr-primary
+        border-color: color-mix(in srgb, var(--imr-primary) 45%, transparent)
+        color: var(--imr-primary)
 
     &:active:not(:disabled)
         transform: translateY(0)
 
     &:focus-visible
-        outline: 2px solid rgba(theme.$imr-primary, .55)
+        outline: 2px solid color-mix(in srgb, var(--imr-primary) 55%, transparent)
         outline-offset: 2px
 
 .mat-mdc-button,
@@ -102,51 +107,51 @@ div:has(> .mat-mdc-button-disabled)
 
 .mat-mdc-unelevated-button.mat-primary,
 .mat-mdc-raised-button.mat-primary
-    background: theme.$imr-primary !important
-    border-color: rgba(theme.$imr-primary, .92) !important
+    background: var(--imr-primary) !important
+    border-color: color-mix(in srgb, var(--imr-primary) 92%, transparent) !important
     box-shadow: none
 
     &:hover:not(:disabled)
-        background: theme.$imr-primary !important
-        border-color: rgba(theme.$imr-primary, .95) !important
+        background: var(--imr-primary) !important
+        border-color: color-mix(in srgb, var(--imr-primary) 95%, transparent) !important
 
 .mat-mdc-unelevated-button.mat-accent,
 .mat-mdc-raised-button.mat-accent
-    background: theme.$imr-secondary !important
-    border-color: rgba(theme.$imr-secondary, .86) !important
+    background: var(--imr-accent) !important
+    border-color: color-mix(in srgb, var(--imr-accent) 86%, transparent) !important
     box-shadow: none
 
     &:hover:not(:disabled)
-        background: color-mix(in srgb, #{theme.$imr-secondary} 86%, #000 14%) !important
-        border-color: rgba(theme.$imr-secondary, .95) !important
+        background: color-mix(in srgb, var(--imr-accent) 86%, #000 14%) !important
+        border-color: color-mix(in srgb, var(--imr-accent) 95%, transparent) !important
 
 .mat-mdc-unelevated-button.mat-warn,
 .mat-mdc-raised-button.mat-warn
-    background: theme.$imr-error !important
-    border-color: rgba(theme.$imr-error, .88) !important
+    background: var(--imr-error) !important
+    border-color: color-mix(in srgb, var(--imr-error) 88%, transparent) !important
     box-shadow: none
 
     &:hover:not(:disabled)
-        background: color-mix(in srgb, #{theme.$imr-error} 86%, #000 14%) !important
-        border-color: rgba(theme.$imr-error, .95) !important
+        background: color-mix(in srgb, var(--imr-error) 86%, #000 14%) !important
+        border-color: color-mix(in srgb, var(--imr-error) 95%, transparent) !important
 
 .mat-mdc-button.mat-primary,
 .mat-mdc-outlined-button.mat-primary
-    color: theme.$imr-primary
-    border-color: rgba(theme.$imr-primary, .42)
-    background: rgba(theme.$imr-primary, .34)
+    color: var(--imr-primary)
+    border-color: color-mix(in srgb, var(--imr-primary) 42%, transparent)
+    background: color-mix(in srgb, var(--imr-primary) 34%, transparent)
 
 .mat-mdc-button.mat-accent,
 .mat-mdc-outlined-button.mat-accent
-    color: color-mix(in srgb, #{theme.$imr-secondary} 86%, #000 14%)
-    border-color: rgba(theme.$imr-secondary, .46)
-    background: rgba(theme.$imr-secondary, .55)
+    color: color-mix(in srgb, var(--imr-accent) 86%, #000 14%)
+    border-color: color-mix(in srgb, var(--imr-accent) 46%, transparent)
+    background: color-mix(in srgb, var(--imr-accent) 55%, transparent)
 
 .mat-mdc-button.mat-warn,
 .mat-mdc-outlined-button.mat-warn
-    color: color-mix(in srgb, #{theme.$imr-error} 86%, #000 14%)
-    border-color: rgba(theme.$imr-error, .45)
-    background: rgba(theme.$imr-error, .12)
+    color: color-mix(in srgb, var(--imr-error) 86%, #000 14%)
+    border-color: color-mix(in srgb, var(--imr-error) 45%, transparent)
+    background: color-mix(in srgb, var(--imr-error) 12%, transparent)
 
 .mat-mdc-icon-button.mat-primary,
 .mat-mdc-icon-button.mat-accent,
@@ -154,52 +159,52 @@ div:has(> .mat-mdc-button-disabled)
     box-shadow: none
 
 .mat-mdc-icon-button.mat-primary
-    color: theme.$imr-primary
-    background: rgba(theme.$imr-primary, .35)
-    border-color: rgba(theme.$imr-primary, .4)
+    color: var(--imr-primary)
+    background: color-mix(in srgb, var(--imr-primary) 35%, transparent)
+    border-color: color-mix(in srgb, var(--imr-primary) 40%, transparent)
 
 .mat-mdc-icon-button.mat-accent
-    color: color-mix(in srgb, #{theme.$imr-secondary} 86%, #000 14%)
-    background: rgba(theme.$imr-secondary, .52)
-    border-color: rgba(theme.$imr-secondary, .45)
+    color: color-mix(in srgb, var(--imr-accent) 86%, #000 14%)
+    background: color-mix(in srgb, var(--imr-accent) 52%, transparent)
+    border-color: color-mix(in srgb, var(--imr-accent) 45%, transparent)
 
 .mat-mdc-icon-button.mat-warn
-    color: color-mix(in srgb, #{theme.$imr-error} 86%, #000 14%)
-    background: rgba(theme.$imr-error, .12)
-    border-color: rgba(theme.$imr-error, .45)
+    color: color-mix(in srgb, var(--imr-error) 86%, #000 14%)
+    background: color-mix(in srgb, var(--imr-error) 12%, transparent)
+    border-color: color-mix(in srgb, var(--imr-error) 45%, transparent)
 
 .imr-action-cell .mat-mdc-icon-button.mat-primary,
 .table-mobile-actions .mat-mdc-icon-button.mat-primary
     color: #fff
-    background: theme.$imr-primary !important
-    border-color: rgba(theme.$imr-primary, .92) !important
+    background: var(--imr-primary) !important
+    border-color: color-mix(in srgb, var(--imr-primary) 92%, transparent) !important
 
     &:hover:not(:disabled)
         color: #fff
-        background: theme.$imr-primary !important
-        border-color: rgba(theme.$imr-primary, .95) !important
+        background: var(--imr-primary) !important
+        border-color: color-mix(in srgb, var(--imr-primary) 95%, transparent) !important
 
 .imr-action-cell .mat-mdc-icon-button.mat-accent,
 .table-mobile-actions .mat-mdc-icon-button.mat-accent
     color: #fff
-    background: theme.$imr-secondary !important
-    border-color: rgba(theme.$imr-secondary, .86) !important
+    background: var(--imr-accent) !important
+    border-color: color-mix(in srgb, var(--imr-accent) 86%, transparent) !important
 
     &:hover:not(:disabled)
         color: #fff
-        background: color-mix(in srgb, #{theme.$imr-secondary} 86%, #000 14%) !important
-        border-color: rgba(theme.$imr-secondary, .95) !important
+        background: color-mix(in srgb, var(--imr-accent) 86%, #000 14%) !important
+        border-color: color-mix(in srgb, var(--imr-accent) 95%, transparent) !important
 
 .imr-action-cell .mat-mdc-icon-button.mat-warn,
 .table-mobile-actions .mat-mdc-icon-button.mat-warn
     color: #fff
-    background: theme.$imr-error !important
-    border-color: rgba(theme.$imr-error, .88) !important
+    background: var(--imr-error) !important
+    border-color: color-mix(in srgb, var(--imr-error) 88%, transparent) !important
 
     &:hover:not(:disabled)
         color: #fff
-        background: color-mix(in srgb, #{theme.$imr-error} 86%, #000 14%) !important
-        border-color: rgba(theme.$imr-error, .95) !important
+        background: color-mix(in srgb, var(--imr-error) 86%, #000 14%) !important
+        border-color: color-mix(in srgb, var(--imr-error) 95%, transparent) !important
 
 .mat-mdc-button-base:disabled
     opacity: .55
@@ -217,10 +222,10 @@ div:has(> .mat-mdc-button-disabled)
     min-height: var(--imr-control-height)
 
 .mat-mdc-table
-    --mat-table-background-color: #{theme.$imr-surface}
+    --mat-table-background-color: var(--imr-surface)
 
 .mat-mdc-paginator
-    --mat-paginator-container-background-color: #{theme.$imr-surface}
+    --mat-paginator-container-background-color: var(--imr-surface)
 
 .mat-mdc-tab-group
     --mat-tab-container-height: var(--imr-control-height)
@@ -241,7 +246,7 @@ div:has(> .mat-mdc-button-disabled)
         min-width: 0
         padding: 0
         height: var(--imr-control-height)
-        border: 1px solid theme.$imr-primary
+        border: 1px solid var(--imr-primary)
         background: rgba(#fff, .72)
         transition: background-color 120ms ease, border-color 120ms ease
 
@@ -249,15 +254,15 @@ div:has(> .mat-mdc-button-disabled)
         padding: 0
 
     .mdc-tab__text-label
-        color: theme.$imr-primary
+        color: var(--imr-primary)
         font-size: 1rem
         font-weight: 700
         letter-spacing: .05em
         text-transform: uppercase
 
     .mdc-tab--active
-        background: theme.$imr-primary
-        border-color: theme.$imr-primary
+        background: var(--imr-primary)
+        border-color: var(--imr-primary)
 
     .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label,
     .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label span,
@@ -294,18 +299,58 @@ div:has(> .mat-mdc-button-disabled)
         border-left: 5px solid rgba(255, 255, 255, .55)
 
 .app-snackbar--success
-    --mdc-snackbar-container-color: #{theme.$imr-success}
+    --mdc-snackbar-container-color: var(--imr-success)
 
 .app-snackbar--info
-    --mdc-snackbar-container-color: #{theme.$imr-primary}
+    --mdc-snackbar-container-color: var(--imr-primary)
 
 .app-snackbar--error
-    --mdc-snackbar-container-color: #{theme.$imr-error}
+    --mdc-snackbar-container-color: var(--imr-error)
 
 
 // ══════════════════════════════════════════════════════════════════════════════
-// 1. Basis-Font
+// 1. Globale Basisregeln
 // ══════════════════════════════════════════════════════════════════════════════
+
+*, *::before, *::after
+    box-sizing: border-box
+
+html, body
+    background: var(--imr-background)
+    min-height: 100vh
+    margin: 0
+    padding: 0
+    width: 100%
+    overflow-x: hidden
+    color: var(--imr-text)
+    -webkit-font-smoothing: antialiased
+    text-rendering: optimizeLegibility
+
+a
+    color: var(--imr-primary)
+
+    &:hover
+        color: var(--imr-primary)
+
+button,
+[role='button'],
+a
+    cursor: pointer
+
+p
+    cursor: default
+
+h1
+    color: var(--imr-primary)
+
+.footer
+    color: var(--imr-text-muted)
+    text-align: center
+    padding-top: 10px
+    white-space: pre-wrap
+
+.border
+    border: solid 1px color-mix(in srgb, var(--imr-border) 95%, transparent)
 
 :root
     font-family: "Roboto", sans-serif
@@ -343,29 +388,6 @@ div:has(> .mat-mdc-button-disabled)
     flex-direction: column
     gap: .25rem
 
-.imr-table-toolbar
-    display: flex
-    align-items: center
-    justify-content: space-between
-    gap: .5rem
-    margin: 0 0 .5rem
-
-    .filter-field,
-    > .mat-mdc-form-field,
-    > mat-form-field
-        width: min(360px, 100%)
-        margin: 0
-
-@media only screen and (max-width: 700px)
-    .imr-table-toolbar
-        flex-direction: column
-        align-items: stretch
-
-        .filter-field,
-        > .mat-mdc-form-field,
-        > mat-form-field
-            width: 100%
-
 @media (max-width: 768px)
     .mat-mdc-tab-group
         .mat-mdc-tab-header
@@ -374,4 +396,11 @@ div:has(> .mat-mdc-button-disabled)
         .mdc-tab__text-label
             padding: .45rem .75rem
             font-size: .92rem
+
+.app-global-loader
+    position: fixed
+    top: 0
+    left: 0
+    right: 0
+    z-index: 2000
 

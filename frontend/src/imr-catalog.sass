@@ -10,9 +10,6 @@
 // IMR components should primarily be styled through CSS variables.
 // -----------------------------------------------------------------------------
 @use './theme' as theme
-@use './app/imr-ui-library/imr-header/imr-header.component' as imrHeaderStyles
-@use './app/imr-ui-library/imr-page-layout/imr-page-layout.component' as imrPageLayoutStyles
-@use './app/imr-ui-library/imr-section/imr-section.component' as imrSectionStyles
 
 // ------------------------------------------------------------------------------
 // 1. IMR design tokens and CSS custom properties
@@ -28,6 +25,7 @@
     --imr-warning:            #{theme.$imr-warning}
 
     // -- Surfaces -------------------------------------------------------------
+    --imr-background:         #{theme.$imr-background}
     --imr-surface:            #{theme.$imr-surface}
     --imr-surface-variant:    #{theme.$imr-surface-variant}
     --imr-border:             #{theme.$imr-border}
@@ -87,54 +85,8 @@
     --mdc-outlined-text-field-container-shape: 0px
     --mdc-filled-text-field-container-shape: 0px
 
-*, *::before, *::after
-    box-sizing: border-box
-
-
 // ------------------------------------------------------------------------------
-// 2. Global base styles
-// ------------------------------------------------------------------------------
-
-html, body
-    background: theme.$imr-background
-    min-height: 100vh
-    margin: 0
-    padding: 0
-    width: 100%
-    overflow-x: hidden
-    color: theme.$imr-text
-    -webkit-font-smoothing: antialiased
-    text-rendering: optimizeLegibility
-
-a
-    color: theme.$imr-primary
-
-    &:hover
-        color: theme.$imr-primary
-
-
-button,
-[role='button'],
-a
-    cursor: pointer
-
-p
-    cursor: default
-
-h1
-    color: theme.$imr-primary
-
-.footer
-    color: theme.$imr-text-muted
-    text-align: center
-    padding-top: 10px
-    white-space: pre-wrap
-
-.border
-    border: solid 1px rgba(theme.$imr-border, .95)
-
-// ------------------------------------------------------------------------------
-// 3. IMR component styles for imr-* hosts and wrapper classes
+// 2. IMR component styles for imr-* hosts and wrapper classes
 // ------------------------------------------------------------------------------
 
 .imr-full-width
@@ -206,7 +158,7 @@ h1
     margin: .2rem 0 .45rem
     padding: .7rem .65rem
     border-radius: 0
-    border: 1px dashed rgba(theme.$imr-border, .88)
+    border: 1px dashed color-mix(in srgb, var(--imr-border) 88%, transparent)
     text-align: center
 
     &.compact
@@ -217,15 +169,15 @@ h1
     width: 1.25rem
     height: 1.25rem
     font-size: 1.25rem
-    color: rgba(theme.$imr-primary, .75)
+    color: color-mix(in srgb, var(--imr-primary) 75%, transparent)
 
 .imr-table-empty-title
     font-weight: 700
-    color: rgba(theme.$imr-primary, .9)
+    color: color-mix(in srgb, var(--imr-primary) 90%, transparent)
 
 .imr-table-empty-copy
     font-size: .84rem
-    color: rgba(theme.$imr-text-muted, .95)
+    color: color-mix(in srgb, var(--imr-text-muted) 95%, transparent)
 
 .imr-action-cell
     display: flex
@@ -302,8 +254,8 @@ td.imr-action-cell
     box-shadow: none
 
     .mat-mdc-header-row
-        background: theme.$imr-primary
-        border-bottom: 1px solid rgba(theme.$imr-primary, .9)
+        background: var(--imr-primary)
+        border-bottom: 1px solid color-mix(in srgb, var(--imr-primary) 90%, transparent)
 
     .mat-mdc-header-cell
         color: #fff
@@ -318,11 +270,11 @@ td.imr-action-cell
         color: rgba(#fff, .8)
 
     .mat-mdc-cell
-        color: theme.$imr-text
+        color: var(--imr-text)
         font-size: .88rem
         line-height: 1.35
         padding: 0 .8rem
-        border-bottom: 1px solid rgba(theme.$imr-border, .65)
+        border-bottom: 1px solid color-mix(in srgb, var(--imr-border) 65%, transparent)
 
     .mat-mdc-row
         min-height: 44px
@@ -342,7 +294,7 @@ td.imr-action-cell
 
 .upload-label
     font-weight: 600
-    color: theme.$imr-primary
+    color: var(--imr-primary)
 
 .file-input-hidden
     position: absolute
@@ -365,9 +317,9 @@ td.imr-action-cell
     margin-top: .6rem
 
 .preview-card
-    border: 1px solid rgba(theme.$imr-border, .95)
+    border: 1px solid color-mix(in srgb, var(--imr-border) 95%, transparent)
     border-radius: 0
-    background: rgba(theme.$imr-surface, .94)
+    background: color-mix(in srgb, var(--imr-surface) 94%, transparent)
     overflow: hidden
     box-shadow: none
 
@@ -383,7 +335,7 @@ td.imr-action-cell
     align-items: center
     justify-content: center
     font-weight: 600
-    color: theme.$imr-primary
+    color: var(--imr-primary)
 
 .preview-meta
     display: flex
@@ -391,7 +343,7 @@ td.imr-action-cell
     justify-content: flex-end
     gap: .2rem
     padding: .45rem
-    border-top: 1px solid rgba(theme.$imr-border, .72)
+    border-top: 1px solid color-mix(in srgb, var(--imr-border) 72%, transparent)
 
     a,
     span
@@ -411,8 +363,8 @@ td.imr-action-cell
     max-height: 200px
     object-fit: cover
     border-radius: 0
-    border: 1px solid rgba(theme.$imr-border, .95)
-    background: rgba(theme.$imr-surface, .94)
+    border: 1px solid color-mix(in srgb, var(--imr-border) 95%, transparent)
+    background: color-mix(in srgb, var(--imr-surface) 94%, transparent)
 
 .image-preview-tile
     display: inline-grid
@@ -420,15 +372,15 @@ td.imr-action-cell
     width: 176px
     height: 112px
     padding: .25rem
-    border: 1px solid rgba(theme.$imr-border, .95)
-    background: rgba(theme.$imr-surface, .94)
+    border: 1px solid color-mix(in srgb, var(--imr-border) 95%, transparent)
+    background: color-mix(in srgb, var(--imr-surface) 94%, transparent)
     overflow: hidden
     box-shadow: none
     cursor: pointer
     transition: border-color .16s ease, background-color .16s ease
 
     &:hover
-        border-color: rgba(theme.$imr-primary, .38)
+        border-color: color-mix(in srgb, var(--imr-primary) 38%, transparent)
 
     img
         width: 100%
@@ -461,7 +413,7 @@ td.imr-action-cell
     align-items: center
     justify-content: center
     padding: 1rem
-    background: rgba(theme.$imr-primary, .5)
+    background: color-mix(in srgb, var(--imr-primary) 50%, transparent)
     backdrop-filter: blur(6px)
 
 .imr-transaction-dialog
@@ -469,8 +421,8 @@ td.imr-action-cell
     max-height: calc(100vh - 2rem)
     overflow: auto
     border-radius: 0
-    border: 1px solid rgba(theme.$imr-border, .86)
-    background: theme.$imr-surface
+    border: 1px solid color-mix(in srgb, var(--imr-border) 86%, transparent)
+    background: var(--imr-surface)
     box-shadow: 0 14px 34px rgba(0, 0, 0, .18)
     padding: 1rem
     animation: imr-dialog-enter .18s ease-out
@@ -481,20 +433,20 @@ td.imr-action-cell
     justify-content: space-between
     margin-bottom: .85rem
     padding-bottom: .75rem
-    border-bottom: 1px solid rgba(theme.$imr-border, .78)
+    border-bottom: 1px solid color-mix(in srgb, var(--imr-border) 78%, transparent)
 
     h3
         margin: 0
-        color: theme.$imr-primary
+        color: var(--imr-primary)
         font-size: 1.08rem
 
 .imr-transaction-meta
     margin: .2rem 0
     padding: .7rem .8rem
     border-radius: 0
-    border: 1px solid rgba(theme.$imr-border, .8)
-    background: rgba(theme.$imr-primary, .14)
-    color: rgba(theme.$imr-primary, .9)
+    border: 1px solid color-mix(in srgb, var(--imr-border) 80%, transparent)
+    background: color-mix(in srgb, var(--imr-primary) 14%, transparent)
+    color: color-mix(in srgb, var(--imr-primary) 90%, transparent)
 
 .imr-transaction-form
     margin-top: .85rem
@@ -503,9 +455,9 @@ td.imr-action-cell
     margin: .2rem 0 .8rem
     padding: .7rem .8rem
     border-radius: 0
-    background: rgba(theme.$imr-surface-variant, .4)
+    background: color-mix(in srgb, var(--imr-surface-variant) 40%, transparent)
     font-size: .9rem
-    color: rgba(theme.$imr-primary, .84)
+    color: color-mix(in srgb, var(--imr-primary) 84%, transparent)
 
 .imr-transaction-actions
     display: flex
@@ -513,7 +465,7 @@ td.imr-action-cell
     gap: .6rem
     margin-top: .9rem
     padding-top: .85rem
-    border-top: 1px solid rgba(theme.$imr-border, .74)
+    border-top: 1px solid color-mix(in srgb, var(--imr-border) 74%, transparent)
 
 @keyframes imr-dialog-enter
     from
@@ -573,16 +525,8 @@ td.imr-action-cell
     .table-filter-compact
         max-width: 320px
 
-// -- app-root helpers ------------------------------------------------------
-.app-global-loader
-    position: fixed
-    top: 0
-    left: 0
-    right: 0
-    z-index: 2000
-
 // ------------------------------------------------------------------------------
-// 5. Grid-System
+// 3. Grid-System
 // ------------------------------------------------------------------------------
 
 .container, .app-container
@@ -748,7 +692,7 @@ td.imr-action-cell
 
 
 // ------------------------------------------------------------------------------
-// 6. Utility-Klassen
+// 4. Utility-Klassen
 // ------------------------------------------------------------------------------
 
 .text-center

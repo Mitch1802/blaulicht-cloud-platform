@@ -1,13 +1,13 @@
-﻿@use '../../../theme' as theme
+﻿@use '../../../imr-layout' as layout
 
 .atemschutz-dienstbuch-page
-	+theme.imr-admin-page-shell
-	+theme.imr-admin-page-mobile(768px)
+	+layout.imr-admin-page-shell
+	+layout.imr-admin-page-mobile(768px)
 
 	hr
 		margin: .65rem 0
 		border: 0
-		border-top: 1px solid rgba(theme.$imr-border, .9)
+		border-top: 1px solid color-mix(in srgb, var(--imr-border) 90%, transparent)
 
 	h4,
 	p

@@ -53,7 +53,6 @@
             "styles": [
               "src/assets/css/material-design-icons.css",
               "src/assets/css/material-design-icons-outlined.css",
-              "src/theme.sass",
               "src/styles.sass"
             ],
             "optimization": {

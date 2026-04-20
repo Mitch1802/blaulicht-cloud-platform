@@ -1,8 +1,8 @@
-﻿@use '../../../theme' as theme
+﻿@use '../../../imr-layout' as layout
 
 .atemschutz-messgeraete-page
-	+theme.imr-admin-page-shell
-	+theme.imr-admin-page-mobile(768px)
+	+layout.imr-admin-page-shell
+	+layout.imr-admin-page-mobile(768px)
 
 :host ::ng-deep
 	.checkbox-field
@@ -36,6 +36,6 @@
 
 	.checkbox-divider
 		border: 0
-		border-top: 1px solid rgba(theme.$imr-border, .8)
+		border-top: 1px solid color-mix(in srgb, var(--imr-border) 80%, transparent)
 		margin: .25rem 0 .5rem
 

@@ -1,6 +1,4 @@
-﻿@use '../../theme' as theme
-
-.module-card-link
+﻿.module-card-link
     display: block
     text-decoration: none
     color: inherit
@@ -17,9 +15,9 @@
         justify-content: flex-start
         flex-direction: column
         text-align: center
-        color: theme.$imr-primary
+        color: var(--imr-primary)
         overflow: hidden
-        border: 1px solid rgba(theme.$imr-border, .92)
+        border: 1px solid color-mix(in srgb, var(--imr-border) 92%, transparent)
         box-shadow: none
 
         &::after
@@ -27,21 +25,21 @@
             position: absolute
             inset: 0 0 auto 0
             height: 3px
-            background: theme.$imr-primary
+            background: var(--imr-primary)
             opacity: .9
 
         &:hover
             transform: none
             background: #fcfdff
-            border-color: rgba(theme.$imr-primary, .3)
+            border-color: color-mix(in srgb, var(--imr-primary) 30%, transparent)
             box-shadow: none
 
         &:focus-visible
-            outline: 2px solid rgba(theme.$imr-primary, .55)
+            outline: 2px solid color-mix(in srgb, var(--imr-primary) 55%, transparent)
             outline-offset: 2px
 
     .module-card-link:focus-visible .module-card
-        outline: 2px solid rgba(theme.$imr-primary, .55)
+        outline: 2px solid color-mix(in srgb, var(--imr-primary) 55%, transparent)
         outline-offset: 2px
     
     .badge
@@ -54,38 +52,38 @@
         padding: .12rem .38rem
 
     .module-card.admin-only
-        background: rgba(theme.$imr-warning, .1)
-        border-color: rgba(theme.$imr-warning, 1)
-        color: theme.$imr-primary
+        background: color-mix(in srgb, var(--imr-warning) 10%, transparent)
+        border-color: var(--imr-warning)
+        color: var(--imr-primary)
 
         &:after
-            background: rgba(theme.$imr-warning, .75)
+            background: color-mix(in srgb, var(--imr-warning) 75%, transparent)
 
         &:hover
             box-shadow: none
 
     .admin-badge 
-        background: rgba(theme.$imr-warning, .9)
-        color: theme.$imr-primary
+        background: color-mix(in srgb, var(--imr-warning) 90%, transparent)
+        color: var(--imr-primary)
 
     .module-card.planned
         cursor: not-allowed
         pointer-events: none
-        background: rgba(theme.$imr-surface-variant, .6)
-        border: 2px dashed rgba(theme.$imr-border, .95)
-        color: theme.$imr-text-muted
+        background: color-mix(in srgb, var(--imr-surface-variant) 60%, transparent)
+        border: 2px dashed color-mix(in srgb, var(--imr-border) 95%, transparent)
+        color: var(--imr-text-muted)
         box-shadow: none
 
         &::after
-            background: rgba(theme.$imr-border, .8)
+            background: color-mix(in srgb, var(--imr-border) 80%, transparent)
 
         &:hover
             transform: none
             box-shadow: none
 
     .planned-badge
-        background: rgba(theme.$imr-border, .9)
-        color: theme.$imr-text
+        background: color-mix(in srgb, var(--imr-border) 90%, transparent)
+        color: var(--imr-text)
 
     .module-icon-shell
         display: inline-flex
@@ -96,7 +94,7 @@
         margin-bottom: .65rem
 
     .module-card.admin-only .module-icon-shell
-        color: theme.$imr-warning
+        color: var(--imr-warning)
 
     .module-card-body
         display: grid
@@ -195,12 +193,12 @@
     flex-shrink: 0
     background: transparent !important
     box-shadow: none !important
-    color: theme.$imr-primary !important
+    color: var(--imr-primary) !important
 
     &:hover,
     &:focus-visible,
     &:active
-        background: rgba(theme.$imr-primary, .08) !important
+        background: color-mix(in srgb, var(--imr-primary) 8%, transparent) !important
 
     .mat-mdc-button-persistent-ripple,
     .mdc-icon-button__ripple,
@@ -212,7 +210,7 @@
         width: clamp(1.5rem, 2.4vw, 2.1rem)
         height: clamp(1.5rem, 2.4vw, 2.1rem)
         line-height: 1.2
-        color: theme.$imr-primary
+        color: var(--imr-primary)
 
 @media (max-width: 700px)
     .start-settings-btn
@@ -234,19 +232,19 @@
     .mat-mdc-header-cell
         padding: 0 .75rem
         height: 56px
-        color: theme.$imr-text-muted
+        color: var(--imr-text-muted)
         font-weight: 500
         font-size: .75rem
         letter-spacing: .0178em
         text-align: left
         white-space: nowrap
-        border-bottom: 1px solid rgba(theme.$imr-border, .7)
+        border-bottom: 1px solid color-mix(in srgb, var(--imr-border) 70%, transparent)
         background: transparent
 
     .mat-mdc-cell
         padding: 0 .75rem
         min-height: 48px
-        border-bottom: 1px solid rgba(theme.$imr-border, .5)
+        border-bottom: 1px solid color-mix(in srgb, var(--imr-border) 50%, transparent)
         vertical-align: middle
         background: transparent
 
@@ -254,10 +252,10 @@
         border-bottom: none
 
     .mat-mdc-row:hover .mat-mdc-cell
-        background: rgba(theme.$imr-primary, .04)
+        background: color-mix(in srgb, var(--imr-primary) 4%, transparent)
 
     .konfig-row--invalid .mat-mdc-cell
-        background: rgba(theme.$imr-error, .04)
+        background: color-mix(in srgb, var(--imr-error) 4%, transparent)
 
     .mat-mdc-header-row,
     .mat-mdc-row
@@ -295,7 +293,7 @@
 .order-num
     font-size: .8rem
     font-weight: 600
-    color: theme.$imr-text-muted
+    color: var(--imr-text-muted)
     min-width: 1.4rem
     text-align: center
 
@@ -317,16 +315,16 @@
     font-size: .85rem
     font-family: inherit
     background: #fff
-    color: theme.$imr-text
+    color: var(--imr-text)
     transition: border-color .15s
 
     &:focus
         outline: none
-        border-color: theme.$imr-primary
-        box-shadow: 0 0 0 2px rgba(theme.$imr-primary, .15)
+        border-color: var(--imr-primary)
+        box-shadow: 0 0 0 2px color-mix(in srgb, var(--imr-primary) 15%, transparent)
 
     &.ng-invalid.ng-dirty
-        border-color: theme.$imr-error
+        border-color: var(--imr-error)
 
 .konfig-rolle-select
     width: 100%

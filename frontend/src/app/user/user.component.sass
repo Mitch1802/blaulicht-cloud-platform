@@ -1,8 +1,8 @@
-@use '../../theme' as theme
+@use '../../imr-layout' as layout
 
 .user-page
-    +theme.imr-admin-page-shell
-    +theme.imr-admin-page-mobile(768px)
+    +layout.imr-admin-page-shell
+    +layout.imr-admin-page-mobile(768px)
 
     .user-toolbar .filter-field
         width: min(100%, 28rem)
@@ -33,7 +33,7 @@
         margin: 0 0 1rem
         padding: .82rem .95rem
         border: 1px solid var(--imr-control-border)
-        border-left: 3px solid rgba(theme.$imr-primary, .82)
+        border-left: 3px solid color-mix(in srgb, var(--imr-primary) 82%, transparent)
         background: var(--imr-control-bg)
 
     .invite-status-copy
@@ -46,11 +46,11 @@
         font-weight: 700
         letter-spacing: .04em
         text-transform: uppercase
-        color: rgba(theme.$imr-text, .62)
+        color: color-mix(in srgb, var(--imr-text) 62%, transparent)
 
     .invite-status-value
         font-size: .95rem
-        color: theme.$imr-text
+        color: var(--imr-text)
 
     .invite-status-action
         display: flex
@@ -70,12 +70,12 @@
         text-transform: uppercase
 
     .admin-badge
-        background: rgba(theme.$imr-warning, .9)
-        color: theme.$imr-primary
+        background: color-mix(in srgb, var(--imr-warning) 90%, transparent)
+        color: var(--imr-primary)
 
     .mitglied-badge
-        background: rgba(theme.$imr-border, .9)
-        color: theme.$imr-text
+        background: color-mix(in srgb, var(--imr-border) 90%, transparent)
+        color: var(--imr-text)
 
     .imr-action-cell
         display: flex

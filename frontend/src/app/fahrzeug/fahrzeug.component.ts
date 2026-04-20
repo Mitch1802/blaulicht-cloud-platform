@@ -27,7 +27,6 @@ import { NavigationService } from 'src/app/_service/navigation.service';
 import { UiMessageService } from 'src/app/_service/ui-message.service';
 import {
   ImrBreadcrumbItem,
-  ImrCardComponent,
   ImrHeaderComponent,
   ImrPageLayoutComponent,
   ImrSectionComponent,
@@ -60,7 +59,6 @@ type ItemDraftFG = FormGroup<{
     ImrHeaderComponent,
     ImrPageLayoutComponent,
     ImrSectionComponent,
-    ImrCardComponent,
     ImrUploadFieldComponent,
     MatButtonModule,
     MatCardModule,

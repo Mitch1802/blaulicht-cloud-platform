@@ -1,8 +1,8 @@
-﻿@use '../../theme' as theme
+﻿@use '../../imr-layout' as layout
 
 .jugend-page
-    +theme.imr-admin-page-shell
-    +theme.imr-admin-page-mobile(768px)
+    +layout.imr-admin-page-shell
+    +layout.imr-admin-page-mobile(768px)
 
     .mitglied-edit-form
         display: flex
@@ -12,9 +12,9 @@
     .mitglied-summary
         margin: 0
         padding: .9rem 1rem
-        border: 1px solid rgba(theme.$imr-primary, .22)
+        border: 1px solid color-mix(in srgb, var(--imr-primary) 22%, transparent)
         border-radius: 0
-        background: rgba(theme.$imr-primary, .07)
+        background: color-mix(in srgb, var(--imr-primary) 7%, transparent)
 
     .summary-title
         display: flex
@@ -24,7 +24,7 @@
 
         h3
             margin: 0
-            color: theme.$imr-primary
+            color: var(--imr-primary)
             font-size: 1.1rem
 
         p
@@ -42,20 +42,20 @@
         align-items: center
         padding: .28rem .55rem
         border-radius: 0
-        border: 1px solid rgba(theme.$imr-primary, .16)
+        border: 1px solid color-mix(in srgb, var(--imr-primary) 16%, transparent)
         background: #fff
         font-size: .8rem
         line-height: 1.2
 
     .edit-group
         padding: .85rem .9rem .35rem
-        border: 1px solid rgba(theme.$imr-primary, .16)
+        border: 1px solid color-mix(in srgb, var(--imr-primary) 16%, transparent)
         border-radius: 0
         background: #fff
 
         h3
             margin: 0 0 .55rem
-            color: theme.$imr-primary
+            color: var(--imr-primary)
             font-size: .98rem
 
     .form-grid-tight
@@ -70,20 +70,20 @@
             margin-right: .5rem
 
     .teilnehmer-level-card
-        border: 1px solid rgba(theme.$imr-primary, .15)
+        border: 1px solid color-mix(in srgb, var(--imr-primary) 15%, transparent)
         border-radius: 0
         padding: .75rem
-        background: rgba(theme.$imr-primary, .04)
+        background: color-mix(in srgb, var(--imr-primary) 4%, transparent)
 
         h3
             margin: 0 0 .6rem
-            color: theme.$imr-primary
+            color: var(--imr-primary)
             font-size: 1rem
 
     .override-hinweis
         padding: .5rem .7rem
-        border: 1px solid rgba(theme.$imr-primary, .2)
-        background: rgba(theme.$imr-primary, .08)
+        border: 1px solid color-mix(in srgb, var(--imr-primary) 20%, transparent)
+        background: color-mix(in srgb, var(--imr-primary) 8%, transparent)
         font-size: .85rem
 
     .teilnehmer-level-row
@@ -123,15 +123,15 @@
         align-items: center
         justify-content: space-between
         padding: .35rem .6rem
-        border: 1px solid rgba(theme.$imr-primary, .12)
+        border: 1px solid color-mix(in srgb, var(--imr-primary) 12%, transparent)
         background: rgba(#fff, .7)
         font-size: .88rem
         opacity: .55
 
         &.level-achieved
             opacity: 1
-            border-color: rgba(theme.$imr-primary, .3)
-            background: rgba(theme.$imr-primary, .06)
+            border-color: color-mix(in srgb, var(--imr-primary) 30%, transparent)
+            background: color-mix(in srgb, var(--imr-primary) 6%, transparent)
 
         &.level-detail-item--label
             opacity: 1
@@ -153,7 +153,7 @@
         gap: .6rem
         align-items: center
         padding: .3rem .6rem
-        border: 1px solid rgba(theme.$imr-primary, .12)
+        border: 1px solid color-mix(in srgb, var(--imr-primary) 12%, transparent)
         background: rgba(#fff, .7)
         font-size: .88rem
 
@@ -189,13 +189,13 @@
     .jugend-settings-pdf,
     .jugend-settings-regeln
         padding: .9rem 1rem
-        border: 1px solid rgba(theme.$imr-primary, .16)
+        border: 1px solid color-mix(in srgb, var(--imr-primary) 16%, transparent)
         border-radius: 0
         background: #fff
 
         h3
             margin: 0 0 .7rem
-            color: theme.$imr-primary
+            color: var(--imr-primary)
             font-size: 1rem
 
     .jugend-settings-pdf-form
@@ -213,7 +213,7 @@
             vertical-align: middle
 
         .jugend-settings-row--group-start .mat-mdc-cell
-            border-top: 2px solid rgba(theme.$imr-primary, .24)
+            border-top: 2px solid color-mix(in srgb, var(--imr-primary) 24%, transparent)
 
         .mat-mdc-row:first-child .mat-mdc-cell
             border-top: none
@@ -239,15 +239,15 @@
         width: 100%
         min-width: 90px
         box-sizing: border-box
-        border: 1px solid rgba(theme.$imr-border, .85)
+        border: 1px solid color-mix(in srgb, var(--imr-border) 85%, transparent)
         background: #fff
         padding: .35rem .5rem
         font: inherit
 
         &:focus
             outline: none
-            border-color: theme.$imr-primary
-            box-shadow: 0 0 0 2px rgba(theme.$imr-primary, .12)
+            border-color: var(--imr-primary)
+            box-shadow: 0 0 0 2px color-mix(in srgb, var(--imr-primary) 12%, transparent)
 
     .jugend-settings-select
         width: 100%

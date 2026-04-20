@@ -1,32 +1,32 @@
-﻿@use '../../theme' as theme
+﻿@use '../../imr-layout' as layout
 
 .einsatzbericht-page
-    +theme.imr-admin-page-shell
-    +theme.imr-admin-page-mobile(768px)
+    +layout.imr-admin-page-shell
+    +layout.imr-admin-page-mobile(768px)
 
 .form-section
-    border: 1px solid rgba(theme.$imr-border, .95)
+    border: 1px solid color-mix(in srgb, var(--imr-border) 95%, transparent)
     border-radius: 0
     background: transparent
 
     &:hover
-        border-color: rgba(theme.$imr-primary, .45)
+        border-color: color-mix(in srgb, var(--imr-primary) 45%, transparent)
 
     &.has-error
-        border-color: rgba(theme.$imr-error, .75)
+        border-color: color-mix(in srgb, var(--imr-error) 75%, transparent)
 
         .mat-expansion-panel-header
-            background: rgba(theme.$imr-error, .07)
+            background: color-mix(in srgb, var(--imr-error) 7%, transparent)
 
             &:hover
-                background: rgba(theme.$imr-error, .12)
+                background: color-mix(in srgb, var(--imr-error) 12%, transparent)
 
     .mat-expansion-panel-header
-        background: theme.$imr-surface
+        background: var(--imr-surface)
 
 
 .form-section-title
-    color: theme.$imr-primary
+    color: var(--imr-primary)
     font-weight: 600
     display: flex
     align-items: center
@@ -34,7 +34,7 @@
     flex: 1 1 auto
 
 .section-error-icon
-    color: theme.$imr-error
+    color: var(--imr-error)
     font-size: 1.1rem
     width: 1.1rem
     height: 1.1rem
@@ -46,7 +46,7 @@
     padding-top: 0
 
 .conditional-block
-    border: 1px solid rgba(theme.$imr-border, .65)
+    border: 1px solid color-mix(in srgb, var(--imr-border) 65%, transparent)
     border-radius: 0
     padding: .55rem .6rem
     margin-bottom: .7rem
@@ -54,7 +54,7 @@
 
     h3
         margin: 0 0 .45rem
-        color: theme.$imr-primary
+        color: var(--imr-primary)
         font-size: 1rem
 
 .einsatzdetails-block
@@ -131,9 +131,9 @@
 
 .bericht-card
     border: 0
-    border-left: 2px solid rgba(theme.$imr-border, .95)
+    border-left: 2px solid color-mix(in srgb, var(--imr-border) 95%, transparent)
     border-radius: 0
-    background: rgba(theme.$imr-surface, .82)
+    background: color-mix(in srgb, var(--imr-surface) 82%, transparent)
     padding: .65rem .7rem
     display: grid
     gap: .55rem
@@ -146,7 +146,7 @@
 
 .bericht-card-date
     font-weight: 600
-    color: theme.$imr-primary
+    color: var(--imr-primary)
 
 .bericht-card-content
     display: grid
@@ -190,14 +190,14 @@
     .status-badge
         border-radius: 0
         padding: .15rem .55rem
-        background: rgba(theme.$imr-warning, .22)
-        color: theme.$imr-primary
+        background: color-mix(in srgb, var(--imr-warning) 22%, transparent)
+        color: var(--imr-primary)
         font-weight: 600
         font-size: .78rem
 
         &.done
-            background: rgba(theme.$imr-success, .16)
-            color: theme.$imr-success
+            background: color-mix(in srgb, var(--imr-success) 16%, transparent)
+            color: var(--imr-success)
 
     .empty
         opacity: .75
@@ -209,7 +209,7 @@
 @media (max-width: 768px)
     .form-section
         border-radius: 0
-        border: 1px solid rgba(theme.$imr-border, .95)
+        border: 1px solid color-mix(in srgb, var(--imr-border) 95%, transparent)
 
         .mat-expansion-panel-header
             padding: .45rem .65rem

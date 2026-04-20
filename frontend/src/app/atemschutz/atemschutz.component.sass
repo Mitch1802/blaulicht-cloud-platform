@@ -1,6 +1,4 @@
-﻿@use '../../theme' as theme
-
-.module-grid
+﻿.module-grid
     gap: .5rem
     padding: .5rem
 
@@ -31,11 +29,11 @@
         flex-direction: column
         text-align: center
         position: relative
-        color: theme.$imr-primary
+        color: var(--imr-primary)
         overflow: hidden
         border-radius: 0
-        border: 1px solid rgba(theme.$imr-border, .92)
-        background: rgba(theme.$imr-surface, 1)
+        border: 1px solid color-mix(in srgb, var(--imr-border) 92%, transparent)
+        background: var(--imr-surface)
         box-shadow: none
         transition: background-color .15s ease, border-color .15s ease
 
@@ -44,21 +42,21 @@
             position: absolute
             inset: 0 0 auto 0
             height: 3px
-            background: theme.$imr-primary
+            background: var(--imr-primary)
             opacity: .9
 
         &:hover
             transform: none
             background: #fcfdff
-            border-color: rgba(theme.$imr-primary, .3)
+            border-color: color-mix(in srgb, var(--imr-primary) 30%, transparent)
             box-shadow: none
 
         &:focus-visible
-            outline: 2px solid rgba(theme.$imr-primary, .55)
+            outline: 2px solid color-mix(in srgb, var(--imr-primary) 55%, transparent)
             outline-offset: 2px
 
     .module-card-link:focus-visible .module-card
-        outline: 2px solid rgba(theme.$imr-primary, .55)
+        outline: 2px solid color-mix(in srgb, var(--imr-primary) 55%, transparent)
         outline-offset: 2px
 
     .module-icon-shell

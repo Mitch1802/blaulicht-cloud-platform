@@ -1,0 +1,30 @@
+@use './theme' as theme
+
+=imr-admin-page-shell
+    max-width: theme.$imr-page-max-width
+    margin: 0 auto
+    padding: 1rem 1rem 2rem
+
+    .imr-top-actions
+        display: flex
+        align-items: center
+        flex-wrap: wrap
+        gap: .8rem
+        margin: .25rem 0 .8rem
+
+    .imr-full-width
+        width: 100%
+
+    .imr-table-wrap
+        overflow-x: auto
+
+        table
+            width: 100%
+
+=imr-admin-page-mobile($breakpoint: 768px)
+    @media (max-width: $breakpoint)
+        .imr-top-actions,
+        .imr-form-actions
+            button,
+            a[mat-flat-button]
+                width: 100%

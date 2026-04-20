@@ -1,8 +1,8 @@
-﻿@use '../../theme' as theme
+﻿@use '../../imr-layout' as layout
 
 .konfiguration-page
-    +theme.imr-admin-page-shell
-    +theme.imr-admin-page-mobile(768px)
+    +layout.imr-admin-page-shell
+    +layout.imr-admin-page-mobile(768px)
 
 .role-form
     display: grid
@@ -19,20 +19,20 @@
 
 .role-list-head
     margin: .1rem 0 0
-    color: theme.$imr-primary
+    color: var(--imr-primary)
     font-size: 1rem
     font-weight: 600
 
 .role-empty
     margin: .15rem 0 0
-    color: theme.$imr-text-muted
+    color: var(--imr-text-muted)
 
 .backup-warning
     display: inline-flex
     align-items: center
     gap: .4rem
     margin: 0
-    color: theme.$imr-error
+    color: var(--imr-error)
 
 .backup-legend
     display: flex
@@ -54,9 +54,9 @@
 
 .table-mobile-card
     border: 0
-    border-left: 2px solid rgba(theme.$imr-border, .95)
+    border-left: 2px solid color-mix(in srgb, var(--imr-border) 95%, transparent)
     border-radius: 0
-    background: rgba(theme.$imr-surface, .82)
+    background: color-mix(in srgb, var(--imr-surface) 82%, transparent)
     padding: .6rem .65rem
     display: grid
     gap: .45rem
@@ -97,7 +97,7 @@
 
 .cleanup-intro
     margin: .2rem 0 .7rem
-    color: theme.$imr-text-muted
+    color: var(--imr-text-muted)
     line-height: 1.35
 
 .cleanup-actions
@@ -134,7 +134,7 @@
 
 .email-test-copy
     margin: 0
-    color: theme.$imr-text-muted
+    color: var(--imr-text-muted)
 
 .email-test-row
     gap: .55rem

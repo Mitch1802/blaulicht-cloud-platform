@@ -1,6 +1,4 @@
-﻿@use '../../../theme' as theme
-
-// Material Card overrides
+﻿// Material Card overrides
 :host ::ng-deep
     mat-card
         padding: 0
@@ -14,11 +12,11 @@
 
     .mat-mdc-card-title
         padding-bottom: 12px
-        color: theme.$imr-primary
+        color: var(--imr-primary)
 
     .mat-mdc-card-subtitle
         padding: 12px
-        color: theme.$imr-text-muted
+        color: var(--imr-text-muted)
 
     .mat-mdc-card-content,
     mat-card-content

@@ -1,14 +1,11 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <imr-page-layout title="Externe Fahrzeug-Checkliste" class="public-fahrzeug-page">
-  <imr-section title="Checkliste ohne Speichern">
-
-
+  <imr-section>
       @if (verified) {
         <div class="imr-top-actions actions-top">
           <button mat-flat-button color="primary" type="button" (click)="logoutPublic()">
-            <mat-icon>logout</mat-icon>
-            PIN vergessen
+            Logout
           </button>
         </div>
       }
@@ -18,9 +15,7 @@
 
       @if (!verified) {
         <section class="intro-block">
-          <p class="intro-text">Bitte PIN eingeben. Es wird nichts gespeichert.</p>
-
-          <form [formGroup]="pinForm" class="pin-form imr-grid">
+          <form [formGroup]="pinForm" class="imr-grid">
             <div class="imr-col-12">
               <mat-form-field class="pin-field">
                 <mat-label>PIN</mat-label>
@@ -31,7 +26,6 @@
             <div class="imr-col-12 pin-action">
               <div class="imr-top-actions">
                 <button mat-flat-button color="primary" type="button" (click)="verifyPin()" [disabled]="loading">
-                  <mat-icon>lock_open</mat-icon>
                   Freischalten
                 </button>
               </div>
@@ -40,19 +34,14 @@
         </section>
       } @else if (!fahrzeug) {
         <section class="intro-block">
-          <h3>Fahrzeug auswählen</h3>
-          <p class="intro-text">
-            Nach PIN-Freigabe Fahrzeug auswählen und Checkliste lokal ausfüllen (ohne Speichern).
-          </p>
-
-          <form [formGroup]="auswahlForm" class="selection-form imr-grid align-items-end">
+          <form [formGroup]="auswahlForm" class="imr-grid">
             <div class="imr-col-12 imr-col-lg-8">
               <mat-form-field class="selection-field">
                 <mat-label>Fahrzeug</mat-label>
                 <mat-select formControlName="public_id">
                   @for (fahrzeugOpt of fahrzeugOptionen; track fahrzeugOpt.public_id) {
                     <mat-option [value]="fahrzeugOpt.public_id">
-                      {{ fahrzeugOpt.name }} - {{ fahrzeugOpt.bezeichnung }}
+                      {{ fahrzeugOpt.name }}
                     </mat-option>
                   }
                 </mat-select>
@@ -62,7 +51,6 @@
             <div class="imr-col-12 imr-col-lg-4">
               <div class="imr-top-actions">
                 <button mat-flat-button color="primary" type="button" (click)="openSelectedFahrzeug()" [disabled]="loading">
-                  <mat-icon>checklist</mat-icon>
                   Checkliste öffnen
                 </button>
               </div>

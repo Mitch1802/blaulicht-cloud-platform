@@ -1,8 +1,8 @@
-﻿@use '../../theme' as theme
+﻿@use '../../imr-layout' as layout
 
 .fmd-page
-    +theme.imr-admin-page-shell
-    +theme.imr-admin-page-mobile(768px)
+    +layout.imr-admin-page-shell
+    +layout.imr-admin-page-mobile(768px)
 
     .imr-card
         border-radius: 0
@@ -25,17 +25,17 @@
 
     .fmd-settings-panel
         padding: .9rem 1rem
-        border: 1px solid rgba(theme.$imr-primary, .16)
+        border: 1px solid color-mix(in srgb, var(--imr-primary) 16%, transparent)
         border-radius: 0
         background: #fff
 
     .red-cell
-        background-color: rgba(theme.$imr-error, .16)
-        color: theme.$imr-error
+        background-color: color-mix(in srgb, var(--imr-error) 16%, transparent)
+        color: var(--imr-error)
 
     .green-cell
-        background-color: rgba(theme.$imr-success, .16)
-        color: theme.$imr-success
+        background-color: color-mix(in srgb, var(--imr-success) 16%, transparent)
+        color: var(--imr-success)
 
     .mat-mdc-header-row
         font-weight: 600

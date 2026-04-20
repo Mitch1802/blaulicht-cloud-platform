@@ -1,8 +1,8 @@
-﻿@use '../../theme' as theme
+﻿@use '../../imr-layout' as layout
 
 .verwaltung-page
-    +theme.imr-admin-page-shell
-    +theme.imr-admin-page-mobile(768px)
+    +layout.imr-admin-page-shell
+    +layout.imr-admin-page-mobile(768px)
 
     mat-form-field
         width: 100%
@@ -10,7 +10,7 @@
     .verwaltung-block
         margin-top: 1rem
         padding-top: .75rem
-        border-top: 1px solid rgba(theme.$imr-border, .8)
+        border-top: 1px solid color-mix(in srgb, var(--imr-border) 80%, transparent)
 
         &:first-child
             margin-top: .35rem
@@ -19,7 +19,7 @@
 
     .section-title
         margin: 0 0 .75rem
-        color: theme.$imr-primary
+        color: var(--imr-primary)
         font-size: 1.05rem
         font-weight: 700
 
@@ -27,7 +27,7 @@
         margin: 0
 
     .verwaltung-settings-block
-        border: 1px solid rgba(theme.$imr-primary, .16)
+        border: 1px solid color-mix(in srgb, var(--imr-primary) 16%, transparent)
         padding: .9rem 1rem
         background: #fff
 

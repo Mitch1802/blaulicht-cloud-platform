@@ -1,8 +1,8 @@
-﻿@use '../../theme' as theme
+﻿@use '../../imr-layout' as layout
 
 .inventar-page
-    +theme.imr-admin-page-shell
-    +theme.imr-admin-page-mobile(700px)
+    +layout.imr-admin-page-shell
+    +layout.imr-admin-page-mobile(700px)
 
     .leihstatus-checkbox
         display: flex
@@ -19,7 +19,7 @@
     width: 100%
     height: 100%
     overflow: auto
-    background-color: rgba(theme.$imr-primary, .76)
+    background-color: color-mix(in srgb, var(--imr-primary) 76%, transparent)
     backdrop-filter: blur(6px)
 
     .modal-content
@@ -30,8 +30,8 @@
         max-height: calc(100vh - 10rem)
         object-fit: contain
         border-radius: 0
-        border: 1px solid rgba(theme.$imr-border, .75)
-        background: rgba(theme.$imr-surface, .98)
+        border: 1px solid color-mix(in srgb, var(--imr-border) 75%, transparent)
+        background: color-mix(in srgb, var(--imr-surface) 98%, transparent)
         box-shadow: 0 24px 50px rgba(0, 0, 0, .24)
 
     .modal-caption
@@ -53,7 +53,7 @@
         width: 2.75rem
         height: 2.75rem
         border-radius: 0
-        background: rgba(theme.$imr-surface, .16)
+        background: color-mix(in srgb, var(--imr-surface) 16%, transparent)
         color: #fff
         font-size: 2rem
         font-weight: 600
@@ -62,7 +62,7 @@
 
     .close:hover,
     .close:focus
-        background: rgba(theme.$imr-surface, .28)
+        background: color-mix(in srgb, var(--imr-surface) 28%, transparent)
         transform: translateY(-1px)
 
 @media only screen and (max-width: 700px)
@@ -71,10 +71,10 @@
             width: 100%
 
 .imr-lending-panel
-    border: 1px solid rgba(theme.$imr-primary, .16)
+    border: 1px solid color-mix(in srgb, var(--imr-primary) 16%, transparent)
     border-radius: 0
     padding: .8rem
-    background: rgba(theme.$imr-primary, .18)
+    background: color-mix(in srgb, var(--imr-primary) 18%, transparent)
 
 .imr-lending-panel-head
     display: flex
@@ -85,10 +85,10 @@
 
 .imr-lending-empty
     margin: .25rem 0 .75rem
-    color: rgba(theme.$imr-primary, .76)
+    color: color-mix(in srgb, var(--imr-primary) 76%, transparent)
 
 .imr-lending-row
-    border: 1px solid rgba(theme.$imr-primary, .14)
+    border: 1px solid color-mix(in srgb, var(--imr-primary) 14%, transparent)
     border-radius: 0
     padding: .65rem .65rem .15rem
     margin-bottom: .6rem
@@ -102,7 +102,7 @@
 .imr-lending-summary
     margin: .2rem 0 0
     font-size: .92rem
-    color: rgba(theme.$imr-primary, .84)
+    color: color-mix(in srgb, var(--imr-primary) 84%, transparent)
 
 .imr-transaction-backdrop
     position: fixed
@@ -111,15 +111,15 @@
     display: grid
     place-items: center
     padding: 1rem
-    background: rgba(theme.$imr-primary, .56)
+    background: color-mix(in srgb, var(--imr-primary) 56%, transparent)
     backdrop-filter: blur(2px)
 
 .imr-transaction-dialog
     width: min(560px, 100%)
     max-height: calc(100vh - 2rem)
     overflow: auto
-    border: 1px solid rgba(theme.$imr-border, .9)
-    background: rgba(theme.$imr-surface, .99)
+    border: 1px solid color-mix(in srgb, var(--imr-border) 90%, transparent)
+    background: color-mix(in srgb, var(--imr-surface) 99%, transparent)
     box-shadow: 0 20px 40px rgba(0, 0, 0, .22)
     padding: .95rem
 
@@ -132,13 +132,13 @@
 
     h3
         margin: 0
-        color: theme.$imr-primary
+        color: var(--imr-primary)
         font-size: 1.02rem
 
 .imr-transaction-meta
     margin: 0 0 .3rem
     font-size: .9rem
-    color: rgba(theme.$imr-primary, .86)
+    color: color-mix(in srgb, var(--imr-primary) 86%, transparent)
 
 .imr-transaction-form
     display: grid
@@ -148,7 +148,7 @@
 .imr-transaction-note
     margin: -.2rem 0 .15rem
     font-size: .86rem
-    color: rgba(theme.$imr-text-muted, .95)
+    color: color-mix(in srgb, var(--imr-text-muted) 95%, transparent)
 
 .imr-transaction-actions
     margin-top: .15rem
