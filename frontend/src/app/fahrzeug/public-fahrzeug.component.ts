@@ -14,7 +14,6 @@ import { MatSelectModule } from "@angular/material/select";
 
 import {
   ImrBreadcrumbItem,
-  ImrHeaderComponent,
   ImrPageLayoutComponent,
   ImrSectionComponent,
 } from "../imr-ui-library";
@@ -30,7 +29,6 @@ import { CheckStatus, CHECK_STATUS_OPTIONS } from "./fahrzeug.constants";
   standalone: true,
   selector: "app-public-fahrzeug",
   imports: [
-    ImrHeaderComponent,
     ImrPageLayoutComponent,
     ImrSectionComponent,
     CommonModule,
