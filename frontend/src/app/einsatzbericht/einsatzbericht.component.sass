@@ -1,5 +1,9 @@
 ﻿@use '../../theme' as theme
 
+.einsatzbericht-page
+    +theme.imr-admin-page-shell
+    +theme.imr-admin-page-mobile(768px)
+
 .form-section
     border: 1px solid rgba(theme.$imr-border, .95)
     border-radius: 0
@@ -63,16 +67,6 @@
 
 //     &:last-child
 //         margin-bottom: 0
-
-.selection-description
-    margin: -.2rem 0 0
-    font-size: .8rem
-    opacity: .72
-
-.selection-counter
-    font-size: .78rem
-    opacity: .72
-    margin-left: .25rem
 
 .option-title
     font-weight: 600

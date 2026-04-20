@@ -1,6 +1,9 @@
 @use '../../theme' as theme
 
 .news-page
+    +theme.imr-admin-page-shell
+    +theme.imr-admin-page-mobile(700px)
+
     .imr-card
         border: 1px solid rgba(theme.$imr-border, .9)
         border-radius: 0 !important
@@ -211,11 +214,6 @@
     .news-page
         .imr-card > .mat-mdc-card-content
             padding: .75rem !important
-
-        .imr-top-actions,
-        .imr-form-actions
-            button
-                width: 100%
 
         .template-actions
             button
