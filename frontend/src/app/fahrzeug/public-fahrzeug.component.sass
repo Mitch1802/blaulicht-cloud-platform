@@ -4,31 +4,8 @@
     +layout.imr-admin-page-shell
     +layout.imr-admin-page-mobile(768px)
 
-    // .imr-card
-    //     border-radius: 0
-
-    // .intro-text
-    //     margin: 0 0 .75rem
-    //     opacity: .82
-
-    // .pin-form
-    //     display: grid
-    //     gap: 12px
-
-    // .selection-form
-    //     gap: 12px
-
-    // .pin-field
-    //     width: 100%
-
-    // .pin-action
-    //     button,
-    //     a[mat-flat-button]
-    //         width: 100%
-
-    // .selection-field
-    //     width: 100%
-    //     min-width: 0
+    .imr-grid
+        padding: 0 !important
 
     .check-head
         display: flex
@@ -42,43 +19,34 @@
         color: var(--imr-primary)
         font-size: 1.2rem
 
-    .check-subtitle
-        margin: .2rem 0 0
-        opacity: .8
-
-    .local-hint
-        margin: 0 0 .75rem
-        opacity: .76
-
-    .check-accordion
-        display: grid
-        gap: 10px
+    .check-count
+        display: inline-flex
+        align-items: center
+        justify-content: center
+        min-height: 1.75rem
+        padding: .15rem .55rem
+        color: var(--imr-primary)
+        font-size: .78rem
+        font-weight: 600
+        white-space: nowrap
 
     .check-item
         display: grid
-        gap: 10px
-        padding: .75rem 0
-        border-bottom: 1px solid color-mix(in srgb, var(--imr-border) 82%, transparent)
-
-        &:last-child
-            border-bottom: none
+        margin-bottom: 0
 
     .item-head
         display: grid
-        gap: 2px
+        gap: .2rem
 
     .item-name
         margin: 0
-        font-weight: 700
+        font-weight: 600
         color: var(--imr-primary)
 
     .item-meta
         margin: 0
-        font-size: .9rem
-        opacity: .8
-
-    .item-controls
-        gap: 10px
+        font-size: .88rem
+        opacity: .78
 
     .status-field,
     .ist-field,
@@ -91,10 +59,6 @@
 
 @media (max-width: 700px)
     .public-fahrzeug-page
-        // .selection-form
-        //     button,
-        //     a[mat-flat-button]
-        //         width: 100%
 
         .pin-field,
         .selection-field
@@ -105,4 +69,5 @@
             button,
             a[mat-flat-button]
                 width: 100%
+
 

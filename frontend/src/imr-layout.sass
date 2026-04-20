@@ -5,13 +5,6 @@
     margin: 0 auto
     padding: 1rem 1rem 2rem
 
-    .imr-top-actions
-        display: flex
-        align-items: center
-        flex-wrap: wrap
-        gap: .8rem
-        margin: .25rem 0 .8rem
-
     .imr-full-width
         width: 100%
 
@@ -22,9 +15,4 @@
             width: 100%
 
 =imr-admin-page-mobile($breakpoint: 768px)
-    @media (max-width: $breakpoint)
-        .imr-top-actions,
-        .imr-form-actions
-            button,
-            a[mat-flat-button]
-                width: 100%
+    // Mobile-specific action styling is handled by shared utility classes.

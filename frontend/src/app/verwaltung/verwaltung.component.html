@@ -36,7 +36,7 @@
             <section class="verwaltung-block">
             <h3 class="section-title">Rechnungsdaten</h3>
             <form [formGroup]="formRechnung" (ngSubmit)="printRechnung()" class="verwaltung-form">
-              <div class="imr-top-actions imr-form-actions">
+              <div class="imr-top-actions">
                 <button mat-flat-button color="primary" (click)="formRechnungReset()" type="button">
                   Reset
                 </button>
@@ -193,7 +193,7 @@
       <mat-tab label="Einstellungen">
         <imr-section>
               <section class="verwaltung-settings-block">
-                <div class="imr-top-actions imr-form-actions">
+                <div class="imr-top-actions">
                   <button mat-flat-button color="accent" type="button" (click)="savePdfSettings()">
                     PDF-Zuweisung speichern
                   </button>

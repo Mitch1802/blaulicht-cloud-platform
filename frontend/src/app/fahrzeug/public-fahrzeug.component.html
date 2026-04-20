@@ -1,150 +1,189 @@
-﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
+﻿<!-- <imr-header [breadcrumb]="breadcrumb"></imr-header> -->
 
-<imr-page-layout title="Externe Fahrzeug-Checkliste" class="public-fahrzeug-page">
+<imr-page-layout
+  title="Externe Fahrzeug-Checkliste"
+  class="public-fahrzeug-page"
+>
   <imr-section>
-      @if (verified) {
-        <div class="imr-top-actions actions-top">
-          <button mat-flat-button color="primary" type="button" (click)="logoutPublic()">
-            Logout
-          </button>
-        </div>
-      }
-      @if (loading) {
-        <mat-progress-bar mode="indeterminate" class="mb-3"></mat-progress-bar>
-      }
+    <!-- @if (verified) {
+      <div class="imr-top-actions">
+        <button
+          mat-flat-button
+          color="primary"
+          type="button"
+          (click)="logoutPublic()"
+        >
+          Logout
+        </button>
+      </div>
+    } -->
+    @if (loading) {
+      <mat-progress-bar mode="indeterminate" class="mb-3"></mat-progress-bar>
+    }
 
-      @if (!verified) {
-        <section class="intro-block">
-          <form [formGroup]="pinForm" class="imr-grid">
-            <div class="imr-col-12">
-              <mat-form-field class="pin-field">
-                <mat-label>PIN</mat-label>
-                <input matInput type="password" inputmode="numeric" formControlName="pin" />
-              </mat-form-field>
-            </div>
-
-            <div class="imr-col-12 pin-action">
-              <div class="imr-top-actions">
-                <button mat-flat-button color="primary" type="button" (click)="verifyPin()" [disabled]="loading">
-                  Freischalten
-                </button>
-              </div>
-            </div>
-          </form>
-        </section>
-      } @else if (!fahrzeug) {
-        <section class="intro-block">
-          <form [formGroup]="auswahlForm" class="imr-grid">
-            <div class="imr-col-12 imr-col-lg-8">
-              <mat-form-field class="selection-field">
-                <mat-label>Fahrzeug</mat-label>
-                <mat-select formControlName="public_id">
-                  @for (fahrzeugOpt of fahrzeugOptionen; track fahrzeugOpt.public_id) {
-                    <mat-option [value]="fahrzeugOpt.public_id">
-                      {{ fahrzeugOpt.name }}
-                    </mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
-            </div>
-
-            <div class="imr-col-12 imr-col-lg-4">
-              <div class="imr-top-actions">
-                <button mat-flat-button color="primary" type="button" (click)="openSelectedFahrzeug()" [disabled]="loading">
-                  Checkliste öffnen
-                </button>
-              </div>
-            </div>
-          </form>
-
-          @if (!loading && fahrzeugOptionen.length === 0) {
-            <p class="empty-hint">Keine Fahrzeuge verfügbar.</p>
-          }
-        </section>
-      } @else {
-        <section class="check-head mb-3">
-          <div>
-            <h3 class="check-title">{{ fahrzeug.name }}</h3>
-            <p class="check-subtitle">{{ fahrzeug.bezeichnung }}</p>
+    @if (!verified) {
+      <section class="intro-block">
+        <form [formGroup]="pinForm" class="imr-grid">
+          <div class="imr-col-12">
+            <mat-form-field class="pin-field">
+              <mat-label>PIN</mat-label>
+              <input
+                matInput
+                type="password"
+                inputmode="numeric"
+                formControlName="pin"
+              />
+            </mat-form-field>
           </div>
 
-          @if (publicId === '') {
-            <button mat-flat-button color="primary" type="button" (click)="backToSelection()">
-              <mat-icon>arrow_back</mat-icon>
-              Fahrzeug wechseln
-            </button>
-          }
-        </section>
+          <div class="imr-col-12 pin-action">
+            <div class="imr-top-actions">
+              <button
+                mat-flat-button
+                color="primary"
+                type="button"
+                (click)="verifyPin()"
+                [disabled]="loading"
+              >
+                Freischalten
+              </button>
+            </div>
+          </div>
+        </form>
+      </section>
+    } @else if (!fahrzeug) {
+      <section class="intro-block">
+        <form [formGroup]="auswahlForm" class="imr-grid">
+          <div class="imr-col-12 imr-col-lg-8">
+            <mat-form-field class="selection-field">
+              <mat-label>Fahrzeug</mat-label>
+              <mat-select formControlName="public_id">
+                @for (
+                  fahrzeugOpt of fahrzeugOptionen;
+                  track fahrzeugOpt.public_id
+                ) {
+                  <mat-option [value]="fahrzeugOpt.public_id">
+                    {{ fahrzeugOpt.name }}
+                  </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
 
-        <p class="local-hint">Hinweis: Dieser Check ist nur lokal im Browser (kein Speichern).</p>
+          <div class="imr-col-12 imr-col-lg-4">
+            <div class="imr-top-actions">
+              <button
+                mat-flat-button
+                color="primary"
+                type="button"
+                (click)="openSelectedFahrzeug()"
+                [disabled]="loading"
+              >
+                Checkliste öffnen
+              </button>
+            </div>
+          </div>
+        </form>
 
-        <mat-divider class="mb-2"></mat-divider>
+        @if (!loading && fahrzeugOptionen.length === 0) {
+          <p class="empty-hint">Keine Fahrzeuge verfügbar.</p>
+        }
+      </section>
+    } @else {
+      <section class="check-head mb-3">
+        <div>
+          <h3 class="check-title">{{ fahrzeug.name }}</h3>
+          <p class="check-subtitle">{{ fahrzeug.bezeichnung }}</p>
+        </div>
 
-        <mat-accordion class="check-accordion" multi>
-          @for (raum of fahrzeug.raeume; track raum.name) {
-            <mat-expansion-panel>
-              <mat-expansion-panel-header>
-                <mat-panel-title>{{ raum.name }}</mat-panel-title>
-                <mat-panel-description>{{ raum.items.length }} Items</mat-panel-description>
-              </mat-expansion-panel-header>
+        @if (publicId === "") {
+          <button
+            mat-flat-button
+            color="primary"
+            type="button"
+            (click)="backToSelection()"
+          >
+            Fahrzeug wechseln
+          </button>
+        }
+      </section>
 
-              @for (item of raum.items; track item.reihenfolge) {
-                <article class="check-item">
-                  <div class="item-head">
-                    <p class="item-name">{{ item.name }}</p>
-                    <p class="item-meta">Soll: {{ item.menge }} {{ item.einheit }}</p>
-                    @if (item.notiz) {
-                      <p class="item-meta">Hinweis: {{ item.notiz }}</p>
-                    }
+      <mat-accordion class="check-accordion" multi>
+        @for (raum of fahrzeug.raeume; track raum.name) {
+          <mat-expansion-panel class="form-section">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <span class="form-section-title">{{ raum.name }}</span>
+              </mat-panel-title>
+              <mat-panel-description>
+                <span class="check-count"
+                  >{{ raum.items.length }}
+                  {{ raum.items.length === 1 ? "Item" : "Items" }}</span
+                >
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            @for (item of raum.items; track item.reihenfolge) {
+              <article class="check-item">
+                <div class="item-head">
+                  <p class="item-name">{{ item.name }} | Soll: {{ item.menge }} {{ item.einheit }}</p>
+                  @if (item.notiz) {
+                    <p class="item-meta">Hinweis: {{ item.notiz }}</p>
+                  }
+                </div>
+
+                <div class="imr-grid">
+                  <div class="imr-col-8 imr-col-lg-4">
+                    <mat-form-field class="status-field">
+                      <mat-label>Status</mat-label>
+                      <mat-select
+                        [value]="draft[getKey(raum.name, item)]?.status ?? 'ok'"
+                        (selectionChange)="
+                          setStatus(raum.name, item, $any($event.value))
+                        "
+                      >
+                        @for (opt of statusOptions; track opt.value) {
+                          <mat-option [value]="opt.value">{{
+                            opt.label
+                          }}</mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
                   </div>
 
-                  <div class="item-controls imr-grid">
-                    <div class="imr-col-12 imr-col-lg-6">
-                      <mat-form-field class="status-field">
-                        <mat-label>Status</mat-label>
-                        <mat-select
-                          [value]="draft[getKey(raum.name, item)]?.status ?? 'ok'"
-                          (selectionChange)="setStatus(raum.name, item, $any($event.value))"
-                        >
-                          @for (opt of statusOptions; track opt.value) {
-                            <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
-                          }
-                        </mat-select>
-                      </mat-form-field>
-                    </div>
-
-                    <div class="imr-col-12 imr-col-lg-6">
-                      <mat-form-field class="ist-field">
-                        <mat-label>Ist-Menge</mat-label>
-                        <input
-                          matInput
-                          type="number"
-                          [value]="draft[getKey(raum.name, item)]?.menge_aktuel ?? ''"
-                          (input)="setIst(raum.name, item, $any($event.target).value)"
-                        />
-                      </mat-form-field>
-                    </div>
+                  <div class="imr-col-4 imr-col-lg-2">
+                    <mat-form-field class="ist-field">
+                      <mat-label>IST</mat-label>
+                      <input
+                        matInput
+                        type="number"
+                        [value]="
+                          draft[getKey(raum.name, item)]?.menge_aktuel ?? ''
+                        "
+                        (input)="
+                          setIst(raum.name, item, $any($event.target).value)
+                        "
+                      />
+                    </mat-form-field>
                   </div>
-
-                  <mat-form-field class="note-field">
-                    <mat-label>Check-Notiz</mat-label>
-                    <input
-                      matInput
-                      [value]="draft[getKey(raum.name, item)]?.notiz ?? ''"
-                      (input)="setNotiz(raum.name, item, $any($event.target).value)"
-                    />
-                  </mat-form-field>
-                </article>
-              }
-            </mat-expansion-panel>
-          }
-        </mat-accordion>
-      }
-
+                  <div class="imr-col-12 imr-col-lg-6">
+                    <mat-form-field class="note-field">
+                      <mat-label>Check-Notiz</mat-label>
+                      <input
+                        matInput
+                        [value]="draft[getKey(raum.name, item)]?.notiz ?? ''"
+                        (input)="
+                          setNotiz(raum.name, item, $any($event.target).value)
+                        "
+                      />
+                    </mat-form-field>
+                  </div>
+                </div>
+              </article>
+            }
+          </mat-expansion-panel>
+        }
+      </mat-accordion>
+    }
   </imr-section>
 </imr-page-layout>
-
-
-
-
-

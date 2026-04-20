@@ -4,3 +4,68 @@
     +layout.imr-admin-page-shell
     +layout.imr-admin-page-mobile(768px)
 
+.check-accordion
+    display: grid
+    gap: .8rem
+    margin-top: .2rem
+
+.check-count
+    display: inline-flex
+    align-items: center
+    justify-content: center
+    min-height: 1.75rem
+    padding: .15rem .55rem
+    border: 1px solid color-mix(in srgb, var(--imr-border) 90%, transparent)
+    background: color-mix(in srgb, var(--imr-surface) 95%, transparent)
+    color: var(--imr-primary)
+    font-size: .78rem
+    font-weight: 600
+    white-space: nowrap
+
+.check-item
+    display: grid
+    gap: .55rem
+    padding: .7rem .75rem
+    margin-bottom: .7rem
+    border: 1px solid color-mix(in srgb, var(--imr-border) 65%, transparent)
+    background: transparent
+
+    &:last-child
+        margin-bottom: 0
+        padding-bottom: 0
+
+.check-item-head
+    display: grid
+    gap: .2rem
+
+.check-item-checkbox
+    font-weight: 600
+    color: var(--imr-primary)
+
+.check-item-meta
+    margin: 0
+    font-size: .88rem
+    opacity: .78
+
+.check-item-body
+    align-items: start
+
+.empty-hint
+    margin: 0
+    opacity: .75
+
+:host ::ng-deep
+    .check-item-checkbox .mdc-form-field
+        width: 100%
+
+    .check-item-checkbox .mdc-label
+        font-weight: 600
+        color: var(--imr-primary)
+
+@media (max-width: 768px)
+    .check-accordion
+        gap: .65rem
+
+    .check-item
+        padding: .65rem
+

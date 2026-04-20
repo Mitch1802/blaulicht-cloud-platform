@@ -272,6 +272,74 @@ div:has(> .mat-mdc-button-disabled)
     .mat-mdc-atb-body-wrapper
         padding-top: 1rem
 
+.form-section
+    border: 1px solid color-mix(in srgb, var(--imr-border) 95%, transparent)
+    border-radius: 0
+    background: transparent
+    box-shadow: none !important
+
+    &:hover
+        border-color: color-mix(in srgb, var(--imr-primary) 45%, transparent)
+
+    &.has-error
+        border-color: color-mix(in srgb, var(--imr-error) 75%, transparent)
+
+        .mat-expansion-panel-header
+            background: color-mix(in srgb, var(--imr-error) 7%, transparent)
+
+            &:hover
+                background: color-mix(in srgb, var(--imr-error) 12%, transparent)
+
+    .mat-expansion-panel-header
+        background: var(--imr-surface)
+
+        &.mat-expanded
+            border-bottom: 1px solid color-mix(in srgb, var(--imr-border) 72%, transparent)
+
+.form-section-title
+    color: var(--imr-primary)
+    font-weight: 600
+    display: flex
+    align-items: center
+    min-width: 0
+    flex: 1 1 auto
+
+.form-section-body
+    padding-top: 0
+
+.bericht-accordion,
+.check-accordion,
+.bericht-accordion .mat-expansion-panel,
+.check-accordion .mat-expansion-panel,
+.bericht-accordion .mat-expansion-panel-header,
+.check-accordion .mat-expansion-panel-header,
+.bericht-accordion .mat-expansion-panel-body,
+.check-accordion .mat-expansion-panel-body,
+.bericht-accordion .mat-expansion-panel-content,
+.check-accordion .mat-expansion-panel-content,
+.bericht-accordion .mat-expansion-panel-spacing,
+.check-accordion .mat-expansion-panel-spacing
+    border-radius: 0 !important
+
+.form-section .mat-expansion-panel-header .mat-content
+    margin-right: 0
+
+.form-section .mat-expansion-panel-header .mat-panel-title
+    display: flex
+    align-items: center
+    margin-right: 0
+    max-width: 100%
+    flex: 1 1 auto
+
+.form-section .mat-expansion-panel-header .mat-panel-description
+    justify-content: flex-end
+    align-items: center
+    margin-right: 0
+    color: inherit
+
+.form-section .mat-expansion-panel-body
+    padding: 1rem 1rem .9rem
+
 .app-snackbar
     --mdc-snackbar-supporting-text-size: 1rem
     --mdc-snackbar-supporting-text-line-height: 1.35rem
@@ -389,6 +457,13 @@ h1
     gap: .25rem
 
 @media (max-width: 768px)
+    .form-section
+        border-radius: 0
+        border: 1px solid color-mix(in srgb, var(--imr-border) 95%, transparent)
+
+        .mat-expansion-panel-header
+            padding: .45rem .65rem
+
     .mat-mdc-tab-group
         .mat-mdc-tab-header
             margin-bottom: .6rem

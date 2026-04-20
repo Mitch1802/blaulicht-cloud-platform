@@ -12,7 +12,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 
 import { MatButtonModule } from "@angular/material/button";
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatDividerModule } from "@angular/material/divider";
+import { MatExpansionModule } from "@angular/material/expansion";
 import { MatInputModule } from "@angular/material/input";
 import { MatFormFieldModule } from '@angular/material/form-field';
 
@@ -63,7 +63,7 @@ type CheckRoomView = {
     ReactiveFormsModule,
     MatButtonModule,
     MatCheckboxModule,
-    MatDividerModule,
+    MatExpansionModule,
     MatFormFieldModule,
     MatInputModule,
   ],
