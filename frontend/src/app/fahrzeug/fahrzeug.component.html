@@ -145,7 +145,6 @@
 
           @if (selectedId && selected?.foto_url) {
           <button mat-flat-button color="warn" type="button" (click)="removeFahrzeugFoto()">
-            <mat-icon>delete</mat-icon>
             Foto entfernen
           </button>
           }
@@ -160,8 +159,8 @@
     }
 
     @if (inventarEditorOpen) {
-    <imr-card class="imr-card inventar-card">
-      <div class="inventar-toolbar mb-3">
+    <section>
+      <div class="imr-top-actions">
         <button mat-flat-button color="primary" type="button" (click)="backToFahrzeugEditor()">
           Zum Fahrzeug
         </button>
@@ -222,7 +221,6 @@
 
           <div class="imr-col-12 imr-col-lg-2">
             <button mat-flat-button color="accent" type="button" (click)="addRaum()">
-              <mat-icon>add</mat-icon>
               Raum anlegen
             </button>
           </div>
@@ -275,7 +273,6 @@
               }
 
               <button mat-flat-button color="warn" type="button" (click)="deleteRaum(raum)">
-                <mat-icon>delete</mat-icon>
                 Raum löschen
               </button>
             </div>
@@ -316,7 +313,6 @@
             }
 
             <div class="compact-hint">
-              <mat-icon>info</mat-icon>
               Für Bearbeitung und neue Einträge bitte auf Detailansicht wechseln.
             </div>
             } @else {
@@ -363,12 +359,10 @@
 
               <div class="item-actions imr-col-12">
                 <button mat-flat-button color="accent" type="button" (click)="saveItem(raum, item)">
-                  <mat-icon>save</mat-icon>
                   Item speichern
                 </button>
 
                 <button mat-flat-button color="warn" type="button" (click)="deleteItem(raum, item)">
-                  <mat-icon>delete</mat-icon>
                   Item löschen
                 </button>
               </div>
@@ -415,7 +409,6 @@
 
                 <div class="imr-col-12">
                   <button mat-flat-button color="accent" type="button" (click)="addItem(raum)">
-                    <mat-icon>add</mat-icon>
                     Item anlegen
                   </button>
                 </div>
@@ -430,6 +423,6 @@
       } @else {
       <div class="empty-hint">Fahrzeugdaten werden geladen.</div>
       }
-    </imr-card>
+    </section>
     }
   </imr-section>

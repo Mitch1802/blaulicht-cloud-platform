@@ -1,56 +1,51 @@
 ﻿<imr-header [breadcrumb]="breadcrumb"></imr-header>
 
-<imr-page-layout title="Fahrzeug Check" class="fahrzeug-check-page">
-  <imr-section [title]="'Fahrzeug Check – ' + (fahrzeug?.name || '')">
+<imr-page-layout [title]="'Fahrzeug Check – ' + (fahrzeug?.name || '')" class="fahrzeug-check-page">
+  <imr-section>
 
-        <form [formGroup]="form" >
-          <mat-form-field>
-            <mat-label>Titel</mat-label>
-            <input matInput formControlName="title" placeholder="z. B. Tagescheck" />
-          </mat-form-field>
+    <form [formGroup]="form" class="">
+      <mat-form-field>
+        <mat-label>Titel</mat-label>
+        <input matInput formControlName="title" placeholder="z. B. Tagescheck" />
+      </mat-form-field>
 
-          <mat-form-field appearance="outline" class="imr-full-width" subscriptSizing="dynamic">
-            <mat-label>Allgemeine Notiz</mat-label>
-            <textarea matInput rows="2" formControlName="notiz"></textarea>
-          </mat-form-field>
+      <mat-form-field appearance="outline" class="imr-full-width" subscriptSizing="dynamic">
+        <mat-label>Allgemeine Notiz</mat-label>
+        <textarea matInput rows="2" formControlName="notiz"></textarea>
+      </mat-form-field>
 
-          <mat-divider></mat-divider>
+      <mat-divider></mat-divider>
 
-          <div formArrayName="results" >
-            @for (raum of raeumeView; track raum.name) {
-              <div class="p-2 border">
-                <h3 class="m-0 mb-2">{{ raum.name }}</h3>
+      <div formArrayName="results">
+        @for (raum of raeumeView; track raum.name) {
+        <div class="p-2 border">
+          <h3 class="m-0 mb-2">{{ raum.name }}</h3>
 
-                @for (item of raum.items; track item.index) {
-                  <div class="imr-grid mb-2" [formGroupName]="item.index">
-                    <div class="imr-col-12 imr-col-md-6">
-                      <mat-checkbox formControlName="checked">
-                        {{ item.name }} (Soll: {{ item.menge }} {{ item.einheit }})
-                      </mat-checkbox>
-                    </div>
+          @for (item of raum.items; track item.index) {
+          <div class="imr-grid mb-2" [formGroupName]="item.index">
+            <div class="imr-col-12 imr-col-md-6">
+              <mat-checkbox formControlName="checked">
+                {{ item.name }} (Soll: {{ item.menge }} {{ item.einheit }})
+              </mat-checkbox>
+            </div>
 
-                    <div class="imr-col-12 imr-col-md-6">
-                      <mat-form-field>
-                        <mat-label>Notiz</mat-label>
-                        <input matInput formControlName="notiz" placeholder="Optional" />
-                      </mat-form-field>
-                    </div>
-                  </div>
-                }
-              </div>
-            }
+            <div class="imr-col-12 imr-col-md-6">
+              <mat-form-field>
+                <mat-label>Notiz</mat-label>
+                <input matInput formControlName="notiz" placeholder="Optional" />
+              </mat-form-field>
+            </div>
           </div>
+          }
+        </div>
+        }
+      </div>
 
-          <div class="imr-top-actions imr-form-actions">
-            <button mat-flat-button color="accent" type="button" (click)="submit()">
-              Checkliste speichern
-            </button>
-          </div>
-        </form>
+      <div class="imr-top-actions">
+        <button mat-flat-button color="accent" type="button" (click)="submit()">
+          Checkliste speichern
+        </button>
+      </div>
+    </form>
   </imr-section>
 </imr-page-layout>
-
-
-
-
-
