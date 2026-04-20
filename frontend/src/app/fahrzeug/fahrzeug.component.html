@@ -73,9 +73,8 @@
 
     @if (editorOpen) {
     <form [formGroup]="fahrzeugForm">
-      <div class="imr-top-action">
+      <div class="imr-top-actions">
         <button mat-flat-button color="accent" type="button" [hidden]="!fahrzeugForm.valid" (click)="saveFahrzeug()">
-          <mat-icon>save</mat-icon>
           Daten speichern
         </button>
 
@@ -85,21 +84,17 @@
 
         @if (selectedId) {
         <button mat-flat-button color="primary" type="button" (click)="openInventarFromEditor()">
-          <mat-icon>inventory_2</mat-icon>
           Inventar bearbeiten
         </button>
         }
 
         @if (selectedId) {
         <a mat-flat-button color="primary" [routerLink]="['/fahrzeuge', selectedId, 'check']">
-          <mat-icon>checklist</mat-icon>
           Check öffnen
         </a>
         }
       </div>
       <section class="imr-grid ">
-
-
         <div class="imr-col-12 imr-col-md-6">
           <mat-form-field class="imr-full-width">
             <mat-label>Name</mat-label>
@@ -158,7 +153,6 @@
 
         <button mat-flat-button color="warn" class="imr-delete-btn" [hidden]="!selectedId" type="button"
           (click)="deleteSelectedFahrzeug()">
-          <mat-icon>delete</mat-icon>
           Daten löschen
         </button>
       </section>
@@ -271,13 +265,11 @@
 
             <div class="raum-actions imr-col-12">
               <button mat-flat-button color="accent" type="button" (click)="saveRaum(raum)">
-                <mat-icon>save</mat-icon>
                 Raum speichern
               </button>
 
               @if (raum.foto_url) {
               <button mat-flat-button color="primary" type="button" (click)="removeRaumFoto(raum)">
-                <mat-icon>image_not_supported</mat-icon>
                 Raumfoto entfernen
               </button>
               }
