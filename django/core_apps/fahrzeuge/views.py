@@ -246,10 +246,10 @@ class FahrzeugCheckCreateView(APIView):
 
         # Items müssen zu diesem Fahrzeug gehören -> Filter über raum__fahrzeug_id
         items = RaumItem.objects.select_related("raum").filter(
-            pkid__in=item_ids,
+            id__in=item_ids,
             raum__fahrzeug_id=fahrzeug.pkid,
         )
-        item_map = {i.pkid: i for i in items}
+        item_map = {i.id: i for i in items}
 
         bulk = []
         for r in ser.validated_data["results"]:

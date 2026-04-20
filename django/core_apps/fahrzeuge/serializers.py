@@ -305,7 +305,7 @@ class RaumItemCrudSerializer(serializers.ModelSerializer):
 # CHECK CREATE
 # =========================
 class FahrzeugCheckItemCreateSerializer(serializers.Serializer):
-    item_id = serializers.IntegerField()
+    item_id = serializers.UUIDField()
     status = serializers.ChoiceField(choices=FahrzeugCheckItem.Status.choices)
     menge_aktuel = serializers.DecimalField(max_digits=10, decimal_places=2, required=False, allow_null=True)
     notiz = serializers.CharField(required=False, allow_blank=True)

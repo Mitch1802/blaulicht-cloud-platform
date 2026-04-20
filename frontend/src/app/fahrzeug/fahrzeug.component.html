@@ -233,12 +233,14 @@
       <mat-accordion class="inventar-accordion" [multi]="true">
         @for (raum of f.raeume; track raum.id) {
         <mat-expansion-panel class="room-panel">
-          <mat-panel-title>
-            {{ raum.name }}
-          </mat-panel-title>
-          <mat-panel-description>
-            #{{ raum.reihenfolge }} | {{ raum.items.length }} Items
-          </mat-panel-description>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              {{ raum.name }}
+            </mat-panel-title>
+            <mat-panel-description>
+              #{{ raum.reihenfolge }} | {{ raum.items.length }} Items
+            </mat-panel-description>
+          </mat-expansion-panel-header>
 
           <form [formGroup]="raumEditFormFor(raum)" class="raum-edit-form imr-grid mb-3">
             <mat-form-field class="imr-col-12 imr-col-lg-4">
