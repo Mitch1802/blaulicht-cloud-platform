@@ -2,6 +2,7 @@
 
 <imr-page-layout [title]="title" class="news-page">
   <imr-section>
+      @if (!isEditMode) {
       <div class="imr-top-actions">
         <button mat-flat-button
           color="primary"
@@ -12,13 +13,13 @@
         </button>
         <button mat-flat-button
           color="accent"
-          [hidden]="isEditMode"
           (click)="neueDetails()"
           type="button"
         >
           Hinzufügen
         </button>
       </div>
+      }
 
       @if (isEditMode) {
       <form
@@ -28,7 +29,7 @@
       >
         <input hidden type="text"  formControlName="id" />
 
-        <div class="imr-top-actions imr-form-actions">
+        <div class="imr-top-actions">
           <button mat-flat-button
           color="accent"
           [hidden]="!formModul.valid"
