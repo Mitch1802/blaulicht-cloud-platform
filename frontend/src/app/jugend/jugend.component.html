@@ -647,10 +647,10 @@
                             <mat-option [value]="token.token">{{ token.label }}</mat-option>
                           }
                         </mat-select>
-                        <div class="jugend-settings-requires-copy">
-                          {{ getSelectedTokenLabels($any(row).get('requires_all')?.value) }}
-                        </div>
                       </mat-form-field>
+                      <div class="jugend-settings-requires-copy">
+                        {{ getSelectedTokenLabels($any(row).get('requires_all')?.value) }}
+                      </div>
                     </td>
                   </ng-container>
 
