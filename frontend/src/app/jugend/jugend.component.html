@@ -614,7 +614,9 @@
                   <ng-container matColumnDef="min_age">
                     <th mat-header-cell *matHeaderCellDef>Min. Alter</th>
                     <td mat-cell *matCellDef="let row" [formGroup]="$any(row)">
-                      <input matInput class="jugend-settings-input" type="number" formControlName="min_age" />
+                      <mat-form-field appearance="outline" class="imr-full-width">
+                        <input matInput type="number" formControlName="min_age" />
+                      </mat-form-field>
                     </td>
                   </ng-container>
 
@@ -626,7 +628,7 @@
                   </ng-container>
 
                   <ng-container matColumnDef="min_membership_months">
-                    <th mat-header-cell *matHeaderCellDef>Mitgliedschaft Monate</th>
+                    <th mat-header-cell *matHeaderCellDef>Min. Mitgl. Da.</th>
                     <td mat-cell *matCellDef="let row" [formGroup]="$any(row)">
                       <input matInput class="jugend-settings-input" type="number" formControlName="min_membership_months" />
                     </td>
