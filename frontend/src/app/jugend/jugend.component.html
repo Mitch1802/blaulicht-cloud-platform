@@ -623,21 +623,25 @@
                   <ng-container matColumnDef="max_age">
                     <th mat-header-cell *matHeaderCellDef>Max. Alter</th>
                     <td mat-cell *matCellDef="let row" [formGroup]="$any(row)">
-                      <input matInput class="jugend-settings-input" type="number" formControlName="max_age" />
+                      <mat-form-field appearance="outline" class="imr-full-width">
+                        <input matInput type="number" formControlName="max_age" />
+                      </mat-form-field>
                     </td>
                   </ng-container>
 
                   <ng-container matColumnDef="min_membership_months">
                     <th mat-header-cell *matHeaderCellDef>Min. Mitgl. Da.</th>
                     <td mat-cell *matCellDef="let row" [formGroup]="$any(row)">
-                      <input matInput class="jugend-settings-input" type="number" formControlName="min_membership_months" />
+                      <mat-form-field appearance="outline" class="imr-full-width">
+                        <input matInput type="number" formControlName="min_membership_months" />
+                      </mat-form-field>
                     </td>
                   </ng-container>
 
                   <ng-container matColumnDef="requires_all">
                     <th mat-header-cell *matHeaderCellDef>Voraussetzungen</th>
                     <td mat-cell *matCellDef="let row" [formGroup]="$any(row)">
-                      <div class="jugend-settings-requires">
+                      <mat-form-field appearance="outline" class="imr-full-width">
                         <mat-select class="jugend-settings-select" formControlName="requires_all" multiple>
                           @for (token of jugendTokenInfos; track token.token) {
                             <mat-option [value]="token.token">{{ token.label }}</mat-option>
@@ -646,14 +650,16 @@
                         <div class="jugend-settings-requires-copy">
                           {{ getSelectedTokenLabels($any(row).get('requires_all')?.value) }}
                         </div>
-                      </div>
+                      </mat-form-field>
                     </td>
                   </ng-container>
 
                   <ng-container matColumnDef="hinweis">
                     <th mat-header-cell *matHeaderCellDef>Hinweis</th>
                     <td mat-cell *matCellDef="let row" [formGroup]="$any(row)">
-                      <input matInput class="jugend-settings-input" type="text" formControlName="hinweis" />
+                      <mat-form-field appearance="outline" class="imr-full-width">
+                        <input matInput type="text" formControlName="hinweis" />
+                      </mat-form-field>
                     </td>
                   </ng-container>
 
