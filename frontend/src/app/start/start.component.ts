@@ -1,4 +1,4 @@
-﻿import { Component, OnInit, inject } from '@angular/core';
+﻿import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import {
   FormArray,
   FormControl,
@@ -21,7 +21,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTable } from '@angular/material/table';
 import { RouterLink } from '@angular/router';
 import startRegelConfig from './konfig.json';
 
@@ -102,6 +102,7 @@ export class StartComponent implements OnInit {
   readonly settingsColumns: string[] = ['order', 'icon', 'modul', 'rolle', 'kategorie', 'routerlink', 'actions'];
 
   settingsRows = new FormArray<FormGroup>([]);
+  @ViewChild(MatTable) private settingsTable?: MatTable<FormGroup>;
 
   // --- Kategorie Autocomplete ---
   private readonly standardKategorien: string[] = [
@@ -183,10 +184,12 @@ export class StartComponent implements OnInit {
 
   addRow(): void {
     this.settingsRows.push(this.createRow());
+    this.settingsTable?.renderRows();
   }
 
   removeRow(index: number): void {
     this.settingsRows.removeAt(index);
+    this.settingsTable?.renderRows();
   }
 
   moveUp(index: number): void {
@@ -194,6 +197,7 @@ export class StartComponent implements OnInit {
     const row = this.settingsRows.at(index);
     this.settingsRows.removeAt(index);
     this.settingsRows.insert(index - 1, row);
+    this.settingsTable?.renderRows();
   }
 
   moveDown(index: number): void {
@@ -201,6 +205,7 @@ export class StartComponent implements OnInit {
     const row = this.settingsRows.at(index);
     this.settingsRows.removeAt(index);
     this.settingsRows.insert(index + 1, row);
+    this.settingsTable?.renderRows();
   }
 
   private createRow(item: StartKonfigItem = {}): FormGroup {
