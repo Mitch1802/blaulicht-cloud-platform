@@ -1,6 +1,6 @@
-﻿import { Component, HostListener, OnInit, inject } from '@angular/core';
+﻿import { Component, HostListener, OnInit, ViewChild, inject } from '@angular/core';
 import { FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatTableDataSource, MatTableModule, MatTable } from '@angular/material/table';
 import { MatInputModule } from '@angular/material/input';
 import {
   ImrBreadcrumbItem,
@@ -280,6 +280,7 @@ export class JugendComponent implements OnInit {
   showMitgliedDetail = false;
   showEventForm = false;
   settingsRows = new FormArray<FormGroup>([]);
+  @ViewChild('settingsTable') private settingsTable?: MatTable<FormGroup>;
   settingsPdfForm = new FormGroup({
     idJugendEventReport: new FormControl<string | null>(null),
   });
@@ -679,6 +680,7 @@ export class JugendComponent implements OnInit {
     }
     this.settingsPdfForm.patchValue({ idJugendEventReport: null }, { emitEvent: false });
     this.markSettingsPristine();
+    this.settingsTable?.renderRows();
   }
 
   saveSettings(): void {
@@ -1608,6 +1610,7 @@ export class JugendComponent implements OnInit {
       idJugendEventReport: this.stringOrNull(this.pdfKonfiguration.idJugendEventReport),
     }, { emitEvent: false });
     this.markSettingsPristine();
+    this.settingsTable?.renderRows();
   }
 
   private markSettingsPristine(): void {
