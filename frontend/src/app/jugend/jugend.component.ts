@@ -651,18 +651,6 @@ export class JugendComponent implements OnInit {
     return this.getStandardLevelLabel(level);
   }
 
-  getTokenLabel(token: string): string {
-    return this.jugendTokenInfos.find((item) => item.token === token)?.label ?? token;
-  }
-
-  getSelectedTokenLabels(tokens: unknown): string {
-    if (!Array.isArray(tokens) || tokens.length === 0) {
-      return 'Keine Voraussetzungen';
-    }
-
-    return tokens.map((token) => this.getTokenLabel(String(token))).join(', ');
-  }
-
   isSettingsGroupStart(index: number): boolean {
     if (index === 0) {
       return true;

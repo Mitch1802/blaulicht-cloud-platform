@@ -630,7 +630,7 @@
                   </ng-container>
 
                   <ng-container matColumnDef="min_membership_months">
-                    <th mat-header-cell *matHeaderCellDef>Min. Mitgl. Da.</th>
+                    <th mat-header-cell *matHeaderCellDef>Min. Mitgl. Monate</th>
                     <td mat-cell *matCellDef="let row" [formGroup]="$any(row)">
                       <mat-form-field appearance="outline" class="imr-full-width">
                         <input matInput type="number" formControlName="min_membership_months" />
@@ -648,9 +648,6 @@
                           }
                         </mat-select>
                       </mat-form-field>
-                      <!-- <div class="jugend-settings-requires-copy">
-                        {{ getSelectedTokenLabels($any(row).get('requires_all')?.value) }}
-                      </div> -->
                     </td>
                   </ng-container>
 
