@@ -661,11 +661,15 @@
                   </ng-container>
 
                   <tr mat-header-row *matHeaderRowDef="sichtbareSpaltenSettings"></tr>
-                  <tr
+                  <!-- <tr
                     mat-row
                     *matRowDef="let row; let i = index; columns: sichtbareSpaltenSettings"
                     [class.jugend-settings-row--group-start]="isSettingsGroupStart(i)"
-                  ></tr>
+                    ></tr> -->
+                  <tr
+                    mat-row
+                    *matRowDef="let row; let i = index; columns: sichtbareSpaltenSettings"
+                    ></tr>
                 </table>
               </div>
             </section>
