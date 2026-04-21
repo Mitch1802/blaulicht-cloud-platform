@@ -651,16 +651,6 @@ export class JugendComponent implements OnInit {
     return this.getStandardLevelLabel(level);
   }
 
-  // isSettingsGroupStart(index: number): boolean {
-  //   if (index === 0) {
-  //     return true;
-  //   }
-
-  //   const currentTrack = this.settingsRows.at(index).get('track')?.value;
-  //   const previousTrack = this.settingsRows.at(index - 1).get('track')?.value;
-  //   return currentTrack !== previousTrack;
-  // }
-
   resetSettingsToDefaults(): void {
     this.settingsRows.clear();
     for (const row of this.buildRegelRows(this.defaultJugendRegelKonfiguration)) {
