@@ -149,7 +149,6 @@
           [disabled]="emailTestControl.invalid || emailTestTypeControl.invalid || emailTestRunning"
           (click)="sendEmailTests()"
         >
-          <mat-icon>mark_email_read</mat-icon>
           Test-Mail senden
         </button>
       </div>
@@ -288,12 +287,10 @@
 
         <div class="cleanup-actions">
           <button mat-flat-button color="primary" type="button" [disabled]="cleanupRunning" (click)="mediaCleanup(false)" aria-label="Verwaiste Dateien analysieren">
-            <mat-icon>manage_search</mat-icon>
             Analysieren
           </button>
 
           <button mat-flat-button color="warn" type="button" [disabled]="cleanupRunning" (click)="mediaCleanup(true)" aria-label="Verwaiste Dateien endgültig löschen">
-            <mat-icon>delete</mat-icon>
             Endgültig löschen
           </button>
         </div>
