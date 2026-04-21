@@ -192,41 +192,38 @@
     @if (isAdmin) {
       <mat-tab label="Einstellungen">
         <imr-section>
-              <section class="verwaltung-settings-block">
-                <div class="imr-top-actions">
-                  <button mat-flat-button color="accent" type="button" (click)="savePdfSettings()">
-                    PDF-Zuweisung speichern
-                  </button>
-                  <button mat-flat-button color="primary" type="button" (click)="resetPdfSettings()">
-                    Zurücksetzen
-                  </button>
-                </div>
-
-                <div class="imr-grid m-0" [formGroup]="formPdfSettings">
-                  <div class="imr-col-12 imr-col-lg-6 mb-3">
-                    <mat-form-field appearance="outline" class="imr-full-width">
-                      <mat-label>Rechnungsaufstellung</mat-label>
-                      <mat-select formControlName="idVerwaltungRechnung">
-                        <mat-option [value]="null">Keine Vorlage</mat-option>
-                        @for (template of pdfTemplates; track template.id) {
-                          <mat-option [value]="template.id">{{ template.typ }} v{{ template.version }} - {{ template.bezeichnung }}</mat-option>
-                        }
-                      </mat-select>
-                    </mat-form-field>
-                  </div>
-                  <div class="imr-col-12 imr-col-lg-6 mb-3">
-                    <mat-form-field appearance="outline" class="imr-full-width">
-                      <mat-label>Tombolabestätigung</mat-label>
-                      <mat-select formControlName="idVerwaltungTombola">
-                        <mat-option [value]="null">Keine Vorlage</mat-option>
-                        @for (template of pdfTemplates; track template.id) {
-                          <mat-option [value]="template.id">{{ template.typ }} v{{ template.version }} - {{ template.bezeichnung }}</mat-option>
-                        }
-                      </mat-select>
-                    </mat-form-field>
-                  </div>
-                </div>
-              </section>
+          <div class="imr-top-actions">
+            <button mat-flat-button color="accent" type="button" (click)="savePdfSettings()">
+              PDF-Zuweisung speichern
+            </button>
+            <button mat-flat-button color="primary" type="button" (click)="resetPdfSettings()">
+              Zurücksetzen
+            </button>
+          </div>
+          <section class="imr-grid" [formGroup]="formPdfSettings">
+            <div class="imr-col-12 imr-col-lg-6 mb-3">
+              <mat-form-field appearance="outline" class="imr-full-width">
+                <mat-label>Rechnungsaufstellung</mat-label>
+                <mat-select formControlName="idVerwaltungRechnung">
+                  <mat-option [value]="null">Keine Vorlage</mat-option>
+                  @for (template of pdfTemplates; track template.id) {
+                    <mat-option [value]="template.id">{{ template.typ }} v{{ template.version }} - {{ template.bezeichnung }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="imr-col-12 imr-col-lg-6 mb-3">
+              <mat-form-field appearance="outline" class="imr-full-width">
+                <mat-label>Tombolabestätigung</mat-label>
+                <mat-select formControlName="idVerwaltungTombola">
+                  <mat-option [value]="null">Keine Vorlage</mat-option>
+                  @for (template of pdfTemplates; track template.id) {
+                    <mat-option [value]="template.id">{{ template.typ }} v{{ template.version }} - {{ template.bezeichnung }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </section>
         </imr-section>
       </mat-tab>
     }

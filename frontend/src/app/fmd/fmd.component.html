@@ -397,7 +397,7 @@
     @if (isAdmin) {
       <mat-tab label="Einstellungen">
         <imr-section>
-          <div class="imr-top-actions fmd-settings-actions">
+          <div class="imr-top-actions">
             <button mat-flat-button color="accent" type="button" (click)="savePdfSettings()">
               PDF-Zuweisung speichern
             </button>
@@ -406,30 +406,28 @@
             </button>
           </div>
 
-          <section class="fmd-settings-panel" [formGroup]="formPdfSettings">
-            <div class="imr-grid">
-              <div class="imr-col-12 imr-col-lg-6 mb-3">
-                <mat-form-field appearance="outline" class="imr-full-width">
-                  <mat-label>FMD Deckblatt</mat-label>
-                  <mat-select formControlName="idFmdDeckblatt">
-                    <mat-option [value]="null">Keine Vorlage</mat-option>
-                    @for (template of pdfTemplates; track template.id) {
-                      <mat-option [value]="template.id">{{ template.typ }} v{{ template.version }} - {{ template.bezeichnung }}</mat-option>
-                    }
-                  </mat-select>
-                </mat-form-field>
-              </div>
-              <div class="imr-col-12 imr-col-lg-6 mb-3">
-                <mat-form-field appearance="outline" class="imr-full-width">
-                  <mat-label>FMD Listen</mat-label>
-                  <mat-select formControlName="idFmdListe">
-                    <mat-option [value]="null">Keine Vorlage</mat-option>
-                    @for (template of pdfTemplates; track template.id) {
-                      <mat-option [value]="template.id">{{ template.typ }} v{{ template.version }} - {{ template.bezeichnung }}</mat-option>
-                    }
-                  </mat-select>
-                </mat-form-field>
-              </div>
+          <section class="imr-grid" [formGroup]="formPdfSettings">
+            <div class="imr-col-12 imr-col-lg-6 mb-3">
+              <mat-form-field appearance="outline" class="imr-full-width">
+                <mat-label>FMD Deckblatt</mat-label>
+                <mat-select formControlName="idFmdDeckblatt">
+                  <mat-option [value]="null">Keine Vorlage</mat-option>
+                  @for (template of pdfTemplates; track template.id) {
+                    <mat-option [value]="template.id">{{ template.typ }} v{{ template.version }} - {{ template.bezeichnung }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="imr-col-12 imr-col-lg-6 mb-3">
+              <mat-form-field appearance="outline" class="imr-full-width">
+                <mat-label>FMD Listen</mat-label>
+                <mat-select formControlName="idFmdListe">
+                  <mat-option [value]="null">Keine Vorlage</mat-option>
+                  @for (template of pdfTemplates; track template.id) {
+                    <mat-option [value]="template.id">{{ template.typ }} v{{ template.version }} - {{ template.bezeichnung }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
             </div>
           </section>
         </imr-section>

@@ -578,25 +578,21 @@
               Auf Standard zurücksetzen
             </button>
           </div>
+          <section class="imr-grid" [formGroup]="formPdfSettings">
+            <div class="imr-col-12 imr-col-lg-6 mb-3">
+              <mat-form-field appearance="outline" class="imr-full-width">
+                <mat-label>Jugend Event-Ausdruck</mat-label>
+                <mat-select formControlName="idJugendEventReport">
+                  <mat-option [value]="null">Keine Vorlage</mat-option>
+                  @for (template of pdfTemplates; track template.id) {
+                    <mat-option [value]="template.id">{{ template.typ }} v{{ template.version }} - {{ template.bezeichnung }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </section>
 
           <div class="jugend-settings-panel">
-            <section class="jugend-settings-pdf">
-              <h3>PDF-Zuordnung</h3>
-              <div [formGroup]="settingsPdfForm" class="jugend-settings-pdf-form">
-                <mat-form-field appearance="outline" class="imr-full-width">
-                  <mat-label>Jugend Event-Ausdruck</mat-label>
-                  <mat-select formControlName="idJugendEventReport">
-                    <mat-option [value]="null">Keine Vorlage</mat-option>
-                    @for (template of pdfTemplates; track template.id) {
-                      <mat-option [value]="template.id">
-                        {{ template.typ }} v{{ template.version }} - {{ template.bezeichnung }}
-                      </mat-option>
-                    }
-                  </mat-select>
-                </mat-form-field>
-              </div>
-            </section>
-
             <section class="jugend-settings-regeln">
               <h3>Jugend-Regeln</h3>
               <div class="imr-table-wrap">
