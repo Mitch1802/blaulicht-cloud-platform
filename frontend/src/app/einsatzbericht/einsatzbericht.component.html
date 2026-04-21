@@ -1,6 +1,45 @@
 <imr-header [breadcrumb]="breadcrumb"></imr-header>
 
 <imr-page-layout [title]="title" class="einsatzbericht-page">
+  @if (isAdmin) {
+    <button
+      imrPageHeadActions
+      mat-icon-button
+      type="button"
+      [attr.aria-label]="settingsPanelOpen ? 'Einstellungen schließen' : 'Einstellungen öffnen'"
+      [attr.aria-expanded]="settingsPanelOpen"
+      (click)="toggleSettings()"
+    >
+      <mat-icon>{{ settingsPanelOpen ? 'close' : 'settings' }}</mat-icon>
+    </button>
+  }
+
+  @if (isAdmin && settingsPanelOpen) {
+    <imr-section title="PDF-Zuweisung">
+      <div class="imr-top-actions">
+        <button mat-flat-button color="accent" type="button" (click)="savePdfSettings()">
+          PDF-Zuweisung speichern
+        </button>
+        <button mat-flat-button color="primary" type="button" (click)="resetPdfSettings()">
+          Zurücksetzen
+        </button>
+      </div>
+      <section class="imr-grid" [formGroup]="formPdfSettings">
+        <div class="imr-col-12 imr-col-lg-6 mb-3">
+          <mat-form-field appearance="outline" class="imr-full-width">
+            <mat-label>Einsatzbericht PDF</mat-label>
+            <mat-select formControlName="idEinsatzberichtPdf">
+              <mat-option [value]="null">Keine Vorlage</mat-option>
+              @for (template of pdfTemplates; track template.id) {
+                <mat-option [value]="template.id">{{ template.typ }} v{{ template.version }} - {{ template.bezeichnung }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </section>
+    </imr-section>
+  }
+
   <imr-section>
     @if (viewMode === "list") {
       <div class="imr-top-actions mb-0">

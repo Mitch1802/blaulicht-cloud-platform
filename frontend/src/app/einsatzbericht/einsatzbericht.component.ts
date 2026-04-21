@@ -28,6 +28,7 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { DateInputMaskDirective } from '../_directive/date-input-mask.directive';
 import { normalizeDateInput } from '../_utils/date-normalization.util';
+import { IPdfTemplate } from '../_interface/pdf_template';
 
 type FahrzeugOption = {
   id: number;
@@ -121,6 +122,11 @@ type BlaulichtsmsResponse = {
 type SaveEinsatzberichtResponse = {
   id?: string;
 };
+
+type EinsatzberichtePdfKonfig = { idEinsatzberichtPdf?: string; [key: string]: unknown };
+type EinsatzberichteModulKonfigItem = { id?: number; modul: string; konfiguration?: Record<string, unknown> };
+type EinsatzberichteModulKonfigResponse = { user?: { roles?: unknown }; main?: EinsatzberichteModulKonfigItem[] } | EinsatzberichteModulKonfigItem[];
+type EinsatzberichtePdfTemplatesResponse = { main?: IPdfTemplate[] } | IPdfTemplate[];
 
 @Component({
   standalone: true,
@@ -229,9 +235,20 @@ export class EinsatzberichtComponent implements OnInit {
   canDeleteBerichte = false;
   canManageStatus = false;
   canPrintBericht = false;
+  isAdmin = false;
 
   private stammdaten: Record<string, unknown> = {};
-  private pdf_konfig: Record<string, unknown> = {};
+  private pdf_konfig: EinsatzberichtePdfKonfig = {};
+
+  private readonly modulKonfigurationEndpoint = 'modul_konfiguration';
+  pdfTemplates: IPdfTemplate[] = [];
+  pdfKonfigId: number | null = null;
+  private pdfTemplatesLoaded = false;
+  settingsPanelOpen = false;
+
+  formPdfSettings = new FormGroup({
+    idEinsatzberichtPdf: new FormControl<string | null>(null),
+  });
 
   statusOptionen = [
     { key: 'ENTWURF', label: 'Entwurf' },
@@ -653,16 +670,21 @@ export class EinsatzberichtComponent implements OnInit {
         this.canDeleteBerichte = isSuperuser || roles.includes('ADMIN') || roles.includes('VERWALTUNG');
         this.canManageStatus = isSuperuser || roles.includes('ADMIN') || roles.includes('VERWALTUNG');
         this.canPrintBericht = isSuperuser || roles.includes('ADMIN') || roles.includes('VERWALTUNG');
+        this.isAdmin = isSuperuser || roles.includes('ADMIN');
         if (this.canManageStatus) {
           this.formBericht.controls.status.enable({ emitEvent: false });
         } else {
           this.formBericht.controls.status.disable({ emitEvent: false });
+        }
+        if (this.isAdmin) {
+          this.loadPdfSettingsContext();
         }
       },
       error: () => {
         this.canEditBerichte = false;
         this.canDeleteBerichte = false;
         this.canManageStatus = false;
+        this.isAdmin = false;
         this.formBericht.controls.status.disable({ emitEvent: false });
       },
     });
@@ -1559,6 +1581,115 @@ export class EinsatzberichtComponent implements OnInit {
 
   private resolveMitalarmiertSelectValue(value: unknown): number[] {
     return Array.from(new Set(this.normalizeMitalarmiertValues(value)));
+  }
+
+  toggleSettings(): void {
+    this.settingsPanelOpen = !this.settingsPanelOpen;
+  }
+
+  savePdfSettings(): void {
+    if (!this.isAdmin) {
+      return;
+    }
+
+    const payload = {
+      modul: 'pdf',
+      konfiguration: {
+        ...this.pdf_konfig,
+        idEinsatzberichtPdf: this.stringOrNull(this.formPdfSettings.controls.idEinsatzberichtPdf.value),
+      },
+    };
+
+    if (this.pdfKonfigId) {
+      this.apiHttpService.patch<EinsatzberichteModulKonfigItem>(this.modulKonfigurationEndpoint, this.pdfKonfigId, payload, false).subscribe({
+        next: (saved) => {
+          this.applySavedPdfKonfig(saved);
+          this.uiMessageService.erstelleMessage('success', 'PDF-Zuweisung gespeichert.');
+        },
+        error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
+      });
+      return;
+    }
+
+    this.apiHttpService.post<EinsatzberichteModulKonfigItem>(this.modulKonfigurationEndpoint, payload, false).subscribe({
+      next: (saved) => {
+        this.applySavedPdfKonfig(saved);
+        this.uiMessageService.erstelleMessage('success', 'PDF-Zuweisung gespeichert.');
+      },
+      error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
+    });
+  }
+
+  resetPdfSettings(): void {
+    this.syncPdfSettingsForm();
+  }
+
+  private loadPdfSettingsContext(): void {
+    this.apiHttpService.get<EinsatzberichteModulKonfigResponse>(this.modulKonfigurationEndpoint).subscribe({
+      next: (erg) => {
+        const eintraege = this.normalizeModulKonfigEntries(erg);
+        const pdfEntry = eintraege.find((item) => String(item.modul ?? '').trim().toLowerCase() === 'pdf');
+        this.pdfKonfigId = typeof pdfEntry?.id === 'number' ? pdfEntry.id : null;
+        this.pdf_konfig = (pdfEntry?.konfiguration ?? this.pdf_konfig ?? {}) as EinsatzberichtePdfKonfig;
+        this.syncPdfSettingsForm();
+        this.loadPdfTemplatesOnce();
+      },
+      error: () => {
+        this.pdfKonfigId = null;
+        this.syncPdfSettingsForm();
+      },
+    });
+  }
+
+  private loadPdfTemplatesOnce(): void {
+    if (this.pdfTemplatesLoaded) {
+      return;
+    }
+
+    this.apiHttpService.get<EinsatzberichtePdfTemplatesResponse>('pdf/templates').subscribe({
+      next: (erg) => {
+        this.pdfTemplates = Array.isArray(erg) ? erg : (erg.main ?? []);
+        this.pdfTemplatesLoaded = true;
+      },
+      error: (error: unknown) => this.authSessionService.errorAnzeigen(error),
+    });
+  }
+
+  private syncPdfSettingsForm(): void {
+    this.formPdfSettings.patchValue({
+      idEinsatzberichtPdf: this.stringOrNull(this.pdf_konfig.idEinsatzberichtPdf),
+    }, { emitEvent: false });
+    this.formPdfSettings.markAsPristine();
+    this.formPdfSettings.markAsUntouched();
+  }
+
+  private applySavedPdfKonfig(saved: EinsatzberichteModulKonfigItem): void {
+    this.pdfKonfigId = typeof saved.id === 'number' ? saved.id : null;
+    this.pdf_konfig = (saved.konfiguration ?? {}) as EinsatzberichtePdfKonfig;
+    this.syncPdfSettingsForm();
+  }
+
+  private normalizeModulKonfigEntries(payload: unknown): EinsatzberichteModulKonfigItem[] {
+    if (Array.isArray(payload)) {
+      return payload as EinsatzberichteModulKonfigItem[];
+    }
+
+    if (payload && typeof payload === 'object') {
+      const main = (payload as { main?: unknown }).main;
+      if (Array.isArray(main)) {
+        return main as EinsatzberichteModulKonfigItem[];
+      }
+    }
+
+    return [];
+  }
+
+  private stringOrNull(value: unknown): string | null {
+    if (value === null || value === undefined || value === '') {
+      return null;
+    }
+
+    return String(value);
   }
 
   druckeBericht(element: EinsatzberichtDto): void {
