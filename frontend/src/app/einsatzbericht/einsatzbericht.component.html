@@ -6,11 +6,12 @@
       imrPageHeadActions
       mat-icon-button
       type="button"
+      class="settings-btn"
       [attr.aria-label]="settingsPanelOpen ? 'Einstellungen schließen' : 'Einstellungen öffnen'"
       [attr.aria-expanded]="settingsPanelOpen"
       (click)="toggleSettings()"
     >
-      <mat-icon>{{ settingsPanelOpen ? 'close' : 'settings' }}</mat-icon>
+      <mat-icon class="settings-icon">{{ settingsPanelOpen ? 'close' : 'settings' }}</mat-icon>
     </button>
   }
 
@@ -39,7 +40,7 @@
       </section>
     </imr-section>
   }
-
+  @else {
   <imr-section>
     @if (viewMode === "list") {
       <div class="imr-top-actions mb-0">
@@ -1013,6 +1014,7 @@
       </form>
     }
   </imr-section>
+  }
 </imr-page-layout>
 
 
