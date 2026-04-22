@@ -170,7 +170,7 @@ jobs:
         run: |
           docker compose -f docker-compose.yml push
 
-      - name: Add + push snapshot tags (test only)
+      - name: Add + push test tags
         if: env.BUILT == 'true' && env.CHANNEL == 'test'
         shell: bash
         env:
@@ -179,13 +179,9 @@ jobs:
         run: |
           set -euo pipefail
 
-          docker tag "mitch122/${DOCKER_REPO}:api-test"   "mitch122/${DOCKER_REPO}:api-test-${SHORT_SHA}"
-          docker tag "mitch122/${DOCKER_REPO}:db-test"    "mitch122/${DOCKER_REPO}:db-test-${SHORT_SHA}"
-          docker tag "mitch122/${DOCKER_REPO}:nginx-test" "mitch122/${DOCKER_REPO}:nginx-test-${SHORT_SHA}"
-
-          docker push "mitch122/${DOCKER_REPO}:api-test-${SHORT_SHA}"
-          docker push "mitch122/${DOCKER_REPO}:db-test-${SHORT_SHA}"
-          docker push "mitch122/${DOCKER_REPO}:nginx-test-${SHORT_SHA}"
+          docker tag "mitch122/${DOCKER_REPO}:api-test"
+          docker tag "mitch122/${DOCKER_REPO}:db-test"
+          docker tag "mitch122/${DOCKER_REPO}:nginx-test"
 
       - name: Create build metadata artifact
         shell: bash
