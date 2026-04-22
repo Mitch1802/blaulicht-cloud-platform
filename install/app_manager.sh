@@ -5,7 +5,6 @@ set -euo pipefail
 # FESTE VARIABLEN
 #############################################
 INSTALL_PATH="/srv/blaulichtcloud"
-DOCKER_USER="mitch122"
 API_VERSION="api/v1/"
 SOFTWARE_NAME="blaulichtcloud"
 NETWORK_NAME="blaulichtcloud_nw"

@@ -2,7 +2,7 @@ services:
     api:
         command: /start
         restart: always
-        image: mitch122/blaulichtcloud:api-${VERSION}
+        image: ghcr.io/mitch1802/blaulichtcloud:api-${VERSION}
         container_name: ${NAME}_api
         expose:
             - "9999"
@@ -18,7 +18,7 @@ services:
             - blaulichtcloud_nw
 
     postgres:
-        image: mitch122/blaulichtcloud:db-${VERSION}
+        image: ghcr.io/mitch1802/blaulichtcloud:db-${VERSION}
         container_name: ${NAME}_db
         restart: always
         volumes:
@@ -29,7 +29,7 @@ services:
             - blaulichtcloud_nw
 
     nginx:
-        image: mitch122/blaulichtcloud:nginx-${VERSION}
+        image: ghcr.io/mitch1802/blaulichtcloud:nginx-${VERSION}
         container_name: ${NAME}_nginx
         restart: always
         environment:
