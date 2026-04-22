@@ -3,19 +3,16 @@ services:
         build:
             context: .
             dockerfile: ./docker/django/Dockerfile
-        # image: mitch122/${DOCKER_REPO}:api-${VERSION}
         image: ghcr.io/mitch1802/${DOCKER_REPO}:api-${VERSION}
 
     postgres:
         build:
             context: .
             dockerfile: ./docker/postgres/Dockerfile
-        # image: mitch122/${DOCKER_REPO}:db-${VERSION}
-        image: ghcr.io/mitch1802/${DOCKER_REPO}:api-${VERSION}
+        image: ghcr.io/mitch1802/${DOCKER_REPO}:db-${VERSION}
 
     nginx:
         build:
             context: .
             dockerfile: ./docker/nginx/Dockerfile
-        # image: mitch122/${DOCKER_REPO}:nginx-${VERSION}
         image: ghcr.io/mitch1802/${DOCKER_REPO}:nginx-${VERSION}
