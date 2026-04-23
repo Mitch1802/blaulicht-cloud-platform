@@ -1,4 +1,4 @@
-name: Cleanup GHCR
+name: 05 Cleanup GHCR
 
 on:
   workflow_dispatch:
