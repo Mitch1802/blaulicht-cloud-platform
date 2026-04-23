@@ -1,0 +1,23 @@
+name: Cleanup GHCR
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 5 * * *'
+      timezone: 'Europe/Vienna'
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Delete untagged GHCR versions
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: blaulichtcloud
+          package-type: container
+          min-versions-to-keep: 0
+          delete-only-untagged-versions: true
