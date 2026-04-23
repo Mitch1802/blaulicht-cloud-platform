@@ -12,9 +12,12 @@ permissions:
 jobs:
   cleanup:
     runs-on: ubuntu-24.04
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - name: Delete untagged GHCR versions
         uses: actions/delete-package-versions@v5
+        continue-on-error: true
         with:
           owner: mitch1802
           package-name: blaulichtcloud
