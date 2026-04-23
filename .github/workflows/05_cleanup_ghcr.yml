@@ -3,8 +3,7 @@ name: 05 Cleanup GHCR
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 5 * * *'
-      timezone: 'Europe/Vienna'
+    - cron: '0 4 * * *'   # 05:00 Europe/Vienna = 04:00 UTC im Sommer, 05:00 UTC im Winter
 
 permissions:
   contents: read
@@ -17,6 +16,7 @@ jobs:
       - name: Delete untagged GHCR versions
         uses: actions/delete-package-versions@v5
         with:
+          owner: mitch1802
           package-name: blaulichtcloud
           package-type: container
           min-versions-to-keep: 0
